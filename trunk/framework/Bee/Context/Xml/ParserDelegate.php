@@ -192,7 +192,7 @@ class Bee_Context_Xml_ParserDelegate {
 		if (!is_null($beanDefinition)) {
 			if (!Bee_Utils_Strings::hasText($beanName)) {
 				try {
-					$beanName = Bee_Context_Support_BeanDefinitionReaderUtils::generateBeanName($beanDefinition, $this->readerContext->getRegistry(), ($containingBean != null));
+					$beanName = Bee_Context_Support_BeanDefinitionReaderUtils::generateBeanName($beanDefinition, $this->readerContext->getRegistry(), ($containingBd != null));
 					$this->readerContext->notice("Neither XML 'id' nor 'name' specified - using generated bean name [$beanName]", $ele);
 				} catch (Exception $ex) {
 					$this->readerContext->error($ex->getMessage(), $ele, $ex);
@@ -377,7 +377,7 @@ class Bee_Context_Xml_ParserDelegate {
 		if (Bee_Utils_Strings::hasLength($indexAttr) && is_numeric($indexAttr) && ($index = intval($indexAttr)) >= 0) {
 			$existingArgs = $bd->getConstructorArgumentValues(); 
 			if(isset($existingArgs[$index])) {
-				$this->readerContext->error("Multiple occurrences of value $index for attribute 'index' of tag 'constructor-arg'");
+				$this->readerContext->error("Multiple occurrences of value $index for attribute 'index' of tag 'constructor-arg'", $ele);
 			} else {
 				try {
 					array_push($this->parseState, "Constructor_Arg_Idx_$index");
@@ -473,7 +473,11 @@ class Bee_Context_Xml_ParserDelegate {
 		} else if ($hasValueAttribute) {
 			
 			// @todo: make it possible to set a type attribute on the element?
-			$valueHolder = new Bee_Context_Config_TypedStringValue($ele->getAttribute(self::VALUE_ATTRIBUTE), $defaultTypeClassName);
+            $typeClassName = $ele->getAttribute(self::TYPE_ATTRIBUTE);
+            if(!$typeClassName) {
+                $typeClassName = Bee_Utils_ITypeDefinitions::STRING;
+            }
+			$valueHolder = new Bee_Context_Config_TypedStringValue($ele->getAttribute(self::VALUE_ATTRIBUTE), $typeClassName);
 			// @todo provide source info via BeanMetadataElement
 //			valueHolder.setSource(extractSource(ele));
 			return $valueHolder;
@@ -499,7 +503,7 @@ class Bee_Context_Xml_ParserDelegate {
 	 * 
 	 * @return
 	 */
-	public function parsePropertySubElement(DOMElement $ele, Bee_Context_Config_IBeanDefinition $bd) {
+	public function parsePropertySubElement(DOMElement $ele, Bee_Context_Config_IBeanDefinition $bd, $defaultTypeClassName) {
 
 		if (!$this->isDefaultNamespace($ele->namespaceURI)) {
 
