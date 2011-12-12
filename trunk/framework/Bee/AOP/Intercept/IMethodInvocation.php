@@ -30,3 +30,5 @@ interface Bee_AOP_Intercept_IMethodInvocation extends Bee_AOP_Intercept_IInvocat
      */
     function getMethod();
 }
+
+?>

@@ -80,3 +80,4 @@ interface Bee_Transactions_ITransactionStatus extends Bee_Transactions_ISavepoin
      */
     function isCompleted();
 }
+?>

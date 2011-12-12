@@ -111,3 +111,4 @@ class Bee_Security_AfterInvocation_ProviderManager implements Bee_Security_IAfte
     }
 
 }
+?>

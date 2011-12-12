@@ -53,3 +53,4 @@ interface Bee_Security_Acls_IPermission {
      */
     public function getPattern();
 }
+?>

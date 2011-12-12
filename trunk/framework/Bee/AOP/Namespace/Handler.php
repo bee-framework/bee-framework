@@ -28,3 +28,5 @@ class Bee_AOP_Namespace_Handler extends Bee_Context_Xml_Namespace_HandlerSupport
         $this->registerBeanDefinitionDecorator("scoped-proxy", new Bee_AOP_Namespace_ScopedProxyBeanDefinitionDecorator());
     }
 }
+
+?>

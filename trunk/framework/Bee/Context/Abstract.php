@@ -86,7 +86,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * Enter description here...
 	 *
 	 */
-	public function __construct($identifier, $callInitMethod=true) {
+	public function __construct($identifier='', $callInitMethod=true) {
         $this->identifier = $identifier;
 		if ($callInitMethod) {
 			$this->init();
@@ -515,15 +515,13 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @param String $dependentBeanName the name of the dependent bean
 	 */
 	public function registerDependentBean($beanName, $dependentBeanName) {
-		
-		if(is_null($this->dependentBeanMap[$beanName])) {
+
+        if(!array_key_exists($beanName, $this->dependentBeanMap)) {
 			$this->dependentBeanMap[$beanName] = array();
 		}		
 		$this->dependentBeanMap[$beanName][$dependentBeanName]= TRUE;
 
-		
-		
-		if(is_null($this->dependenciesForBeanMap[$dependentBeanName])) {
+		if(!array_key_exists($dependentBeanName, $this->dependenciesForBeanMap)) {
 			$this->dependenciesForBeanMap[$dependentBeanName] = array();
 		}		
 		$this->dependenciesForBeanMap[$dependentBeanName][$beanName] = TRUE;
@@ -581,10 +579,10 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		return (!is_null($this->getParent()) && $this->getParent()->containsBeanDefinition($beanName)); 
 	}
 	
-	
+
 
 	public function getBean($name, $requiredType=null) {
-		
+
 		$beanName = $this->transformedBeanName($name);
 		
 		// @todo: prototypes currently in creation: 
@@ -618,7 +616,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		
 		// @todo: catch IllegalStateException in case scope is not active (e.g. no session started...)
 		// not needed for session, request, prototype scopes but maybe for fancy new scope implementations...
-		$scopedInstance = $scope->get($beanName, new _Bee_Context_Config_ObjectFactory($beanName, $localBeanDefinition, $this));
+		$scopedInstance = $scope->get($beanName, new Bee_Context_Abstract_ObjectFactoryImpl($beanName, $localBeanDefinition, $this));
 
         $bean = $this->getObjectForBeanInstance($scopedInstance, $name, $beanName, $localBeanDefinition);
 
@@ -629,7 +627,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		return $bean;
 		
 	}
-	
+
     /**
      * Get the object for the given bean instance, either the bean
      * instance itself or its created object in case of a FactoryBean.
@@ -692,8 +690,9 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
      */
     protected function getObjectFromFactoryBean(Bee_Context_IFactoryBean $factory, $beanName, $shouldPostProcess) {
         if ($factory->isSingleton() /*&& $this->containsSingleton(beanName)*/) {
-            $object = $this->factoryBeanObjectCache[$beanName];
-            if ($object == null) {
+            if(array_key_exists($beanName, $this->factoryBeanObjectCache)) {
+                $object = $this->factoryBeanObjectCache[$beanName];
+            } else {
                 $object = $this->doGetObjectFromFactoryBean($factory, $beanName, $shouldPostProcess);
                 $this->factoryBeanObjectCache[$beanName] = $object;
             }
@@ -810,7 +809,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 /**
  * Workaround for an anonymous implementation of Bee_Context_Config_IObjectFactory.
  */
-final class _Bee_Context_Config_ObjectFactory implements Bee_Context_Config_IObjectFactory {
+final class Bee_Context_Abstract_ObjectFactoryImpl implements Bee_Context_Config_IObjectFactory {
 
 	/**
 	 * Enter description here...

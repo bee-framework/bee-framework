@@ -21,7 +21,7 @@
  * Time: 11:36:56 PM
  */
 
-abstract class Bee_Context_Xml_Namespace_AbstractBeanDefinitionParser implements Bee_Context_Xml_Namespace_IBeanDefinitionParser {
+abstract class Bee_Context_Xml_Namespace_AbstractBeanDefinitionParser implements Bee_Context_Xml_Namespace_IBeanDefinitionParser, Bee_Context_Xml_IConstants {
 
     /** Constant for the id attribute */
     const ID_ATTRIBUTE = 'id';
@@ -30,12 +30,17 @@ abstract class Bee_Context_Xml_Namespace_AbstractBeanDefinitionParser implements
         $definition = $this->parseInternal($element, $parserContext);
         if (!$parserContext->isNested()) {
             try {
+                $aliases = $this->shouldParseNameAliases() ? Bee_Context_Xml_Utils::parseNameAttribute($element) : null;
+
                 $id = $this->resolveId($element, $definition, $parserContext);
+                if (!Bee_Utils_Strings::hasText($id) && count($aliases) > 0) {
+                    $id = Bee_Context_Xml_Utils::getIdFromAliases($aliases, $parserContext->getReaderContext(), $element);
+                }
                 if (!Bee_Utils_Strings::hasText($id)) {
                     $parserContext->getReaderContext()->error(
-                            "Id is required for element '" + $element->localName + "' when used as a top-level tag", $element);
+                            "Id is required for element '" . $element->localName . "' when used as a top-level tag", $element);
                 }
-                $holder = new Bee_Context_Config_BeanDefinitionHolder($definition, $id);
+                $holder = new Bee_Context_Config_BeanDefinitionHolder($definition, $id, $aliases);
                 $this->registerBeanDefinition($holder, $parserContext->getRegistry());
 //                if ($this->shouldFireEvents()) {
 //                    $componentDefinition = new BeanComponentDefinition(holder);
@@ -132,6 +137,10 @@ abstract class Bee_Context_Xml_Namespace_AbstractBeanDefinitionParser implements
         return false;
     }
 
+    protected function shouldParseNameAliases() {
+        return true;
+    }
+
     /**
      * Controls whether this parser is supposed to fire a
      * {@link org.springframework.beans.factory.parsing.BeanComponentDefinition}
@@ -162,3 +171,4 @@ abstract class Bee_Context_Xml_Namespace_AbstractBeanDefinitionParser implements
 //    }
 
 }
+?>

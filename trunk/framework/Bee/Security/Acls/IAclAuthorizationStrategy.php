@@ -31,3 +31,4 @@ interface Bee_Security_Acls_IAclAuthorizationStrategy {
 
     public function securityCheck(Bee_Security_Acls_IAcl $acl, $changeType);
 }
+?>

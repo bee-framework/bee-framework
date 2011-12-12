@@ -16,6 +16,9 @@
  */
 
 /**
+ *
+ * DOES NOT WORK ON FACTORY BEANS!!!
+ * 
  * User: mp
  * Date: Feb 17, 2010
  * Time: 7:18:00 PM
@@ -29,12 +32,12 @@ class Bee_AOP_Scope_ScopedProxyFactoryBean implements Bee_Context_IFactoryBean, 
      */
     private $targetBeanName;
 
-    private $proxy;
-
     /**
-     * @var Bee_IContext 
+     * @var Bee_Context_Abstract
      */
     private $beeContext;
+
+	private $proxy = null;
 
     /**
      * @param string $targetBeanName
@@ -45,20 +48,40 @@ class Bee_AOP_Scope_ScopedProxyFactoryBean implements Bee_Context_IFactoryBean, 
     }
 
     function setBeeContext(Bee_IContext $context) {
+		Bee_Utils_Assert::isInstanceOf('Bee_Context_Abstract', $context);
         $this->beeContext = $context;
     }
 
     function getObject() {
-        return new Test_ClassToProxy_Proxy($this->beeContext->getIdentifier(), $this->targetBeanName);
+
+		if($this->proxy == null) {
+			// todo: handle factories properly
+			$targetType = $this->getObjectType();
+			$enhancer = new Bee_Weaving_Enhancer($targetType);
+
+			$targetClassName = $enhancer->createEnhancedClass();
+
+			$this->proxy = new $targetClassName();
+			$this->proxy->setMethodInterceptor(new Bee_AOP_Scope_ScopedProxyMethodInterceptor($this->targetBeanName, $this->beeContext->getIdentifier()));
+		}
+
+		return $this->proxy;
+
+//        return new Test_ClassToProxy_Proxy($this->beeContext->getIdentifier(), $this->targetBeanName);
     }
 
     function getObjectType() {
         if($this->proxy != null) {
-            get_class($this->proxy);
+            return Bee_Utils_Types::getType($this->proxy);
         }
+		// todo: handle factories properly
+		$targetBeanDefinition = $this->beeContext->getBeanDefinition($this->targetBeanName);
+        return $targetBeanDefinition->getBeanClassName();
     }
 
     function isSingleton() {
         return true; 
     }
 }
+
+?>

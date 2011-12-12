@@ -58,3 +58,4 @@ interface Bee_Security_Acls_IAccessControlEntry {
      */
     public function isGranting();
 }
+?>

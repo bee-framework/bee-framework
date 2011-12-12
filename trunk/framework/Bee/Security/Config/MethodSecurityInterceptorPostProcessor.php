@@ -48,3 +48,4 @@ class Bee_Security_Config_MethodSecurityInterceptorPostProcessor implements Bee_
     }
 
 }
+?>

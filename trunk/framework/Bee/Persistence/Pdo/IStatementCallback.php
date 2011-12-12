@@ -49,3 +49,4 @@ interface Bee_Persistence_Pdo_IStatementCallback {
     public function doInPreparedStatement(PDOStatement $ps);
 
 }
+?>

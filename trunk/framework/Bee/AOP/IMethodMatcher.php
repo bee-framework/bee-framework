@@ -70,3 +70,5 @@ interface Bee_AOP_IMethodMatcher {
      */
 //    MethodMatcher TRUE = TrueMethodMatcher.INSTANCE;
 }
+
+?>

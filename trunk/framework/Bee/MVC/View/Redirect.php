@@ -23,7 +23,7 @@ class Bee_MVC_View_Redirect implements Bee_MVC_IView {
 
 	public function render(array $model = array()) {
 		Bee_Utils_Assert::hasText($model['redirectUrl']);
-		header('Location: ' . $model['redirectUrl']);
+		header('Location: ' . $model['redirectUrl'], true, 303);
 	}
 }
 ?>

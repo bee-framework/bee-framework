@@ -85,3 +85,4 @@ interface Bee_Context_Config_IInstantiationAwareBeanPostProcessor extends Bee_Co
 //            throws BeansException;
 
 }
+?>

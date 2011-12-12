@@ -465,7 +465,7 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 		}
 	}
 	
-	private final function selectRootNode(Bee_MVC_IHttpRequest $request) {
+	protected final function selectRootNode(Bee_MVC_IHttpRequest $request) {
 		$node = $request->getParameter(self::FOLDER_TREE_ROOT_FOLDER_KEY);
 		if(!($node instanceof Bee_Filesystem_INode)) {
 			$node = $this->fileManager->getNode();

@@ -30,3 +30,4 @@ class Bee_Transactions_Namespace_Handler extends Bee_Context_Xml_Namespace_Handl
 //        $this->registerBeanDefinitionParser('annotation-driven', new AnnotationDrivenBeanDefinitionParser());
     }
 }
+?>

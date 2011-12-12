@@ -58,3 +58,4 @@ interface Bee_Security_Intercept_IObjectDefinitionSource {
      */
     public function supports($classOrClassName);
 }
+?>

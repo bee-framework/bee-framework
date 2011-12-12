@@ -15,60 +15,41 @@
  * limitations under the License.
  */
 
+require_once 'Bee/Cache/IProvider.php';
 /**
  * Abstract base class for some cache provider implementations. Mainly solves the problem of
  * retrieving timestamps from the info output of certain cache providers.
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-abstract class Bee_Cache_Provider_Base {
-	
-	const CTIME_KEY_SUFFIX = '__CTIME__';
-	const ATIME_KEY_SUFFIX = '__ATIME__';
+abstract class Bee_Cache_Provider_Base implements Bee_Cache_IProvider {
 	
 	public function init() {}
 
-	public final function store($key, $value, $mtime = 0) {
-		$mtime = $mtime == 0 ? time() : $mtime;
-		$this->doStore($key . self::CTIME_KEY_SUFFIX, $mtime);
-		$this->doStore($key . self::ATIME_KEY_SUFFIX, $mtime);
-		return $this->doStoreSerialized($key, $value);
+	public final function store($key, &$value, $etime = 0) {
+		return $this->doStoreSerialized($key, $value, $etime);
 	}
 	
 	public final function retrieve($key) {
-		$this->doStore($key . self::ATIME_KEY_SUFFIX, time());
 		return $this->doRetrieveSerialized($key);
-	}
-	
-	public final function evict($key) {
-		$this->doEvict($key . self::CTIME_KEY_SUFFIX);
-		$this->doEvict($key . self::ATIME_KEY_SUFFIX);
-		return $this->doEvict($key);
-	}
-	
-	public final function getLastUpdateTimestamp($key) {
-		return $this->doRetrieve($key . self::CTIME_KEY_SUFFIX);
-	}
-	
-	public final function getLastAccessTimestamp($key) {
-		return $this->doRetrieve($key . self::ATIME_KEY_SUFFIX);
 	}
 	
 	public function shutdown() {}
 	
-	protected abstract function doStore($key, $value);
+	protected abstract function doStore($key, $value, $etime = 0);
 	
 	protected abstract function doRetrieve($key);
 	
-	protected abstract function doEvict($key);
-
-	protected function doStoreSerialized($key, $value) {
-		return $this->doStore($key, serialize($value));
+	protected function doStoreSerialized($key, &$value, $etime = 0) {
+		return $this->doStore($key, serialize($value), $etime);
 	}
 
 	protected function doRetrieveSerialized($key) {
 		return unserialize($this->doRetrieve($key));
 	}
-	
+
+	protected final function getTTL($etime) {
+		return $etime - time();
+	}
 }
 ?>

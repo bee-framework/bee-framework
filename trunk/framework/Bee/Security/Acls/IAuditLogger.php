@@ -23,3 +23,4 @@
 interface Bee_Security_Acls_IAuditLogger {
     public function logIfNeeded($granted, Bee_Security_Acls_IAccessControlEntry $ace);
 }
+?>

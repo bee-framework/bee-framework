@@ -24,31 +24,41 @@
 class Bee_Context_InvalidPropertyException extends Bee_Context_BeansException {
 	
 	const EXCEPTION_MESSAGE = 'Could not access property %s on bean class %s: %s';
-	
-	private $name;
-	
-	
-	
+
+    /**
+     * @var string
+     */
+    private $propertyName;
+
+    /**
+     * @var string
+     */
+	private $beanClassName;
+
 	/**
 	 * Enter description here...
 	 *
-	 * @param String $name
+	 * @param string $name
 	 * @return void
 	 */
 	public function __construct($propertyName, $beanClassName, $message=null) {
 		parent::__construct(sprintf(self::EXCEPTION_MESSAGE, $propertyName, $beanClassName, $message));
-		$this->name = $name;
+		$this->propertyName = $propertyName;
+		$this->beanClassName = $beanClassName;
 	}
-	
 
-		
+    /**
+     * @return string
+     */
+    public function getPropertyName() {
+        return $this->propertyName;
+    }
+
 	/**
-	 * Enter description here...
-	 *
-	 * @return String
+	 * @return string
 	 */
-	public function getBeanName() {
-		return $this->name;
+	public function getBeanClassName() {
+		return $this->beanClassName;
 	}
 }
 

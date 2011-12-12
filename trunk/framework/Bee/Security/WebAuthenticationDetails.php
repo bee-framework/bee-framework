@@ -91,3 +91,4 @@ class Bee_Security_WebAuthenticationDetails implements Bee_Security_Concurrent_I
     }
 
 }
+?>

@@ -480,3 +480,5 @@ class Bee_AOP_Namespace_ConfigBeanDefinitionParser /*implements Bee_Context_Xml_
 //        return beanDefinition;
 //    }
 }
+
+?>

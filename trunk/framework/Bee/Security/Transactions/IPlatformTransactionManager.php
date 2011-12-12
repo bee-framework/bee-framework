@@ -97,3 +97,4 @@ interface Bee_Transactions_IPlatformTransactionManager {
      */
     function rollback(Bee_Transactions_ITransactionStatus $status);
 }
+?>

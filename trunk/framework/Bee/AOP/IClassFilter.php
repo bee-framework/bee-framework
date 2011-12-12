@@ -35,3 +35,5 @@ interface Bee_AOP_IClassFilter {
      */
 //    ClassFilter TRUE = TrueClassFilter.INSTANCE;
 }
+
+?>

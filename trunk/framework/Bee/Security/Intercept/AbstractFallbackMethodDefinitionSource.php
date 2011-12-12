@@ -145,3 +145,4 @@ abstract class Bee_Security_Intercept_AbstractFallbackMethodDefinitionSource imp
      */
     protected abstract function findAttributes($targetClassOrClassName);
 }
+?>

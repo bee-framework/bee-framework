@@ -38,7 +38,7 @@ class Bee_Exceptions_TypeMismatch extends Bee_Exceptions_Base {
 	 * @return void
 	 */
 	public function __construct($requiredType, $actualType=null, Exception $cause = null) {
-		parent::__construct(sprintf(self::EXCEPTION_MESSAGE, $requiredType, $actualType), 0, $cause);
+		parent::__construct(sprintf(self::EXCEPTION_MESSAGE, $requiredType, $actualType), $cause);
 		$this->requiredType = $requiredType;
 		$this->actualType = $actualType;
 	}

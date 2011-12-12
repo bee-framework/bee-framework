@@ -76,3 +76,4 @@ interface Bee_Security_Acls_IMutableAcl extends Bee_Security_Acls_IAcl {
      */
     public function updateAce($aceIndex, Bee_Security_Acls_IPermission $permission);
 }
+?>

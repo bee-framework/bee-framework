@@ -36,3 +36,5 @@ interface Bee_AOP_ITargetClassAware {
      */
     public function getTargetClassName();
 }
+
+?>

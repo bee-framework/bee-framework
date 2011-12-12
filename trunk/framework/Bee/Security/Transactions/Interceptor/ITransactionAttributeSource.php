@@ -36,3 +36,4 @@ interface Bee_Transactions_Interceptor_ITransactionAttributeSource {
      */
     function getTransactionAttribute(ReflectionMethod $method, $targetClassName);
 }
+?>

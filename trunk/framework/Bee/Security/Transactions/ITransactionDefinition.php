@@ -243,3 +243,4 @@ interface Bee_Transactions_ITransactionDefinition {
      */
     function getName();
 }
+?>

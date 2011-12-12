@@ -98,11 +98,7 @@ class Bee_Context_BeanDefinitionValueResolver {
 
 		} else if ($value instanceof Bee_Context_Config_RuntimeBeanNameReference) {
 
-			$ref = $value->getBeanName();
-			if (!$this->context->containsBean($ref)) {
-				throw new Bee_Context_BeanDefinitionStoreException("Invalid bean name '$ref' in bean reference $argName");
-			}
-			return $ref;
+			return $this->checkBeanNameReference($argName, $value);
 
 		} else if ($value instanceof Bee_Context_Config_BeanDefinitionHolder) {
 			
@@ -114,45 +110,15 @@ class Bee_Context_BeanDefinitionValueResolver {
 			// Resolve plain BeanDefinition, without contained name: use dummy name.
 			return $this->resolveInnerBean($argName, "(inner bean)", $value);
 
-		} else if (is_array($value)) {
+		} else if ($value instanceof Bee_Context_Config_ArrayValue) {
 
+			// May need to resolve contained runtime references.
+			return $this->resolveArrayValue($argName, $value);
+
+		} else if (is_array($value)) {
+            // TODO: deprecated
 			// May need to resolve contained runtime references.
 			return $this->resolveArray($argName, $value);
-
-/*
-		} else if (value instanceof ManagedList) {
-
-			// May need to resolve contained runtime references.
-			return resolveManagedList(argName, (List) value);
-
-		} else if (value instanceof ManagedSet) {
-
-			// May need to resolve contained runtime references.
-			return resolveManagedSet(argName, (Set) value);
-
-		} else if (value instanceof ManagedMap) {
-
-			// May need to resolve contained runtime references.
-			return resolveManagedMap(argName, (Map) value);
-
-		} else if (value instanceof ManagedProperties) {
-
-			Properties original = (Properties) value;
-			Properties copy = new Properties();
-			for (Iterator it = original.entrySet().iterator(); it.hasNext();) {
-				Map.Entry propEntry = (Map.Entry) it.next();
-				Object propKey = propEntry.getKey();
-				Object propValue = propEntry.getValue();
-				if (propKey instanceof TypedStringValue) {
-					propKey = ((TypedStringValue) propKey).getValue();
-				}
-				if (propValue instanceof TypedStringValue) {
-					propValue = ((TypedStringValue) propValue).getValue();
-				}
-				copy.put(propKey, propValue);
-			}
-			return copy;
-*/
 
 		} else if ($value instanceof Bee_Context_Config_TypedStringValue) {
 
@@ -173,7 +139,14 @@ class Bee_Context_BeanDefinitionValueResolver {
 			return $value;
 		}
 	}
-	
+
+    private function checkBeanNameReference($argName, Bee_Context_Config_RuntimeBeanNameReference $value) {
+        $ref = $this->findApplicableBeanName($value->getBeanNames(), $this->context);
+        if (!$this->context->containsBean($ref)) {
+            throw new Bee_Context_BeanDefinitionStoreException("Invalid bean name '$ref' in bean reference $argName");
+        }
+        return $ref;
+    }
 	
 	
 	
@@ -188,13 +161,15 @@ class Bee_Context_BeanDefinitionValueResolver {
 					// @todo: a lot of debug information is lost here
 					throw new Bee_Context_BeanCreationException($this->beanName);
 				}
-				return $this->context->getParent()->getBean($ref->getBeanName());
+//				return $this->context->getParent()->getBean($ref->getBeanName());
+				return $this->getBeanFromContext($ref->getBeanNames(), $this->context->getParent());
 
 			} else {
 
-				$bean = $this->context->getBean($ref->getBeanName());
-				$this->context->registerDependentBean($ref->getBeanName(), $this->beanName);
-				return $bean;
+//				$bean = $this->context->getBean($ref->getBeanName());
+//				$this->context->registerDependentBean($ref->getBeanName(), $this->beanName);
+//                return $bean;
+                return $this->getBeanFromContext($ref->getBeanNames(), $this->context);
 
 			}
 
@@ -204,6 +179,25 @@ class Bee_Context_BeanDefinitionValueResolver {
 		}
 	}
 
+    private function findApplicableBeanName(array $beanNames, Bee_IContext $context) {
+        $result = null;
+        foreach($beanNames as $beanName) {
+            $result = $beanName;
+            if($context->containsBean($beanName)) {
+                break;
+            }
+        }
+        return $result;
+    }
+
+    private function getBeanFromContext(array $beanNames, Bee_IContext $context) {
+        $beanName = $this->findApplicableBeanName($beanNames, $context);
+        $bean = $context->getBean($beanName);
+        if($context == $this->context) {
+            $this->context->registerDependentBean($beanName, $this->beanName);
+        }
+        return $bean;
+    }
 	
 	
 	/**
@@ -234,10 +228,14 @@ class Bee_Context_BeanDefinitionValueResolver {
 		}
 	}
 
+	private function resolveArrayValue($argName, Bee_Context_Config_ArrayValue $arr) {
+		return array_map(array($this, '_resolveValueIfNecessary'), $arr->getValue());
+	}
+	
 	private function resolveArray($argName, array $arr) {
 		return array_map(array($this, '_resolveValueIfNecessary'), $arr);
 	}
-	
+
 	protected function _resolveValueIfNecessary($value) {
 		return $this->resolveValueIfNecessary('(array element)', $value);
 	}

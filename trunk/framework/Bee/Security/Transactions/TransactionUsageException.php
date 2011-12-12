@@ -27,3 +27,4 @@ class Bee_Transactions_TransactionUsageException extends Bee_Exceptions_Base {
         parent::__construct($message, $cause);
     }
 }
+?>

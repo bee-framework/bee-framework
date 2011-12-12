@@ -91,3 +91,4 @@ class Bee_Utils_UserAgent {
 
 }
  
+?>

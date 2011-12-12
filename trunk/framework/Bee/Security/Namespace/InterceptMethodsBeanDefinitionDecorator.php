@@ -29,3 +29,4 @@ class Bee_Security_Namespace_InterceptMethodsBeanDefinitionDecorator implements 
         // TODO: Implement decorate() method.
     }
 }
+?>

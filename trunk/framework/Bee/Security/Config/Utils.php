@@ -44,3 +44,4 @@ class Bee_Security_Config_Utils {
         }
     }
 }
+?>

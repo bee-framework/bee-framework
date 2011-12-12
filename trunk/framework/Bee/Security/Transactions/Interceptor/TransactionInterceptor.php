@@ -67,3 +67,4 @@ class Bee_Transactions_Interceptor_TransactionInterceptor extends Bee_Transactio
         return $retVal;
     }
 }
+?>

@@ -67,3 +67,4 @@ interface Bee_Security_IAfterInvocationManager {
     function supportsClass($classOrClassName);
 
 }
+?>

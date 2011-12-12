@@ -27,3 +27,4 @@ class Bee_Transactions_IllegalTransactionStateException extends Bee_Transactions
         parent::__construct($message, $cause);
     }
 }
+?>

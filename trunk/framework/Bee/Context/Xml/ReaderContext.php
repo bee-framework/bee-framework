@@ -37,13 +37,18 @@ class Bee_Context_Xml_ReaderContext {
 	 * @var Bee_Context_Xml_Namespace_IHandlerResolver
 	 */
 	private $namespaceHandlerResolver;
-	
-	
+
+    /**
+     * @var Logger
+     */
+	private $log;
 	
 	public function __construct(
 			Bee_Context_Config_IBeanDefinitionRegistry $registry, 
 			Bee_Context_Xml_Namespace_IHandlerResolver $namespaceHandlerResolver) {
 		
+        $this->log = Logger::getLogger(__CLASS__);
+
 		$this->registry = $registry;
 		$this->namespaceHandlerResolver = $namespaceHandlerResolver;
 	}
@@ -69,19 +74,17 @@ class Bee_Context_Xml_ReaderContext {
 	}
 	
 	public function error($message, DOMElement $elem, Exception $ex = null) {
-		// @todo: throw exception
-		trigger_error($message, E_USER_ERROR);
+//		trigger_error($message, E_USER_ERROR);
+        $this->log->fatal($message);
+        throw new Bee_Context_BeanCreationException('', $message, $ex);
 	}
 
 	public function warning($message, DOMElement $elem, Exception $ex = null) {
-		// @todo
-		trigger_error($message, E_USER_WARNING);
+        $this->log->warn($message);
 	}
 	
 	public function notice($message, DOMElement $elem, Exception $ex = null) {
-		// @todo
-		trigger_error($message, E_USER_NOTICE);
+        $this->log->info($message);
 	}
-	
 }
 ?>

@@ -44,10 +44,11 @@ abstract class Bee_Context_Xml_Namespace_AbstractSingleBeanDefinitionParser exte
         if ($beanClassName != null) {
             $builder->getBeanDefinition()->setBeanClassName($beanClassName);
         }
-        if ($parserContext->isNested()) {
-            // Inner bean definition must receive same scope as containing bean.
-            $builder->setScope($parserContext->getContainingBeanDefinition()->getScope());
-        }
+
+        $this->parseDependsOn($element, $builder->getBeanDefinition());
+
+        Bee_Context_Xml_Utils::parseScopeAttribute($element, $builder->getBeanDefinition(), $parserContext->getContainingBeanDefinition());
+
         $this->doParse($element, $parserContext, $builder);
         return $builder->getBeanDefinition();
     }
@@ -55,14 +56,13 @@ abstract class Bee_Context_Xml_Namespace_AbstractSingleBeanDefinitionParser exte
     /**
      * Determine the name for the parent of the currently parsed bean,
      * in case of the current bean being defined as a child bean.
-     * <p>The default implementation returns <code>null</code>,
-     * indicating a root bean definition.
+     * <p>The default implementation returns the value of the parent attribute on the element.
      * @param element the <code>Element</code> that is being parsed
      * @return string the name of the parent bean for the currently parsed bean,
      * or <code>null</code> if none
      */
     protected function getParentName(DOMElement $element) {
-        return null;
+        return Bee_Context_Xml_Utils::parseParentAttribute($element);
     }
 
     /**
@@ -88,4 +88,9 @@ abstract class Bee_Context_Xml_Namespace_AbstractSingleBeanDefinitionParser exte
      */
     protected function doParse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext, Bee_Context_Support_BeanDefinitionBuilder $builder) {
     }
+
+    protected function parseDependsOn(DOMElement $ele, Bee_Context_Config_IBeanDefinition $bd) {
+        Bee_Context_Xml_Utils::parseDependsOnAttribute($ele, $bd);
+    }
 }
+?>

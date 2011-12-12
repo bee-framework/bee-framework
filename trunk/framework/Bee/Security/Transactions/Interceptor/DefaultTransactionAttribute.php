@@ -38,3 +38,4 @@ class Bee_Transactions_Interceptor_DefaultTransactionAttribute extends Bee_Trans
         return ($ex instanceof RuntimeException);
     }
 }
+?>

@@ -62,3 +62,4 @@ interface Bee_Security_IRunAsManager {
     function supportsClass($classOrClassName);
 
 }
+?>

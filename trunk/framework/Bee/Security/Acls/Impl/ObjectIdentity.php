@@ -64,3 +64,4 @@ class Bee_Security_Acls_Impl_ObjectIdentity implements Bee_Security_Acls_IObject
         return 'Bee_Security_Acls_Impl_ObjectIdentity['.$this->getIdentifierString().']';
     }
 }
+?>

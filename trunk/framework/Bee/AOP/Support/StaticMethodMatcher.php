@@ -33,3 +33,5 @@ abstract class Bee_AOP_Support_StaticMethodMatcher implements Bee_AOP_IMethodMat
     }
 
 }
+
+?>

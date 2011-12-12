@@ -26,3 +26,4 @@ class Bee_Security_Acls_Exception_UnloadedSid extends Bee_Security_Exception_Gen
         parent::__construct($message);
     }
 }
+?>

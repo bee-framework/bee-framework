@@ -113,3 +113,4 @@ class Bee_Security_Intercept_MethodDefinitionSourceAdvisor_MethodDefinitionSourc
         return $this->owner->getAttributeSource()->getAttributesForMethod($m, $targetClass) != null;
     }
 }
+?>

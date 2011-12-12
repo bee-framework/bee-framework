@@ -31,3 +31,4 @@ class Bee_Persistence_Pdo_RowMapper_SingleColumn implements Bee_Persistence_Pdo_
         return $rs->fetchColumn();
     }
 }
+?>

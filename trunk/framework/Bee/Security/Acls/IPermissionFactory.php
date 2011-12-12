@@ -29,3 +29,4 @@ interface Bee_Security_Acls_IPermissionFactory {
      */
     public function buildFromMask($mask);
 }
+?>

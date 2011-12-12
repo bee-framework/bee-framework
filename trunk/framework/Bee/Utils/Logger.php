@@ -72,6 +72,10 @@ class Bee_Utils_Logger {
         return self::$debugEnabled;
     }
 
+    public static function setDebugEnabled($debugEnabled) {
+        self::$debugEnabled = $debugEnabled;
+    }
+
     public static function debug($message) {
         if (self::isDebugEnabled()) {
             error_log($message, E_USER_NOTICE);
@@ -84,6 +88,7 @@ class Bee_Utils_Logger {
 
     public static function warn($message, Exception $ex = null) {
         if($ex) {
+            $ex = self::getRootCause($ex);
             error_log($message . ' - ' . $ex->getMessage(), E_USER_WARNING);
         } else {
             error_log($message, E_USER_WARNING);
@@ -92,6 +97,7 @@ class Bee_Utils_Logger {
 
     public static function error($message, Exception $ex = null) {
         if($ex) {
+            $ex = self::getRootCause($ex);
             error_log($message . ' - ' . $ex->getMessage(), E_USER_WARNING);
         } else {
             error_log($message, E_USER_WARNING);
@@ -105,15 +111,15 @@ class Bee_Utils_Logger {
      * @param bool $timestamp
      * @return void
      */
-    public static function toFile($message, $filename, $timestamp=true) {
+    public static function toFile($message, $filename="log.txt", $timestamp=true) {
         if (is_array($message)) {
             if ($timestamp) {
-                array_unshift($message, date('h:i:s'));
+                array_unshift($message, date('H:i:s'));
                 array_unshift($message, date('Y-m-d'));
             }
             $message = implode(self::$csvSeparator, $message);
         } else if ($timestamp) {
-            $message = date('h:i:s').' | '.$message;
+            $message = date('H:i:s').' | '.$message;
             $message = date('Y-m-d').' - '.$message;
         }
         $message .= "\n";
@@ -122,9 +128,27 @@ class Bee_Utils_Logger {
         if (mb_strlen($fn)>0 && $fn[mb_strlen($fn)]!=DIRECTORY_SEPARATOR) {
             $fn .= DIRECTORY_SEPARATOR;
         }
-        $fn .= $filename;
+
+        $bn = pathinfo($filename, PATHINFO_DIRNAME);
+        if (Bee_Utils_Strings::hasText($bn) && $bn!=".") {
+            $fn .= $bn;
+            if (mb_strlen($fn)>0 && $fn[mb_strlen($fn)]!=DIRECTORY_SEPARATOR) {
+                $fn .= DIRECTORY_SEPARATOR;
+            }
+        }
+
+        $fn .= pathinfo($filename, PATHINFO_FILENAME);
+        $fn .= "_".date("Y-m-d");
+        $fn .= ".".pathinfo($filename, PATHINFO_EXTENSION);
 
         file_put_contents($fn, $message, FILE_APPEND);
+    }
+
+    private static function getRootCause(Exception $ex) {
+        while($ex instanceof Bee_Exceptions_Base && !is_null($ex->getCause())) {
+            $ex = $ex->getCause();
+        }
+        return $ex;
     }
 }
 
@@ -136,3 +160,4 @@ class Bee_Utils_Logger {
  */
 class LOG extends Bee_Utils_Logger {
 }
+?>

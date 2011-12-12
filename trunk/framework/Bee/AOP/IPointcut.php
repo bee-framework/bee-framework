@@ -41,3 +41,5 @@ interface Bee_AOP_IPointcut {
      */
 //    Pointcut TRUE = TruePointcut.INSTANCE;
 }
+
+?>

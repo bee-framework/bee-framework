@@ -176,3 +176,4 @@ class Bee_Transactions_Support_DefaultTransactionStatus extends Bee_Transactions
     }
 
 }
+?>

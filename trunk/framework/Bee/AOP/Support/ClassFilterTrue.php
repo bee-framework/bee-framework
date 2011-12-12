@@ -27,3 +27,5 @@ class Bee_AOP_Support_ClassFilterTrue implements Bee_AOP_IClassFilter {
     }
 
 }
+
+?>

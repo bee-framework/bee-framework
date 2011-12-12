@@ -55,3 +55,5 @@ class Bee_Annotations_Utils {
         return new ReflectionAnnotatedMethod($method->getDeclaringClass(), $method->getName());
     }
 }
+
+?>

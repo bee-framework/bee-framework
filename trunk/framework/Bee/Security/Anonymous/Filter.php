@@ -89,29 +89,21 @@ class Bee_Security_Anonymous_Filter implements Bee_MVC_IFilter {
                 Bee_Security_Context_Holder::getContext()->setAuthentication($this->createAuthentication($request));
                 $addedToken = true;
 
-                if (Bee_Utils_Logger::isDebugEnabled()) {
-                    Bee_Utils_Logger::debug('Populated SecurityContextHolder with anonymous token: '
-                        . Bee_Security_Context_Holder::getContext()->getAuthentication());
-                }
+                Bee_Utils_Logger::debug('Populated SecurityContextHolder with anonymous token: '
+                    . Bee_Security_Context_Holder::getContext()->getAuthentication());
             } else {
-                if (Bee_Utils_Logger::isDebugEnabled()) {
-                    Bee_Utils_Logger::debug('SecurityContextHolder not populated with anonymous token, as it already contained: '
-                        . Bee_Security_Context_Holder::getContext()->getAuthentication());
-                }
+                Bee_Utils_Logger::debug('SecurityContextHolder not populated with anonymous token, as it already contained: '
+                    . Bee_Security_Context_Holder::getContext()->getAuthentication());
             }
 //            if (is_null(Bee_Security_Context_Holder::getContext()->getAuthentication())) {
 //                Bee_Security_Context_Holder::getContext()->setAuthentication($this->createAuthentication($request));
 //                $addedToken = true;
 //
-//                if (Bee_Utils_Logger::isDebugEnabled()) {
 //                    Bee_Utils_Logger::debug('Populated SecurityContextHolder with anonymous token: '
 //                        . Bee_Security_Context_Holder::getContext()->getAuthentication());
-//                }
 //            } else {
-//                if (Bee_Utils_Logger::isDebugEnabled()) {
 //                    Bee_Utils_Logger::debug('SecurityContextHolder not populated with anonymous token, as it already contained: '
 //                        . Bee_Security_Context_Holder::getContext()->getAuthentication());
-//                }
 //            }
         }
 
@@ -208,3 +200,4 @@ class Bee_Security_Anonymous_Filter implements Bee_MVC_IFilter {
     }
 
 }
+?>

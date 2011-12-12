@@ -31,3 +31,4 @@ interface Bee_Security_Acls_ISidRetrievalStrategy {
     public function getSids(Bee_Security_IAuthentication $authentication);
 
 }
+?>

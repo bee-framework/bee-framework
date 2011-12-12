@@ -50,3 +50,4 @@ class Bee_Persistence_Pdo_SimpleStatementCreator implements Bee_Persistence_Pdo_
     }
 
 }
+?>

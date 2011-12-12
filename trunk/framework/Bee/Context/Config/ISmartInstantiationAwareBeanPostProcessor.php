@@ -55,3 +55,4 @@ interface Bee_Context_Config_ISmartInstantiationAwareBeanPostProcessor extends B
      */
     function getEarlyBeanReference($bean, $beanName);
 }
+?>

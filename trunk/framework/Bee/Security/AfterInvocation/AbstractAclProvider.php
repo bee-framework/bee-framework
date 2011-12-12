@@ -156,3 +156,4 @@ abstract class Bee_Security_AfterInvocation_AbstractAclProvider implements Bee_S
         return true;
     }
 }
+?>

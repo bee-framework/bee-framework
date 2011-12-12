@@ -30,3 +30,5 @@ interface Bee_AOP_Intercept_IInvocation extends Bee_AOP_Intercept_IJoinpoint {
      */
     function getArguments();
 }
+
+?>

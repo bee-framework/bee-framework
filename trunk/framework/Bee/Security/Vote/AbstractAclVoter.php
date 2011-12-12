@@ -88,3 +88,4 @@ abstract class Bee_Security_Vote_AbstractAclVoter implements Bee_Security_Vote_I
 //        }
     }
 }
+?>

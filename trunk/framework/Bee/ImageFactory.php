@@ -78,10 +78,11 @@ class Bee_ImageFactory {
 	
 	
 	private static function isCachedImageOutdated() {
-		return true;
+//		return true;
 		if (filemtime(self::$cacheFilename) < filemtime(self::getSourcePathAndFilename())) {
 			return true;
 		}
+        return false;
 	}
 	
 	
@@ -98,6 +99,9 @@ class Bee_ImageFactory {
 		if (self::$height!==false) {
 			self::$cacheFilename .= "x".self::$height; 
 		}
+        if (self::$stretch) {
+            self::$cacheFilename .= '_stretched';
+        }
 	}
 	
 	
@@ -114,13 +118,14 @@ class Bee_ImageFactory {
 	 */
 	public static final function createImage($path, $filename, $width=false, $height=false, $watermarkFile=false, $label=false, $stretch=false) {
 		ini_set('memory_limit', '-1');
-		
+
 		// build full filename
 		self::$sourcePath = $path;
 		self::$sourceFilename = $filename;
 		
 		self::$width = $width;
 		self::$height = $height;
+        self::$stretch = $stretch;
 
 		
 		// create directory for caches
@@ -131,8 +136,7 @@ class Bee_ImageFactory {
 		
 		self::buildCacheFilename();
 		self::setMimeType();
-		self::$stretch = $stretch;
-		
+
 		if (file_exists(self::getSourcePathAndFilename())) {
 			
 			if (!$width && !$height && !$watermarkFile && !$label) {

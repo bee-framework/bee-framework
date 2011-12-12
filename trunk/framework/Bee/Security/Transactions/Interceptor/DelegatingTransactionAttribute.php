@@ -66,3 +66,4 @@ class Bee_Transactions_Interceptor_DelegatingTransactionAttribute implements Bee
 
 
 }
+?>

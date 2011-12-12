@@ -30,3 +30,4 @@ class Bee_Security_Acls_Impl_ObjectIdentityRetrievalStrategy implements Bee_Secu
         return new Bee_Security_Acls_Impl_ObjectIdentity(get_class($domainObject), $domainObject->getId());
     }
 }
+?>

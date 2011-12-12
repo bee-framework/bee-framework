@@ -66,3 +66,4 @@ interface Bee_Transactions_ISavepointManager {
     function releaseSavepoint($savepoint);
 
 }
+?>

@@ -39,3 +39,4 @@ class Bee_Security_Acls_Impl_CumulativePermission extends Bee_Security_Acls_Impl
     }
 
 }
+?>

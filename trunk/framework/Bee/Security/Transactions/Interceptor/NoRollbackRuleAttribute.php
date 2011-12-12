@@ -32,3 +32,4 @@ class Bee_Transactions_Interceptor_NoRollbackRuleAttribute extends Bee_Transacti
         return "No" + parent::__toString();
     }
 }
+?>

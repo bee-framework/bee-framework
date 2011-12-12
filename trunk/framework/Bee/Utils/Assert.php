@@ -111,7 +111,11 @@ class Bee_Utils_Assert {
         return self::isTrue(count($arr) > 0, $message); 
     }
 	
-	
+	public static function isEmpty(array $arr, $message = '[Assertion failed] - array must be empty') {
+        return self::isTrue(count($arr) === 0, $message);
+    }
+
+
 	
 	
 	

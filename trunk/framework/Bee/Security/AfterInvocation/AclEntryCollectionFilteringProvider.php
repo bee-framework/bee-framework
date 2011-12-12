@@ -31,7 +31,7 @@ class Bee_Security_AfterInvocation_AclEntryCollectionFilteringProvider extends B
 
     public function decide(Bee_Security_IAuthentication $authentication, $object, Bee_Security_ConfigAttributeDefinition $config,
         $returnedObject) {
-        
+
         if (is_null($returnedObject)) {
             if (Bee_Utils_Logger::isDebugEnabled()) {
                 Bee_Utils_Logger::debug('Return object is null, skipping');
@@ -70,10 +70,10 @@ class Bee_Security_AfterInvocation_AclEntryCollectionFilteringProvider extends B
             foreach($returnedObject as $idx => $domainObject) {
                 $identity = $identities[$i++];
 
-                // Ignore nulls or entries which aren't instances of the configured domain object class
-                if (is_null($domainObject) || !Bee_Utils_Types::isAssignable($domainObject, $this->getProcessDomainObjectClass())) {
-                    continue;
-                }
+//                // Ignore nulls or entries which aren't instances of the configured domain object class
+//                if (is_null($domainObject) || !Bee_Utils_Types::isAssignable($domainObject, $this->getProcessDomainObjectClass())) {
+//                    continue;
+//                }
                 $acl = $acls[$identity->getIdentifierString()];
 
                 if(!$this->hasAclPermission($acl, $sids)) {
@@ -92,3 +92,4 @@ class Bee_Security_AfterInvocation_AclEntryCollectionFilteringProvider extends B
     }
 
 }
+?>

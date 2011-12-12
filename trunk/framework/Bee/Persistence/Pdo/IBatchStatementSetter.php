@@ -38,3 +38,4 @@ interface Bee_Persistence_Pdo_IBatchStatementSetter {
     public function getBatchSize();
 
 }
+?>

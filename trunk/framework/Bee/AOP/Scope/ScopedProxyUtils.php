@@ -69,3 +69,5 @@ class Bee_AOP_Scope_ScopedProxyUtils {
         return self::TARGET_NAME_PREFIX . $originalBeanName;
     }
 }
+
+?>

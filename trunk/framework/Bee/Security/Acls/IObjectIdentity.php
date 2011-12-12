@@ -50,3 +50,4 @@ interface Bee_Security_Acls_IObjectIdentity {
      */
     public function getIdentifierString();
 }
+?>

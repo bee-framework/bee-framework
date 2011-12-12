@@ -26,19 +26,19 @@ class Bee_Context_Config_RuntimeBeanNameReference implements Bee_Context_Config_
 	/**
 	 * Enter description here...
 	 *
-	 * @var String
+	 * @var array
 	 */
-    private $beanName;
+    private $beanNames;
 
 
     /**
 	 * Create a new RuntimeBeanReference to the given bean name,
 	 * without explicitly marking it as reference to a bean in
 	 * the parent factory.
-	 * @param String $beanName name of the target bean
+	 * @param array $beanNames name of the target bean
 	 */
-	public function __construct($beanName) {
-		$this->beanName = $beanName;
+	public function __construct(array $beanNames) {
+		$this->beanNames = $beanNames;
 	}
 
 
@@ -48,8 +48,8 @@ class Bee_Context_Config_RuntimeBeanNameReference implements Bee_Context_Config_
 	 *
 	 * @return String
 	 */
-    public function getBeanName() {
-		return $this->beanName;
+    public function getBeanNames() {
+		return $this->beanNames;
 	}
 }
 ?>

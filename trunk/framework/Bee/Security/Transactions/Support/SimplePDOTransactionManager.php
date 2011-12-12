@@ -86,3 +86,4 @@ class Bee_Transactions_Support_SimplePDOTransactionManager implements Bee_Transa
     }
 
 }
+?>

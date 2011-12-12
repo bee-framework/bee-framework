@@ -192,3 +192,4 @@ class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter
 
     }
 }
+?>

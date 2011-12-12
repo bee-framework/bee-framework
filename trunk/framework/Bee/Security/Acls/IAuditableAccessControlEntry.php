@@ -35,3 +35,4 @@ interface Bee_Security_Acls_IAuditableAccessControlEntry extends Bee_Security_Ac
      */
     public function isAuditSuccess();
 }
+?>

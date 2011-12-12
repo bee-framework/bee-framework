@@ -92,3 +92,4 @@ class Bee_Transactions_Interceptor_RuleBasedTransactionAttribute extends Bee_Tra
         return !($winner instanceof Bee_Transactions_Interceptor_NoRollbackRuleAttribute);
     }
 }
+?>

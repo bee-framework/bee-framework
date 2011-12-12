@@ -20,7 +20,9 @@
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Cache_Provider_XCache extends Bee_Cache_Provider_Base implements Bee_Cache_IProvider {
+require_once 'Bee/Cache/IProvider.php';
+require_once 'Bee/Cache/Provider/Base.php';
+class Bee_Cache_Provider_XCache extends Bee_Cache_Provider_Base {
 	
 	public final function listKeys() {
 		$info = xcache_list(XC_TYPE_VAR, 0);
@@ -31,15 +33,19 @@ class Bee_Cache_Provider_XCache extends Bee_Cache_Provider_Base implements Bee_C
 		return xcache_clear_cache(XC_TYPE_VAR, 0);
 	}
 
-	protected final function doStore($key, $value) {
-		return xcache_set($key, $value);
+	public function exists($key) {
+		return xcache_isset($key);
+	}
+
+	protected final function doStore($key, $value, $etime = 0) {
+		return xcache_set($key, $value, $this->getTTL($etime));
 	}
 
 	protected final function doRetrieve($key) {
 		return xcache_get($key);
 	}
 	
-	protected final function doEvict($key) {
+	public final function evict($key) {
 		return xcache_unset($key);
 	}
 	

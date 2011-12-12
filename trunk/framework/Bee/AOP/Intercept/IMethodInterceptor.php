@@ -29,3 +29,5 @@
 interface Bee_AOP_Intercept_IMethodInterceptor extends Bee_AOP_Intercept_IInterceptor {
     function invoke(Bee_AOP_Intercept_IMethodInvocation $methodInvocation);
 }
+
+?>

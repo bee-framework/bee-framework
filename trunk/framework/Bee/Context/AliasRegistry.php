@@ -111,12 +111,12 @@ class Bee_Context_AliasRegistry {
 	public function canonicalName($name) {
 		$canonicalName = $name;
 		// Handle aliasing.
-		$resolvedName = null;
 		do {
-			$resolvedName = $this->aliasMap[$canonicalName];
-			if (!is_null($resolvedName)) {
-				$canonicalName = $resolvedName;
-			}
+            $resolvedName = null;
+            if(array_key_exists($canonicalName, $this->aliasMap)) {
+                $resolvedName = $this->aliasMap[$canonicalName];
+                $canonicalName = $resolvedName;
+            }
 		} while (!is_null($resolvedName));
 		return $canonicalName;
 	}

@@ -84,3 +84,4 @@ class Bee_Security_Helper {
 }
 
 class SEC extends Bee_Security_Helper {}
+?>

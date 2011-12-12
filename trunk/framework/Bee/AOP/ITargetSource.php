@@ -60,3 +60,5 @@ interface Bee_AOP_ITargetSource extends Bee_AOP_ITargetClassAware {
     public function releaseTarget($target);
 
 }
+
+?>

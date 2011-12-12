@@ -24,3 +24,4 @@
  */
 
 class Bee_Security_Annotations_Secured extends Annotation {}
+?>

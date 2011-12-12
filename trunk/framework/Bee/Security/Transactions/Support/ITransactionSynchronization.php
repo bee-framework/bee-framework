@@ -115,3 +115,4 @@ interface Bee_Transactions_Support_ITransactionSynchronization {
      */
     function afterCompletion($status);
 }
+?>

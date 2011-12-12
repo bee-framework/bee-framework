@@ -185,3 +185,4 @@ abstract class Bee_Transactions_Support_AbstractTransactionStatus implements Bee
         throw new Bee_Transactions_NestedTransactionNotSupportedException("This transaction does not support savepoints");
     }
 }
+?>

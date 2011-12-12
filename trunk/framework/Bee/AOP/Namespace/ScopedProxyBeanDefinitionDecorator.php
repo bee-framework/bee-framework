@@ -31,3 +31,5 @@ class Bee_AOP_Namespace_ScopedProxyBeanDefinitionDecorator implements Bee_Contex
         return Bee_AOP_Scope_ScopedProxyUtils::createScopedProxy($definition, $parserContext->getRegistry());
     }
 }
+
+?>

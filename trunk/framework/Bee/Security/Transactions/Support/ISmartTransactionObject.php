@@ -34,3 +34,4 @@ interface Bee_Transactions_Support_ISmartTransactionObject {
     function isRollbackOnly();
 
 }
+?>

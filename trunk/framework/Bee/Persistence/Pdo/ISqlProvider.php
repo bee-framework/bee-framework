@@ -30,3 +30,4 @@ interface Bee_Persistence_Pdo_ISqlProvider {
      */
     function getSql();
 }
+?>

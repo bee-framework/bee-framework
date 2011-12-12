@@ -34,3 +34,4 @@ class Bee_Security_Acls_Impl_BasicAuditLogger implements Bee_Security_Acls_IAudi
         }
     }
 }
+?>

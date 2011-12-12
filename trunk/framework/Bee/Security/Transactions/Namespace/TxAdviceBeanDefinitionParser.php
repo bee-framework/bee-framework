@@ -57,7 +57,7 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends Bee_Contex
         // Set the transaction manager property.
         $transactionManagerName = ($element->hasAttribute(self::TRANSACTION_MANAGER_ATTRIBUTE) ?
                 $element->getAttribute(self::TRANSACTION_MANAGER_ATTRIBUTE) : "transactionManager");
-        $builder->addPropertyReference(self::TRANSACTION_MANAGER_PROPERTY, $transactionManagerName);
+        $builder->addPropertyReference(self::TRANSACTION_MANAGER_PROPERTY, Bee_Utils_Strings::tokenizeToArray($transactionManagerName, ','));
 
         $txAttributes = Bee_Utils_Dom::getChildElementsByTagName($element, self::ATTRIBUTES);
         if (count($txAttributes) > 1) {
@@ -141,3 +141,4 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends Bee_Contex
         }
     }
 }
+?>

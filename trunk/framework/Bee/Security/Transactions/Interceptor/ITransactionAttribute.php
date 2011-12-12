@@ -32,3 +32,4 @@ interface Bee_Transactions_Interceptor_ITransactionAttribute extends Bee_Transac
      */
     function rollbackOn(Exception $ex);
 }
+?>

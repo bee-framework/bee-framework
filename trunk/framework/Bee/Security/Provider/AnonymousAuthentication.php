@@ -53,3 +53,4 @@ class Bee_Security_Provider_AnonymousAuthentication implements Bee_Security_IAut
         return Bee_Utils_Types::isAssignable($authenticationClass, 'Bee_Security_AnonymousAuthenticationToken');
     }
 }
+?>

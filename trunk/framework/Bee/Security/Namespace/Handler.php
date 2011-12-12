@@ -48,3 +48,4 @@ class Bee_Security_Namespace_Handler extends Bee_Context_Xml_Namespace_HandlerSu
 //        $this->registerBeanDefinitionDecorator(Elements.CUSTOM_AFTER_INVOCATION_PROVIDER, new CustomAfterInvocationProviderBeanDefinitionDecorator());
     }
 }
+?>

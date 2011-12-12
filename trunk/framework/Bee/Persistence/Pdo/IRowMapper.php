@@ -36,3 +36,4 @@ interface Bee_Persistence_Pdo_IRowMapper {
     public function mapRow(PDOStatement $rs, $rowNum);
 
 }
+?>

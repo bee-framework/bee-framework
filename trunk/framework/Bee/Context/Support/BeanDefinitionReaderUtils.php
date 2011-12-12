@@ -62,9 +62,9 @@ class Bee_Context_Support_BeanDefinitionReaderUtils {
 		$generatedBeanName = $definition->getBeanClassName();
 		if (!Bee_Utils_Strings::hasText($generatedBeanName)) {
 			if (Bee_Utils_Strings::hasText($parentName = $definition->getParentName())) {
-				$generatedBeanName = $parentName + '$child';
+				$generatedBeanName = $parentName . '$child';
 			} else if (Bee_Utils_Strings::hasText($factoryBeanName = $definition->getFactoryBeanName())) {
-				$generatedBeanName = $factoryBeanName + '$created';
+				$generatedBeanName = $factoryBeanName . '$created';
 			}
 		}
 		if (!Bee_Utils_Strings::hasText($generatedBeanName)) {
@@ -79,7 +79,7 @@ class Bee_Context_Support_BeanDefinitionReaderUtils {
 			$counter = -1;
 			while ($counter == -1 || $registry->containsBeanDefinition($id)) {
 				$counter++;
-				$id = $generatedBeanName + self::GENERATED_BEAN_NAME_SEPARATOR + $counter;
+				$id = $generatedBeanName . self::GENERATED_BEAN_NAME_SEPARATOR . $counter;
 			}
 			
 		// @todo: this should be used for name generation of inner beans. right now we don't have a good identity function for PHP

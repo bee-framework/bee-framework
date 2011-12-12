@@ -68,3 +68,4 @@ class Bee_Context_Support_ParseState {
 interface Bee_Context_Support_ParseStateEntry {
 
 }
+?>
