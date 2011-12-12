@@ -85,7 +85,7 @@ abstract class Bee_Cache_Provider_AbstractSerializing extends Bee_Cache_Provider
 	}
 
 	private function checkExpired($key) {
-		$etime = $this->cache[$key . self::ETIME_KEY_SUFFIX];
+		$etime = array_key_exists($key . self::ETIME_KEY_SUFFIX, $this->cache) ? $this->cache[$key . self::ETIME_KEY_SUFFIX] : 0;
 		if($etime > 0 && $etime < time()) {
 			// expired!!
 			$this->evict($key);
