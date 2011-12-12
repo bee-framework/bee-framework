@@ -21,7 +21,7 @@
  * Time: 15:16
  */
 
-class Bee_Utils_AssertTest extends PHPUnit_Framework_TestCase {
+class Bee_Cache_Provider_FileTest extends PHPUnit_Framework_TestCase {
 
 //    /**
 //   	 * Initialize the cache provider if necessary. Called once per request, before the first cache access is made.
