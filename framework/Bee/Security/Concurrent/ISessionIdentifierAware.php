@@ -32,3 +32,4 @@ interface Bee_Security_Concurrent_ISessionIdentifierAware {
      */
     public function getSessionId();
 }
+?>

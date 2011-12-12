@@ -44,19 +44,22 @@ class Bee_Filesystem_CachedNode_Cachable implements Bee_Cache_ICachableResource 
 		return max(array(filectime($this->dir), filemtime($this->dir)));
 	}
 	
-	public final function &createContent() {
+	public final function &createContent(&$expirationTimestamp = 0) {
 		$nodeInfo = array();
 		$fileInfo = new SplFileInfo($this->dir);
 //		trigger_error('###### INST SplFileInfo', E_USER_NOTICE);
 
 		$nodeInfo['filename'] = $fileInfo->getFilename();
-		$nodeInfo['mTime'] = $fileInfo->getMTime();
-		$nodeInfo['cTime'] = $fileInfo->getCTime();
-		$nodeInfo['aTime'] = $fileInfo->getATime();
-		$nodeInfo['inode'] = $fileInfo->getInode();
-		$nodeInfo['owner'] = $fileInfo->getOwner();
-		$nodeInfo['perms'] = $fileInfo->getPerms();
-		$nodeInfo['path'] = $fileInfo->getPath();		
+        try {
+            $nodeInfo['mTime'] = $fileInfo->getMTime();
+            $nodeInfo['cTime'] = $fileInfo->getCTime();
+            $nodeInfo['aTime'] = $fileInfo->getATime();
+            $nodeInfo['inode'] = $fileInfo->getInode();
+            $nodeInfo['owner'] = $fileInfo->getOwner();
+            $nodeInfo['perms'] = $fileInfo->getPerms();
+        } catch (Exception $e) {
+        }
+		$nodeInfo['path'] = $fileInfo->getPath();
 		$nodeInfo['mimeType'] = Bee_Filesystem_MimeDetector::detect($nodeInfo['filename']);
 		
 		if($fileInfo->isDir()) {
@@ -80,7 +83,10 @@ class Bee_Filesystem_CachedNode_Cachable implements Bee_Cache_ICachableResource 
 			$nodeInfo['dirs'] =& $dirs;
 			$nodeInfo['files'] =& $files;
 		} else {
-			$nodeInfo['size'] = $fileInfo->getSize();		
+            try {
+                $nodeInfo['size'] = $fileInfo->getSize();
+            } catch (Exception $e) {
+            }
 		}
 		
 		return $nodeInfo;

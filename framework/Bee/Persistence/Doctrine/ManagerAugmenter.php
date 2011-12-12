@@ -109,3 +109,4 @@ class Bee_Persistence_Doctrine_ManagerAugmenter implements Bee_Context_Config_II
 		}
 	}
 }
+?>

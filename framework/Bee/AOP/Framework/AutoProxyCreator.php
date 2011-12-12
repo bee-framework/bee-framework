@@ -147,3 +147,5 @@ class Bee_AOP_Framework_AutoProxyCreator implements Bee_Context_Config_IInstanti
 
 
 }
+
+?>

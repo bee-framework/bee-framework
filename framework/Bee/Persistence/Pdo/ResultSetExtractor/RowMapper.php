@@ -46,3 +46,4 @@ class Bee_Persistence_Pdo_ResultSetExtractor_RowMapper implements Bee_Persistenc
     }
 
 }
+?>

@@ -94,3 +94,4 @@ class Bee_Transactions_Interceptor_RollbackRuleAttribute {
         return "RollbackRuleAttribute with pattern [$this->exceptionName]";
     }
 }
+?>

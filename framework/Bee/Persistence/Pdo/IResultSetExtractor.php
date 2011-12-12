@@ -35,3 +35,4 @@ interface Bee_Persistence_Pdo_IResultSetExtractor {
     public function extractData(PDOStatement $rs);
 
 }
+?>

@@ -38,18 +38,19 @@ class Bee_MVC_View_Passthru extends Bee_MVC_View_Abstract {
 
 
     public function getContentType() {
-		return Bee_MVC_Model::getValue('mimeType');
+		return MODEL::get('mimeType');
 	}
 
 	protected function renderMergedOutputModel() {
-        $file = Bee_MVC_Model::getValue('resource');
+        $resource = MODEL::get('resource');
+        $file = fopen($resource, 'rb');
         $filename = MODEL::get('filename');
         $mimeType = MODEL::get('mimeType');
 
         $contentDisposition = $this->download ? 'attachment' : 'inline';
 
         header('Content-Type: '.$mimeType);
-        header('Content-Length: ' . filesize($file));
+        header('Content-Length: ' . filesize($resource));
         if (Bee_Utils_Strings::hasText($filename)) {
             header('Content-Disposition: '.$contentDisposition.'; filename='.$filename);
         } else {
@@ -58,7 +59,10 @@ class Bee_MVC_View_Passthru extends Bee_MVC_View_Abstract {
         header('Cache-Control: no-store, no-cache, must-revalidate'); // HTTP/1.1
         header('Cache-Control: post-check=0, pre-check=0", false'); // HTTP/1
         header('Pragma: no-cache');
-        readfile($file);
+        header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+        header("Expires: 1");
+//        readfile($file);
+        fpassthru($file);
 	}
 }
 

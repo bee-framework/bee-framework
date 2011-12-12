@@ -22,7 +22,7 @@
  * 
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_Xml_ParserDelegate {
+class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	
 	/**
 	 * The default namespace for bean definitions
@@ -31,28 +31,18 @@ class Bee_Context_Xml_ParserDelegate {
 	 */
 	const BEANS_NAMESPACE_URI = 'http://www.beeframework.org/schema/beans';
 
-	const BEAN_NAME_DELIMITERS = ',; ';
-
 	const TRUE_VALUE = 'true';
-	
-	const DESCRIPTION_ELEMENT = 'description';
+
+    const DEFAULT_VALUE = 'default';
 
 	const BEAN_ELEMENT = 'bean';
 	
 	const ID_ATTRIBUTE = 'id';
 	
-	const NAME_ATTRIBUTE = 'name';
-	
 	const CLASS_ATTRIBUTE = 'class';
-	
-	const PARENT_ATTRIBUTE = 'parent';
-	
-	const SCOPE_ATTRIBUTE = 'scope';
 	
 	const ABSTRACT_ATTRIBUTE = 'abstract';
 
-	const DEPENDS_ON_ATTRIBUTE = 'depends-on';
-	
 	const INIT_METHOD_ATTRIBUTE = 'init-method';
 
 	const DESTROY_METHOD_ATTRIBUTE = 'destroy-method';
@@ -67,13 +57,7 @@ class Bee_Context_Xml_ParserDelegate {
 
 	const TYPE_ATTRIBUTE = 'type';
 
-	const VALUE_TYPE_ATTRIBUTE = 'value-type';
-
 	const PROPERTY_ELEMENT = 'property';
-
-	const REF_ATTRIBUTE = 'ref';
-
-	const VALUE_ATTRIBUTE = 'value';
 
 	const REF_ELEMENT = 'ref';
 
@@ -91,12 +75,12 @@ class Bee_Context_Xml_ParserDelegate {
 	
 	const LIST_ELEMENT = 'list';
 	
+	const ARRAY_ELEMENT = 'array';
+
 	const ASSOC_ARRAY_ELEMENT = 'assoc-array';
 
-	const ASSOC_ITEM_ELEMENT = 'assoc-item';
-	
-	const KEY_ATTRIBUTE = 'key';
-	
+    const MERGE_ATTRIBUTE = 'merge';
+
 	const DEFAULT_MERGE_ATTRIBUTE = 'default-merge';
 
 	const DEFAULT_INIT_METHOD_ATTRIBUTE = 'default-init-method';
@@ -147,7 +131,7 @@ class Bee_Context_Xml_ParserDelegate {
 	
 	public function initDefaults(DOMElement $root) {
 		$defaults = new Bee_Context_Xml_DocumentDefaultsDefinition();
-		$defaults->setMerge($root->getAttribute(self::DEFAULT_MERGE_ATTRIBUTE));
+		$defaults->setMerge($root->getAttribute(self::DEFAULT_MERGE_ATTRIBUTE) === self::TRUE_VALUE);
 		if($root->hasAttribute(self::DEFAULT_INIT_METHOD_ATTRIBUTE)) {
 			$defaults->setInitMethod($root->getAttribute(self::DEFAULT_INIT_METHOD_ATTRIBUTE));
 		}
@@ -170,17 +154,13 @@ class Bee_Context_Xml_ParserDelegate {
 	 */
 	public function parseBeanDefinitionElement(DOMElement $ele, Bee_Context_Config_IBeanDefinition $containingBd = null) {
 		$id = $ele->getAttribute(self::ID_ATTRIBUTE);
-		$nameAttr = $ele->getAttribute(self::NAME_ATTRIBUTE);
 
-		$aliases = Bee_Utils_Strings::tokenizeToArrayKeys($nameAttr, self::BEAN_NAME_DELIMITERS);
-		$aliases_keys = array_keys($aliases);
+		$aliases = Bee_Context_Xml_Utils::parseNameAttribute($ele);
 
 		// find a bean id
 		$beanName = $id;
 		if (!Bee_Utils_Strings::hasText($beanName) && count($aliases) > 0) {
-			$beanName = array_shift($aliases_keys);
-			unset($aliases[$beanName]);
-			$this->readerContext->notice("No XML 'id' specified - using '$beanName' as bean name and $aliases as aliases", $ele);
+			$beanName = Bee_Context_Xml_Utils::getIdFromAliases($aliases, $this->readerContext, $ele);
 		}
 
 		if (is_null($containingBd)) {
@@ -200,7 +180,7 @@ class Bee_Context_Xml_ParserDelegate {
 				}
 			}
 			
-			return new Bee_Context_Config_BeanDefinitionHolder($beanDefinition, $beanName, $aliases_keys);
+			return new Bee_Context_Config_BeanDefinitionHolder($beanDefinition, $beanName, $aliases);
 		}
 		return null;
 	}
@@ -209,11 +189,13 @@ class Bee_Context_Xml_ParserDelegate {
 	/**
 	 * Enter description here...
 	 *
-	 * @param unknown_type $beanName
+	 * @param $beanName
 	 * @param array $aliases
 	 * @param DOMElement $beanElement
 	 */
-	private function checkNameUniqueness($beanName, array $aliases, DOMElement $beanElement) {
+	private function checkNameUniqueness($beanName, array $aliases = null, DOMElement $beanElement) {
+        $aliases = !is_null($aliases) ? array_fill_keys($aliases, true) : array();
+
 		$foundName = null;
 
 		if (Bee_Utils_Strings::hasText($beanName) && array_key_exists($beanName, $this->usedNames)) {
@@ -244,33 +226,22 @@ class Bee_Context_Xml_ParserDelegate {
 		if ($ele->hasAttribute(self::CLASS_ATTRIBUTE)) {
 			$className = trim($ele->getAttribute(self::CLASS_ATTRIBUTE));
 		}
-		$parent = null;
-		if ($ele->hasAttribute(self::PARENT_ATTRIBUTE)) {
-			$parent = $ele->getAttribute(self::PARENT_ATTRIBUTE);
-		}
+        $parent = Bee_Context_Xml_Utils::parseParentAttribute($ele);
 
 		try {
 			array_push($this->parseState, $beanName);
 
 			$bd = Bee_Context_Support_BeanDefinitionReaderUtils::createBeanDefinition($parent, $className);
 
-			if ($ele->hasAttribute(self::SCOPE_ATTRIBUTE)) {
-				$bd->setScope($ele->getAttribute(self::SCOPE_ATTRIBUTE));
-			} else if (!is_null($containingBd)) {
-				// Take default from containing bean in case of an inner bean definition.
-				$bd->setScope($containingBd->getScope());
-			}
+            Bee_Context_Xml_Utils::parseScopeAttribute($ele, $bd, $containingBd);
 
 			if ($ele->hasAttribute(self::ABSTRACT_ATTRIBUTE)) {
 				$bd->setAbstract(self::TRUE_VALUE === $ele->getAttribute(self::ABSTRACT_ATTRIBUTE));
 			}
-			
-			if ($ele->hasAttribute(self::DEPENDS_ON_ATTRIBUTE)) {
-				$dependsOn = $ele->getAttribute(self::DEPENDS_ON_ATTRIBUTE);
-				$bd->setDependsOn(Bee_Utils_Strings::tokenizeToArray($dependsOn, self::BEAN_NAME_DELIMITERS));
-			}
 
-			if ($ele->hasAttribute(self::INIT_METHOD_ATTRIBUTE)) {
+            Bee_context_Xml_Utils::parseDependsOnAttribute($ele, $bd);
+
+            if ($ele->hasAttribute(self::INIT_METHOD_ATTRIBUTE)) {
 				$initMethodName = $ele->getAttribute(self::INIT_METHOD_ATTRIBUTE);
 				if (Bee_Utils_Strings::hasText($initMethodName)) {
 					$bd->setInitMethodName($initMethodName);
@@ -324,15 +295,14 @@ class Bee_Context_Xml_ParserDelegate {
 //			error("Class that bean class [" + className + "] depends on not found", ele, err);
 		} catch (Exception $ex) {
 			array_pop($this->parseState);
-			$this->readerContext->error("Unexpected failure during bean definition parsing: $ex->getMessage()", $ele, $ex);
+			$this->readerContext->error("Unexpected failure during bean definition parsing: {$ex->getMessage()}", $ele, $ex);
 		}
 
 		array_pop($this->parseState);
 		return null;
 	}
-	
 
-	/**
+    /**
 	 * Parse constructor-arg sub-elements of the given bean element.
 	 *
 	 * @param DOMElement $beanEle
@@ -466,18 +436,14 @@ class Bee_Context_Xml_ParserDelegate {
 			if (!Bee_Utils_Strings::hasText($refName)) {
 				$this->readerContext->error("$elementName contains empty 'ref' attribute", $ele);
 			}
-			$ref = new Bee_Context_Config_RuntimeBeanReference($refName);
+			$ref = new Bee_Context_Config_RuntimeBeanReference(Bee_Utils_Strings::tokenizeToArray($refName, self::BEAN_NAME_DELIMITERS));
 			// @todo provide source info via BeanMetadataElement
 //			ref.setSource(extractSource(ele));
 			return $ref;
 		} else if ($hasValueAttribute) {
 			
 			// @todo: make it possible to set a type attribute on the element?
-            $typeClassName = $ele->getAttribute(self::TYPE_ATTRIBUTE);
-            if(!$typeClassName) {
-                $typeClassName = Bee_Utils_ITypeDefinitions::STRING;
-            }
-			$valueHolder = new Bee_Context_Config_TypedStringValue($ele->getAttribute(self::VALUE_ATTRIBUTE), $typeClassName);
+			$valueHolder = new Bee_Context_Config_TypedStringValue($ele->getAttribute(self::VALUE_ATTRIBUTE));
 			// @todo provide source info via BeanMetadataElement
 //			valueHolder.setSource(extractSource(ele));
 			return $valueHolder;
@@ -503,7 +469,7 @@ class Bee_Context_Xml_ParserDelegate {
 	 * 
 	 * @return
 	 */
-	public function parsePropertySubElement(DOMElement $ele, Bee_Context_Config_IBeanDefinition $bd, $defaultTypeClassName) {
+	public function parsePropertySubElement(DOMElement $ele, Bee_Context_Config_IBeanDefinition $bd, $defaultTypeClassName = null) {
 
 		if (!$this->isDefaultNamespace($ele->namespaceURI)) {
 
@@ -539,7 +505,7 @@ class Bee_Context_Xml_ParserDelegate {
 				$this->readerContext->error("<ref> element contains empty target attribute", $ele);
 				return null;
 			}
-			$ref = new Bee_Context_Config_RuntimeBeanReference($refName, $toParent);
+			$ref = new Bee_Context_Config_RuntimeBeanReference(Bee_Utils_Strings::tokenizeToArray($refName, self::BEAN_NAME_DELIMITERS), $toParent);
 			// @todo provide source info via BeanMetadataElement
 //			ref.setSource(extractSource(ele));
 			return $ref;
@@ -560,7 +526,7 @@ class Bee_Context_Xml_ParserDelegate {
 				$this->readerContext->error("<idref> element contains empty target attribute", $ele);
 				return null;
 			}
-			$ref = new Bee_Context_Config_RuntimeBeanNameReference($refName);
+			$ref = new Bee_Context_Config_RuntimeBeanNameReference(Bee_Utils_Strings::tokenizeToArray($refName, self::BEAN_NAME_DELIMITERS));
 			// @todo provide source info via BeanMetadataElement
 //			$ref->setSource(extractSource(ele));
 			return $ref;
@@ -591,12 +557,16 @@ class Bee_Context_Xml_ParserDelegate {
 			return $nullHolder;
 
 			// @todo: determine sensible collection types for PHP and implement parsers accordingly...
+		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::ARRAY_ELEMENT)) {
+			
+			return $this->parseArrayElement($ele, $bd);
+
 		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::LIST_ELEMENT)) {
-			
+			// TODO deprecate
 			return $this->parseListElement($ele, $bd);
-		
+
 		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::ASSOC_ARRAY_ELEMENT)) {
-			
+			// TODO deprecate
 			return $this->parseAssocArrayElement($ele, $bd);
 		
 //		} else if (Bee_Utils_Dom::nodeNameEquals($ele, SET_ELEMENT)) {
@@ -646,6 +616,43 @@ class Bee_Context_Xml_ParserDelegate {
 	 * @param Bee_Context_Config_IBeanDefinition $bd
 	 * @return array
 	 */
+	public function parseArrayElement(DOMElement $collectionEle, Bee_Context_Config_IBeanDefinition $bd) {
+		$defaultTypeClassName = $collectionEle->getAttribute(self::VALUE_TYPE_ATTRIBUTE);
+
+		// @todo: what about that managed list stuff?
+		$nl = $collectionEle->childNodes;
+		$list = array();
+		foreach($nl as $ele) {
+			if($ele instanceof DOMElement) {
+                if (Bee_Utils_Dom::nodeNameEquals($ele, self::ASSOC_ITEM_ELEMENT)) {
+                    $list =& array_merge($list, $this->parseAssocItemElement($ele, $bd, $defaultTypeClassName));
+                } else {
+                    array_push($list, $this->parsePropertySubElement($ele, $bd, $defaultTypeClassName));
+                }
+			}
+		}
+		return new Bee_Context_Config_ArrayValue($list, $this->parseMergeAttribute($collectionEle));
+	}
+
+    public function parseMergeAttribute(DOMElement $collectionElement) {
+		if($collectionElement->hasAttribute(self::MERGE_ATTRIBUTE)) {
+			$value = $collectionElement->getAttribute(self::MERGE_ATTRIBUTE);
+			if (self::DEFAULT_VALUE !== $value) {
+				return self::TRUE_VALUE === $value;
+			}
+		}
+		return $this->defaults->getMerge();
+    }
+
+	/**
+	 * Parse a list element.
+	 *
+	 * @param DOMElement $collectionEle
+	 * @param Bee_Context_Config_IBeanDefinition $bd
+	 * @return array
+     *
+     * @deprecated
+	 */
 	public function parseListElement(DOMElement $collectionEle, Bee_Context_Config_IBeanDefinition $bd) {
 		$defaultTypeClassName = $collectionEle->getAttribute(self::VALUE_TYPE_ATTRIBUTE);
 
@@ -660,7 +667,13 @@ class Bee_Context_Xml_ParserDelegate {
 		return $list;
 	}
 
-	
+	/**
+     * @param DOMElement $collectionEle
+     * @param Bee_Context_Config_IBeanDefinition $bd
+     * @return array
+     *
+     * @deprecated
+     */
 	public function parseAssocArrayElement(DOMElement $collectionEle, Bee_Context_Config_IBeanDefinition $bd) {
 		$defaultTypeClassName = $collectionEle->getAttribute(self::VALUE_TYPE_ATTRIBUTE);
 		// @todo: what about that managed list stuff?
@@ -682,7 +695,6 @@ class Bee_Context_Xml_ParserDelegate {
 		$key = $ele->getAttribute(self::KEY_ATTRIBUTE);
 		if (!Bee_Utils_Strings::hasText($key)) {
 			$this->readerContext->error("Tag 'assoc-item' must have a 'key' attribute", $ele);
-			return;
 		}
 		$val = $this->parseComplexPropElement($ele, $bd, "<assoc-item> for key $key");
 		return array($key => $val);

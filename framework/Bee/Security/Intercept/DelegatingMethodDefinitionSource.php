@@ -85,3 +85,4 @@ class Bee_Security_Intercept_DelegatingMethodDefinitionSource implements Bee_Sec
         $this->methodDefinitionSources = $methodDefinitionSources;
     }
 }
+?>

@@ -18,10 +18,53 @@
 //require_once dirname(__FILE__).'/../libs/addendum/annotations.php';
 
 class BeeFramework {
+
+    const WEAVING_PACKAGE_PREFIX = 'Bee_';
+
+	const CLASS_FILE_CACHE_PREFIX = '__BeeClassFileCache_';
+
+	const GENERATED_CLASS_CODE_MARKER = '__CLASS_IS_GENERATED';
 	
 	private static $beeHiveLocation;
 
 	private static $applicationId = false;
+
+	/**
+	 * @var Bee_Weaving_IEnhancedClassesStore
+	 */
+    private static $enhancedClassesStore = null;
+
+    /**
+     * todo: quick n dirty
+     * @var array
+     */
+    private static $weavingExcludedClasses = array();
+
+    private static $weaveDuringClassloading = false;
+
+	private static $missedClassNames = array();
+
+	private static $classFileMap;
+
+	private static $productionMode = false;
+
+	/**
+	 * @param Bee_Weaving_IEnhancedClassesStore $enhancedClassesStore
+	 */
+	public static function setEnhancedClassesStore(Bee_Weaving_IEnhancedClassesStore $enhancedClassesStore) {
+		self::$enhancedClassesStore = $enhancedClassesStore;
+	}
+
+	/**
+	 * @return Bee_Weaving_IEnhancedClassesStore
+	 */
+	public static function getEnhancedClassesStore() {
+		return self::$enhancedClassesStore;
+	}
+
+    public static function excludeFromWeaving($className) {
+        self::$weavingExcludedClasses[$className] = true;
+    }
 	
 	public static function setApplicationId($applicationId) {
 		self::$applicationId = $applicationId;
@@ -30,9 +73,7 @@ class BeeFramework {
 	public static function getApplicationId() {
 		return self::$applicationId;
 	}
-	
-	//	private static $includePaths;
-	
+
 	/**
 	 * Main bootstrap method for the framework. Basically just initializes the framework classloader.
 	 *
@@ -41,9 +82,12 @@ class BeeFramework {
 	static function init() {
 		self::$beeHiveLocation = dirname(__FILE__);
 		self::addApplicationIncludePath(self::$beeHiveLocation);
-//		self::$includePaths = array(self::$beeHiveLocation);
-//		set_error_handler(array('BeeFramework', 'handleError'));
-		spl_autoload_register(array('BeeFramework', 'autoload'));
+
+		require_once dirname(__FILE__).'/Bee/Cache/Manager.php';
+
+		spl_autoload_register(array(__CLASS__, 'autoload'));
+
+		register_shutdown_function(array(__CLASS__, 'shutdown'));
 //		Bee_Cache_Manager::init();
 	}
 
@@ -67,48 +111,90 @@ class BeeFramework {
 	public static function addApplicationIncludePath($includePath) {
         $incPath = get_include_path();
 		set_include_path($includePath . PATH_SEPARATOR . $incPath);
-//		self::$includePaths[] = $includePath;
     }
 
     
     /**
      * Main SPL autoloader function for the framework 
      *
-     * @param unknown_type $className
+     * @param string $className
      * @return boolean
      */
     public static function autoload($className) {
+
     	if (class_exists($className, false) || interface_exists($className, false)) {
     		return false;
         }
-        
-        $class = $className . '.php';
 
-        include_once $class;
+		if(self::$productionMode) {
+			if(!is_array(self::$classFileMap)) {
+				self::$classFileMap = Bee_Cache_Manager::retrieve(self::CLASS_FILE_CACHE_PREFIX);
+				if(!is_array(self::$classFileMap)) {
+					self::$classFileMap = array();
+				}
+			}
 
-        if (class_exists($className, false) || interface_exists($className, false)) {
-            return true;
+			if(array_key_exists($className, self::$classFileMap)) {
+				$cachedPath = self::$classFileMap[$className];
+				if($cachedPath === self::GENERATED_CLASS_CODE_MARKER) {
+					return false;
+				}
+
+				include $cachedPath;
+				if (class_exists($className, false) || interface_exists($className, false)) {
+					return false;
+				}
+			}
+
+			array_push(self::$missedClassNames, $className);
+		}
+
+        if(self::$enhancedClassesStore != null && !array_key_exists($className, self::$weavingExcludedClasses) && substr($className, 0, strlen(self::WEAVING_PACKAGE_PREFIX)) != self::WEAVING_PACKAGE_PREFIX) {
+            // possibly a woven class
+
+			if(self::$enhancedClassesStore->loadClass($className)) {
+				return true;
+			}
+
+			if(self::$weaveDuringClassloading) {
+				require_once dirname(__FILE__).'Bee/Weaving/Enhancer.php';
+
+				$enhancer = new Bee_Weaving_Enhancer($className);
+				if($enhancer->createEnhancedClass() !== false) {
+					return true;
+				}
+			}
         }
 
-		$class = str_replace('_', '/', $className) . '.php';
-		
-		include_once $class;
+        foreach(self::getClassFileLocations($className) as $loc) {
+            include $loc;
 
-		if (class_exists($className, false) || interface_exists($className, false)) {
-    		return true;
+            if (class_exists($className, false) || interface_exists($className, false)) {
+                return true;
+            }
         }
+
         return false;
-		
-//        foreach(self::$includePaths as $includePath) {
-//        	$class = $includePath . '/' . str_replace('_', '/', $className) . '.php';
-//	        if (file_exists($class)) {
-//	        	require_once $class;
-//	            return true;
-//	        }        	
-//        }
-//        return false;
     }
-    
+
+    public static function getClassFileLocations($className) {
+        return array(
+            str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php',
+            $className . '.php'
+        );
+    }
+
+	public static function shutdown() {
+		if(self::$productionMode) {
+			foreach(self::$missedClassNames as $missedClassName) {
+				$ref = new ReflectionClass($missedClassName);
+				self::$classFileMap[$missedClassName] = file_exists($ref->getFileName()) ? $ref->getFileName() : self::GENERATED_CLASS_CODE_MARKER;
+			}
+			Bee_Cache_Manager::store(self::CLASS_FILE_CACHE_PREFIX, self::$classFileMap);
+		}
+
+		Bee_Cache_Manager::shutdown();
+	}
     
     /**
      * Convenience method, dispatches current request using a dispatcher context configured from the
@@ -121,13 +207,28 @@ class BeeFramework {
 		try {
     		Bee_Utils_Assert::notNull($configLocation);
 			$ctx = new Bee_Context_Xml($configLocation);
-			$dp = new Bee_MVC_Dispatcher($ctx);
-			$dp->dispatch();    	
+            self::dispatchRequestUsingContext($ctx);
 		} catch (Exception $e) {
 			self::handleException($e);
 		}
     }
     
+    /**
+     * Convenience method, dispatches current request using the given dispatcher context.
+     *
+     * @param String $configLocation comma-separated string XML config files to load the bean definitions from
+     * @return void
+     */
+    public static function dispatchRequestUsingContext(Bee_IContext $ctx) {
+		try {
+    		Bee_Utils_Assert::notNull($ctx);
+			$dp = new Bee_MVC_Dispatcher($ctx);
+			$dp->dispatch();
+		} catch (Exception $e) {
+			self::handleException($e);
+		}
+    }
+
     public static function handleException(Exception $e) {
 		$topLevelMessage = $e->getMessage();
 
@@ -189,13 +290,19 @@ class BeeFramework {
 	public static final function getApplicationName() {
 		return self::$applicationName;
 	}
+
+	public static function setProductionMode($productionMode) {
+		self::$productionMode = $productionMode;
+	}
+
+	public static function getProductionMode() {
+		return self::$productionMode;
+	}
 }
-
-
 
 BeeFramework::init();
 
-
+require_once dirname(__FILE__).'/Bee/Utils/ITypeDefinitions.php';
 
 interface TYPES extends Bee_Utils_ITypeDefinitions {
 }

@@ -200,7 +200,7 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 			$this->doFilter($request);
 		}
 
-		Bee_Cache_Manager::shutdown();
+//		Bee_Cache_Manager::shutdown();
 	}
 
 	public function doFilter(Bee_MVC_IHttpRequest $request) {

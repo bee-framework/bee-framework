@@ -307,3 +307,4 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
         $this->parentAcl = $parentAcl;
     }
 }
+?>

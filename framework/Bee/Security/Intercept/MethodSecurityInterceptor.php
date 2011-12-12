@@ -86,3 +86,4 @@ class Bee_Security_Intercept_MethodSecurityInterceptor extends Bee_Security_Inte
         return $result;
     }
 }
+?>

@@ -28,3 +28,5 @@ class Bee_AOP_Namespace_Utils {
 //        self::registerComponentIfNecessary($beanDefinition, $parserContext);
     }
 }
+
+?>

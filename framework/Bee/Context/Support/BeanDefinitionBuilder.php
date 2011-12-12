@@ -121,11 +121,11 @@ class Bee_Context_Support_BeanDefinitionBuilder {
 
     /**
      * Add a reference to a named bean as a constructor arg.
-     * @param string $beanName
+     * @param array $beanName
      * @return Bee_Context_Support_BeanDefinitionBuilder
      */
-    public function addConstructorArgReference($beanName) {
-        return $this->addConstructorArgValue(new Bee_Context_Config_RuntimeBeanReference($beanName));
+    public function addConstructorArgReference(array $beanNames) {
+        return $this->addConstructorArgValue(new Bee_Context_Config_RuntimeBeanReference($beanNames));
     }
 
     /**
@@ -142,11 +142,11 @@ class Bee_Context_Support_BeanDefinitionBuilder {
     /**
      * Add a reference to the specified bean name under the property specified.
      * @param string $name the name of the property to add the reference to
-     * @param string $beanName the name of the bean being referenced
+     * @param array $beanNames the name of the bean being referenced
      * @return Bee_Context_Support_BeanDefinitionBuilder
      */
-    public function addPropertyReference($name, $beanName) {
-        return $this->addPropertyValue($name, new Bee_Context_Config_RuntimeBeanReference($beanName));
+    public function addPropertyReference($name, array $beanNames) {
+        return $this->addPropertyValue($name, new Bee_Context_Config_RuntimeBeanReference($beanNames));
     }
 
     /**
@@ -203,3 +203,4 @@ class Bee_Context_Support_BeanDefinitionBuilder {
         return $this;
     }
 }
+?>

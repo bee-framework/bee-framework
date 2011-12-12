@@ -26,23 +26,51 @@
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
 interface Bee_Cache_IProvider {
-	
+
+	/**
+	 * Initialize the cache provider if necessary. Called once per request, before the first cache access is made.
+	 * @abstract
+	 * @return void
+	 */
 	public function init();
 
-	public function store($key, $value);
-	
+	/**
+	 * Store the value in the cache under the given key. If given, a modification timestamp will be stored with the value
+	 * and can be retrieved using getLastUpdateTimestamp(). If an UNIX timestamp is given for etime, the cache entry will
+	 * expire at that time.
+	 * @abstract
+	 * @param $key
+	 * @param $value
+	 * @param int $etime
+	 * @return void
+	 */
+	public function store($key, &$value, $etime = 0);
+
+	/**
+	 * @abstract
+	 * @param $key string
+	 * @return bool
+	 */
+	public function exists($key);
+
+	/**
+	 * @abstract
+	 * @param $key string
+	 * @return mixed
+	 */
 	public function retrieve($key);
 	
 	public function evict($key);
 	
-	public function getLastUpdateTimestamp($key);
-	
-	public function getLastAccessTimestamp($key);
-	
 	public function listKeys();
 
 	public function clearCache();
-	
+
+	/**
+	 * Shut down the cache provider at the end of a request.
+	 * @abstract
+	 * @return void
+	 */
 	public function shutdown();
 }
 ?>

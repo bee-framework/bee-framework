@@ -58,3 +58,4 @@ class Bee_Context_Config_CompositeComponentDefinition extends Bee_Context_Config
         return $this->nestedComponents;
     }
 }
+?>

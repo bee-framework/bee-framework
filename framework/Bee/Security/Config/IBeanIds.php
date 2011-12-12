@@ -32,3 +32,4 @@ interface Bee_Security_Config_IBeanIds {
     const METHOD_SECURITY_INTERCEPTOR = '_methodSecurityInterceptor';
     const METHOD_SECURITY_INTERCEPTOR_POST_PROCESSOR = '_methodSecurityInterceptorPostProcessor';	
 }
+?>

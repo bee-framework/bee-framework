@@ -48,3 +48,5 @@ abstract class Bee_AOP_Support_StaticMethodMatcherPointcut extends Bee_AOP_Suppo
         return $this;
     }
 }
+
+?>

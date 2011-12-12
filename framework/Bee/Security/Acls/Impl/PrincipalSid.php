@@ -68,3 +68,4 @@ class Bee_Security_Acls_Impl_PrincipalSid implements Bee_Security_Acls_ISid {
         return $this->getIdentifierString() == $sid->getIdentifierString();
     }
 }
+?>

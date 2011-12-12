@@ -27,3 +27,4 @@ class Bee_Transactions_NoTransactionException extends Bee_Transactions_Transacti
         parent::__construct($message, $cause);
     }
 }
+?>

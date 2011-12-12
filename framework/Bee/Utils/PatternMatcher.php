@@ -84,3 +84,4 @@ class Bee_Utils_PatternMatcher {
     }
 
 }
+?>

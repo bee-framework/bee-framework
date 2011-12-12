@@ -417,3 +417,4 @@ class Bee_Security_Acls_Pdo_AclService_BatchStatementSetter_createEntries implem
     }
 
 }
+?>

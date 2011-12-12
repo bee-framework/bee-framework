@@ -134,3 +134,5 @@ class Bee_AOP_Framework_ProxyConfig {
     }
 
 }
+
+?>

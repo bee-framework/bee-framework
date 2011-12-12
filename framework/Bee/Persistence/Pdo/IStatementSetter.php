@@ -31,3 +31,4 @@ interface Bee_Persistence_Pdo_IStatementSetter {
     public function setValues(PDOStatement $ps);
 
 }
+?>

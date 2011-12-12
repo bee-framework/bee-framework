@@ -97,3 +97,5 @@ class AbstractAutoProxyCreator implements Bee_Context_Config_IInstantiationAware
 //    }
 
 }
+
+?>

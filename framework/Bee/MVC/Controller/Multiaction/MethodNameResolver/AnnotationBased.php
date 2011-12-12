@@ -32,9 +32,12 @@ class Bee_MVC_Controller_Multiaction_MethodNameResolver_AnnotationBased extends 
 	
 	const DEFAULT_HTTP_METHOD_KEY = 'DEFAULT';
 
-	private $methodResolvers = array();
-	
-	private $initialized = false;
+	const CACHE_KEY_PREFIX = 'BeeMethodNameResolverAnnotationCache_';
+
+    /**
+     * @var Bee_MVC_Controller_Multiaction_MethodNameResolver_AntPath[]
+     */
+	private $methodResolvers = false;
 
 	public function getHandlerMethodName(Bee_MVC_IHttpRequest $request) {
 		
@@ -42,59 +45,73 @@ class Bee_MVC_Controller_Multiaction_MethodNameResolver_AnnotationBased extends 
 				
 		$httpMethod = strtoupper($request->getMethod());
 		
-		if(array_key_exists($httpMethod, $this->methodResolvers)) {
-			$resolver = $this->methodResolvers[$httpMethod];
-			$handlerMethod = $resolver->getHandlerMethodName($request);
-		}
-		
+        $handlerMethod = $this->getHandlerMethodInternal($httpMethod, $request);
+
 		if(is_null($handlerMethod)) {
-			$resolver = $this->methodResolvers[self::DEFAULT_HTTP_METHOD_KEY];
-			if(!is_null($resolver)) {
-				$handlerMethod = $resolver->getHandlerMethodName($request);			
-			}
+            $handlerMethod = $this->getHandlerMethodInternal(self::DEFAULT_HTTP_METHOD_KEY, $request);
 		}
 		
 		return $handlerMethod;
 	}
 
+    private function getHandlerMethodInternal($httpMethod, Bee_MVC_IHttpRequest $request) {
+        if(array_key_exists($httpMethod, $this->methodResolvers)) {
+            $resolver = $this->methodResolvers[$httpMethod];
+            return $resolver->getHandlerMethodName($request);
+        }
+        return null;
+    }
+
 		
 	protected function init() {
-		if(!$this->initialized) {
-			$delegate = $this->getController()->getDelegate();
-			$classReflector = new ReflectionAnnotatedClass($delegate);
+		if(!$this->methodResolvers) {
 
-			$methods = $classReflector->getMethods(ReflectionMethod::IS_PUBLIC);
-			
-			$mappings = array();
-			foreach($methods as $method) {
-				
-				if($this->getController()->isHandlerMethod($method)) {
-					
-					// is possible handler method, check for annotations
-					$annotations = $method->getAllAnnotations('Bee_MVC_Controller_Multiaction_RequestHandler');
+			$delegateClassName = get_class($this->getController()->getDelegate());
 
-					foreach($annotations as $annotation) {
-						$httpMethod = strtoupper($annotation->httpMethod);
-						if(!Bee_Utils_Strings::hasText($httpMethod)) {
-							$httpMethod = self::DEFAULT_HTTP_METHOD_KEY;
+			if(BeeFramework::getProductionMode()) {
+				$this->methodResolvers = Bee_Cache_Manager::retrieve(self::CACHE_KEY_PREFIX.$delegateClassName);
+			}
+
+			if(!$this->methodResolvers) {
+				$classReflector = new ReflectionAnnotatedClass($delegateClassName);
+
+				$methods = $classReflector->getMethods(ReflectionMethod::IS_PUBLIC);
+
+				$mappings = array();
+				foreach($methods as $method) {
+
+					if($this->getController()->isHandlerMethod($method)) {
+
+						// is possible handler method, check for annotations
+						$annotations = $method->getAllAnnotations('Bee_MVC_Controller_Multiaction_RequestHandler');
+
+						foreach($annotations as $annotation) {
+							$httpMethod = strtoupper($annotation->httpMethod);
+							if(!Bee_Utils_Strings::hasText($httpMethod)) {
+								$httpMethod = self::DEFAULT_HTTP_METHOD_KEY;
+							}
+							if(!array_key_exists($httpMethod, $mappings)) {
+								$mappings[$httpMethod] = array();
+							}
+
+							// replace special escape syntax needed to allow */ patterns in PHPDoc comments
+							$pathPattern = str_replace('*\/', '*/', $annotation->pathPattern);
+							$mappings[$httpMethod][$pathPattern] = $method->getName();
 						}
-						if(!array_key_exists($httpMethod, $mappings)) {
-							$mappings[$httpMethod] = array();
-						}
-						
-						// replace special escape syntax needed to allow */ patterns in PHPDoc comments
-						$pathPattern = str_replace('*\/', '*/', $annotation->pathPattern);
-						$mappings[$httpMethod][$pathPattern] = $method;
+
 					}
 
 				}
 
+				foreach($mappings as $method => $mapping) {
+					$resolver = new Bee_MVC_Controller_Multiaction_MethodNameResolver_AntPath();
+					$resolver->setMethodMappings($mapping);
+					$this->methodResolvers[$method] = $resolver;
+				}
 			}
-			
-			foreach($mappings as $method => $mapping) {
-				$resolver = new Bee_MVC_Controller_Multiaction_MethodNameResolver_AntPath();
-				$resolver->setMethodMappings($mapping);
-				$this->methodResolvers[$method] = $resolver;
+
+			if(BeeFramework::getProductionMode()) {
+				Bee_Cache_Manager::store(self::CACHE_KEY_PREFIX.$delegateClassName, $this->methodResolvers);
 			}
 		}
 	}

@@ -61,7 +61,7 @@ class Bee_Filesystem_MimedictionaryCacheable implements Bee_Cache_ICachableResou
 		return filemtime(dirname(__FILE__) . DIRECTORY_SEPARATOR . self::MIME_DICTIONARY_FILE);
 	}
 	
-	public function &createContent() {
+	public function &createContent(&$expirationTimestamp = 0) {
 		$result = array();
 
 		$dict = file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . self::MIME_DICTIONARY_FILE);		

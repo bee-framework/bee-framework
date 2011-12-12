@@ -69,3 +69,4 @@ class Bee_Security_Acls_Impl_PermissionFactory implements Bee_Security_Acls_IPer
         return $this->registeredPermissions[$name];
     }
 }
+?>

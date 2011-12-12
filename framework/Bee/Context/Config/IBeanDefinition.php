@@ -137,7 +137,7 @@ interface Bee_Context_Config_IBeanDefinition {
 	 * Return the constructor argument values for this bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
 	 *
-	 * @return Array
+	 * @return Bee_Beans_PropertyValue[]
 	 */
 	public function getConstructorArgumentValues();
 	
@@ -155,7 +155,7 @@ interface Bee_Context_Config_IBeanDefinition {
 	 * Return the property values to be applied to a new instance of the bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
 	 *
-	 * @return Array
+	 * @return Bee_Beans_PropertyValue[]
 	 */
 	public function getPropertyValues();
 

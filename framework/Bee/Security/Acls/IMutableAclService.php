@@ -62,3 +62,4 @@ interface Bee_Security_Acls_IMutableAclService extends Bee_Security_Acls_IAclSer
     function copyAcls(Bee_Security_Acls_IObjectIdentity $origObjectOid, Bee_Security_Acls_IObjectIdentity $targetObjectOid);
 
 }
+?>

@@ -26,6 +26,6 @@ interface Bee_Cache_ICachableResource {
 	
 	public function getModificationTimestamp();
 	
-	public function &createContent();
+	public function &createContent(&$expirationTimestamp = 0);
 }
 ?>

@@ -66,28 +66,134 @@ abstract class Bee_Filesystem_AbstractNode implements Bee_Filesystem_INode {
 			$this->afterChildCreate();
 			return $this->createNode($newDir);
 		} else {
-			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_COULD_NOT_CREATE, $newdir);
+			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_COULD_NOT_CREATE, $newDir);
 		}
 	}
-	
+
+    public final function addFile($sourceFile, $filename, $overwrite=false) {
+        if (!file_exists($sourceFile)) {
+            throw new Exception('File not found: '.$sourceFile);
+        }
+
+        $newFile = $this->realPath;
+        $newFile .= $newFile[strlen($newFile)-1]!=DIRECTORY_SEPARATOR ? DIRECTORY_SEPARATOR : '';
+
+        if (!$overwrite) {
+            $piName = pathinfo($filename, PATHINFO_FILENAME);
+            $piExt = pathinfo($filename, PATHINFO_EXTENSION);
+            $filename = $piName.'.'.$piExt;
+            $count = 0;
+            while (file_exists($newFile.$filename)) {
+                $count++;
+                $filename = $piName.'-'.$count.'.'.$piExt;
+            }
+        }
+
+        $newFile .= $filename;
+
+        if (is_uploaded_file($sourceFile)) {
+            move_uploaded_file($sourceFile, $newFile);
+
+        } else {
+            file_put_contents($newFile, fopen('php://input', 'r'));
+        }
+
+        $this->afterChildCreate();
+        return $this->createNode($newFile);
+    }
+
 	public final function addUploadedFile($fileFieldName, $fileName = null) {
-		if (empty($_FILES[$fileFieldName]["name"])) {
-			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_RESOURCE_DOES_NOT_EXIST);
-		}
-		if (is_null($fileName)) {
-			$fileName = $_FILES[$fileFieldName]["name"];
-		}
-		$newFile = $this->realPath . DIRECTORY_SEPARATOR . $fileName;
-		if(file_exists($newFile)) {
-			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_RESOURCE_EXISTS, $newFile);
-		}
-		if (!@move_uploaded_file($_FILES[$fileFieldName]["tmp_name"], $newFile)) {
-			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_UNKNOWN_ERROR);
-		}
-		$this->afterChildCreate();
-		return $this->createNode($newFile);		
+        
+        echo 'SAVE UPLOADED FILE INTO: ';
+        echo $this->getPathName();
+        echo DIRECTORY_SEPARATOR;
+        echo $fileName;
+        echo '<hr/>';
+        
+        if (isset($_GET['qqfile'])) {
+            $this->addUploadedFileFromXhr($fileFieldName, $fileName);
+
+        } else if (isset($_FILES['qqfile'])) {
+            $this->addUploadedFileFromForm($fileFieldName, $fileName);
+
+        } else {
+            throw new Exception("No file to upload");
+        }
+    }
+
+	public final function addUploadedFileFromForm($fileFieldName, $filename, $overwrite=false) {
+        echo 'SAVE FROM FORM<hr/>';
+        echo 'Filname: '.$filename.'<br/>';
+        echo 'FULLPATH: ';
+//        echo $this->getPathName();
+        echo $this->realPath();
+        echo DIRECTORY_SEPARATOR;
+        echo $filename;
+        echo '<hr/>';
+
+
+		$newFile = $this->realPath . DIRECTORY_SEPARATOR . $filename;
+//		if(file_exists($newFile)) {
+//			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_RESOURCE_EXISTS, $newFile);
+//		}
+
+        var_dump($newFile);
+
+
+//		if (empty($_FILES[$fileFieldName]["name"])) {
+//			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_RESOURCE_DOES_NOT_EXIST);
+//		}
+//		if (is_null($fileName)) {
+//			$fileName = $_FILES[$fileFieldName]["name"];
+//		}
+//		$newFile = $this->realPath . DIRECTORY_SEPARATOR . $fileName;
+//		if(file_exists($newFile)) {
+//			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_RESOURCE_EXISTS, $newFile);
+//		}
+//		if (!@move_uploaded_file($_FILES[$fileFieldName]["tmp_name"], $newFile)) {
+//			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_UNKNOWN_ERROR);
+//		}
+//		$this->afterChildCreate();
+//		return $this->createNode($newFile);
 	}
 	
+	public final function addUploadedFileFromXhr($fileFieldName, $filename, $overwrite=false) {
+        $newFile = $this->realPath.DIRECTORY_SEPARATOR.$filename;
+
+        if (!$overwrite) {
+            $piName = pathinfo($filename, PATHINFO_FILENAME);
+            $piExt = pathinfo($filename, PATHINFO_EXTENSION);
+            $count = 0;
+            while (file_exists($newFile)) {
+                $count++;
+                $newFile = $this->realPath.DIRECTORY_SEPARATOR.$piName.'-'.$count.'.'.$piExt;
+            }
+        }
+
+        if (isset($_SERVER["CONTENT_LENGTH"])){
+            $filesize = intval($_SERVER["CONTENT_LENGTH"]);
+        } else {
+            throw new Exception('Getting content length is not supported.');
+        }
+
+        $input = fopen("php://input", "r");
+        $temp = tmpfile();
+        $realSize = stream_copy_to_stream($input, $temp);
+        fclose($input);
+
+        if ($realSize != $filesize){
+            return false;
+        }
+
+        $target = fopen($newFile, "w");
+        fseek($temp, 0, SEEK_SET);
+        stream_copy_to_stream($temp, $target);
+        fclose($target);
+
+        $this->afterChildCreate();
+        return $this->createNode($newFile);
+	}
+
 	public final function rename($newName) {
 		$newPath = $this->getPath() . DIRECTORY_SEPARATOR . $this->manager->cleanName($newName);
 		if(rename($this->realPath, $newPath)) {

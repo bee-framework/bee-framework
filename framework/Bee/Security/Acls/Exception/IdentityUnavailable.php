@@ -26,3 +26,4 @@ class Bee_Security_Acls_Exception_IdentityUnavailable extends Bee_Security_Excep
         parent::__construct('Identity could not be determined for object of type ' . get_class($object));
     }
 }
+?>

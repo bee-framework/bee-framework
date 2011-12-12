@@ -38,3 +38,4 @@ class Bee_Utils_Constants {
         return $this->reflectedClass->getConstant($name);
     }
 }
+?>

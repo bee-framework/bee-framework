@@ -39,3 +39,5 @@ interface Bee_AOP_Intercept_IJoinpoint {
      */
     function getThis();
 }
+
+?>

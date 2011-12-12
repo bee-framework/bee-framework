@@ -34,7 +34,6 @@ class Bee_MVC_View_InternalResource extends Bee_MVC_View_Abstract {
 	 * This includes setting the model as request attributes.
 	 */
 	protected function renderMergedOutputModel() {
-
 		// TODO : check path!!!!
 		include Bee_MVC_Model::getValue('resource');
 	}

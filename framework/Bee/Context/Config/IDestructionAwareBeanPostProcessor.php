@@ -38,3 +38,4 @@ interface Bee_Context_Config_IDestructionAwareBeanPostProcessor extends Bee_Cont
     function postProcessBeforeDestruction($bean, $beanName);
 
 }
+?>

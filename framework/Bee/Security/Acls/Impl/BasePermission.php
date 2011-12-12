@@ -44,3 +44,4 @@ class Bee_Security_Acls_Impl_BasePermission implements Bee_Security_Acls_IPermis
         return get_class($this).'['.$this->getPattern().'='.$this->mask.']';
     }
 }
+?>

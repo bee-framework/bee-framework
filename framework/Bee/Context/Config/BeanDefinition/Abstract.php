@@ -60,7 +60,7 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract implements Bee_Context
 	/**
 	 * Enter description here...
 	 *
-	 * @var array
+	 * @var Bee_Beans_PropertyValue[]
 	 */
 	private $constructorArgumentValues = array();
 	
@@ -68,7 +68,7 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract implements Bee_Context
 	/**
 	 * Enter description here...
 	 *
-	 * @var array array of PropertyValue instances
+	 * @var Bee_Beans_PropertyValue[] array of PropertyValue instances
 	 */
 	private $propertyValues = array();
 	
@@ -228,12 +228,11 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract implements Bee_Context
 		}
 	}
 	
-	private function mergePropertyValuesIfPossible (Bee_Beans_PropertyValue &$parentValue, Bee_Beans_PropertyValue &$childValue) {
-		// @todo: introduce Mergeable interface
-		if(is_array($parentValue->getValue()) && is_array($childValue->getValue())) {
-			// @todo: implement recursive merging (no, array_merge_recursive() does NOT work, of course!!!)
-			$childValue->setValue(array_merge($parentValue->getValue(), $childValue->getValue()));
-		}			
+	private function mergePropertyValuesIfPossible (Bee_Beans_PropertyValue $parent, Bee_Beans_PropertyValue $child) {
+        $childValue = $child->getValue();
+		if($childValue instanceof Bee_Context_Config_IMergeable && $childValue->getMergeEnabled()) {
+            $childValue->merge($parent->getValue());
+		}
 	}
 	
 	public function getPropertyValues() {

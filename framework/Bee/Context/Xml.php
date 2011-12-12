@@ -34,7 +34,7 @@ class Bee_Context_Xml extends Bee_Context_Abstract {
 	 * @param String $locations
 	 * @return void
 	 */
-	public function __construct($locations, $callInitMethod=true) {
+	public function __construct($locations='', $callInitMethod=true) {
 		parent::__construct($locations, false);
         $this->configCacheable = new Bee_Context_Xml_CachableConfig(explode(",", $locations));
 		if ($callInitMethod) {
@@ -80,30 +80,30 @@ class Bee_Context_Xml_CachableConfig implements Bee_Cache_ICachableResource {
 	}
 	
 	public function getModificationTimestamp() {
-        if(!$this->modificationTimestamp) {
+		if(BeeFramework::getProductionMode()) {
+			return 0;
+		}
+        if($this->modificationTimestamp === false) {
             $latest = is_null($this->parentConfig) ? 0 : $this->parentConfig->getModificationTimestamp();
             foreach($this->configLocations as $location) {
                 if (!file_exists($location)) {
-                    trigger_error("File '$location' does not exist", E_USER_WARNING);
-                } else {
-                    $ctime = max(array(filectime($location), filemtime($location)));
-                    if($ctime > $latest) {
-                        $latest = $ctime;
-                    }
+                    throw new Exception("File '$location' does not exist");
                 }
+
+				$latest = max(array(filectime($location), filemtime($location), $latest));
             }
             $this->modificationTimestamp = $latest;
         }
 		return $this->modificationTimestamp;
 	}
 	
-	public function &createContent() {
+	public function &createContent(&$expirationTimestamp = 0) {
 		$registry = new Bee_Context_Config_BasicBeanDefinitionRegistry(); 
 		$reader = new Bee_Context_Xml_BeanDefinitionReader($registry);
 		
 		foreach($this->configLocations as $location) {
 			if (!file_exists($location)) {
-				trigger_error("File '$location' does not exist", E_USER_WARNING);
+                throw new Exception("File '$location' does not exist");
 			} else {
 				$reader->loadBeanDefinitions($location);
 			}

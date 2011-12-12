@@ -25,7 +25,10 @@
  * </ul>
  * 
  * Implementations of other cache providers such as Turck MMCache or eAccelerator are planned (should
- * be pretty straightforward anyway).   
+ * be pretty straightforward anyway).
+ *
+ * IMPORTANT: Do not rely on class autoloading when creating cache extensions. The cache manager is used in the autoloading
+ * process!!!
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  * @author Benjamin Hartmann
@@ -36,9 +39,13 @@ class Bee_Cache_Manager {
 	const INFO_IN_CACHE_SINCE_KEY = 'inCacheSince';
 	const INFO_CACHE_HIT_KEY = 'cacheHit';
 	const INFO_NO_CACHE_KEY = 'noCache';
-	
+
+	const CTIME_KEY_SUFFIX = '__CTIME__';
+
+	private static $useFileCacheFallback = true;
+
 	private static $useSessionCacheFallback = true;
-	
+
 	/**
 	 * Map PHP cache extension names to class name of the respective cache provider adapter 
 	 *
@@ -55,32 +62,49 @@ class Bee_Cache_Manager {
 	 * @var Bee_Cache_IProvider
 	 */
 	private static $provider;
-	
+
 	private static function initCacheProvider() {
 		// todo: take into account minimum versions for extensions?
 		foreach(self::$providers as $extension => $providerClass) {
 			if(extension_loaded($extension)) {
-				trigger_error("Extension $extension found, using cache provider $providerClass", E_USER_NOTICE);
-				self::$provider = new $providerClass(); 
+				self::initProviderClass($providerClass);
 				return;
 			}
 		}
-		trigger_error("No supported cache extensions found", E_USER_NOTICE);
-		if(self::$useSessionCacheFallback) {
-			trigger_error("Using fallback cache provider Bee_Cache_Provider_Session", E_USER_NOTICE);
-			self::$provider = new Bee_Cache_Provider_Session(); 
+		if(self::$useFileCacheFallback) {
+			self::initProviderClass('Bee_Cache_Provider_File');
+		} else if(self::$useSessionCacheFallback) {
+			self::initProviderClass('Bee_Cache_Provider_Session');
 		}
 	}
+
+	private static function initProviderClass($providerClass) {
+		$loc = BeeFramework::getClassFileLocations($providerClass);
+		require_once $loc[0];
+		self::$provider = new $providerClass();
+	}
 	
-	public static function init() {
-		self::initCacheProvider();
+	public static function init($providerInstanceOrClassName = false) {
+		if($providerInstanceOrClassName) {
+			if(is_string($providerInstanceOrClassName)) {
+				self::initProviderClass($providerInstanceOrClassName);
+			} else if($providerInstanceOrClassName instanceof Bee_Cache_IProvider) {
+				self::$provider = $providerInstanceOrClassName;
+			} else {
+				// todo: provide logging
+			}
+		} else {
+			self::initCacheProvider();
+		}
 		if(!is_null(self::$provider)) {
 			self::$provider->init();	
 		}
 	}
-	
+
 	public static function shutdown() {
-		self::$provider->shutdown(); 
+		if(!is_null(self::$provider)) {
+			self::$provider->shutdown();
+		}
 	}
 	
 	/**
@@ -96,7 +120,7 @@ class Bee_Cache_Manager {
 		if ($keyOrCachable instanceof Bee_Cache_ICachableResource) {
 			$keyOrCachable = $keyOrCachable->getKey();
 		}
-		$keyOrCachable = (BeeFramework::getApplicationId()!==false ? BeeFramework::getApplicationId().'_' : '').$keyOrCachable;
+		$keyOrCachable = self::getQualifiedKey($keyOrCachable);
 		if(!is_null(self::$provider)) {				
 			self::$provider->evict($keyOrCachable);
 		}
@@ -108,7 +132,7 @@ class Bee_Cache_Manager {
 	 * @param Bee_Cache_ICachableResource $resource
 	 * @return mixed
 	 */
-	public static function retrieveCachable(Bee_Cache_ICachableResource $resource, $returnInfoArray = false) {
+	public static function &retrieveCachable(Bee_Cache_ICachableResource $resource, $returnInfoArray = false) {
 		if(is_null(self::$provider)) {
 			// no cache provider found, no caching or unsupported cache type installed
 			$data =& $resource->createContent(); 
@@ -116,15 +140,24 @@ class Bee_Cache_Manager {
 		}
 		
 		// caching supported, check if in cache and not stale
-		$key = (BeeFramework::getApplicationId()!==false ? BeeFramework::getApplicationId().'_' : '').$resource->getKey();
+		$key = self::getQualifiedKey($resource->getKey());
+		$ctimeKey = $key . self::CTIME_KEY_SUFFIX;
+
+		$inCacheSince = self::$provider->retrieve($ctimeKey);
+		$inCacheSince = $inCacheSince === false ? -1 : $inCacheSince;
+
 		$mtime = $resource->getModificationTimestamp();
-		$inCacheSince = self::$provider->getLastUpdateTimestamp($key);
-//		$now = microtime(true);
+
 		if($inCacheSince < $mtime) {
 			// @todo: provide logging
 			// resource not found in cache or stale, re-create and store in cache
-			$data =& $resource->createContent();
-			self::$provider->store($key, $data, microtime(true));
+
+			$etime = 0;
+			$data =& $resource->createContent($etime);
+
+			self::$provider->store($ctimeKey, $mtime, $etime);
+			self::$provider->store($key, $data, $etime);
+
 			$cacheHit = false;
 		} else {
 			// @todo: provide logging
@@ -132,8 +165,32 @@ class Bee_Cache_Manager {
 			$data = self::$provider->retrieve($key);
 			$cacheHit = true;
 		}
-		return $returnInfoArray ? array(self::INFO_CACHE_HIT_KEY => $cacheHit, self::INFO_IN_CACHE_SINCE_KEY => $inCacheSince, self::INFO_DATA_KEY => &$data) : $data;
+
+		if($returnInfoArray) {
+			$data = array(self::INFO_CACHE_HIT_KEY => $cacheHit, self::INFO_IN_CACHE_SINCE_KEY => $inCacheSince, self::INFO_DATA_KEY => &$data);
+		}
+		return $data;
 	}
-	
+
+	public static function retrieve($key) {
+		return self::$provider->retrieve(self::getQualifiedKey($key));
+	}
+
+	/**
+	 * @static
+	 * @param $key string
+	 * @return bool
+	 */
+	public static function exists($key) {
+		return self::$provider->exists($key);
+	}
+
+	public static function store($key, &$value, $etime = 0) {
+		self::$provider->store(self::getQualifiedKey($key), $value, $etime);
+	}
+
+	private static function getQualifiedKey($key) {
+		return (BeeFramework::getApplicationId()!==false ? BeeFramework::getApplicationId().'_' : '') . $key;
+	}
 }
 ?>

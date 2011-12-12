@@ -33,17 +33,24 @@ class Bee_Utils_Strings {
 		if(is_null($text)) {
 			return false;
 		}
-		if (!is_string($text)) {
-			throw new Bee_Exceptions_TypeMismatch(Bee_Utils_ITypeDefinitions::STRING, Bee_Utils_Types::getType($text));
-		}
+        self::checkIsString($text);
 		return (strlen($text) > 0);
 	}
 
 	public static function hasText($text) {
+        if(is_null($text)) {
+            return false;
+        }
+        self::checkIsString($text);
 		return self::hasLength(trim($text));
 	}
-	
-	
+
+    private static function checkIsString($text) {
+        if (!is_string($text)) {
+            throw new Bee_Exceptions_TypeMismatch(Bee_Utils_ITypeDefinitions::STRING, Bee_Utils_Types::getType($text));
+        }
+    }
+
 	/**
 	 * Tokenize the given String into a associative set (using the tokens as keys and <code>true</code> as value).
 	 * <p>The given delimiters string is supposed to consist of any number of
@@ -114,7 +121,16 @@ class Bee_Utils_Strings {
 	}	
 	
 	public static function startsWith($string, $prefix) {
-		return substr($string, 0, strlen($prefix)) === $prefix;
+        if(is_null($string)) {
+            return is_null($prefix);
+        }
+        if(is_null($prefix)) {
+            return false;
+        }
+        self::checkIsString($string);
+        self::checkIsString($prefix);
+        $prefTest = substr($string, 0, strlen($prefix));
+		return $prefTest === false ? "" === $prefix : $prefTest === $prefix;
 	}
 
 	/**
@@ -125,15 +141,29 @@ class Bee_Utils_Strings {
 	 * @return String
 	 */
 	public static function stripPrefix($str, $prefix) {
-		if (is_string($str) && substr_count($str, $prefix)>0) {
-			$str = str_replace($prefix, '', $str);
+		if(is_null($str)) {
+			return null;
+		}
+		if(is_null($prefix) || strlen($prefix) === 0) {
+			return $str;
+		}
+		if (self::startsWith($str, $prefix)) {
+			$str = substr($str, strlen($prefix));
 		}
 		return $str;
 	}
 	
 	public static function endsWith($string, $suffix) {
-		return substr($string, (-strlen($suffix))) === $suffix;
+		if(is_null($string)) {
+			return is_null($suffix);
+		}
+		if(is_null($suffix)) {
+			return false;
+		}
+		self::checkIsString($string);
+		self::checkIsString($suffix);
+		$sufTest = substr($string, (-strlen($suffix)));
+		return $sufTest === $string || $sufTest === false ? "" === $suffix : $sufTest === $suffix;
 	}
-	
 }
 ?>

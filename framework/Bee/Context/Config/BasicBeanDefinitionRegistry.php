@@ -28,7 +28,7 @@ class Bee_Context_Config_BasicBeanDefinitionRegistry extends Bee_Context_AliasRe
      * BeanPostProcessors to apply in createBean
      * @var Bee_Context_Config_IBeanPostProcessor[]
      */
-	private $beanPostProcessorNames = null;
+	private $beanPostProcessorMap = array();
 
     /**
      *
@@ -51,8 +51,21 @@ class Bee_Context_Config_BasicBeanDefinitionRegistry extends Bee_Context_AliasRe
      * @return Bee_Context_Config_IBeanDefinition
      */
 	public function getBeanDefinition($beanName) {
+
 		if (array_key_exists($beanName, $this->beanDefinitions)) {
-			return $this->beanDefinitions[$beanName];
+			$bd = $this->beanDefinitions[$beanName];
+            $parentName = $bd->getParentName();
+            if(!is_null($parentName)) {
+                $parentName = $this->transformedBeanName($parentName);
+                $parentBd = $this->getBeanDefinition($parentName);
+                $newBd = new Bee_Context_Config_BeanDefinition_Generic($parentBd);
+                $newBd->overrideFrom($bd);
+                $newBd->setParentName(null);
+                $bd = $newBd;
+                $this->beanDefinitions[$beanName] = $bd;
+            }
+            return $bd;
+
 		}
 		throw new Bee_Context_NoSuchBeanDefinitionException($beanName);
 	}
@@ -72,9 +85,9 @@ class Bee_Context_Config_BasicBeanDefinitionRegistry extends Bee_Context_AliasRe
 		$this->beanDefinitions[$beanName] = $beanDefinition;
 
         $beanName = $this->canonicalName($beanName);
-        if(!in_array($beanName, $this->beanPostProcessorNames)) {
+        if(!array_key_exists($beanName, $this->beanPostProcessorMap)) {
             if(Bee_Utils_Types::isAssignable($beanDefinition->getBeanClassName(), 'Bee_Context_Config_IBeanPostProcessor')) {
-                $this->beanPostProcessorNames[] = $beanName;
+                $this->beanPostProcessorMap[$beanName] = true;
                 if (Bee_Utils_Types::isAssignable($beanDefinition->getBeanClassName(), 'Bee_Context_Config_IInstantiationAwareBeanPostProcessor')) {
                     $this->hasInstantiationAwareBeanPostProcessors = true;
                 }
@@ -96,39 +109,39 @@ class Bee_Context_Config_BasicBeanDefinitionRegistry extends Bee_Context_AliasRe
      * @param Bee_Context_Config_BasicBeanDefinitionRegistry $registry
      * @return void
      */
-	public function getDefinitionsFromRegistry(Bee_Context_Config_BasicBeanDefinitionRegistry $registry) {
+	protected function getDefinitionsFromRegistry(Bee_Context_Config_BasicBeanDefinitionRegistry $registry) {
 		$this->getAliasesFromRegistry($registry);
 		$this->beanDefinitions = $registry->beanDefinitions;
-        $this->beanPostProcessorNames = $registry->getBeanPostProcessorNames();
+        $this->beanPostProcessorMap = array_fill_keys($registry->getBeanPostProcessorNames(), true);
         $this->hasInstantiationAwareBeanPostProcessors = $registry->hasInstantiationAwareBeanPostProcessors();
         $this->hasDestructionAwareBeanPostProcessors = $registry->hasDestructionAwareBeanPostProcessors();
-		$this->mergeBeanDefinitions();
+//		$this->mergeBeanDefinitions();
 	}
 	
-	protected function mergeBeanDefinitions() {
-		$beanNames = array_keys($this->beanDefinitions);
-		foreach($beanNames as $beanName) {
-			$this->mergeBeanDefinition($beanName);
-		}
-	}
+//	protected function mergeBeanDefinitions() {
+//		$beanNames = array_keys($this->beanDefinitions);
+//		foreach($beanNames as $beanName) {
+//			$this->mergeBeanDefinition($beanName);
+//		}
+//	}
 	
-	protected function mergeBeanDefinition($beanName) {
-		$bd = $this->getBeanDefinition($beanName);
-		$parentName = $bd->getParentName();
-		if(!is_null($parentName)) {
-			$parentName = $this->transformedBeanName($parentName);
-			$parentBd = $this->mergeBeanDefinition($parentName);
-			$newBd = new Bee_Context_Config_BeanDefinition_Generic($parentBd);
-			$newBd->overrideFrom($bd);
-			$newBd->setParentName(null);
-			$bd = $newBd;
-			$this->beanDefinitions[$beanName] = $bd;
-		}
-		return $bd;
-	}
+//	protected function mergeBeanDefinition($beanName) {
+//		$bd = $this->getBeanDefinition($beanName);
+//		$parentName = $bd->getParentName();
+//		if(!is_null($parentName)) {
+//			$parentName = $this->transformedBeanName($parentName);
+//			$parentBd = $this->mergeBeanDefinition($parentName);
+//			$newBd = new Bee_Context_Config_BeanDefinition_Generic($parentBd);
+//			$newBd->overrideFrom($bd);
+//			$newBd->setParentName(null);
+//			$bd = $newBd;
+//			$this->beanDefinitions[$beanName] = $bd;
+//		}
+//		return $bd;
+//	}
 	
     public function getBeanPostProcessorCount() {
-        return count($this->beanPostProcessorNames);
+        return count($this->beanPostProcessorMap);
     }
 
     /**
@@ -137,7 +150,7 @@ class Bee_Context_Config_BasicBeanDefinitionRegistry extends Bee_Context_AliasRe
      * @return Bee_Context_Config_IBeanPostProcessor[]
      */
     public function getBeanPostProcessorNames() {
-        return $this->beanPostProcessorNames;
+        return array_keys($this->beanPostProcessorMap);
     }
 
     /**

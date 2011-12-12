@@ -72,3 +72,4 @@ class Bee_Security_Annotations_SecuredMethodDefinitionSource extends Bee_Securit
         return new Bee_Security_ConfigAttributeDefinition($a->value);
     }
 }
+?>

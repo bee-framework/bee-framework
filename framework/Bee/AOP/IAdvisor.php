@@ -34,3 +34,5 @@ interface Bee_AOP_IAdvisor {
      */
     public function getAdvice();
 }
+
+?>

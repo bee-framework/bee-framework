@@ -32,3 +32,4 @@ interface Bee_Security_Intercept_IMethodDefinitionSource extends Bee_Security_In
      */
     public function getAttributesForMethod(ReflectionMethod $method, $targetClassOrClassName);
 }
+?>

@@ -68,7 +68,7 @@ class Bee_Context_Config_Scope_Cache_CachableConfig implements Bee_Cache_ICachab
         return $this->objectFactory->getModificationTimestamp();
     }
 
-    public function &createContent() {
+    public function &createContent(&$expirationTimestamp = 0) {
         return $this->objectFactory->getObject();
     }
 

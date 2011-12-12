@@ -28,3 +28,4 @@ class Bee_Transactions_NestedTransactionNotSupportedException extends Bee_Except
         parent::__construct($message, $cause);
     }
 }
+?>

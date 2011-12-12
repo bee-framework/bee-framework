@@ -433,3 +433,4 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements Bee
 
 
 }
+?>

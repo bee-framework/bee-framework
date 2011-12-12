@@ -25,3 +25,5 @@
 interface Bee_AOP_IAdvice {
 
 }
+
+?>

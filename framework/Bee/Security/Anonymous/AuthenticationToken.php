@@ -92,3 +92,4 @@ class Bee_Security_Anonymous_AuthenticationToken extends Bee_Security_AbstractAu
         return 'Bee_Security_Anonymous_AuthenticationToken['.$this->principal.','.$this->keyHash.']';
     }
 }
+?>

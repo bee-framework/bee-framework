@@ -80,7 +80,7 @@ class Bee_Filesystem_Manager {
 		$this->converter->setExternalUnicodeNormalization(self::DEFAULT_CLIENT_UNICODE_NORMALIZATION);
 		$this->converter->setInternalEncoding(self::DEFAULT_FILESYSTEM_ENCODING);
 		$this->converter->setInternalUnicodeNormalization(self::DEFAULT_FILESYSTEM_UNICODE_NORMALIZATION);
-		$this->basePath = $basePath;
+		$this->basePath = str_replace('/', DIRECTORY_SEPARATOR, $basePath);
 		umask(0000);
 	}
 	
@@ -119,6 +119,7 @@ class Bee_Filesystem_Manager {
 	 * @return void
 	 */
 	public final function setBasePath($basePath) {
+        $basePath = str_replace('/', DIRECTORY_SEPARATOR, $basePath);
 		if(Bee_Utils_Strings::endsWith($basePath, DIRECTORY_SEPARATOR)) {
 			$basePath = substr($basePath, 0, -strlen(DIRECTORY_SEPARATOR));
 		}

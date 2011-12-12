@@ -21,7 +21,7 @@
  * Time: 16:34
  */
 
-require_once '../libs/addendum-0.4.0/annotations.php';
+require_once '../libs/addendum-0.4.1/annotations.php';
 require_once '../libs/log4php-2.1.0/Logger.php';
 require_once '../framework/BeeFramework.php';
 

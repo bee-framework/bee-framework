@@ -121,7 +121,7 @@ class Bee_Utils_AntPathMatcher implements Bee_Utils_IPathMatcher {
 		}
 
 		// up to last '**'
-		while ($$pattIdxStart <= $pattIdxEnd && $pathIdxStart <= $pathIdxEnd) {
+		while ($pattIdxStart <= $pattIdxEnd && $pathIdxStart <= $pathIdxEnd) {
 			$patDir = $pattDirs[$pattIdxEnd];
 			if ($patDir === '**') {
 				break;
@@ -289,7 +289,7 @@ class Bee_Utils_AntPathMatcher implements Bee_Utils_IPathMatcher {
 		while ($patIdxStart !== $patIdxEnd && $strIdxStart <= $strIdxEnd) {
 			$patIdxTmp = -1;
 			for ($i = $patIdxStart + 1; $i <= $patIdxEnd; $i++) {
-				if ($patArr[i] === '*') {
+				if ($patArr[$i] === '*') {
 					$patIdxTmp = $i;
 					break;
 				}
@@ -355,8 +355,8 @@ class Bee_Utils_AntPathMatcher implements Bee_Utils_IPathMatcher {
 	 * and '<code>path</code>', but does <strong>not</strong> enforce this.
 	 */
 	public function extractPathWithinPattern($pattern, $path) {
-		$patternParts = explode($this->pathSeparator, $pattern);
-		$pathParts = explode($this->pathSeparator, $path);
+		$patternParts = Bee_Utils_Strings::tokenizeToArray($pattern, $this->pathSeparator);
+		$pathParts = Bee_Utils_Strings::tokenizeToArray($path, $this->pathSeparator);
 		
 		$patternPartLength = count($patternParts);
 		$pathPartsLength = count($pathParts);

@@ -160,3 +160,4 @@ class Bee_Transactions_Support_DefaultTransactionDefinition implements Bee_Trans
         return $this->name;
     }
 }
+?>

@@ -380,3 +380,4 @@ class Bee_Transactions_Interceptor_TransactionAspectSupportTransactionInfo {
         Bee_Transactions_Interceptor_TransactionAspectSupport::$transactionInfoHolder = $this->oldTransactionInfo;
     }
 }
+?>

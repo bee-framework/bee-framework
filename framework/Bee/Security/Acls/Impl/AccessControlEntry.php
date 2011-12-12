@@ -109,3 +109,4 @@ class Bee_Security_Acls_Impl_AccessControlEntry implements Bee_Security_Acls_IAc
     }
 
 }
+?>

@@ -71,3 +71,5 @@ interface Bee_Context_Config_IComponentDefinition {
      */
     function getBeanReferences();
 }
+
+?>

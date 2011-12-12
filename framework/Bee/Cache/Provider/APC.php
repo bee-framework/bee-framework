@@ -15,12 +15,14 @@
  * limitations under the License.
  */
 
+require_once 'Bee/Cache/IProvider.php';
+require_once 'Bee/Cache/Provider/Base.php';
 /**
  * Cache provider implementation for the Alternative PHP Cache.
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Cache_Provider_APC extends Bee_Cache_Provider_Base implements Bee_Cache_IProvider {
+class Bee_Cache_Provider_APC extends Bee_Cache_Provider_Base {
 	
 	const APC_CACHE_TYPE = 'user';
 	
@@ -33,15 +35,19 @@ class Bee_Cache_Provider_APC extends Bee_Cache_Provider_Base implements Bee_Cach
 		return apc_clear_cache(self::APC_CACHE_TYPE);
 	}
 
-	protected final function doStore($key, $value) {
-		return apc_store($key, $value);
+	public function exists($key) {
+		return apc_exists($key);
+	}
+
+	protected final function doStore($key, $value, $etime = 0) {
+		return apc_store($key, $value, $this->getTTL($etime));
 	}
 
 	protected final function doRetrieve($key) {
 		return apc_fetch($key);
 	}
 	
-	protected final function doEvict($key) {
+	public final function evict($key) {
 		return apc_delete($key);
 	}
 	

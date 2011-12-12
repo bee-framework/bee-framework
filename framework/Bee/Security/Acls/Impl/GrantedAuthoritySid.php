@@ -63,3 +63,4 @@ class Bee_Security_Acls_Impl_GrantedAuthoritySid implements Bee_Security_Acls_IS
         return $this->getIdentifierString() == $sid->getIdentifierString();
     }
 }
+?>

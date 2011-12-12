@@ -241,3 +241,4 @@ class Bee_Persistence_Pdo_Template_BatchUpdateCallback implements Bee_Persistenc
         return $rowsAffected;
     }
 }
+?>

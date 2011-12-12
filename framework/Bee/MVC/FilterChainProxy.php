@@ -95,3 +95,4 @@ class Bee_MVC_VirtualFilterChain implements Bee_MVC_IFilterChain {
     }
 
 }
+?>

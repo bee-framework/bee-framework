@@ -23,6 +23,9 @@
  */
 class Bee_Utils_Env {
 
+    const PATH_INFO = 'PATH_INFO';
+    const ORIG_PATH_INFO = 'ORIG_PATH_INFO';
+
     public static $USER_AGENTS = array('msie', 'firefox', 'safari', 'webkit', 'opera', 'netscape', 'konqueror', 'gecko');
 	
 	private static $pathInfo;
@@ -47,7 +50,7 @@ class Bee_Utils_Env {
 	public static final function getBasePath() {
 		if (is_null(self::$basePath)) {
 			self::$basePath = dirname(self::getPhpSelf());
-			if (self::$basePath[0]=="/") {
+			if (self::$basePath[0]==DIRECTORY_SEPARATOR) {
 				self::$basePath = substr(self::$basePath, 1);
 			}
 			if (self::$basePath==false) {
@@ -128,7 +131,7 @@ class Bee_Utils_Env {
 		return $host;
 	}
 
-	private static function getPhpSelf() {
+	public static function getPhpSelf() {
 		if (is_null(self::$php_self)) {
 			self::$php_self = substr($_SERVER["PHP_SELF"], 0, stripos($_SERVER["PHP_SELF"], '.php')+4);
 		}
@@ -139,7 +142,7 @@ class Bee_Utils_Env {
 	/**
 	 * Usage of this method is really discouraged, since 
 	 *
-	 * @return unknown
+	 * @return String
 	 */
 	public static function getHtmlBase() {
 		$base  = 'http://';
@@ -172,20 +175,22 @@ class Bee_Utils_Env {
 		 */
 
 		if (is_null(self::$pathInfo)) {
-			if(Bee_Utils_Strings::hasText($_SERVER['PATH_INFO'])) {
-				self::$pathInfo = $_SERVER['PATH_INFO'];
+            $pathInfo = array_key_exists(self::PATH_INFO, $_SERVER) ? $_SERVER[self::PATH_INFO] : null;
+			if(Bee_Utils_Strings::hasText($pathInfo)) {
+				self::$pathInfo = $pathInfo;
 				
-			} else if(Bee_Utils_Strings::hasText($_SERVER['ORIG_PATH_INFO'])) {
-				if ($_SERVER['ORIG_PATH_INFO'] == $_SERVER['ORIG_SCRIPT_NAME']) {
-					return '';
-					throw new Exception();
-				}
-                if ($_SERVER['ORIG_PATH_INFO'] == $_SERVER['SCRIPT_NAME']) {
-                    return '';
-                    throw new Exception();
+			} else {
+                $pathInfo = array_key_exists(self::ORIG_PATH_INFO, $_SERVER) ? $_SERVER[self::ORIG_PATH_INFO] : null;
+                if(Bee_Utils_Strings::hasText($pathInfo)) {
+                    if ($pathInfo == $_SERVER['ORIG_SCRIPT_NAME']) {
+                        return '';
+                    }
+                    if ($pathInfo == $_SERVER['SCRIPT_NAME']) {
+                        return '';
+                    }
+                    self::$pathInfo = $pathInfo;
                 }
-				self::$pathInfo = $_SERVER['ORIG_PATH_INFO'];
-			}
+            }
 		}
 		return self::$pathInfo;
 	}
@@ -231,6 +236,7 @@ class Bee_Utils_Env {
 
             $userAgents = self::$USER_AGENTS;
             $userAgents[] = 'version';
+            $agent = '';
 
             $agent = strtolower($agent ? $agent : $_SERVER['HTTP_USER_AGENT']);
             $pattern = '#(?<browser>'.join('|', $userAgents).')[/ ]+(?<version>[0-9]+(?:\.[0-9]+)?)#';

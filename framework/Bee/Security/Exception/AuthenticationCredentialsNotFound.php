@@ -28,3 +28,4 @@ class Bee_Security_Exception_AuthenticationCredentialsNotFound extends Bee_Secur
     	parent::__construct($msg, $extraInformation, $cause);
     }
 }
+?>

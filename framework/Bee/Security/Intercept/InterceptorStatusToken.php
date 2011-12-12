@@ -85,3 +85,4 @@ class Bee_Security_Intercept_InterceptorStatusToken {
         return $this->contextHolderRefreshRequired;
     }
 }
+?>

@@ -37,3 +37,4 @@ interface Bee_Security_Acls_Pdo_ILookupStrategy {
      */
     public function readAclsByOidsAndSids($objects, $sids);
 }
+?>

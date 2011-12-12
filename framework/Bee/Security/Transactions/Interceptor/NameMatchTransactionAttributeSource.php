@@ -98,3 +98,4 @@ class Bee_Transactions_Interceptor_NameMatchTransactionAttributeSource implement
         return Bee_Utils_PatternMatcher::simpleMatch($mappedName, $methodName);
     }
 }
+?>

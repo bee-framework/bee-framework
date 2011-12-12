@@ -84,3 +84,4 @@ interface Bee_Security_Acls_IAclService {
      */
     public function readAclsForOidsAndSids($objects, $sids, $check = true);
 }
+?>

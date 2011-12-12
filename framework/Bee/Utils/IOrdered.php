@@ -56,3 +56,4 @@ interface Bee_Utils_IOrdered {
      */
     public function getOrder();
 }
+?>

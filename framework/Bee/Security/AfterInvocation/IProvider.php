@@ -51,3 +51,4 @@ interface Bee_Security_AfterInvocation_IProvider {
     public function supportsClass($classOrClassName);
 
 }
+?>

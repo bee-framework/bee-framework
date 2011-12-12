@@ -25,7 +25,7 @@ class Bee_Context_Xml_DocumentDefaultsDefinition {
 	/**
 	 * Enter description here...
 	 *
-	 * @var String
+	 * @var bool
 	 */
 	private $merge;
 	
@@ -46,7 +46,7 @@ class Bee_Context_Xml_DocumentDefaultsDefinition {
 	/**
 	 * Enter description here...
 	 *
-	 * @param String $merge
+	 * @param bool $merge
 	 * @return void
 	 */
 	public function setMerge($merge) {
@@ -56,7 +56,7 @@ class Bee_Context_Xml_DocumentDefaultsDefinition {
 	/**
 	 * Enter description here...
 	 *
-	 * @return String
+	 * @return bool
 	 */
 	public function getMerge() {
 		return $this->merge;

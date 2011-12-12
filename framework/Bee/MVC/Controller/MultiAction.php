@@ -55,8 +55,6 @@ class Bee_MVC_Controller_MultiAction extends Bee_MVC_Controller_Abstract {
 	 */
 	private $methodNameResolver;
 	
-	private $initialized = false;
-	
 	protected function init() {
 		Bee_Utils_Assert::notNull($this->delegate, '\'delegate\' property is required in Bee_MVC_Controller_MultiAction');
 		Bee_Utils_Assert::notNull($this->methodNameResolver, '\'methodNameResolver\' property is required in Bee_MVC_Controller_MultiAction');
@@ -84,7 +82,7 @@ class Bee_MVC_Controller_MultiAction extends Bee_MVC_Controller_Abstract {
 			}
 				
 			// @todo: this might pose a security risk. introduce a set of allowed method names			
-			$method = new ReflectionMethod(get_class($this->delegate), $methodName);
+			$method = new ReflectionMethod($this->delegate, $methodName);
 			if(!$this->isHandlerMethod($method)) {
 				throw new Exception('No request handling method with name '.$methodName.' in class ['.Bee_Utils_Types::getType($this->delegate).']');
 			}

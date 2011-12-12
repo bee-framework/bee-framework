@@ -36,3 +36,4 @@ class Bee_Security_Acls_Impl_SidRetrievalStrategy implements Bee_Security_Acls_I
         return $sids;
     }
 }
+?>

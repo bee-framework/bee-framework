@@ -167,3 +167,4 @@ interface Bee_Security_Acls_IAcl {
      */
     public function isSidLoaded(array $sids);
 }
+?>

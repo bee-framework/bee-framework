@@ -47,3 +47,5 @@ abstract class Bee_AOP_Support_AbstractPointcutAdvisor implements Bee_AOP_IPoint
         $this->order = $order;
     }
 }
+
+?>

@@ -72,13 +72,14 @@ final class Bee_PerformanceEvaluator {
 	 * @return String
 	 * @Param int decimals
 	 */
-	public static function getEvaluationAsHtml($decimals=5) {
-		$result  = "Performance evaluation:<br/>";
+	public static function getEvaluationAsHtml($decimals=3) {
+		$result  = "<hr/>Performance evaluation:<hr/>";
 		$result .= "<table>";
 		foreach (self::evaluate() as $key => $value) {
 			$result .= "<tr style=\"border-bottom: solid 1px #000\">";
 			$result .= "<td style=\"padding: 5px;\">$key</td>";
-			$result .= "<td style=\"padding: 5px;\">".number_format($value, intval($decimals), ",", ".")." s</td>";
+//			$result .= "<td style=\"padding: 5px;\">".intval($value*1000)." ms</td>";
+			$result .= "<td style=\"padding: 5px; text-align: right;\">".number_format($value*1000, intval($decimals), ",", ".")." ms</td>";
 			$result .= "</tr>";
 		}
 		$result .= "</table>";

@@ -24,7 +24,7 @@
 class Bee_AOP_Target_SingletonTargetSource implements Bee_AOP_ITargetSource {
 
     /** Target cached and invoked using reflection */
-    private final $target;
+    private $target;
 
 
     /**
@@ -53,3 +53,5 @@ class Bee_AOP_Target_SingletonTargetSource implements Bee_AOP_ITargetSource {
     }
 
 }
+
+?>

@@ -35,3 +35,4 @@ interface Bee_Persistence_Pdo_IStatementCreator {
     public function createStatement(PDO $con);
 
 }
+?>

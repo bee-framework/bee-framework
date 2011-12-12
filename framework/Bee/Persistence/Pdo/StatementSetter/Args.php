@@ -47,3 +47,4 @@ class Bee_Persistence_Pdo_StatementSetter_Args implements Bee_Persistence_Pdo_IS
     }
 
 }
+?>

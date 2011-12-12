@@ -30,3 +30,4 @@ interface Bee_Security_Acls_IObjectIdentityRetrievalStrategy {
      */
     public function getObjectIdentity($domainObject);
 }
+?>

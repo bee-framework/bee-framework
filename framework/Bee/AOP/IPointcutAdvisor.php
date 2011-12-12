@@ -29,3 +29,5 @@ interface Bee_AOP_IPointcutAdvisor extends Bee_AOP_IAdvisor {
      */
     public function getPointcut();
 }
+
+?>

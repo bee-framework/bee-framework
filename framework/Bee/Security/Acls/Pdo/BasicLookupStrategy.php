@@ -479,3 +479,4 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy_ResultSetExtractor implements Be
     }
 
 }
+?>

@@ -29,3 +29,5 @@
 interface Bee_AOP_Intercept_IInterceptor extends Bee_AOP_IAdvice {
 
 }
+
+?>

@@ -83,18 +83,18 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 	}
 	
 	public function getPathInfo() {
-		if (is_null($this->pathInfo)) {
-			if(Bee_Utils_Strings::hasText($_SERVER['PATH_INFO'])) {
-				$this->pathInfo = $_SERVER['PATH_INFO'];
-				
-			} else if(Bee_Utils_Strings::hasText($_SERVER['ORIG_PATH_INFO'])) {
-				if ($_SERVER['ORIG_PATH_INFO'] == $_SERVER['ORIG_SCRIPT_NAME']) {
-					$this->pathInfo = '';
-				} else {
-					$this->pathInfo = $_SERVER['ORIG_PATH_INFO'];
-				}			
-			}
-		}
+//		if (is_null($this->pathInfo)) {
+//			if(Bee_Utils_Strings::hasText($_SERVER['PATH_INFO'])) {
+//				$this->pathInfo = $_SERVER['PATH_INFO'];
+//
+//			} else if(Bee_Utils_Strings::hasText($_SERVER['ORIG_PATH_INFO'])) {
+//				if ($_SERVER['ORIG_PATH_INFO'] == $_SERVER['ORIG_SCRIPT_NAME']) {
+//					$this->pathInfo = '';
+//				} else {
+//					$this->pathInfo = $_SERVER['ORIG_PATH_INFO'];
+//				}
+//			}
+//		}
 		return $this->pathInfo;
 	}
 

@@ -26,3 +26,4 @@ class Bee_Security_Acls_Exception_ChildrenExist extends Bee_Security_Exception_G
         parent::__construct($message);
     }
 }
+?>

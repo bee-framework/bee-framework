@@ -63,3 +63,5 @@ class Bee_AOP_Config_Utils {
         return $beanDefinition;
     }
 }
+
+?>

@@ -26,3 +26,4 @@ class Bee_Persistence_Pdo_ResultSetExtractor_SingleColumn implements Bee_Persist
         return $rs->fetchAll(PDO::FETCH_COLUMN);
     }
 }
+?>

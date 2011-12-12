@@ -26,3 +26,4 @@ class Bee_Security_Acls_Exception_NotFound extends Bee_Security_Exception_Generi
         parent::__construct($message);
     }
 }
+?>

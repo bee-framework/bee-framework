@@ -38,3 +38,4 @@ class Bee_Security_RunAs_NullRunAsManager implements Bee_Security_IRunAsManager 
     }
 
 }
+?>

@@ -72,3 +72,4 @@ class Bee_Security_Acls_FormattingUtils {
         return $result;
     }
 }
+?>

@@ -58,3 +58,5 @@ abstract class Bee_Context_Config_AbstractComponentDefinition implements Bee_Con
         return $this->getDescription();
     }
 }
+
+?>

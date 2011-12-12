@@ -67,3 +67,4 @@ class Bee_Transactions_TransactionSystemException extends Bee_Exceptions_Base {
     }
 
 }
+?>

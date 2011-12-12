@@ -36,3 +36,4 @@ interface Bee_Security_Acls_ISid {
      */
     public function equals(Bee_Security_Acls_ISid $sid);
 }
+?>

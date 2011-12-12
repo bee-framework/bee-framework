@@ -59,7 +59,9 @@ class Bee_MVC_Controller_Multiaction_MethodNameResolver_AntPath extends Bee_MVC_
 	public function getHandlerMethodName(Bee_MVC_IHttpRequest $request) {
 		$matcher = new Bee_Utils_AntPathMatcher();
 		$pathInfo = $request->getPathInfo();
-		
+
+		$handlerMethodName = null;
+
 		if(array_key_exists($pathInfo, $this->methodMappings)) {
 			// shortcut for direct path matches
 			$handlerMethodName = $this->methodMappings[$pathInfo];

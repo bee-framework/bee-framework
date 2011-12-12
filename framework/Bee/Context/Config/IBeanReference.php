@@ -28,5 +28,7 @@ interface Bee_Context_Config_IBeanReference {
      * @abstract
      * @return string
      */
-    function getBeanName();
+    function getBeanNames();
 }
+
+?>
