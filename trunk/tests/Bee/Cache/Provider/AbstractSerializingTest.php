@@ -129,6 +129,12 @@ class Bee_Cache_Provider_AbstractSerializingTest extends PHPUnit_Framework_TestC
         $this->assertEquals('bar', $this->provider->retrieve('foo'));
     }
 
+	/**
+	 * @test
+	 */
+	public function incomplete() {
+		$this->markTestIncomplete();
+	}
 }
 
 

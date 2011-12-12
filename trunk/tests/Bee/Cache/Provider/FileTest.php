@@ -83,4 +83,11 @@ class Bee_Cache_Provider_FileTest extends PHPUnit_Framework_TestCase {
         // delete file here
     }
 
+	/**
+	 * @test
+	 */
+	public function incomplete() {
+		$this->markTestIncomplete();
+	}
+
 }
