@@ -103,7 +103,7 @@ class Bee_Utils_Assert {
 	public static function isInstanceOf($typeName, $obj, $message = null) {
 		self::hasText($typeName, "Type name to check against must not be null");
 		if (!Bee_Utils_Types::isAssignable($obj, $typeName)) {
-			throw new InvalidArgumentException(is_null($message) ? "[Assertion failed] object must be of type $typeName, but is of type " . Bee_Utils_Types::getType() : $message);
+			throw new InvalidArgumentException(is_null($message) ? "[Assertion failed] object must be of type $typeName, but is of type " . Bee_Utils_Types::getType($obj) : $message);
 		}
 	}
 	
