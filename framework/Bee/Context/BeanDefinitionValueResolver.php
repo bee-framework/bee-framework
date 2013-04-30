@@ -47,25 +47,14 @@ class Bee_Context_BeanDefinitionValueResolver {
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Beans_ITypeConverter
-	 */
-	private $typeConverter; //
-	
-
-	
-	/**
-	 * Enter description here...
-	 *
 	 * @param Bee_Context_Abstract $context
 	 * @param String $beanName
 	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition
-	 * @param Bee_Beans_ITypeConverter $typeConverter
 	 */
-	public function __construct(Bee_Context_Abstract $context, $beanName, Bee_Context_Config_IBeanDefinition $beanDefinition, Bee_Beans_ITypeConverter $typeConverter = null) {
+	public function __construct(Bee_Context_Abstract $context, $beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
 		$this->context = $context;
 		$this->beanName = $beanName;
 		$this->beanDefinition = $beanDefinition;
-		$this->typeConverter = is_null($typeConverter) ? new Bee_Beans_FromStringConverter() : $typeConverter;
 	}
 	
 	
@@ -122,17 +111,7 @@ class Bee_Context_BeanDefinitionValueResolver {
 
 		} else if ($value instanceof Bee_Context_Config_TypedStringValue) {
 
-			try {
-				$targetTypeName = $value->getTargetTypeName();
-				if(!is_null($targetTypeName)) {
-					return $this->typeConverter->convertIfNecessary($value->getValue(), $targetTypeName);
-				}
-				return $value->getValue();
-				
-			} catch (Exception $ex) {
-				// Improve the message by showing the context.
-				throw new Bee_Context_BeanCreationException($this->beanName, 'Error resolving typed string value for argument '. $argName, $ex);
-			}
+			return $value->getValue();
 
 		} else {
 			// No need to resolve value...
@@ -240,4 +219,3 @@ class Bee_Context_BeanDefinitionValueResolver {
 		return $this->resolveValueIfNecessary('(array element)', $value);
 	}
 }
-?>

@@ -34,10 +34,17 @@ class Bee_Security_Helper {
      */
     private static $afterInvocationProviderManager;
 
+    /**
+     * @var Bee_Security_IUserDetailsService
+     */
+    private static $userDetailsService;
+
     public static function construct(Bee_Security_IAccessDecisionManager $accessDecisionManager,
-                                     Bee_Security_IAfterInvocationManager $afterInvocationProviderManager) {
+                                     Bee_Security_IAfterInvocationManager $afterInvocationProviderManager,
+                                     Bee_Security_IUserDetailsService $userDetailsService) {
         self::$accessDecisionManager = $accessDecisionManager;
         self::$afterInvocationProviderManager = $afterInvocationProviderManager;
+        self::$userDetailsService = $userDetailsService;
     }
 
     public static function isAuthenticated() {
@@ -81,6 +88,31 @@ class Bee_Security_Helper {
         }
         return self::$afterInvocationProviderManager->decide($auth, $secureObject, new Bee_Security_ConfigAttributeDefinition($configAttribute), $returnedObject);
     }
+
+    public static function getIdentity($identityName) {
+        $auth = self::$userDetailsService->getGroupByName($identityName);
+        if ($auth instanceof Potiscom_Auth_Doctrine_Group) {
+            return $auth;
+        }
+        $auth = self::$userDetailsService->getUserByName($identityName);
+        if ($auth instanceof Potiscom_Auth_Doctrine_User) {
+            return $auth;
+        }
+        throw new Bee_Security_Exception_Authentication('Not authenticated');
+    }
+
+    public static function checkAccessForIdentity($identityName, $configAttribute, $secureObject = null) {
+        $identity = self::getIdentity($identityName);
+        $auth = new Bee_Security_UsernamePasswordAuthenticationToken($username, $password);
+        self::$accessDecisionManager->decide($auth, $secureObject, new Bee_Security_ConfigAttributeDefinition($configAttribute));
+        return true;
+    }
+
+    public static function checkResultAccessForIdentity($identityName, $configAttribute, $secureObject = null, $returnedObject = null) {
+        $auth = self::getIdentity($identityName);
+        return self::$afterInvocationProviderManager->decide($auth, $secureObject, new Bee_Security_ConfigAttributeDefinition($configAttribute), $returnedObject);
+    }
+
 }
 
 class SEC extends Bee_Security_Helper {}

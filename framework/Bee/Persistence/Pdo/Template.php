@@ -56,15 +56,15 @@ class Bee_Persistence_Pdo_Template {
         return $this->query(new Bee_Persistence_Pdo_SimpleStatementCreator($sql), $pss, $rse);
     }
 
-    public function queryColumnBySqlStringAndArgsArray($sql, array $args) {
+    public function queryColumnBySqlStringAndArgsArray($sql, array $args, array $argTypes = null) {
         return $this->query(new Bee_Persistence_Pdo_SimpleStatementCreator($sql),
-            new Bee_Persistence_Pdo_StatementSetter_Args($args),
+            new Bee_Persistence_Pdo_StatementSetter_Args($args, $argTypes),
             new Bee_Persistence_Pdo_ResultSetExtractor_SingleColumn());
     }
 
-    public function queryScalarBySqlStringAndArgsArray($sql, array $args) {
+    public function queryScalarBySqlStringAndArgsArray($sql, array $args, array $argTypes = null) {
         $results = $this->query(new Bee_Persistence_Pdo_SimpleStatementCreator($sql),
-            new Bee_Persistence_Pdo_StatementSetter_Args($args),
+            new Bee_Persistence_Pdo_StatementSetter_Args($args, $argTypes),
             new Bee_Persistence_Pdo_ResultSetExtractor_RowMapper(
             new Bee_Persistence_Pdo_RowMapper_SingleColumn()));
         $count = count($results);
@@ -95,8 +95,8 @@ class Bee_Persistence_Pdo_Template {
         return $this->execute($psc, new Bee_Persistence_Pdo_Template_QueryCallback($pss, $rse));
     }
 
-    public function updateBySqlStringAndArgsArray($sql, array $args) {
-        return $this->updateBySqlString($sql, new Bee_Persistence_Pdo_StatementSetter_Args($args));
+    public function updateBySqlStringAndArgsArray($sql, array $args, array $argTypes = null) {
+        return $this->updateBySqlString($sql, new Bee_Persistence_Pdo_StatementSetter_Args($args, $argTypes));
     }
 
     public function updateBySqlString($sql, Bee_Persistence_Pdo_IStatementSetter $pss) {
@@ -128,7 +128,7 @@ class Bee_Persistence_Pdo_Template {
 
         if (Bee_Utils_Logger::isDebugEnabled()) {
             $sql = self::getSql($psc);
-            Bee_Utils_Logger::debug('Executing prepared SQL statement' + (!is_null($sql) ? " [" + $sql + "]" : ""));
+            Bee_Utils_Logger::debug('Executing prepared SQL statement' . (!is_null($sql) ? " [" . $sql . "]" : ""));
         }
 
         $ps = null;
@@ -180,14 +180,14 @@ class Bee_Persistence_Pdo_Template_QueryCallback implements Bee_Persistence_Pdo_
                 $this->pss->setValues($ps);
             }
             $ps->execute();
-            return $this->rse->extractData($ps);
+			$result = $this->rse->extractData($ps);
+			$ps->closeCursor();
+			return $result;
         } catch(Exception $e) {
             $ps->closeCursor();
             throw $e;
         }
-        $ps->closeCursor();
     }
-
 }
 
 class Bee_Persistence_Pdo_Template_UpdateCallback implements Bee_Persistence_Pdo_IStatementCallback {
@@ -241,4 +241,3 @@ class Bee_Persistence_Pdo_Template_BatchUpdateCallback implements Bee_Persistenc
         return $rowsAffected;
     }
 }
-?>

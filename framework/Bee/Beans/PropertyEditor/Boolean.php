@@ -20,26 +20,20 @@
  *
  * @author Benjamin Hartmann
  */
-class Bee_Beans_PropertyEditor_Boolean implements Bee_Beans_IPropertyEditor {
+class Bee_Beans_PropertyEditor_Boolean extends Bee_Beans_PropertyEditor_Abstract {
 
 	const VALUE_TRUE = 'true';
 	const VALUE_FALSE = 'false';
 
-
-
 	/**
-	 * Enter description here...
+	 * Return either "true" or "false"
 	 *
 	 * @param Boolean $value
 	 * @return String
 	 */
 	public function toString($value) {
-		Bee_Utils_Assert::isTrue(is_bool($value));
-		return $value ? self::VALUE_TRUE : self::VALUE_FALSE;
+		return parent::toString(!!$value);
 	}
-
-
-
 
 	/**
 	 * Enter description here...
@@ -48,12 +42,13 @@ class Bee_Beans_PropertyEditor_Boolean implements Bee_Beans_IPropertyEditor {
 	 * @return Boolean
 	 */
 	public function fromString($value) {
-		Bee_Utils_Assert::isTrue(is_string($value));
-		return strtolower($value) == self::VALUE_TRUE;
+		if(is_bool($value)) {
+			return $value;
+		}
+		return $this->checkAndReturnIfNotNull(filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE), $value);
 	}
 
     public static function valueOf($value) {
         return Bee_Utils_Strings::hasText($value) && strtolower($value) != self::VALUE_FALSE;
     }
 }
-?>

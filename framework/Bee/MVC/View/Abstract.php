@@ -83,11 +83,11 @@ abstract class Bee_MVC_View_Abstract implements Bee_MVC_IView {
 		Bee_MVC_Model::addValuesToModel($model);
 
 		$this->prepareResponse();
-		
+
 		$this->outputStatusHeader();
-		
+
 		$this->renderMergedOutputModel();
-		
+
 		Bee_MVC_Model::clear();		
 		Bee_MVC_Model::addValuesToModel($oldModelValues);
 	}

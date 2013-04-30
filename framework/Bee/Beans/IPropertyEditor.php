@@ -28,10 +28,8 @@ interface Bee_Beans_IPropertyEditor {
 	 * @param mixed $value
 	 * @return String
 	 */
-	public function toString($value);
-	
-	
-	
+    public function toString($value);
+
 	/**
 	 * Enter description here...
 	 *
@@ -40,5 +38,3 @@ interface Bee_Beans_IPropertyEditor {
 	 */
 	public function fromString($value);
 }
-
-?>

@@ -28,5 +28,10 @@ class Bee_Cache_Provider_Session extends Bee_Cache_Provider_AbstractSerializing 
 	protected function storeCacheArray(&$array) {
 		$_SESSION[self::SESSION_CACHE_KEY] &= $array;
 	}
+
+    public function clearCache() {
+        parent::clearCache();
+        unset($_SESSION[self::SESSION_CACHE_KEY]);
+   	}
 }
 ?>

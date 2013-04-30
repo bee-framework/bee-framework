@@ -32,18 +32,26 @@ class Bee_Cache_Provider_File extends Bee_Cache_Provider_AbstractSerializing {
 	 */
 	private $cacheDir;
 
-	public function __construct($cacheDir = false) {
+	/**
+	 * @var string
+	 */
+	private $cacheFile = '__BeeFileCache';
+
+
+
+	public function __construct($cacheDir = false, $cacheFile = false) {
 		if(!$cacheDir) {
 			$cacheDir = sys_get_temp_dir();
 		}
 		$this->cacheDir = $cacheDir;
+        if ($cacheFile !== false) {
+            $this->cacheFile = $cacheFile;
+        }
 	}
 
 	protected function &loadCacheArray() {
 		$cacheFile = $this->getCacheFileName();
-
-		if(file_exists($cacheFile . self::DATA_FILE_SUFFIX)) {
-
+		if (file_exists($cacheFile . self::DATA_FILE_SUFFIX)) {
 			// obtain shared lock on semaphore file
 			$fp = fopen($cacheFile . self::SEMAPHORE_FILE_SUFFIX, 'w+');
 			if (flock($fp, LOCK_SH)) {
@@ -59,7 +67,6 @@ class Bee_Cache_Provider_File extends Bee_Cache_Provider_AbstractSerializing {
 
 	protected function storeCacheArray(&$array) {
 		$cacheFile = $this->getCacheFileName();
-
 		// obtain exclusive lock on semaphore file
 		$fp = fopen($cacheFile . self::SEMAPHORE_FILE_SUFFIX, 'w+');
 		if (flock($fp, LOCK_EX)) {
@@ -70,7 +77,23 @@ class Bee_Cache_Provider_File extends Bee_Cache_Provider_AbstractSerializing {
 	}
 
 	private function getCacheFileName() {
-		$tmpName = $this->cacheDir . DIRECTORY_SEPARATOR . '__BeeFileCache' . (BeeFramework::getApplicationId() ? BeeFramework::getApplicationId() : '');
+        $dir = $this->cacheDir;
+        if (Bee_Utils_Strings::hasText($dir) && !preg_match('#'.DIRECTORY_SEPARATOR.'$#i', $dir)) {
+            $dir .= DIRECTORY_SEPARATOR;
+        }
+		$tmpName = $dir . $this->cacheFile . (BeeFramework::getApplicationId() ? '_'.BeeFramework::getApplicationId() : '');
 		return $tmpName;
 	}
+
+    public function clearCache() {
+        parent::clearCache();
+        $cacheFile = $this->getCacheFileName();
+        if (file_exists($cacheFile . self::DATA_FILE_SUFFIX)) {
+            unlink($cacheFile . self::DATA_FILE_SUFFIX);
+        }
+        if (file_exists($cacheFile . self::SEMAPHORE_FILE_SUFFIX)) {
+            unlink($cacheFile . self::SEMAPHORE_FILE_SUFFIX);
+        }
+        return true;
+   	}
 }

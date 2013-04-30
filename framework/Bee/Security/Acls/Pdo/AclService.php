@@ -72,7 +72,7 @@ class Bee_Security_Acls_Pdo_AclService implements Bee_Security_Acls_IMutableAclS
     public function findChildren(Bee_Security_Acls_IObjectIdentity $parentIdentity) {
         $args = array($parentIdentity->getIdentifier(), $parentIdentity->getType());
         $objects = $this->pdoTemplate->queryBySqlString(self::SELECT_ACL_OBJECT_WITH_PARENT,
-            new Bee_Persistence_Pdo_StatementSetter_Args($args),
+            new Bee_Persistence_Pdo_StatementSetter_Args($args, array(PDO::PARAM_INT, PDO::PARAM_STR)),
             new Bee_Persistence_Pdo_ResultSetExtractor_RowMapper(new Bee_Security_Acls_Pdo_AclService_RowMapper_findChildren()));
 
         if (count($objects) == 0) {
@@ -403,13 +403,13 @@ class Bee_Security_Acls_Pdo_AclService_BatchStatementSetter_createEntries implem
         $entries = $this->acl->getEntries();
         $entry = $entries[$i];
 
-        $ps->bindValue(1, $this->acl->getId());
-        $ps->bindValue(2, $i);
-        $ps->bindValue(3, $this->aclService->createOrRetrieveSidPrimaryKey($entry->getSid(), true));
-        $ps->bindValue(4, $entry->getPermission()->getMask());
-        $ps->bindValue(5, $entry->isGranting());
-        $ps->bindValue(6, $entry->isAuditSuccess());
-        $ps->bindValue(7, $entry->isAuditFailure());
+        $ps->bindValue(1, $this->acl->getId(), PDO::PARAM_INT);
+        $ps->bindValue(2, $i, PDO::PARAM_INT);
+        $ps->bindValue(3, $this->aclService->createOrRetrieveSidPrimaryKey($entry->getSid(), true), PDO::PARAM_INT);
+        $ps->bindValue(4, $entry->getPermission()->getMask(), PDO::PARAM_INT);
+        $ps->bindValue(5, $entry->isGranting(), PDO::PARAM_INT);
+        $ps->bindValue(6, $entry->isAuditSuccess(), PDO::PARAM_INT);
+        $ps->bindValue(7, $entry->isAuditFailure(), PDO::PARAM_INT);
     }
 
     public function getBatchSize() {

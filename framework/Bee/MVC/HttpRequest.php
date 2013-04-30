@@ -38,7 +38,7 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 	 *
 	 * @var String
 	 */
-	private $pathInfo;
+	private $pathInfo = '';
 	
 	/**
 	 * Enter description here...
@@ -107,6 +107,15 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 	 *
 	 * @return string
 	 */
+	public function hasParameter($name) {
+        return array_key_exists($name, $this->parameters);
+	}
+
+	/**
+	 * Returns the PATH_INFO (i.e. any additional path trailing the actual PHP file)
+	 *
+	 * @return string
+	 */
 	public function getParameter($name) {
 //		$val = $this->parameters[$name];
 //		if(is_array($val)) {
@@ -115,7 +124,7 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 //		return $val;
         return $this->parameters[$name];
 	}
-	
+
 	public function setParameter($name, $value) {
 		if(is_null($value)) {
 			unset($this->parameters[$name]);

@@ -52,18 +52,24 @@ class Bee_MVC_View_Passthru extends Bee_MVC_View_Abstract {
         header('Content-Type: '.$mimeType);
         header('Content-Length: ' . filesize($resource));
         if (Bee_Utils_Strings::hasText($filename)) {
-            header('Content-Disposition: '.$contentDisposition.'; filename='.$filename);
+            header('Content-Disposition: '.$contentDisposition.'; filename="'.$filename.'"');
         } else {
             header('Content-Disposition: '.$contentDisposition.'');
         }
-        header('Cache-Control: no-store, no-cache, must-revalidate'); // HTTP/1.1
-        header('Cache-Control: post-check=0, pre-check=0", false'); // HTTP/1
-        header('Pragma: no-cache');
-        header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
-        header("Expires: 1");
+
+
+//        header('Cache-Control: no-store, no-cache, must-revalidate'); // HTTP/1.1
+//        header('Cache-Control: post-check=0, pre-check=0", false'); // HTTP/1
+//        header('Pragma: no-cache');
+        header('Pragma: public');
+//        header('Last-Modified: '.gmdate('D, d M Y H:i:s') . ' GMT');
+        header('Last-Modified: '.gmdate('D, d M Y H:i:s', filemtime($resource)) . ' GMT');
+        header('Cache-Control: max-age=604800, public'); // HTTP/1.1
+//        header("Expires: 1");
 //        readfile($file);
         fpassthru($file);
 	}
+
 }
 
 ?>

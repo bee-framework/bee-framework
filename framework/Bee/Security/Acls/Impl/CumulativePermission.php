@@ -34,6 +34,7 @@ class Bee_Security_Acls_Impl_CumulativePermission extends Bee_Security_Acls_Impl
         $this->pattern = Bee_Security_Acls_FormattingUtils::mergePatterns($this->pattern, $permission->getPattern());
         return $this;
     }
+
     public function getPattern() {
         return $this->pattern;
     }

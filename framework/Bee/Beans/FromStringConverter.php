@@ -23,7 +23,7 @@
 class Bee_Beans_FromStringConverter implements Bee_Beans_ITypeConverter {
 	
 	public function convertIfNecessary($value, $requiredTypeName) {
-		if(Bee_Utils_Types::getType($value) !== $requiredTypeName) {
+		if($requiredTypeName != Bee_Utils_ITypeDefinitions::STRING) {
 			$conv = Bee_Beans_PropertyEditor_Registry::getEditor($requiredTypeName);
 			$value = $conv->fromString($value); 
 		}

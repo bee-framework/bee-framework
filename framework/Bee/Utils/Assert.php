@@ -32,7 +32,7 @@ class Bee_Utils_Assert {
 	 * @throws InvalidArgumentException if expression is <code>false</code>
 	 */
 	public static function isTrue($expression, $message="[Assertion failed] - this expression must be true") {
-        if (!$expression) {
+		if (!$expression) {
 			throw new InvalidArgumentException($message);
 		}
 	}

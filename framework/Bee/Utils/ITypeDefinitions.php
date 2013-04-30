@@ -24,12 +24,24 @@ interface Bee_Utils_ITypeDefinitions {
 	
 	const BOOLEAN = 'boolean';
 	const INTEGER = 'integer';
-	const FLOAT = 'double';
+	const INT = 'int';
+	const DOUBLE = 'double';
+	const FLOAT = 'float';
 	const STRING = 'string';
 	
 	const ARRAY_TYPE = 'array';
 	const OBJECT_TYPE = 'object';
 	
 	const RESOURCE = 'resource';
+
+
+
+	const URL = 'url';
+	const EMAIL = 'email';
+	const IP = 'ip';
+	const IPv4 = 'ipv4';
+	const IPv6 = 'ipv6';
+	const REGEX = 'regex';
+
+	const UNIX_TIMESTAMP = 'unix_timestamp';
 }
-?>

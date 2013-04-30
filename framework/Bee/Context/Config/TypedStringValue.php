@@ -22,7 +22,12 @@
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
 class Bee_Context_Config_TypedStringValue {
-	
+
+	/**
+	 * @var Bee_Beans_ITypeConverter
+	 */
+	private static $converter;
+
 	/**
 	 * Enter description here...
 	 *
@@ -33,20 +38,13 @@ class Bee_Context_Config_TypedStringValue {
 	/**
 	 * Enter description here...
 	 *
-	 * @var string
-	 */
-	private $targetTypeName;
-	
-	
-	/**
-	 * Enter description here...
-	 *
 	 * @param String $value
 	 * @param String $targetTypeName
 	 */
 	public function __construct($value, $targetTypeName = Bee_Utils_ITypeDefinitions::STRING) {
-		$this->value = $value;
-		$this->targetTypeName = $targetTypeName;
+		// todo MP: the whole TypedStringValue concept is probably superflouous. move type check upstream??
+		self::initConverterIfNecessary();
+		$this->value = self::$converter->convertIfNecessary($value, $targetTypeName);
 	}
 	
 	/**
@@ -57,16 +55,10 @@ class Bee_Context_Config_TypedStringValue {
 	public function getValue() {
 		return $this->value; 
 	}
-	
-	
-	
-	/**
-	 * Enter description here...
-	 *
-	 * @return String
-	 */
-	public function getTargetTypeName() {
-		return $this->targetTypeName;
+
+	private static function initConverterIfNecessary() {
+		if(!self::$converter) {
+			self::$converter = new Bee_Beans_FromStringConverter();
+		}
 	}
 }
-?>

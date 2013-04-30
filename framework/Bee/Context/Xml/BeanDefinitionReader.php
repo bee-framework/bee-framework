@@ -29,23 +29,13 @@ class Bee_Context_Xml_BeanDefinitionReader {
 	 */
 	private $registry;
 	
-	
-	/**
-	 * Enter description here...
-	 *
-	 * @var Bee_Context_Support_IBeanNameGenerator
-	 */
-	private $beanNameGenerator;
-	
-	
 	/**
 	 * Enter description here...
 	 *
 	 * @var Bee_Context_Xml_Namespace_IHandlerResolver
 	 */
 	private $namespaceHandlerResolver;
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -61,13 +51,13 @@ class Bee_Context_Xml_BeanDefinitionReader {
 	/**
 	 * Enter description here...
 	 *
-	 * @param Stirng $location
+	 * @param String $location
 	 */
 	public function loadBeanDefinitions($location) {
 		Bee_Utils_Assert::hasText($location, 'You must specify a location from which to load bean definitions!');
 		
 		if(array_key_exists($location, $this->resourcesBeingLoaded)) {
-			throw new Bee_Context_BeansException('Detected recursive loading of ' + $location + ' - check your import definitions!');
+			throw new Bee_Context_BeansException('Detected recursive loading of ' . $location . ' - check your import definitions!');
 		}
 		$this->resourcesBeingLoaded[$location] = true;
 		try {
@@ -119,16 +109,6 @@ class Bee_Context_Xml_BeanDefinitionReader {
 	 */
 	public function getRegistry() {
 		return $this->registry;
-	}
-	
-	
-	/**
-	 * Enter description here...
-	 *
-	 * @return Bee_Context_Support_IBeanNameGenerator
-	 */
-	public function getBeanNameGenerator() {
-		return $this->beanNameGenerator;
 	}
 }
 ?>

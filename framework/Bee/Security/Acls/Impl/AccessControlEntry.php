@@ -67,7 +67,7 @@ class Bee_Security_Acls_Impl_AccessControlEntry implements Bee_Security_Acls_IAc
         $this->acl = $acl; // can be null
         $this->sid = $sid;
         $this->permission = $permission;
-        $this->granting = $granting;
+        $this->granting = (bool) $granting;
         $this->auditSuccess = $auditSuccess;
         $this->auditFailure = $auditFailure;
     }

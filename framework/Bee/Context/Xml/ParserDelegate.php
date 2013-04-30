@@ -73,11 +73,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 
 	const NULL_ELEMENT = 'null';
 	
-	const LIST_ELEMENT = 'list';
-	
 	const ARRAY_ELEMENT = 'array';
-
-	const ASSOC_ARRAY_ELEMENT = 'assoc-array';
 
     const MERGE_ATTRIBUTE = 'merge';
 
@@ -342,7 +338,6 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	public function parseConstructorArgElement(DOMElement $ele, Bee_Context_Config_IBeanDefinition $bd) {
 		
 		$indexAttr = $ele->getAttribute(self::INDEX_ATTRIBUTE);
-		$typeAttr = $ele->getAttribute(self::TYPE_ATTRIBUTE);
 
 		if (Bee_Utils_Strings::hasLength($indexAttr) && is_numeric($indexAttr) && ($index = intval($indexAttr)) >= 0) {
 			$existingArgs = $bd->getConstructorArgumentValues(); 
@@ -352,7 +347,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 				try {
 					array_push($this->parseState, "Constructor_Arg_Idx_$index");
 					$value = $this->parsePropertyValue($ele, $bd, null);
-					$valueHolder = new Bee_Beans_PropertyValue($index, $value, Bee_Utils_Strings::hasLength($typeAttr) ? $typeAttr : null);
+					$valueHolder = new Bee_Beans_PropertyValue($index, $value);
 					$bd->addConstructorArgumentValue($valueHolder);
 					array_pop($this->parseState);
 				} catch (Exception $ex) {
@@ -379,7 +374,6 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 		try {
 			if (array_key_exists($propertyName, $bd->getPropertyValues())) {
 				$this->readerContext->error("Multiple 'property' definitions for property '$propertyName'", $ele);
-				return;
 			}
 			$val = $this->parsePropertyValue($ele, $bd, $propertyName);
 			$pv = new Bee_Beans_PropertyValue($propertyName, $val);
@@ -442,8 +436,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 			return $ref;
 		} else if ($hasValueAttribute) {
 			
-			// @todo: make it possible to set a type attribute on the element?
-			$valueHolder = new Bee_Context_Config_TypedStringValue($ele->getAttribute(self::VALUE_ATTRIBUTE));
+			$valueHolder = $this->buildTypedStringValue($ele->getAttribute(self::VALUE_ATTRIBUTE), $ele->getAttribute(self::TYPE_ATTRIBUTE), $ele);
 			// @todo provide source info via BeanMetadataElement
 //			valueHolder.setSource(extractSource(ele));
 			return $valueHolder;
@@ -456,23 +449,19 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 		}
 	}
 
-	
-	
 	/**
 	 * Parse a value, ref or collection sub-element of a property or
-	 * constructor-arg element.
-	 *
+	 * constructor-arg element
 	 * @param DOMElement $ele subelement of property element; we don't know which yet
 	 * @param Bee_Context_Config_IBeanDefinition $bd
-	 * @param String $defaultTypeClassName the default type (class name) for any
-	 * <code>&lt;value&gt;</code> tag that might be created
-	 * 
-	 * @return
+	 * @param string|null $defaultType the default type (class name) for any <code>&lt;value&gt;</code> tag that might be created
+	 * @return Bee_Context_Config_ArrayValue|Bee_Context_Config_BeanDefinitionHolder|Bee_Context_Config_RuntimeBeanNameReference|Bee_Context_Config_RuntimeBeanReference|Bee_Context_Config_TypedStringValue|null
 	 */
-	public function parsePropertySubElement(DOMElement $ele, Bee_Context_Config_IBeanDefinition $bd, $defaultTypeClassName = null) {
+	public function parsePropertySubElement(DOMElement $ele, Bee_Context_Config_IBeanDefinition $bd, $defaultType = null) {
 
 		if (!$this->isDefaultNamespace($ele->namespaceURI)) {
 
+			// todo MP: why is this missing? prevents XMLs with e.g. nested <util:array/> elements from being parsed
 			return $this->parseNestedCustomElement($ele, $bd);
 
 		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::BEAN_ELEMENT)) {
@@ -536,16 +525,11 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 			// It's a literal value.
 			$value = Bee_Utils_Dom::getTextValue($ele);
 
-			$typeClassName = $ele->getAttribute(self::TYPE_ATTRIBUTE);
-			if (!Bee_Utils_Strings::hasText($typeClassName)) {
-				$typeClassName = $defaultTypeClassName;
+			$typeName = $ele->getAttribute(self::TYPE_ATTRIBUTE);
+			if (!Bee_Utils_Strings::hasText($typeName)) {
+				$typeName = $defaultType;
 			}
-//			try {
-				return $this->buildTypedStringValue($value, $typeClassName, $ele);
-//			} catch (ClassNotFoundException ex) {
-//				error("Type class [" + typeClassName + "] not found for <value> element", ele, ex);
-//				return value;
-//			}
+			return $this->buildTypedStringValue($value, $typeName, $ele);
 
 		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::NULL_ELEMENT)) {
 
@@ -560,26 +544,6 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::ARRAY_ELEMENT)) {
 			
 			return $this->parseArrayElement($ele, $bd);
-
-		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::LIST_ELEMENT)) {
-			// TODO deprecate
-			return $this->parseListElement($ele, $bd);
-
-		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::ASSOC_ARRAY_ELEMENT)) {
-			// TODO deprecate
-			return $this->parseAssocArrayElement($ele, $bd);
-		
-//		} else if (Bee_Utils_Dom::nodeNameEquals($ele, SET_ELEMENT)) {
-//
-//			return $this->parseSetElement($ele, $bd);
-//
-//		} else if (Bee_Utils_Dom::nodeNameEquals($ele, MAP_ELEMENT)) {
-//
-//			return $this->parseMapElement($ele, $bd);
-//
-//		} else if (Bee_Utils_Dom::nodeNameEquals($ele, PROPS_ELEMENT)) {
-//
-//			return $this->parsePropsElement($ele);
 
 		}
 		$this->readerContext->error("Unknown property sub-element: [$ele->nodeName]", $ele);
@@ -614,24 +578,32 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	 *
 	 * @param DOMElement $collectionEle
 	 * @param Bee_Context_Config_IBeanDefinition $bd
-	 * @return array
+	 * @return Bee_Context_Config_ArrayValue
 	 */
 	public function parseArrayElement(DOMElement $collectionEle, Bee_Context_Config_IBeanDefinition $bd) {
-		$defaultTypeClassName = $collectionEle->getAttribute(self::VALUE_TYPE_ATTRIBUTE);
+		$defaultType = $collectionEle->getAttribute(self::VALUE_TYPE_ATTRIBUTE);
 
-		// @todo: what about that managed list stuff?
+		$assoc = false;
+		$numeric = false;
+
 		$nl = $collectionEle->childNodes;
 		$list = array();
 		foreach($nl as $ele) {
 			if($ele instanceof DOMElement) {
                 if (Bee_Utils_Dom::nodeNameEquals($ele, self::ASSOC_ITEM_ELEMENT)) {
-                    $list =& array_merge($list, $this->parseAssocItemElement($ele, $bd, $defaultTypeClassName));
+					$assoc = true;
+					list($key, $value) = $this->parseAssocItemElement($ele, $bd, $defaultType);
+                    $list[$key] = $value;
                 } else {
-                    array_push($list, $this->parsePropertySubElement($ele, $bd, $defaultTypeClassName));
+					$numeric = true;
+                    array_push($list, $this->parsePropertySubElement($ele, $bd, $defaultType));
                 }
 			}
+			if($assoc && $numeric) {
+				$this->readerContext->error('Must not combine \'assoc-item\' elements and other elements in the same \'array\' element!', $collectionEle);
+			}
 		}
-		return new Bee_Context_Config_ArrayValue($list, $this->parseMergeAttribute($collectionEle));
+		return new Bee_Context_Config_ArrayValue($list, $this->parseMergeAttribute($collectionEle), $assoc);
 	}
 
     public function parseMergeAttribute(DOMElement $collectionElement) {
@@ -644,51 +616,6 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 		return $this->defaults->getMerge();
     }
 
-	/**
-	 * Parse a list element.
-	 *
-	 * @param DOMElement $collectionEle
-	 * @param Bee_Context_Config_IBeanDefinition $bd
-	 * @return array
-     *
-     * @deprecated
-	 */
-	public function parseListElement(DOMElement $collectionEle, Bee_Context_Config_IBeanDefinition $bd) {
-		$defaultTypeClassName = $collectionEle->getAttribute(self::VALUE_TYPE_ATTRIBUTE);
-
-		// @todo: what about that managed list stuff?
-		$nl = $collectionEle->childNodes;
-		$list = array();
-		foreach($nl as $ele) {
-			if($ele instanceof DOMElement) {
-				array_push($list, $this->parsePropertySubElement($ele, $bd, $defaultTypeClassName));
-			}
-		}
-		return $list;
-	}
-
-	/**
-     * @param DOMElement $collectionEle
-     * @param Bee_Context_Config_IBeanDefinition $bd
-     * @return array
-     *
-     * @deprecated
-     */
-	public function parseAssocArrayElement(DOMElement $collectionEle, Bee_Context_Config_IBeanDefinition $bd) {
-		$defaultTypeClassName = $collectionEle->getAttribute(self::VALUE_TYPE_ATTRIBUTE);
-		// @todo: what about that managed list stuff?
-		$nl = $collectionEle->childNodes;
-		$list = array();
-		foreach($nl as $ele) {
-			if($ele instanceof DOMElement) {
-				$list = array_merge($list, $this->parseAssocItemElement($ele, $bd, $defaultTypeClassName));
-			}
-		}
-		return $list;
-	}
-
-	
-	
 	public function parseAssocItemElement(DOMElement $ele, Bee_Context_Config_IBeanDefinition $bd, $defaultTypeClassName) {
 		Bee_Utils_Assert::isTrue(Bee_Utils_Dom::nodeNameEquals($ele, self::ASSOC_ITEM_ELEMENT), 'Tag assoc-array must not contain elements other than assoc-item');
 
@@ -697,11 +624,9 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 			$this->readerContext->error("Tag 'assoc-item' must have a 'key' attribute", $ele);
 		}
 		$val = $this->parseComplexPropElement($ele, $bd, "<assoc-item> for key $key");
-		return array($key => $val);
+		return array($key, $val);
 	}
 
-	
-	
 	/**
 	 * Enter description here...
 	 *
@@ -717,7 +642,6 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 		}
 		return $handler->parse($ele, new Bee_Context_Xml_ParserContext($this->readerContext, $this, $containingBd));
 	}
-
 	
 	/**
 	 * Enter description here...

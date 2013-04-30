@@ -43,5 +43,8 @@ class Bee_Security_Acls_Impl_BasePermission implements Bee_Security_Acls_IPermis
     public function __toString() {
         return get_class($this).'['.$this->getPattern().'='.$this->mask.']';
     }
+
+	public function equals(Bee_Security_Acls_IPermission $other) {
+		return $this->getMask() == $other->getMask();
+	}
 }
-?>

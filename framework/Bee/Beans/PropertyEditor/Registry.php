@@ -22,10 +22,11 @@
  */
 class Bee_Beans_PropertyEditor_Registry {
 
-	private static $converters = Array();
-	
-	
-	
+	/**
+	 * @var Bee_Beans_IPropertyEditor[]
+	 */
+	private static $converters = array();
+
 	/**
 	 *
 	 * @param String $type
@@ -62,9 +63,19 @@ class Bee_Beans_PropertyEditor_Registry {
 	}
 }
 
-Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::INTEGER, new Bee_Beans_PropertyEditor_Integer());
-Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::FLOAT, new Bee_Beans_PropertyEditor_Float());
-Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::BOOLEAN, new Bee_Beans_PropertyEditor_Boolean());
-Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::STRING, new Bee_Beans_PropertyEditor_String());
+Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::INTEGER, new Bee_Beans_PropertyEditor_Generic(FILTER_VALIDATE_INT));
+Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::INT, new Bee_Beans_PropertyEditor_Generic(FILTER_VALIDATE_INT));
+Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::DOUBLE, new Bee_Beans_PropertyEditor_Generic(FILTER_VALIDATE_FLOAT));
+Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::FLOAT, new Bee_Beans_PropertyEditor_Generic(FILTER_VALIDATE_FLOAT));
 
-?>
+Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::BOOLEAN, new Bee_Beans_PropertyEditor_Boolean());
+
+Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::URL, new Bee_Beans_PropertyEditor_Generic(FILTER_VALIDATE_URL));
+Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::EMAIL, new Bee_Beans_PropertyEditor_Generic(FILTER_VALIDATE_EMAIL));
+Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::IP, new Bee_Beans_PropertyEditor_Generic(FILTER_VALIDATE_IP));
+Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::IPv4, new Bee_Beans_PropertyEditor_Generic(FILTER_VALIDATE_IP, FILTER_FLAG_IPV4));
+Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::IPv6, new Bee_Beans_PropertyEditor_Generic(FILTER_VALIDATE_IP, FILTER_FLAG_IPV6));
+
+Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::UNIX_TIMESTAMP, new Bee_Beans_PropertyEditor_UnixTimestamp());
+
+Bee_Beans_PropertyEditor_Registry::registerEditor(Bee_Utils_ITypeDefinitions::STRING, new Bee_Beans_PropertyEditor_String());

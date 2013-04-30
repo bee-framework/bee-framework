@@ -52,5 +52,7 @@ interface Bee_Security_Acls_IPermission {
      * @return a 32-character bit pattern
      */
     public function getPattern();
+
+	public function equals(Bee_Security_Acls_IPermission $other);
 }
-?>
+
