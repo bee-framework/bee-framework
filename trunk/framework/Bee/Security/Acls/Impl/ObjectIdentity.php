@@ -63,5 +63,8 @@ class Bee_Security_Acls_Impl_ObjectIdentity implements Bee_Security_Acls_IObject
     public function __toString() {
         return 'Bee_Security_Acls_Impl_ObjectIdentity['.$this->getIdentifierString().']';
     }
+
+	public function equals(Bee_Security_Acls_IObjectIdentity $other) {
+		return $this->getIdentifierString() == $other->getIdentifierString();
+	}
 }
-?>

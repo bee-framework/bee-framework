@@ -20,93 +20,94 @@
  * Date: 03.07.11
  * Time: 21:44
  */
- 
+
 class Bee_Context_Config_ArrayValue implements ArrayAccess, IteratorAggregate, Countable, Bee_Context_Config_IMergeable {
 
-    /**
-     * @var array
-     */
-    private $sourceArray;
+	/**
+	 * @var array
+	 */
+	private $sourceArray;
 
-    /**
-     * @var bool
-     */
-    private $mergeEnabled = false;
+	/**
+	 * @var bool
+	 */
+	private $mergeEnabled = false;
 
-    public function __construct(array &$sourceArray, $mergeEnabled = false) {
-        $this->sourceArray =& $sourceArray;
-        $this->mergeEnabled = $mergeEnabled;
-    }
+	private $associative = false;
 
-    /**
-     * Gets the MergeEnabled
-     *
-     * @return bool $mergeEnabled
-     */
-    public function getMergeEnabled() {
-        return $this->mergeEnabled;
-    }
+	public function __construct(array &$sourceArray, $mergeEnabled = false, $associative = false) {
+		$this->sourceArray =& $sourceArray;
+		$this->mergeEnabled = $mergeEnabled;
+		$this->associative = $associative;
+	}
 
-    /**
-     * Sets the MergeEnabled
-     *
-     * @param bool $mergeEnabled
-     * @return void
-     */
-    public function setMergeEnabled($mergeEnabled) {
-        $this->mergeEnabled = $mergeEnabled;
-    }
+	/**
+	 * Gets the MergeEnabled
+	 *
+	 * @return bool $mergeEnabled
+	 */
+	public function getMergeEnabled() {
+		return $this->mergeEnabled;
+	}
 
-    public function offsetExists($offset) {
-        array_key_exists($offset, $this->sourceArray);
-    }
+	/**
+	 * Sets the MergeEnabled
+	 *
+	 * @param bool $mergeEnabled
+	 * @return void
+	 */
+	public function setMergeEnabled($mergeEnabled) {
+		$this->mergeEnabled = $mergeEnabled;
+	}
 
-    public function offsetGet($offset) {
-        return $this->sourceArray[$offset];
-    }
+	public function offsetExists($offset) {
+		return array_key_exists($offset, $this->sourceArray);
+	}
 
-    public function offsetSet($offset, $value) {
-        $this->sourceArray[$offset] = $value;
-    }
+	public function offsetGet($offset) {
+		return $this->sourceArray[$offset];
+	}
 
-    public function offsetUnset($offset) {
-        unset($this->sourceArray[$offset]);
-    }
+	public function offsetSet($offset, $value) {
+		$this->sourceArray[$offset] = $value;
+	}
 
-    public function count() {
-        return count($this->sourceArray);
-    }
+	public function offsetUnset($offset) {
+		unset($this->sourceArray[$offset]);
+	}
 
-    function merge($parent) {
-        $newSrcArray = array();
-        if($parent instanceof Traversable) {
-            foreach($parent as $key => $value) {
-                if(is_numeric($key)) {
-                    array_push($newSrcArray, $value);
-                } else if(!array_key_exists($key, $this->sourceArray)) {
-                    $newSrcArray[$key] = $value;
-                }
-            }
-        }
-        foreach($this->sourceArray as $key => $value) {
-            if(is_numeric($key)) {
-                array_push($newSrcArray, $value);
-            } else {
-                $newSrcArray[$key] = $value;
-            }
-        }
-        $this->sourceArray =& $newSrcArray;
-    }
+	public function count() {
+		return count($this->sourceArray);
+	}
 
-    public function getIterator() {
-        return new ArrayIterator($this->sourceArray);
-    }
+	function merge(Traversable $parent) {
+		$tmpArray = array();
+		foreach ($parent as $key => $value) {
+			if($this->associative) {
+				$tmpArray[$key] = $value;
+			} else {
+				array_push($tmpArray, $value);
+			}
+		}
+		foreach ($this->sourceArray as $key => $value) {
+			if($this->associative) {
+				$tmpArray[$key] = $value;
+			} else {
+				array_push($tmpArray, $value);
+			}
+		}
+		$this->sourceArray =& $tmpArray;
+	}
 
-    /**
-     * @return array
-     */
-    public function getValue() {
-        return $this->sourceArray;
-    }
+	public function getIterator() {
+		return new ArrayIterator($this->sourceArray);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getValue() {
+		return $this->sourceArray;
+	}
 
 }

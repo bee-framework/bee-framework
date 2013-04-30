@@ -34,15 +34,15 @@ class Bee_Utils_Strings {
 			return false;
 		}
         self::checkIsString($text);
-		return (strlen($text) > 0);
+		return (mb_strlen($text) > 0);
 	}
 
 	public static function hasText($text) {
         if(is_null($text)) {
             return false;
         }
-        self::checkIsString($text);
-		return self::hasLength(trim($text));
+//        self::checkIsString($text);
+		return self::hasLength(trim(strval($text)));
 	}
 
     private static function checkIsString($text) {

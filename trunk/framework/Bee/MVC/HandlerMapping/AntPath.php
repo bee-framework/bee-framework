@@ -28,7 +28,7 @@ class Bee_MVC_HandlerMapping_AntPath extends Bee_MVC_HandlerMapping_Abstract {
 	 * @var array
 	 */
 	private $handlerMappings;
-	
+
 	public function getHandlerMappings() {
 		return $this->handlerMappings;
 	}
@@ -44,7 +44,7 @@ class Bee_MVC_HandlerMapping_AntPath extends Bee_MVC_HandlerMapping_Abstract {
 		
 		$controllerBeanName = $this->getDefaultControllerBeanName();
 		
-		if(array_key_exists($pathInfo, $this->handlerMappings)) {
+		if (array_key_exists($pathInfo, $this->handlerMappings)) {
 			// shortcut for direct path matches
 			$controllerBeanName = $this->handlerMappings[$pathInfo];
 		} else {
@@ -56,7 +56,7 @@ class Bee_MVC_HandlerMapping_AntPath extends Bee_MVC_HandlerMapping_Abstract {
 				}
 			}
 		}
-				
+
 		return $controllerBeanName;
 	}
 }

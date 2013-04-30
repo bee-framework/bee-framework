@@ -146,7 +146,10 @@ class BeeFramework {
 				}
 			}
 
-			array_push(self::$missedClassNames, $className);
+            if (class_exists($className)) {
+			    array_push(self::$missedClassNames, $className);
+            }
+            // TODO: What to do if class-loading fails??
 		}
 
         if(self::$enhancedClassesStore != null && !array_key_exists($className, self::$weavingExcludedClasses) && substr($className, 0, strlen(self::WEAVING_PACKAGE_PREFIX)) != self::WEAVING_PACKAGE_PREFIX) {
@@ -232,17 +235,56 @@ class BeeFramework {
     public static function handleException(Exception $e) {
 		$topLevelMessage = $e->getMessage();
 
-		while (!is_null($e)) {
-			echo 'EXCEPTION ' . get_class($e) . '<br/>';
-			echo 'Message: '.$e->getMessage().'<hr/>';
-			self::printArray($e->getTrace());
+        $js = '<script>'."\n";
+            $js .= 'function toggle(event) {'."\n";
 
-			echo '<hr/>ROOT CAUSE : &nbsp;';
-			if($e instanceof Bee_Exceptions_Base) {
-				$e = $e->getCause();
-			} else {
-				$e = null;
-			}
+            $js .= 'console.dir(event)'."\n";
+            $js .= 'event.cancelBubble = true;'."\n";
+            $js .= 'event.stopImmediatePropagation();'."\n";
+            $js .= 'var ele = event.target.nextElementSibling;'."\n";
+                $js .= 'if (ele.style.display == "none") {'."\n";
+                        $js .= 'ele.style.display = "block";'."\n";
+                $js .= '} else {'."\n";
+                    $js .= 'ele.style.display = "none";'."\n";
+                $js .= '}'."\n";
+            $js .= '}'."\n";
+        $js .= '</script>'."\n";
+
+        echo $js;
+
+
+        $excCnt = 0;
+
+		while (!is_null($e)) {
+            $excCnt += 1;
+            echo '<div style="padding: 0 0 2px 0; margin: 0 2px 10px 2px; border: solid 1px #666;">';
+                echo '<div style="background-color: #666; color: #fff; margin-bottom: 5px; padding: 5px; cursor: pointer;" onclick="javascript:toggle(event);">'.$excCnt.'. Exception: "'.get_class($e).'"</div>';
+
+                echo '<div>';
+                    echo '<div style="padding: 0 0 2px 0; margin: 10px; border: solid 1px #aaa; color: #aaa;">';
+                        echo '<div style="background-color: #aaa; color: #666; padding: 5px; cursor: pointer;" onclick="javascript:toggle(event);">Message</div>';
+                        echo '<div style="padding: 5px;">';
+                            echo $e->getMessage();
+                        echo '</div>';
+                    echo '</div>';
+
+                    echo '<div style="padding: 0 0 2px 0; margin: 10px; border: solid 1px #aaa; color: #aaa;">';
+                        echo '<div style="background-color: #aaa; color: #666; padding: 5px; cursor: pointer;" onclick="javascript:toggle(event);">Stracktrace</div>';
+                        echo '<div style="padding: 5px; font-size: 10px; display: none;">';
+                            self::printArray($e->getTrace());
+                        echo '</div>';
+                    echo '</div>';
+                echo '</div>';
+            echo '</div>';
+
+
+//            echo 'Root-Cause: &nbsp;';
+            if ($e instanceof Bee_Exceptions_Base) {
+                $e = $e->getCause();
+            } else {
+                $e = null;
+            }
+
 		}
 		
 		error_log($topLevelMessage, E_USER_WARNING);

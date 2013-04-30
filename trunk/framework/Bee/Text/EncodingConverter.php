@@ -16,22 +16,17 @@
  */
 
 class Bee_Text_EncodingConverter {
-	
-	const UNICODE_NORMALIZATION_DECOMPOSED = 'NFD';  // Canonical Decomposition
-	const UNICODE_NORMALIZATION_COMPOSED = 'NFC'; // Canonical Decomposition, followed by Canonical Composition
-	const UNICODE_NORMALIZATION_COMPATIBLE_DECOMPOSED = 'NFKD';  // Compatibility Decomposition
-	const UNICODE_NORMALIZATION_COMPATIBLE_COMPOSED = 'NFKC'; // Compatibility Decomposition, followed by Canonical Composition
-	
+
 	const DEFAULT_INTERNAL_ENCODING = 'UTF-8';
-	const DEFAULT_INTERNAL_UNICODE_NORMALIZATION = self::UNICODE_NORMALIZATION_COMPOSED;
+	const DEFAULT_INTERNAL_UNICODE_NORMALIZATION = Bee_Text_Normalization_INormalizer::UNICODE_NORMALIZATION_COMPOSED;
 	
 	const DEFAULT_EXTERNAL_ENCODING = 'UTF-8';
-	const DEFAULT_EXTERNAL_UNICODE_NORMALIZATION = self::UNICODE_NORMALIZATION_COMPOSED;
+	const DEFAULT_EXTERNAL_UNICODE_NORMALIZATION = Bee_Text_Normalization_INormalizer::UNICODE_NORMALIZATION_COMPOSED;
 
 	/**
 	 * Enter description here...
 	 *
-	 * @var I18N_UnicodeNormalizer
+	 * @var Bee_Text_Normalization_INormalizer
 	 */
 	private $normalizer;
 	
@@ -68,9 +63,13 @@ class Bee_Text_EncodingConverter {
 	 *
 	 */
 	public function __construct() {
-		$this->normalizer = new I18N_UnicodeNormalizer();
+		if(class_exists("Normalizer")) {
+			$this->normalizer = new Bee_Text_Normalization_PHP53Normalizer();
+		} else {
+			$this->normalizer = new Bee_Text_Normalization_PEARNormalizer();
+		}
 	}
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -178,4 +177,3 @@ class Bee_Text_EncodingConverter {
 		return stripos($enc, 'utf') !== false || stripos($enc, 'ucs') !== false;
 	}
 }
-?>

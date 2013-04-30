@@ -46,4 +46,3 @@ class Bee_Beans_PropertyEditor_String implements Bee_Beans_IPropertyEditor {
 		return $value;
 	}
 }
-?>

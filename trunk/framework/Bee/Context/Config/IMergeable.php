@@ -25,5 +25,5 @@ interface Bee_Context_Config_IMergeable {
 
     function getMergeEnabled();
 
-    function merge($parent);
+    function merge(Traversable $parent);
 }

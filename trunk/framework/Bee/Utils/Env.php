@@ -29,8 +29,9 @@ class Bee_Utils_Env {
     public static $USER_AGENTS = array('msie', 'firefox', 'safari', 'webkit', 'opera', 'netscape', 'konqueror', 'gecko');
 	
 	private static $pathInfo;
+	private static $absoluteBasePath;
 	private static $basePath;
-	private static $applicationIndex;
+	private static $dispatcher;
 	private static $applicationPath;
 	private static $php_self;
     /**
@@ -40,6 +41,27 @@ class Bee_Utils_Env {
 	
 	
 	
+	/**
+	 * The basePath is the path to the root of the webserver.
+	 * It is likely to be extended by a customer-id or user-
+	 * name.
+	 *
+	 * @return String
+	 */
+	public static final function getAbsoluteBasePath() {
+		if (is_null(self::$absoluteBasePath)) {
+            self::$absoluteBasePath = self::getWebserverDocumentRoot().'/';
+            $basePath = self::getBasePath();
+
+            if (Bee_Utils_Strings::hasText(self::$absoluteBasePath) && Bee_Utils_Strings::hasText($basePath) && !preg_match('#'.DIRECTORY_SEPARATOR.'$#i', self::$absoluteBasePath) && !preg_match('#^'.DIRECTORY_SEPARATOR.'#i', $basePath)) {
+                echo 'MUST ADD THE THING!!!!<br/>';
+                self::$absoluteBasePath .= DIRECTORY_SEPARATOR;
+            }
+            self::$absoluteBasePath .= $basePath;
+		}
+		return self::$absoluteBasePath;
+	}
+
 	/**
 	 * The basePath is the path to the root of the webserver.
 	 * It is likely to be extended by a customer-id or user-
@@ -60,7 +82,7 @@ class Bee_Utils_Env {
 		return self::$basePath;
 	}
 
-	
+
 	
 	/**
 	 * The applicationIndex is the .php file that will be the
@@ -68,14 +90,17 @@ class Bee_Utils_Env {
 	 *
 	 * @return String
 	 */
-	public static final function getApplicationIndex() {
-		if (is_null(self::$applicationIndex)) {
-			self::$applicationIndex = pathinfo(self::getPhpSelf(), PATHINFO_FILENAME).'.'.pathinfo(self::getPhpSelf(), PATHINFO_EXTENSION);
+	public static final function getDispatcher() {
+		if (is_null(self::$dispatcher)) {
+			self::$dispatcher = pathinfo(self::getPhpSelf(), PATHINFO_FILENAME).'.'.pathinfo(self::getPhpSelf(), PATHINFO_EXTENSION);
 		}
-		return self::$applicationIndex;
+		return self::$dispatcher;
 	}
 
-	
+    public static final function getApplicationIndex() {
+        return self::getDispatcher();
+    }
+
 	
 	/**
 	 * The applicationPath is the path where the customized
@@ -109,8 +134,22 @@ class Bee_Utils_Env {
 	 *
 	 * @return String
 	 */
+	public static final function getProtocol() {
+		$protocol = $_SERVER['HTTP_REFERER'];
+        $pos = strpos($protocol, '://');
+        if ($pos===false) {
+            return 'http';
+        }
+        return substr($protocol, 0, $pos);
+	}
+
+	/**
+	 * The URL to the server
+	 *
+	 * @return String
+	 */
 	public static final function getHost() {
-		$host = $_SERVER['HTTP_HOST']; 
+		$host = $_SERVER['HTTP_HOST'];
 		try {
 			Bee_Utils_Assert::hasText($host);
 		} catch (Exception $e) {

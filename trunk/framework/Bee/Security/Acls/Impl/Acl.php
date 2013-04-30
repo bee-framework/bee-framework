@@ -89,7 +89,7 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
         $this->auditLogger = $auditLogger;
         $this->parentAcl = $parentAcl; // may be null
         $this->loadedSids = $loadedSids; // may be null
-        $this->entriesInheriting = $entriesInheriting;
+        $this->entriesInheriting = (bool) $entriesInheriting;
         $this->owner = $owner;
     }
 
@@ -141,7 +141,7 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
 
                 foreach($this->aces as $ace) {
 
-                    if (($ace->getPermission()->getMask() == $permission->getMask()) && $ace->getSid()->equals($sid)) {
+                    if (($ace->getPermission()->equals($permission)) && $ace->getSid()->equals($sid)) {
                         // Found a matching ACE, so its authorization decision will prevail
                         if ($ace->isGranting()) {
                             // Success

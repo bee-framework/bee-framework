@@ -21,6 +21,8 @@
  */
 class Bee_Utils_SmartyMailer {
 
+    private $pluginDir;
+
 	/**
 	 * 
 	 * @var Smarty
@@ -39,6 +41,13 @@ class Bee_Utils_SmartyMailer {
 	 *
 	 * @var String
 	 */
+	private $smtpPort = 25;
+
+	/**
+	 * Enter description here...
+	 *
+	 * @var String
+	 */
 	private $smtpUsername;
 	
 	/**
@@ -47,7 +56,12 @@ class Bee_Utils_SmartyMailer {
 	 * @var String
 	 */
 	private $smtpPassword;
-	
+
+    /**
+     * @var string
+     */
+    private $smtpSecurity;
+
 	/**
 	 * Enter description here...
 	 *
@@ -62,85 +76,193 @@ class Bee_Utils_SmartyMailer {
 	 */
 	private $defaultSenderName;
 
-    private $mailType = 'smtp';
-	
-	public function sendMail($recipient, $subjectTemplate, $messageTemplate, array $model, $senderAddress = false, $senderName = false) {
+    /**
+     * @var string
+     */
+    private $defaultRecipientAddress;
 
-		$mail = new PHPMailer();
-        $mail->CharSet = 'UTF-8';
+    /**
+     * @var string
+     */
+    private $defaultRecipientName;
 
-        switch ($this->mailType) {
+
+    private $mailType = 'mail';
+
+
+    /**
+     * @param $subjectTemplate
+     * @param $bodyTemplate
+     * @param array $model
+     * @param mixed $recipient Either string example@mail.com or array with keys "address" and optional "name"
+     * @param mixed $sender Either string example@mail.com or array with keys "address" and optional "name"
+     */
+    public function sendMail($subjectTemplate, $bodyTemplate, array $model, $recipient=null, $sender=null) {
+        $phpMailer = $this->instantiatePhpMailer($subjectTemplate, $bodyTemplate, $model, $recipient, $sender);
+
+        if (!$phpMailer->Send()) {
+            throw new Exception($phpMailer->ErrorInfo);
+        }
+        return true;
+	}
+
+    /**
+     * @param $subjectTemplate
+     * @param $bodyTemplate
+     * @param array $model
+     * @param mixed $recipient Either string example@mail.com or array with keys "address" and optional "name"
+     * @param mixed $sender Either string example@mail.com or array with keys "address" and optional "name"
+     */
+    public function dumpMail($subjectTemplate, $bodyTemplate, array $model, $recipient=null, $sender=null, $exit=true) {
+        $phpMailer = $this->instantiatePhpMailer($subjectTemplate, $bodyTemplate, $model, $recipient, $sender);
+        // TODO: inlude bcc and cc in wrapper!
+        $phpMailer->AddBCC('b.hartmann@arend-hartmann.com', 'Benjamin Hartmann');
+
+        echo '<div style="border: solid 1px #f00; padding: 5px; margin: 10px;">';
+        echo 'To:<br/>';
+        echo '=> Address: '.$recipient['address'].'<br/>';
+        echo '=> Name: '.$recipient['name'].'<br/>';
+        echo '<br/>';
+        echo 'Subject: "'.$phpMailer->Subject.'"<br/>';
+        echo '</div>';
+
+        echo '<div style="border: solid 1px #f00; padding: 5px; margin: 10px;">';
+        echo $phpMailer->Body;
+        echo '</div>';
+
+        if ($exit) {
+            exit();
+        }
+	}
+
+
+    /**
+     * @param $subjectTemplate
+     * @param $bodyTemplate
+     * @param array $model
+     * @param mixed $recipient Either string example@mail.com or array with keys "address" and optional "name"
+     * @param mixed $sender Either string example@mail.com or array with keys "address" and optional "name"
+     *
+     * @return PHPMailer
+     */
+    public function instantiatePhpMailer($subjectTemplate, $bodyTemplate, array $model, $recipient=null, $sender=null) {
+        $phpMailer = new PHPMailer(true);
+        $phpMailer->PluginDir = $this->getPluginDir();
+        $phpMailer->CharSet = 'UTF-8';
+        $phpMailer->IsHTML(true);
+
+
+        // SET CONNECTION
+        switch ($this->getMailType()) {
             case 'smtp' :
-                $mail->IsSMTP();
-                $mail->Host = $this->smtpHost;
-                if(Bee_Utils_Strings::hasText($this->smtpUsername)) {
-                    $mail->SMTPAuth = true;
-                    $mail->Username = $this->smtpUsername;
-                    $mail->Password = $this->smtpPassword;
+                $phpMailer->IsSMTP();
+                $phpMailer->Host = $this->getSmtpHost();
+                $phpMailer->Port = intval($this->getSmtpPort());
+
+                if (Bee_Utils_Strings::hasText($this->getSmtpUsername())) {
+                    $phpMailer->SMTPAuth = true;
+                    $phpMailer->Username = $this->getSmtpUsername();
+                    $phpMailer->Password = $this->getSmtpPassword();
+
+                    if (Bee_Utils_Strings::hasText($this->getSmtpSecurity())) {
+                        $phpMailer->SMTPSecure = $this->getSmtpSecurity();
+                    }
+                } else {
                 }
                 break;
-            
+
             case 'mail' :
-                $mail->IsMail();
+                $phpMailer->IsMail();
                 break;
         }
 
 
-		$mail->From = $senderAddress ? $senderAddress : $this->defaultSenderAddress;
-		$mail->FromName = $senderName ? $senderName : $this->defaultSenderName;
-		
-		$mail->AddAddress($recipient);
-		
-		$this->smarty->clear_all_assign();
-		foreach($model as $key => $value) {
-			$this->smarty->assign($key, $value);
-		}
+        // SET RECIPIENT
+        if (is_null($recipient)) {
+            $recipient = array();
+            $recipient['address'] = $this->getDefaultRecipientAddress();
+            $recipient['name'] = $this->getDefaultRecipientName();
+        }
 
-		$mail->Subject = $this->smarty->fetch($subjectTemplate);
-		$mail->Body = $this->smarty->fetch($messageTemplate);
+        if (is_string($recipient)) {
+            $phpMailer->AddAddress($recipient);
 
-		$mail->IsHTML(true);
+        } else if (is_array($recipient)) {
+            if (!array_key_exists('address', $recipient)) {
+                throw new Exception('SmartyMailer failed: mailformed recipient. Field not found: "address"');
+            }
 
-		if(!$mail->Send()) {
-			throw new Exception($mail->ErrorInfo);
-		}
-	}
+            if (array_key_exists('name', $recipient)) {
+                $phpMailer->AddAddress($recipient['address'], $recipient['name']);
+            } else {
+                $phpMailer->AddAddress($recipient['address'], $recipient['name']);
+            }
 
-	public function dumpMail($recipient, $subjectTemplate, $messageTemplate, array $model, $senderAddress = false, $senderName = false) {
+        } else {
+            throw new Exception('SmartyMailer failed: mailformed recipient. Type-mismatch. Recipient must be either string or array, but is: "'.gettype($recipient).'" instead.');
+        }
 
-		$mail = new PHPMailer();
-		$mail->IsSMTP();
-		$mail->CharSet = 'UTF-8';
 
-		$mail->Host = $this->smtpHost;
-		if(Bee_Utils_Strings::hasText($this->smtpUsername)) {
-			$mail->SMTPAuth = true;
-			$mail->Username = $this->smtpUsername;
-			$mail->Password = $this->smtpPassword;
-		}
+        // SET SENDER
+        if (is_null($sender)) {
+            $sender = array();
+            $sender['address'] = $this->getDefaultSenderAddress();
+            $sender['name'] = $this->getDefaultSenderName();
+        }
 
-		$mail->From = $senderAddress ? $senderAddress : $this->defaultSenderAddress;
-		$mail->FromName = $senderName ? $senderName : $this->defaultSenderName;
+        if (is_string($sender)) {
+            $phpMailer->SetFrom($sender);
 
-		$mail->AddAddress($recipient);
+        } else if (is_array($sender)) {
+            if (!array_key_exists('address', $sender)) {
+                throw new Exception('SmartyMailer failed: mailformed sender. Field not found: "address"');
+            }
 
-		$this->smarty->clear_all_assign();
-		foreach($model as $key => $value) {
-			$this->smarty->assign($key, $value);
-		}
+            if (array_key_exists('name', $sender)) {
+                $phpMailer->SetFrom($sender['address'], $sender['name']);
+            } else {
+                $phpMailer->SetFrom($sender['address'], $sender['name']);
+            }
 
-		$mail->Subject = $this->smarty->fetch($subjectTemplate);
-		$mail->Body = $this->smarty->fetch($messageTemplate);
+        } else {
+            throw new Exception('SmartyMailer failed: mailformed sender. Type-mismatch. Sender must be either string or array, but is: "'.gettype($sender).'" instead.');
+        }
 
-		$mail->IsHTML(true);
 
-        echo '<div style="border: solid 1px #f00; padding: 5px;">';
-        echo $mail->Body;
-        echo '</div>';
-        exit();
-	}
+        // SET CONTENT
+        $this->smarty->clearAllAssign();
+        foreach($model as $key => $value) {
+            $this->smarty->assign($key, $value);
+        }
+        $phpMailer->Subject = $this->smarty->fetch($subjectTemplate);
+        $phpMailer->Body = $this->smarty->fetch($bodyTemplate);
 
-	/**
+        return $phpMailer;
+    }
+
+
+
+    //=== GETTERS & SETTERS ============================================================================================
+    /**
+     * Gets the PluginDir
+     *
+     * @return  $pluginDir
+     */
+    public function getPluginDir() {
+        return $this->pluginDir;
+    }
+
+    /**
+     * Sets the PluginDir
+     *
+     * @param $pluginDir
+     * @return void
+     */
+    public function setPluginDir($pluginDir) {
+        $this->pluginDir = $pluginDir;
+    }
+
+    /**
 	 * 
 	 * @return Smarty
 	 */
@@ -176,7 +298,26 @@ class Bee_Utils_SmartyMailer {
 		$this->smtpHost = $smtpHost;
 	}
 
-	/**
+    /**
+     * Gets the SmtpPort
+     *
+     * @return  $smtpPort
+     */
+    public function getSmtpPort() {
+        return $this->smtpPort;
+    }
+
+    /**
+     * Sets the SmtpPort
+     *
+     * @param $smtpPort
+     * @return void
+     */
+    public function setSmtpPort($smtpPort) {
+        $this->smtpPort = $smtpPort;
+    }
+
+    /**
 	 * Enter description here...
 	 *
 	 * @return String
@@ -232,14 +373,43 @@ class Bee_Utils_SmartyMailer {
 		$this->smtpUsername = $smtpUsername;
 	}
 
-	/**
-	 * Enter description here...
-	 *
-	 * @param String $smtpPassword
-	 */
-	public final function setSmtpPassword($smtpPassword) {
-		$this->smtpPassword = $smtpPassword;
-	}
+    /**
+     * Gets the SmtpPassword
+     *
+     * @return  $smtpPassword
+     */
+    public function getSmtpPassword() {
+        return $this->smtpPassword;
+    }
+
+    /**
+     * Sets the SmtpPassword
+     *
+     * @param $smtpPassword
+     * @return void
+     */
+    public function setSmtpPassword($smtpPassword) {
+        $this->smtpPassword = $smtpPassword;
+    }
+
+    /**
+     * Gets the SmtpSecurity
+     *
+     * @return  $smtpSecurity
+     */
+    public function getSmtpSecurity() {
+        return $this->smtpSecurity;
+    }
+
+    /**
+     * Sets the SmtpSecurity
+     *
+     * @param $smtpSecurity
+     * @return void
+     */
+    public function setSmtpSecurity($smtpSecurity) {
+        $this->smtpSecurity = $smtpSecurity;
+    }
 
     /**
      * Gets the MailType
@@ -260,5 +430,42 @@ class Bee_Utils_SmartyMailer {
         $this->mailType = $mailType;
     }
 
+    /**
+     * Gets the DefaultRecipientAddress
+     *
+     * @return  $defaultRecipientAddress
+     */
+    public function getDefaultRecipientAddress() {
+        return $this->defaultRecipientAddress;
+    }
+
+    /**
+     * Sets the DefaultRecipientAddress
+     *
+     * @param $defaultRecipientAddress
+     * @return void
+     */
+    public function setDefaultRecipientAddress($defaultRecipientAddress) {
+        $this->defaultRecipientAddress = $defaultRecipientAddress;
+    }
+
+    /**
+     * Gets the DefaultRecipientName
+     *
+     * @return  $defaultRecipientName
+     */
+    public function getDefaultRecipientName() {
+        return $this->defaultRecipientName;
+    }
+
+    /**
+     * Sets the DefaultRecipientName
+     *
+     * @param $defaultRecipientName
+     * @return void
+     */
+    public function setDefaultRecipientName($defaultRecipientName) {
+        $this->defaultRecipientName = $defaultRecipientName;
+    }
+
 }
-?>

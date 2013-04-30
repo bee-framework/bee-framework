@@ -22,7 +22,7 @@
  */
 final class Bee_Utils_Types {
 
-	private static $primitves = array(Bee_Utils_ITypeDefinitions::BOOLEAN, Bee_Utils_ITypeDefinitions::INTEGER, Bee_Utils_ITypeDefinitions::FLOAT, Bee_Utils_ITypeDefinitions::STRING);
+	private static $primitves = array(Bee_Utils_ITypeDefinitions::BOOLEAN, Bee_Utils_ITypeDefinitions::INTEGER, Bee_Utils_ITypeDefinitions::DOUBLE, Bee_Utils_ITypeDefinitions::STRING);
 	 
 	/**
 	 * Enter description here...

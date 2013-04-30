@@ -37,7 +37,6 @@ class Bee_Security_Vote_AffirmativeBased extends Bee_Security_Vote_AbstractDecis
 			throw new Bee_Security_Exception_AccessDenied('access_denied');
 		}
 
-        echo 'ALL ABSTAINED<br/>';
         // To get this far, every AccessDecisionVoter abstained
         $this->checkAllowIfAllAbstainDecisions();
 	}

@@ -49,5 +49,10 @@ interface Bee_Security_Acls_IObjectIdentity {
      * @return string
      */
     public function getIdentifierString();
+
+	/**
+	 * @param Bee_Security_Acls_IObjectIdentity $other
+	 * @return boolean
+	 */
+	public function equals(Bee_Security_Acls_IObjectIdentity $other);
 }
-?>

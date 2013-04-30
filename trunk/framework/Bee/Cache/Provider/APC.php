@@ -32,7 +32,14 @@ class Bee_Cache_Provider_APC extends Bee_Cache_Provider_Base {
 	}
 
 	public final function clearCache() {
-		return apc_clear_cache(self::APC_CACHE_TYPE);
+        if (function_exists('apc_cache_info') && ($cache=@apc_cache_info('opcode'))) {
+            apc_clear_cache('opcode');
+        }
+        if (function_exists('apc_cache_info') && ($cache=@apc_cache_info('user'))) {
+            apc_clear_cache('user');
+        }
+        return true;
+//		return apc_clear_cache(self::APC_CACHE_T YPE);
 	}
 
 	public function exists($key) {

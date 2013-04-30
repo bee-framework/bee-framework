@@ -36,23 +36,11 @@ class Bee_Beans_PropertyValue {
 	 */
 	private $value;
 	
-	/**
-	 * Enter description here...
-	 *
-	 * @var string
-	 */
-	private $typeName;
-	
-	
-	
-	public function __construct($name, $value = null, $typeName = null){
+	public function __construct($name, $value = null){
 		$this->name = $name;
 		$this->value = $value;
-		$this->typeName = $typeName;
 	}
-	
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -61,9 +49,7 @@ class Bee_Beans_PropertyValue {
 	public function getName() {
 		return $this->name;
 	}
-	
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -73,9 +59,7 @@ class Bee_Beans_PropertyValue {
 	public function setName($name) {
 		$this->name = $name;
 	}
-	
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -84,9 +68,7 @@ class Bee_Beans_PropertyValue {
 	public function getValue() {
 		return $this->value;
 	}
-	
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -95,29 +77,6 @@ class Bee_Beans_PropertyValue {
 	 */
 	public function setValue($value) {
 		$this->value = $value; 
-	}
-	
-	
-	
-	/**
-	 * Enter description here...
-	 *
-	 * @return String
-	 */
-	public function getTypeName() {
-		return $this->typeName;
-	}
-	
-	
-	
-	/**
-	 * Enter description here...
-	 *
-	 * @param String $typeName
-	 * @return void
-	 */
-	public function setTypeName($typeName) {
-		$this->typeName = $typeName;
 	}
 }
 ?>

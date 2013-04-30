@@ -192,5 +192,9 @@ class Bee_Cache_Manager {
 	private static function getQualifiedKey($key) {
 		return (BeeFramework::getApplicationId()!==false ? BeeFramework::getApplicationId().'_' : '') . $key;
 	}
+
+    public static function clearCache() {
+        return self::$provider->clearCache();
+    }
 }
 ?>

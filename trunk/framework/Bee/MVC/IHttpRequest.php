@@ -46,6 +46,13 @@ interface Bee_MVC_IHttpRequest {
 	public function getMethod();
 	
 	
+    /**
+   	 * Enter description here...
+   	 *
+   	 * @return bool
+   	 */
+   	public function hasParameter($name);
+
 	/**
 	 * Enter description here...
 	 *
@@ -93,4 +100,3 @@ interface Bee_MVC_IHttpRequest {
 	
 	public function addParameters(array $params);
 }
-?>

@@ -19,8 +19,9 @@
  * User: mp
  * Date: Mar 20, 2010
  * Time: 1:17:41 AM
+ *
+ * TODO: derive type information for args and use appropriate bindValue(*, *, PDO::PARAM_*) type info!!
  */
-
 class Bee_Persistence_Pdo_StatementSetter_Args implements Bee_Persistence_Pdo_IStatementSetter {
 
     /**
@@ -28,23 +29,51 @@ class Bee_Persistence_Pdo_StatementSetter_Args implements Bee_Persistence_Pdo_IS
      */
     private $args;
 
+	/**
+	 * @var array
+	 */
+	private $types;
+
     /**
-     * @param  $args
+     * @param $args
+     * @param $types
      * @return void
      */
-    public function __construct(array $args) {
-        $this->args = $args;
+    public function __construct(array $args, array $types = null) {
+		$this->args = $args;
+		if (is_array($types)) {
+			Bee_Utils_Assert::isTrue(count($args) == count($types), 'Size of types array must be equal to size of args array');
+			$this->types = $types;
+		}
     }
 
     public function setValues(PDOStatement $ps) {
         if (!is_null($this->args)) {
             for ($i = 0; $i < count($this->args); $i++) {
                 $arg = $this->args[$i];
-                $ps->bindValue($i + 1, $arg);
+
+                if (is_array($this->types)) {
+                    $dataType = $this->types[$i];
+
+                } else {
+                    if (is_int($arg) && is_bool($arg)) {
+                        $dataType = PDO::PARAM_INT;
+
+                    } else if (is_null($arg)) {
+                        $dataType = PDO::PARAM_NULL;
+                        
+                    } else {
+                        $dataType = PDO::PARAM_STR;
+                    }
+                }
+
+                if (!$ps->bindValue($i + 1, $arg, $dataType)) {
+                    throw new Exception('PDO Statement failed. bindValue returned false for: "'.$arg.'" of type '.gettype($arg));
+                }
             }
         }
 
     }
 
 }
-?>
+
