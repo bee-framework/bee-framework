@@ -15,9 +15,7 @@
  * limitations under the License.
  */
 
-//require_once dirname(__FILE__).'/../libs/addendum/annotations.php';
-
-class BeeFramework {
+class Bee_Framework {
 
     const WEAVING_PACKAGE_PREFIX = 'Bee_';
 
@@ -83,7 +81,7 @@ class BeeFramework {
 		self::$beeHiveLocation = dirname(__FILE__);
 		self::addApplicationIncludePath(self::$beeHiveLocation);
 
-		require_once dirname(__FILE__).'/Bee/Cache/Manager.php';
+		require_once dirname(__FILE__) . '/Cache/Manager.php';
 
 		spl_autoload_register(array(__CLASS__, 'autoload'));
 
@@ -160,7 +158,7 @@ class BeeFramework {
 			}
 
 			if(self::$weaveDuringClassloading) {
-				require_once dirname(__FILE__).'Bee/Weaving/Enhancer.php';
+				require_once dirname(__FILE__) . 'Bee/Weaving/Enhancer.php';
 
 				$enhancer = new Bee_Weaving_Enhancer($className);
 				if($enhancer->createEnhancedClass() !== false) {
@@ -345,9 +343,9 @@ class BeeFramework {
 	}
 }
 
-BeeFramework::init();
+Bee_Framework::init();
 
-require_once dirname(__FILE__).'/Bee/Utils/ITypeDefinitions.php';
+//require_once dirname(__FILE__) . '/Utils/ITypeDefinitions.php';
 
 interface TYPES extends Bee_Utils_ITypeDefinitions {
 }
