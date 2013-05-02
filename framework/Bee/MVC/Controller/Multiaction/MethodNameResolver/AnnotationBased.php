@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Addendum\ReflectionAnnotatedClass;
 
 /**
  * Method name resolver implementation based on Addendum Annotations. This is a very powerful implementation, capable of invoking different
@@ -68,7 +69,7 @@ class Bee_MVC_Controller_Multiaction_MethodNameResolver_AnnotationBased extends 
 
 			$delegateClassName = get_class($this->getController()->getDelegate());
 
-			if(BeeFramework::getProductionMode()) {
+			if(Bee_Framework::getProductionMode()) {
 				$this->methodResolvers = Bee_Cache_Manager::retrieve(self::CACHE_KEY_PREFIX.$delegateClassName);
 			}
 
@@ -110,7 +111,7 @@ class Bee_MVC_Controller_Multiaction_MethodNameResolver_AnnotationBased extends 
 				}
 			}
 
-			if(BeeFramework::getProductionMode()) {
+			if(Bee_Framework::getProductionMode()) {
 				Bee_Cache_Manager::store(self::CACHE_KEY_PREFIX.$delegateClassName, $this->methodResolvers);
 			}
 		}

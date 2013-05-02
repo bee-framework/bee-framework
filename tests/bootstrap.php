@@ -22,6 +22,6 @@
  */
 
 require_once '../libs/addendum-0.4.1/annotations.php';
-require_once '../libs/log4php-2.1.0/Logger.php';
-require_once '../framework/BeeFramework.php';
+require_once '../libs/apache-log4php-2.3.0/Logger.php';
+require_once '../framework/Bee/Framework.php';
 

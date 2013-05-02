@@ -98,15 +98,15 @@ class Bee_Weaving_Enhancer {
 			return $classNameToCreate;
 		}
 
-		if(!BeeFramework::getEnhancedClassesStore()->hasStoredClass($classNameToCreate)) {
+		if(!Bee_Framework::getEnhancedClassesStore()->hasStoredClass($classNameToCreate)) {
 			$incPaths = explode(PATH_SEPARATOR, get_include_path());
 
-			foreach(BeeFramework::getClassFileLocations($templateClassName) as $loc) {
+			foreach(Bee_Framework::getClassFileLocations($templateClassName) as $loc) {
 				foreach($incPaths as $incPath) {
 					$classFile = $incPath . DIRECTORY_SEPARATOR . $loc;
 					if(file_exists($classFile)) {
 						$this->enhanceClass(file_get_contents($classFile));
-						BeeFramework::getEnhancedClassesStore()->storeClass($classNameToCreate, $this->toSourceCode());
+						Bee_Framework::getEnhancedClassesStore()->storeClass($classNameToCreate, $this->toSourceCode());
 //						file_put_contents($enhancedClassLocation, $this->toSourceCode());
 						break 2;
 					}
@@ -114,7 +114,7 @@ class Bee_Weaving_Enhancer {
 			}
 		}
 
-		if (BeeFramework::getEnhancedClassesStore()->loadClass($classNameToCreate)) {
+		if (Bee_Framework::getEnhancedClassesStore()->loadClass($classNameToCreate)) {
 			return $classNameToCreate;
 		}
         return false;

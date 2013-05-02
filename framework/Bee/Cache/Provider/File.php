@@ -81,7 +81,7 @@ class Bee_Cache_Provider_File extends Bee_Cache_Provider_AbstractSerializing {
         if (Bee_Utils_Strings::hasText($dir) && !preg_match('#'.DIRECTORY_SEPARATOR.'$#i', $dir)) {
             $dir .= DIRECTORY_SEPARATOR;
         }
-		$tmpName = $dir . $this->cacheFile . (BeeFramework::getApplicationId() ? '_'.BeeFramework::getApplicationId() : '');
+		$tmpName = $dir . $this->cacheFile . (Bee_Framework::getApplicationId() ? '_'.Bee_Framework::getApplicationId() : '');
 		return $tmpName;
 	}
 

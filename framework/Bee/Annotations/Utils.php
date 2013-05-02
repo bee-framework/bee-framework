@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+use Addendum\ReflectionAnnotatedClass;
 /**
  * User: mp
  * Date: Feb 19, 2010

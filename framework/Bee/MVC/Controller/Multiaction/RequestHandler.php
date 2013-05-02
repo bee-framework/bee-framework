@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Addendum\Annotation;
 
 /**
  * Addendum annotation for the annotation-based method name resolver.

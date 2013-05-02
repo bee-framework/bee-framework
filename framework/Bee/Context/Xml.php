@@ -80,7 +80,7 @@ class Bee_Context_Xml_CachableConfig implements Bee_Cache_ICachableResource {
 	}
 	
 	public function getModificationTimestamp() {
-		if(BeeFramework::getProductionMode()) {
+		if(Bee_Framework::getProductionMode()) {
 			return 0;
 		}
         if($this->modificationTimestamp === false) {

@@ -79,7 +79,7 @@ class Bee_Cache_Manager {
 	}
 
 	private static function initProviderClass($providerClass) {
-		$loc = BeeFramework::getClassFileLocations($providerClass);
+		$loc = Bee_Framework::getClassFileLocations($providerClass);
 		require_once $loc[0];
 		self::$provider = new $providerClass();
 	}
@@ -191,7 +191,7 @@ class Bee_Cache_Manager {
 	}
 
 	private static function getQualifiedKey($key) {
-		return (BeeFramework::getApplicationId()!==false ? BeeFramework::getApplicationId().'_' : '') . $key;
+		return (Bee_Framework::getApplicationId()!==false ? Bee_Framework::getApplicationId().'_' : '') . $key;
 	}
 
     public static function clearCache() {
