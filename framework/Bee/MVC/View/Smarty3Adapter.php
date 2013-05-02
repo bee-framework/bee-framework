@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 
-class Bee_MVC_View_Smarty3Adapter extends Smarty implements Bee_Context_Config_IInitializingBean {
+/**
+ * Class Bee_MVC_View_Smarty3Adapter
+ * @deprecated probably not needed for Smarty3?
+ */
+class Bee_MVC_View_Smarty3Adapter extends Smarty /*implements Bee_Context_Config_IInitializingBean*/ {
 	
 //	/**
 //	 *
@@ -93,4 +97,3 @@ class Bee_MVC_View_Smarty3Adapter extends Smarty implements Bee_Context_Config_I
 		}
 	}
 }
-?>

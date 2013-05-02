@@ -171,7 +171,6 @@ class BeeFramework {
 
         foreach(self::getClassFileLocations($className) as $loc) {
             include $loc;
-
             if (class_exists($className, false) || interface_exists($className, false)) {
                 return true;
             }
@@ -182,7 +181,7 @@ class BeeFramework {
 
     public static function getClassFileLocations($className) {
         return array(
-            str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php',
+            str_replace('_', DIRECTORY_SEPARATOR, str_replace('\\', DIRECTORY_SEPARATOR, $className)) . '.php',
             $className . '.php'
         );
     }
@@ -215,13 +214,13 @@ class BeeFramework {
 			self::handleException($e);
 		}
     }
-    
-    /**
-     * Convenience method, dispatches current request using the given dispatcher context.
-     *
-     * @param String $configLocation comma-separated string XML config files to load the bean definitions from
-     * @return void
-     */
+
+	/**
+	 * Convenience method, dispatches current request using the given dispatcher context.
+	 *
+	 * @param Bee_IContext $ctx
+	 * @return void
+	 */
     public static function dispatchRequestUsingContext(Bee_IContext $ctx) {
 		try {
     		Bee_Utils_Assert::notNull($ctx);
@@ -340,6 +339,10 @@ class BeeFramework {
 	public static function getProductionMode() {
 		return self::$productionMode;
 	}
+
+	public static function getLoggerForClass($className) {
+		return Logger::getLogger(str_replace('_', '.', str_replace('\\', '.', $className)));
+	}
 }
 
 BeeFramework::init();
@@ -348,4 +351,3 @@ require_once dirname(__FILE__).'/Bee/Utils/ITypeDefinitions.php';
 
 interface TYPES extends Bee_Utils_ITypeDefinitions {
 }
-?>

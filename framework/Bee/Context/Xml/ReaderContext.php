@@ -47,7 +47,7 @@ class Bee_Context_Xml_ReaderContext {
 			Bee_Context_Config_IBeanDefinitionRegistry $registry, 
 			Bee_Context_Xml_Namespace_IHandlerResolver $namespaceHandlerResolver) {
 		
-        $this->log = Logger::getLogger(__CLASS__);
+        $this->log = BeeFramework::getLoggerForClass(__CLASS__);
 
 		$this->registry = $registry;
 		$this->namespaceHandlerResolver = $namespaceHandlerResolver;
@@ -87,4 +87,3 @@ class Bee_Context_Xml_ReaderContext {
         $this->log->info($message);
 	}
 }
-?>

@@ -135,8 +135,9 @@ class Bee_Cache_Manager {
 	public static function &retrieveCachable(Bee_Cache_ICachableResource $resource, $returnInfoArray = false) {
 		if(is_null(self::$provider)) {
 			// no cache provider found, no caching or unsupported cache type installed
-			$data =& $resource->createContent(); 
-			return $returnInfoArray ? array(self::INFO_NO_CACHE_KEY => true, self::INFO_CACHE_HIT_KEY => false, self::INFO_IN_CACHE_SINCE_KEY => false, self::INFO_DATA_KEY => $data) : $data;
+			$data =& $resource->createContent();
+			$result = $returnInfoArray ? array(self::INFO_NO_CACHE_KEY => true, self::INFO_CACHE_HIT_KEY => false, self::INFO_IN_CACHE_SINCE_KEY => false, self::INFO_DATA_KEY => &$data) : $data;
+			return $result;
 		}
 		
 		// caching supported, check if in cache and not stale
@@ -197,4 +198,3 @@ class Bee_Cache_Manager {
         return self::$provider->clearCache();
     }
 }
-?>
