@@ -338,6 +338,10 @@ class Bee_Framework {
 		return self::$productionMode;
 	}
 
+	/**
+	 * @param string $className
+	 * @return Logger
+	 */
 	public static function getLoggerForClass($className) {
 		return Logger::getLogger(str_replace('_', '.', str_replace('\\', '.', $className)));
 	}

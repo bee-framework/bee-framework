@@ -16,6 +16,7 @@
  */
 
 use Addendum\ReflectionAnnotatedClass;
+use Addendum\ReflectionAnnotatedMethod;
 /**
  * User: mp
  * Date: Feb 19, 2010
@@ -56,5 +57,3 @@ class Bee_Annotations_Utils {
         return new ReflectionAnnotatedMethod($method->getDeclaringClass(), $method->getName());
     }
 }
-
-?>
