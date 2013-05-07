@@ -61,6 +61,19 @@ class OrderedColorsDao {
 	}
 
 	/**
+	 *
+	 */
+	public function createTable() {
+		$this->pdoConnection->exec('CREATE TABLE "ordered_colors" (
+			 "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+			 "name" text NOT NULL,
+			 "hex_value" text NOT NULL,
+			 "pos" integer DEFAULT NULL,
+			UNIQUE (pos ASC)
+		)');
+	}
+
+	/**
 	 * @return \Bee\Persistence\Behaviors\Ordered\Strategy
 	 */
 	public function getOrderedStrategy() {
