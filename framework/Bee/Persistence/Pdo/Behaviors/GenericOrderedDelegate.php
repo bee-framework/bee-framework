@@ -166,11 +166,12 @@ class GenericOrderedDelegate extends DelegateBase implements IDelegate {
 		$qryDomain = $this->getQueryDomain();
 		$qryString = sprintf($newPos < $oldPos ? self::SHIFT_UP_QUERY_TEMPLATE : self::SHIFT_DOWN_QUERY_TEMPLATE,
 			$this->getPosExpression(), $qryDomain, $this->getDomainRestrictionString($orderedEntity, $params, $restriction));
-		// if this is a single table update, add ORDER clause to avoid unique constraint violation
-//		if (stripos($qryDomain, ' JOIN ') === false) {
-//			$qryString .= ' ORDER BY ' . $this->getPosExpression() . ($newPos < $oldPos ? ' DESC' : ' ASC');
-//		}
-//		var_dump($qryString);
+
+		// if this is a single table update, add ORDER clause to avoid unique constraint violation (if driver supports it)
+		if ($this->pdoSupportsFeature(self::FEATURE_ORDERED_UPDATE) && stripos($qryDomain, ' JOIN ') === false) {
+			$qryString .= ' ORDER BY ' . $this->getPosExpression() . ($newPos < $oldPos ? ' DESC' : ' ASC');
+		}
+
 		$this->getPdo()->prepare($qryString)->execute($params);
 	}
 

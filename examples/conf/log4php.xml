@@ -18,7 +18,7 @@
         <appender_ref ref="default" />
     </root>
     <logger name="Bee" additivity="false">
-        <level value="warn" />
+        <level value="info" />
         <appender_ref ref="framework" />
     </logger>
 </configuration>
