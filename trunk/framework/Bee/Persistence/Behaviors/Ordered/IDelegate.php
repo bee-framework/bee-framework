@@ -28,7 +28,7 @@ interface IDelegate {
 	 * @param mixed $restriction
 	 * @return int
 	 */
-	public function getPosition($orderedEntity, $restriction);
+	public function getPosition($orderedEntity, $restriction = false);
 
 	/**
 	 * @param mixed $orderedEntity
@@ -43,12 +43,12 @@ interface IDelegate {
 	 * @param int $oldPos
 	 * @param $restriction
 	 */
-	public function shiftPosition($orderedEntity, $newPos, $oldPos, $restriction);
+	public function shiftPosition($orderedEntity, $newPos, $oldPos, $restriction = false);
 
 	/**
 	 * @param mixed $orderedEntity
 	 * @param int $newPos
 	 * @param mixed $restriction
 	 */
-	public function setPosition($orderedEntity, $newPos, $restriction);
+	public function setPosition($orderedEntity, $newPos, $restriction = false);
 }
