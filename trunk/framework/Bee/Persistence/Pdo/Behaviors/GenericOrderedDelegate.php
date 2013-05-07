@@ -167,9 +167,10 @@ class GenericOrderedDelegate extends DelegateBase implements IDelegate {
 		$qryString = sprintf($newPos < $oldPos ? self::SHIFT_UP_QUERY_TEMPLATE : self::SHIFT_DOWN_QUERY_TEMPLATE,
 			$this->getPosExpression(), $qryDomain, $this->getDomainRestrictionString($orderedEntity, $params, $restriction));
 		// if this is a single table update, add ORDER clause to avoid unique constraint violation
-		if (stripos($qryDomain, ' JOIN ') === false) {
-			$qryString .= ' ORDER BY ' . $this->getPosExpression() . ($newPos < $oldPos ? ' DESC' : ' ASC');
-		}
+//		if (stripos($qryDomain, ' JOIN ') === false) {
+//			$qryString .= ' ORDER BY ' . $this->getPosExpression() . ($newPos < $oldPos ? ' DESC' : ' ASC');
+//		}
+//		var_dump($qryString);
 		$this->getPdo()->prepare($qryString)->execute($params);
 	}
 
@@ -178,7 +179,7 @@ class GenericOrderedDelegate extends DelegateBase implements IDelegate {
 	 * @param int $newPos
 	 * @param mixed $restriction
 	 */
-	public function setPosition($orderedEntity, $newPos, $restriction) {
+	public function setPosition($orderedEntity, $newPos, $restriction = false) {
 		$params = array(':newPos' => $newPos);
 		$qryString = sprintf(self::SET_POS_QUERY_TEMPLATE, $this->getPosExpression(), $this->getQueryDomain(),
 			$this->getIdentityRestrictionString($orderedEntity, $params), $this->getDomainRestrictionString($orderedEntity, $params, $restriction));

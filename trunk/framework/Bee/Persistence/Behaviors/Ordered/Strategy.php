@@ -29,22 +29,46 @@ class Strategy {
 	 */
 	private $delegate;
 
-	/**
-	 * @param mixed $subject
-	 * @param mixed $ref
-	 * @param mixed $groupRestriction
-	 */
-	public function moveBefore($subject, $ref, $groupRestriction = false) {
-		$this->moveRelative($subject, $ref, true, $groupRestriction);
+	public function __construct(IDelegate $delgate) {
+		$this->delegate = $delgate;
 	}
 
 	/**
 	 * @param mixed $subject
 	 * @param mixed $ref
 	 * @param mixed $groupRestriction
+	 * @return int
 	 */
-	public function moveBehind($subject, $ref, $groupRestriction = false) {
-		$this->moveRelative($subject, $ref, false, $groupRestriction);
+	public function moveBefore($subject, $ref, $groupRestriction = false) {
+		return $this->moveRelative($subject, $ref, true, $groupRestriction);
+	}
+
+	/**
+	 * @param mixed $subject
+	 * @param mixed $ref
+	 * @param mixed $groupRestriction
+	 * @return int
+	 */
+	public function moveAfter($subject, $ref, $groupRestriction = false) {
+		return $this->moveRelative($subject, $ref, false, $groupRestriction);
+	}
+
+	/**
+	 * @param mixed $subject
+	 * @param mixed $groupRestriction
+	 * @return int
+	 */
+	public function moveToStart($subject, $groupRestriction = false) {
+		return $this->moveAfter($subject, false, $groupRestriction);
+	}
+
+	/**
+	 * @param mixed $subject
+	 * @param mixed $groupRestriction
+	 * @return int
+	 */
+	public function moveToEnd($subject, $groupRestriction = false) {
+		return $this->moveBefore($subject, false, $groupRestriction);
 	}
 
 	/**
@@ -52,6 +76,7 @@ class Strategy {
 	 * @param mixed $ref
 	 * @param bool $before
 	 * @param mixed $groupRestriction
+	 * @return int
 	 */
 	public function moveRelative($subject, $ref, $before = true, $groupRestriction = false) {
 		// determine previous position of subject
@@ -83,5 +108,7 @@ class Strategy {
 			$this->delegate->setPosition($subject, $newPos, $groupRestriction);
 		}
 		// that's all, folks!
+
+		return $newPos;
 	}
 }

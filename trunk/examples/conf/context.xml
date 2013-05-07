@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.beeframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.beeframework.org/schema/security"
+       xsi:schemaLocation="http://www.beeframework.org/schema/beans http://www.beeframework.org/schema/beans/bee-beans-1.2.xsd
+       http://www.beeframework.org/schema/security http://www.beeframework.org/schema/security/bee-security-1.0.xsd">
+
+    <!-- Persistence - PDO Connection -->
+    <bean id="pdoConnection" class="PDO">
+   		<!-- LOCAL DB -->
+   		<constructor-arg index="0" value="sqlite:db/examples.sqlite" />
+   		<constructor-arg index="1" value="sa" />
+   		<constructor-arg index="2" value="" />
+   	</bean>
+
+    <bean id="orderedColorsDao" class="Persistence\Pdo\OrderedColorsDao">
+        <constructor-arg index="0" ref="pdoConnection" />
+    </bean>
+
+</beans>
