@@ -51,4 +51,4 @@ $dao->addColor('Cyan', '#00ffff');
 
 $dao->getOrderedStrategy()->moveAfter($greenId, $purpleId);
 
-//BeeFramework::dispatchRequestUsingSerializedContext('conf/context.serialized');
+echo 'DONE<hr/>';
