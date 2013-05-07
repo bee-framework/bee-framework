@@ -1,5 +1,8 @@
 <?php
 namespace Bee\Persistence\Pdo\Behaviors;
+
+use Bee\Persistence\Pdo\FeatureDetector;
+
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -23,7 +26,7 @@ use \PDOStatement;
  * Date: 05.05.13
  * Time: 23:52
  */
-abstract class DelegateBase {
+abstract class DelegateBase extends FeatureDetector {
 
 	/**
 	 * @var \PDO
@@ -68,5 +71,13 @@ abstract class DelegateBase {
 		$qry->execute($params);
 		$res = $qry->fetch(\PDO::FETCH_NUM);
 		return $res [0];
+	}
+
+	/**
+	 * @param string $feature
+	 * @return bool
+	 */
+	protected function pdoSupportsFeature($feature) {
+		return self::supports($feature, $this->getPdo());
 	}
 }
