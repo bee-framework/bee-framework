@@ -38,16 +38,9 @@ Logger::configure('conf/log4php.xml');
 
 $ctx = new Bee_Context_Xml('conf/context.xml');
 
-$pdoConn = $ctx->getBean('pdoConnection');
-$pdoConn->exec('CREATE TABLE "ordered_colors" (
-	 "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-	 "name" text NOT NULL,
-	 "hex_value" text NOT NULL,
-	 "pos" integer DEFAULT NULL,
-	UNIQUE (pos ASC)
-)');
-
 $dao = $ctx->getBean('orderedColorsDao');
+
+$dao->createTable();
 
 $dao->addColor('Red', '#ff0000');
 $greenId = $dao->addColor('Green', '#00ff00');
