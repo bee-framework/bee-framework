@@ -78,7 +78,7 @@ class Bee_Framework {
 	 * @return void
 	 */
 	static function init() {
-		self::$beeHiveLocation = dirname(__FILE__);
+		self::$beeHiveLocation = dirname(dirname(__FILE__));
 		self::addApplicationIncludePath(self::$beeHiveLocation);
 
 		require_once dirname(__FILE__) . '/Cache/Manager.php';
