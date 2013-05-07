@@ -112,11 +112,12 @@ class Bee_Persistence_Doctrine_DaoBase {
         }
     }
 
-    /**
-     * @param Doctrine_Query $query
-     * @param array $params
-     * @param Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder
-     */
+	/**
+	 * @param Doctrine_Query $query
+	 * @param array $params
+	 * @param Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder
+	 * @param array $defaultOrderMapping
+	 */
     protected final function applyOrderAndLimit(Doctrine_Query &$query, array &$params, Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = array()) {
         if (is_null($orderAndLimitHolder)) {
             $orderMapping = $defaultOrderMapping;

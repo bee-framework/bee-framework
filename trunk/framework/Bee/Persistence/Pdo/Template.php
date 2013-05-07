@@ -28,6 +28,11 @@ class Bee_Persistence_Pdo_Template {
      */
     private $pdoConnection;
 
+	/**
+	 * @var Logger
+	 */
+	private static $log;
+
     /**
      * Gets the PdoConnection
      *
@@ -46,6 +51,16 @@ class Bee_Persistence_Pdo_Template {
     public function setPdoConnection(PDO $pdoConnection) {
         $this->pdoConnection = $pdoConnection;
     }
+
+	/**
+	 * @return \Logger
+	 */
+	public static function getLog() {
+		if(!self::$log) {
+			self::$log = Bee_Framework::getLoggerForClass(__CLASS__);
+		}
+		return self::$log;
+	}
 
     public function __construct(PDO $pdoConnection) {
         $this->pdoConnection = $pdoConnection;
@@ -90,7 +105,7 @@ class Bee_Persistence_Pdo_Template {
                           Bee_Persistence_Pdo_IResultSetExtractor $rse) {
 
         Bee_Utils_Assert::notNull($rse, 'ResultSetExtractor must not be null');
-        Bee_Utils_Logger::debug('Executing prepared SQL query');
+		self::getLog()->debug('Executing prepared SQL query');
 
         return $this->execute($psc, new Bee_Persistence_Pdo_Template_QueryCallback($pss, $rse));
     }
@@ -104,7 +119,7 @@ class Bee_Persistence_Pdo_Template {
     }
 
     public function update(Bee_Persistence_Pdo_IStatementCreator $psc, Bee_Persistence_Pdo_IStatementSetter $pss) {
-        Bee_Utils_Logger::debug('Executing prepared SQL update');
+		self::getLog()->debug('Executing prepared SQL update');
         return $this->execute($psc, new Bee_Persistence_Pdo_Template_UpdateCallback($pss));
     }
 
@@ -113,7 +128,7 @@ class Bee_Persistence_Pdo_Template {
     }
 
     public function batchUpdate(Bee_Persistence_Pdo_IStatementCreator $psc, Bee_Persistence_Pdo_IBatchStatementSetter $bss) {
-        Bee_Utils_Logger::debug('Executing prepared SQL batch update');
+		self::getLog()->debug('Executing prepared SQL batch update');
         return $this->execute($psc, new Bee_Persistence_Pdo_Template_BatchUpdateCallback($bss));
     }
 
@@ -126,9 +141,9 @@ class Bee_Persistence_Pdo_Template {
         Bee_Utils_Assert::notNull($psc, 'PreparedStatementCreator must not be null');
         Bee_Utils_Assert::notNull($action, 'Callback object must not be null');
 
-        if (Bee_Utils_Logger::isDebugEnabled()) {
+        if (self::getLog()->isDebugEnabled()) {
             $sql = self::getSql($psc);
-            Bee_Utils_Logger::debug('Executing prepared SQL statement' . (!is_null($sql) ? " [" . $sql . "]" : ""));
+			self::getLog()->debug('Executing prepared SQL statement' . (!is_null($sql) ? " [" . $sql . "]" : ""));
         }
 
         $ps = null;
@@ -197,9 +212,21 @@ class Bee_Persistence_Pdo_Template_UpdateCallback implements Bee_Persistence_Pdo
      */
     private $pss;
 
+	/**
+	 * @var Logger
+	 */
+	private static $log;
+
     public function __construct(Bee_Persistence_Pdo_IStatementSetter $pss) {
         $this->pss = $pss;
     }
+
+	public static function getLog() {
+		if(!self::$log) {
+			self::$log = Bee_Framework::getLoggerForClass(__CLASS__);
+		}
+		return self::$log;
+	}
 
     function doInPreparedStatement(PDOStatement $ps) {
         if ($this->pss != null) {
@@ -207,8 +234,8 @@ class Bee_Persistence_Pdo_Template_UpdateCallback implements Bee_Persistence_Pdo
         }
         if($ps->execute()) {
             $rows = $ps->rowCount();
-            if(Bee_Utils_Logger::isDebugEnabled()) {
-                Bee_Utils_Logger::debug('SQL update affected '.$rows.' rows');
+            if(self::getLog()->isDebugEnabled()) {
+				self::getLog()->debug('SQL update affected '.$rows.' rows');
             }
             return $rows;
         }
