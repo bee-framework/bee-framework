@@ -95,13 +95,21 @@ class Strategy {
 			}
 		} else {
 			// no, "move behind nothing" means "move to beginning", "move before nothing" means "move to the end"
-			$newPos = $before ? $this->delegate->getMaxPosition($subject, $groupRestriction) + 1 : 0;
+			$newPos = 0;
+			if($before) {
+				$maxPos = $this->delegate->getMaxPosition($subject, $groupRestriction);
+				$newPos = $maxPos !== false ? $maxPos + 1 : 0;
+			}
 		}
 
 		// actual move?
 		if ($oldPos != $newPos) {
-			// temporarily move the subject to a neutral position, so as to avoid any conflicts (e.g. SQL constraints)
-			$this->delegate->setPosition($subject, -1, $groupRestriction);
+
+			// if subject previously had a valid position (i.e. is not newly inserted) ...
+			if($oldPos !== false) {
+				// .. temporarily move it to a neutral position, so as to avoid any conflicts (e.g. SQL constraints)
+				$this->delegate->setPosition($subject, -1, $groupRestriction);
+			}
 			// shift remaining entries (possibly including reference element)
 			$this->delegate->shiftPosition($subject, $newPos, $oldPos, $groupRestriction);
 			// set final position on subject

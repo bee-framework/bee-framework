@@ -1,4 +1,6 @@
 <?php
+use Persistence\Pdo\SimpleHierarchyDao;
+use Persistence\Pdo\OrderedColorsDao;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -38,17 +40,73 @@ Logger::configure('conf/log4php.xml');
 
 $ctx = new Bee_Context_Xml('conf/context.xml');
 
+$ctx->getBean('pdoConnection')->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+/*
+ * == EXAMPLE : Ordered Dao =============================================
+ */
 $dao = $ctx->getBean('orderedColorsDao');
 
 $dao->createTable();
 
-$dao->addColor('Red', '#ff0000');
+$redId = $dao->addColor('Red', '#ff0000');
 $greenId = $dao->addColor('Green', '#00ff00');
 $dao->addColor('Blue', '#0000ff');
 $dao->addColor('Yellow', '#ffff00');
 $purpleId = $dao->addColor('Purple', '#ff00ff');
-$dao->addColor('Cyan', '#00ffff');
+$cyanId = $dao->addColor('Cyan', '#00ffff');
 
-$dao->getOrderedStrategy()->moveAfter($greenId, $purpleId);
+//$dao->doInTransaction(function(OrderedColorsDao $dao, \Logger $log) use ($greenId, $purpleId) {
+//	$dao->getOrderedStrategy()->moveAfter($greenId, $purpleId);
+//});
+//
+//$dao->doInTransaction(function(OrderedColorsDao $dao, \Logger $log) use ($redId, $cyanId) {
+//	$dao->getOrderedStrategy()->moveAfter($redId, $cyanId);
+//});
+//
+//$dao->doInTransaction(function(OrderedColorsDao $dao, \Logger $log) use ($purpleId, $redId) {
+//	$dao->getOrderedStrategy()->moveBefore($purpleId, $redId);
+//});
+
+/*
+ * == EXAMPLE : NestedSet Dao =============================================
+ */
+$dao = $ctx->getBean('simpleHierarchyDao');
+
+$dao->createTable();
+
+$id1 = $dao->addEntry('Entry 1');
+$id2 = $dao->addEntry('Entry 2');
+$id3 = $dao->addEntry('Entry 3');
+$id4 = $dao->addEntry('Entry 4');
+$id5 = $dao->addEntry('Entry 5');
+$id6 = $dao->addEntry('Entry 6');
+$id7 = $dao->addEntry('Entry 7');
+$id8 = $dao->addEntry('Entry 8');
+$id9 = $dao->addEntry('Entry 9');
+
+
+$dao->doInTransaction(function(SimpleHierarchyDao $dao, \Logger $log) use ($id9, $id1) {
+	$dao->getNestedSetStrategy()->moveAsPrevSibling($id9, $id1);
+});
+
+$dao->doInTransaction(function(SimpleHierarchyDao $dao, \Logger $log) use ($id5, $id4) {
+	$dao->getNestedSetStrategy()->moveAsFirstChild($id5, $id4);
+});
+
+$dao->doInTransaction(function(SimpleHierarchyDao $dao, \Logger $log) use ($id6, $id4) {
+	$dao->getNestedSetStrategy()->moveAsFirstChild($id6, $id4);
+});
+
+$dao->doInTransaction(function(SimpleHierarchyDao $dao, \Logger $log) use ($id8, $id6) {
+	$dao->getNestedSetStrategy()->moveAsLastChild($id8, $id6);
+});
+
+$dao->doInTransaction(function(SimpleHierarchyDao $dao, \Logger $log) use ($id1, $id8) {
+	$dao->getNestedSetStrategy()->moveAsNextSibling($id1, $id8);
+});
+
+/*
+ * == END OF EXAMPLES =============================================
+ */
 
 echo 'DONE<hr/>';

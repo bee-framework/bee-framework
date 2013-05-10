@@ -3,6 +3,7 @@ namespace Persistence\Pdo;
 
 use Bee\Persistence\Behaviors\Ordered\Strategy as OrderedStrategy;
 use Bee\Persistence\Pdo\Behaviors\GenericOrderedDelegate;
+use Bee\Persistence\Pdo\SimpleDaoBase;
 
 /*
  * Copyright 2008-2010 the original author or authors.
@@ -26,27 +27,7 @@ use Bee\Persistence\Pdo\Behaviors\GenericOrderedDelegate;
  * Time: 12:12
  */
  
-class OrderedColorsDao {
-
-	/**
-	 * @var \Logger
-	 */
-	private static $log;
-
-	/**
-	 * @return \Logger
-	 */
-	protected static function getLog() {
-		if (!self::$log) {
-			self::$log = \Bee_Framework::getLoggerForClass(__CLASS__);
-		}
-		return self::$log;
-	}
-
-	/**
-	 * @var \PDO
-	 */
-	private $pdoConnection;
+class OrderedColorsDao extends SimpleDaoBase{
 
 	/**
 	 * @var OrderedStrategy
@@ -54,8 +35,7 @@ class OrderedColorsDao {
 	private $orderedStrategy;
 
 	public function __construct(\PDO $pdoConnection) {
-		self::getLog()->info('DAO constructed, got PDO connection');
-		$this->pdoConnection = $pdoConnection;
+		parent::__construct($pdoConnection);
 		$pdoOrderedDelagate = new GenericOrderedDelegate('ordered_colors', $pdoConnection);
 		$this->orderedStrategy = new OrderedStrategy($pdoOrderedDelagate);
 	}
@@ -64,12 +44,11 @@ class OrderedColorsDao {
 	 *
 	 */
 	public function createTable() {
-		$this->pdoConnection->exec('CREATE TABLE "ordered_colors" (
+		$this->getPdoConnection()->exec('CREATE TABLE IF NOT EXISTS "ordered_colors" (
 			 "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
 			 "name" text NOT NULL,
 			 "hex_value" text NOT NULL,
-			 "pos" integer DEFAULT NULL,
-			UNIQUE (pos ASC)
+			 "pos" integer DEFAULT NULL
 		)');
 	}
 
@@ -80,27 +59,21 @@ class OrderedColorsDao {
 		return $this->orderedStrategy;
 	}
 
+
 	public function addColor($colorName, $colorHex) {
 		self::getLog()->info("adding color ($colorName, $colorHex)");
-
-		$this->pdoConnection->beginTransaction();
-		try {
-
-			self::getLog()->debug('inserting');
-			$insertStmt = $this->pdoConnection->prepare('INSERT INTO ordered_colors (name, hex_value) VALUES (:name, :hex_value)');
+		return $this->doInTransaction(function(OrderedColorsDao $dao, \Logger $log) use ($colorName, $colorHex) {
+			$log->debug('inserting');
+			$insertStmt = $dao->getPdoConnection()->prepare('INSERT INTO ordered_colors (name, hex_value) VALUES (:name, :hex_value)');
 			$insertStmt->execute(array(':name' => $colorName, ':hex_value' => $colorHex));
 
-			$id = $this->pdoConnection->lastInsertId();
-			self::getLog()->debug('moving to end of list');
-			$pos = $this->orderedStrategy->moveToEnd($id);
+			$id = $dao->getPdoConnection()->lastInsertId();
+			$log->debug('moving to end of list');
+			$pos = $dao->getOrderedStrategy()->moveToEnd($id);
 
-			self::getLog()->debug("committing ($id, $colorName, $colorHex, $pos)");
-			$this->pdoConnection->commit();
+			$log->debug("committing ($id, $colorName, $colorHex, $pos)");
 			return $id;
-		} catch(\Exception $e) {
-			self::getLog()->debug('exception caught', $e);
-			$this->pdoConnection->rollBack();
-			throw $e;
-		}
+
+		});
 	}
 }

@@ -9,11 +9,17 @@
     <bean id="pdoConnection" class="PDO">
    		<!-- LOCAL DB -->
    		<constructor-arg index="0" value="sqlite:db/examples.sqlite" />
-   		<constructor-arg index="1" value="sa" />
+        <constructor-arg index="1" value="sa" />
+        <!--<constructor-arg index="0" value="mysql:host=127.0.0.1;dbname=bee_test" />-->
+   		<!--<constructor-arg index="1" value="root" />-->
    		<constructor-arg index="2" value="" />
    	</bean>
 
     <bean id="orderedColorsDao" class="Persistence\Pdo\OrderedColorsDao">
+        <constructor-arg index="0" ref="pdoConnection" />
+    </bean>
+
+    <bean id="simpleHierarchyDao" class="Persistence\Pdo\SimpleHierarchyDao">
         <constructor-arg index="0" ref="pdoConnection" />
     </bean>
 
