@@ -1,5 +1,6 @@
 <?php
-namespace Bee\Persistence\Behaviors\Ordered;
+namespace Bee\Persistence\Behaviors\NestedSet;
+
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -18,37 +19,41 @@ namespace Bee\Persistence\Behaviors\Ordered;
 
 /**
  * User: mp
- * Date: 05.05.13
- * Time: 23:07
+ * Date: 07.05.13
+ * Time: 15:58
  */
+
 interface IDelegate {
 
 	/**
-	 * @param mixed $orderedEntity
+	 * @param mixed $nestedSetEntity
 	 * @param mixed $restriction
-	 * @return int|bool
+	 * @return NodeInfo
 	 */
-	public function getPosition($orderedEntity, $restriction = false);
+	public function getNodeInfo($nestedSetEntity, $restriction = false);
 
 	/**
-	 * @param mixed $orderedEntity
+	 * @param mixed $nestedSetEntity
 	 * @param mixed $restriction
-	 * @return int
+	 * @return NodeInfo
 	 */
-	public function getMaxPosition($orderedEntity, $restriction = false);
+	public function getTreeInfo($nestedSetEntity, $restriction = false);
 
 	/**
-	 * @param mixed $orderedEntity
-	 * @param int $newPos
-	 * @param int|bool $oldPos
-	 * @param $restriction
-	 */
-	public function shiftPosition($orderedEntity, $newPos, $oldPos, $restriction = false);
-
-	/**
-	 * @param mixed $orderedEntity
-	 * @param int $newPos
+	 * @param mixed $nestedSetEntity
+	 * @param NodeInfo $oldInfo
+	 * @param int $newLft
+	 * @param int $newLvl
 	 * @param mixed $restriction
 	 */
-	public function setPosition($orderedEntity, $newPos, $restriction = false);
+	public function setPosition($nestedSetEntity, NodeInfo $oldInfo, $newLft, $newLvl, $restriction = false);
+
+	/**
+	 * @param mixed $nestedSetEntity
+	 * @param int $delta
+	 * @param int $lowerBoundIncl
+	 * @param int $upperBoundExcl
+	 * @param mixed $restriction
+	 */
+	public function shift($nestedSetEntity, $delta, $lowerBoundIncl, $upperBoundExcl, $restriction = false);
 }
