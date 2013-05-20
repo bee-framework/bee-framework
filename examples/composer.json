@@ -1,0 +1,7 @@
+{
+    "require": {
+        "doctrine/orm": "~2.3@stable",
+        "doctrine/doctrine1": "~1.2@stable"
+    },
+    "minimum-stability": "dev"
+}

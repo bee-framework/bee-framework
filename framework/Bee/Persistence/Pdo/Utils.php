@@ -38,6 +38,23 @@ class Utils {
 	/**
 	 * @param \PDOStatement $qry
 	 * @param array $params
+	 * @return mixed
+	 */
+	public static function fetchOneNumericOrFalse(\PDOStatement $qry, array $params) {
+		return self::numericOrFalse(self::fetchOne($qry, $params));
+	}
+
+	/**
+	 * @param $result
+	 * @return bool|int
+	 */
+	public static function numericOrFalse($result) {
+		return is_numeric($result) ? $result : false;
+	}
+
+	/**
+	 * @param \PDOStatement $qry
+	 * @param array $params
 	 * @return array
 	 */
 	public static function fetchRow(\PDOStatement $qry, array $params) {

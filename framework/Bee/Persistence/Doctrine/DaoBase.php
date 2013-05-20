@@ -18,6 +18,21 @@
 class Bee_Persistence_Doctrine_DaoBase {
 	
 	/**
+	 * @var \Logger
+	 */
+	private static $log;
+
+	/**
+	 * @return \Logger
+	 */
+	protected static function getLog() {
+		if (!self::$log) {
+			self::$log = \Bee_Framework::getLoggerForClass(__CLASS__);
+		}
+		return self::$log;
+	}
+
+	/**
 	 * Enter description here...
 	 *
 	 * @var Doctrine_Connection
@@ -147,4 +162,25 @@ class Bee_Persistence_Doctrine_DaoBase {
         }
     }
 
+	/**
+	 * @param callback $func
+	 * @throws \Exception
+	 * @return mixed
+	 */
+	public function doInTransaction($func) {
+		$this->getDoctrineConnection()->beginTransaction();
+		try {
+			$result = $func($this, self::getLog());
+
+			$this->getDoctrineConnection()->commit();
+			$this->getDoctrineConnection()->flush();
+
+			return $result;
+		} catch(\Exception $e) {
+			self::getLog()->debug('exception caught', $e);
+			$this->getDoctrineConnection()->rollBack();
+			throw $e;
+		}
+
+	}
 }

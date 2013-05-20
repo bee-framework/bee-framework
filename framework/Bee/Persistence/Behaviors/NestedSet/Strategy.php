@@ -16,6 +16,7 @@ namespace Bee\Persistence\Behaviors\NestedSet;
  * limitations under the License.
  */
 
+use Bee\Persistence\Behaviors\IOrderedStrategy;
 use Bee\Persistence\Behaviors\NestedSet\IDelegate;
 
 /**
@@ -23,7 +24,7 @@ use Bee\Persistence\Behaviors\NestedSet\IDelegate;
  * Date: 07.05.13
  * Time: 15:49
  */
-class Strategy {
+class Strategy implements IOrderedStrategy{
 
 	/**
 	 * @var \Logger
@@ -78,7 +79,7 @@ class Strategy {
 	 * @param mixed $groupRestriction
 	 * @return NodeInfo
 	 */
-	public function moveAsPrevSibling($subject, $ref, $groupRestriction = false) {
+	public function moveBefore($subject, $ref, $groupRestriction = false) {
 		return $this->moveRelative($subject, $ref, $groupRestriction, true, false);
 	}
 
@@ -88,7 +89,7 @@ class Strategy {
 	 * @param mixed $groupRestriction
 	 * @return NodeInfo
 	 */
-	public function moveAsNextSibling($subject, $ref, $groupRestriction = false) {
+	public function moveAfter($subject, $ref, $groupRestriction = false) {
 		return $this->moveRelative($subject, $ref, $groupRestriction, false, false);
 	}
 
@@ -161,10 +162,10 @@ class Strategy {
 			$delta = $subjectInfo->getSpan();
 
 			// shift set boundaries
-			if (!$subjectInfo->isNotNew() || $newLeft < $subjectInfo->lft) {
+			if (!$subjectInfo->isInTree() || $newLeft < $subjectInfo->lft) {
 				// shift up
 				$lowerBound = $newLeft;
-				$upperBound = $subjectInfo->lft;
+				$upperBound = $subjectInfo->lft >=  0 ? $subjectInfo->lft : false;
 			} else {
 				// shift down
 				$delta *= -1;
@@ -174,7 +175,7 @@ class Strategy {
 			}
 
 			// if subject previously had a valid position (i.e. is not newly inserted) ...
-			if ($subjectInfo->isNotNew()) {
+			if ($subjectInfo->isInTree()) {
 				// ... temporarily move it to a neutral position, so as to avoid any conflicts (e.g. SQL constraints)
 				// (keep its original level for now)
 				$this->delegate->setPosition($subject, $subjectInfo, -$subjectInfo->getSpan(), $subjectInfo->lvl, $groupRestriction);
@@ -196,6 +197,26 @@ class Strategy {
 	}
 
 	/**
+	 * Remove the given subject and its children from the hierarchy by setting the managed set fields to NULL and
+	 * restoring consistency of the rest of the hierarchy. Does not actually delete any rows!
+	 * @param mixed $subject
+	 * @param mixed $groupRestriction
+	 * @throws \Exception
+	 */
+	public function remove($subject, $groupRestriction = false) {
+		$subjectInfo = $this->delegate->getNodeInfo($subject);
+		if(!$subjectInfo->isInTree()) {
+			throw new \Exception('Trying to remove a subject that is not in a hierarchy : ' . $subject);
+		}
+
+		// store the subtree in the negative area (in case we do not want to delete it, but rather move it to a different tree)
+		$this->delegate->setPosition($subject, $subjectInfo, -$subjectInfo->getSpan(), 0, $groupRestriction);
+
+		// restore numbering consistency
+		$this->delegate->shift($subject, -$subjectInfo->getSpan(), $subjectInfo->rgt + 1, false, $groupRestriction);
+	}
+
+	/**
 	 * @param NodeInfo $subjectInfo
 	 * @param NodeInfo $newParentInfo
 	 * @param bool $strict
@@ -205,5 +226,23 @@ class Strategy {
 		if ($subjectInfo->contains($newParentInfo, $strict)) {
 			throw new \Exception('Moved node must not contain its prospective parent');
 		}
+	}
+
+	/**
+	 * @param mixed $subject
+	 * @param mixed $groupRestriction
+	 * @return NodeInfo new position
+	 */
+	public function moveToStart($subject, $groupRestriction = false) {
+		return $this->moveAsFirstRoot($subject, $groupRestriction);
+	}
+
+	/**
+	 * @param mixed $subject
+	 * @param mixed $groupRestriction
+	 * @return NodeInfo new position
+	 */
+	public function moveToEnd($subject, $groupRestriction = false) {
+		return $this->moveAsLastRoot($subject, $groupRestriction);
 	}
 }
