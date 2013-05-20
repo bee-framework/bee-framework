@@ -26,7 +26,7 @@ use Bee\Persistence\Pdo\Utils;
  * Date: 07.05.13
  * Time: 18:06
  */
- 
+
 class GenericNestedSetDelegate extends DelegateBase implements IDelegate {
 
 	const GET_POSITION_QUERY_TEMPLATE = 'SELECT %1$s AS lft, %2$s AS rgt, %3$s AS lvl FROM %4$s WHERE %5$s AND %6$s';
@@ -106,7 +106,7 @@ class GenericNestedSetDelegate extends DelegateBase implements IDelegate {
 	 * @param mixed $restriction
 	 */
 	public function setPosition($nestedSetEntity, NodeInfo $oldInfo, $newLft, $newLvl, $restriction = false) {
-		if($oldInfo->isNotNew()) {
+		if ($oldInfo->hasStructure()) {
 			$params = array(':pos_delta' => $newLft - $oldInfo->lft, ':lvl_delta' => $newLvl - $oldInfo->lvl, ':lft' => $oldInfo->lft, ':rgt' => $oldInfo->rgt);
 			$qryString = sprintf(self::SET_POSITION_QUERY_TEMPLATE, $this->leftFieldName, $this->rightFieldName, $this->levelFieldName,
 				$this->getQueryDomain(), $this->getDomainRestrictionString($nestedSetEntity, $params, $restriction));
@@ -129,23 +129,29 @@ class GenericNestedSetDelegate extends DelegateBase implements IDelegate {
 	 */
 	public function shift($nestedSetEntity, $delta, $lowerBoundIncl, $upperBoundExcl, $restriction = false) {
 		$params = array(':delta' => $delta, ':lower_bound' => $lowerBoundIncl);
-		if($upperBoundExcl !== false) {
+		if ($upperBoundExcl !== false) {
 			$params[':upper_bound'] = $upperBoundExcl;
 		}
 		$qryTempl = $upperBoundExcl !== false ? self::SHIFT_QUERY_TEMPLATE : self::SHIFT_QUERY_OPEN_TEMPLATE;
 
 		$qryDomain = $this->getQueryDomain();
 		$domRes = $this->getDomainRestrictionString($nestedSetEntity, $params, $restriction);
+
+		// order updates only if supported by the driver and not operating on a joined relation
 		$orderUpdate = $this->pdoSupportsFeature(self::FEATURE_ORDERED_UPDATE) && stripos($qryDomain, ' JOIN ') === false;
 
+		// update left positions
 		$qryString = sprintf($qryTempl, $qryDomain, $this->leftFieldName, $domRes);
-		if ($upperBoundExcl !== false && $orderUpdate) {
+//		if ($upperBoundExcl !== false && $orderUpdate) {
+		if ($orderUpdate) {
 			$qryString .= ' ORDER BY ' . $this->leftFieldName . ($delta > 0 ? ' DESC' : ' ASC');
 		}
 		$this->getPdo()->prepare($qryString)->execute($params);
 
+		// update right positions
 		$qryString = sprintf($qryTempl, $qryDomain, $this->rightFieldName, $domRes);
-		if ($upperBoundExcl !== false && $orderUpdate) {
+//		if ($upperBoundExcl !== false && $orderUpdate) {
+		if ($orderUpdate) {
 			$qryString .= ' ORDER BY ' . $this->rightFieldName . ($delta > 0 ? ' DESC' : ' ASC');
 		}
 		$this->getPdo()->prepare($qryString)->execute($params);

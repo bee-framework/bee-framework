@@ -15,12 +15,27 @@
    		<constructor-arg index="2" value="" />
    	</bean>
 
-    <bean id="orderedColorsDao" class="Persistence\Pdo\OrderedColorsDao">
+    <!-- PDO stuff -->
+    <bean id="orderedColorsDaoPdo" class="Persistence\Pdo\OrderedColorsDao">
         <constructor-arg index="0" ref="pdoConnection" />
     </bean>
 
     <bean id="simpleHierarchyDao" class="Persistence\Pdo\SimpleHierarchyDao">
         <constructor-arg index="0" ref="pdoConnection" />
     </bean>
+
+    <!-- Persistence - Doctrine 1 stuff -->
+   	<bean id="doctrineManager" class="Doctrine_Manager" factory-method="getInstance" />
+
+   	<bean id="doctrineConnection" factory-bean="doctrineManager" factory-method="openConnection">
+   		<constructor-arg index="0" ref="pdoConnection" />
+   		<property name="charset" value="utf8" />
+   	</bean>
+
+    <bean id="doctrineDaoTemplate" abstract="true">
+        <constructor-arg index="0" ref="doctrineConnection" />
+   	</bean>
+
+    <bean id="orderedColorsDaoDoctrine" class="Persistence\Doctrine\OrderedColorsDao" parent="doctrineDaoTemplate" />
 
 </beans>

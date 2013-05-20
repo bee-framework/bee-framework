@@ -71,7 +71,7 @@ final class NodeInfo {
 	 * @return int
 	 */
 	public function getSpan() {
-		return $this->isNotNew() ? $this->rgt - $this->lft + 1 : 2;
+		return $this->hasStructure() ? $this->rgt - $this->lft + 1 : 2;
 	}
 
 	/**
@@ -84,8 +84,15 @@ final class NodeInfo {
 	/**
 	 * @return bool
 	 */
-	public function isNotNew() {
-		return $this->lft !== false && $this->rgt !== false;
+	public function hasStructure() {
+		return is_numeric($this->rgt) && is_numeric($this->lft);
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isInTree() {
+		return $this->rgt > 0 && $this->lft > 0;
 	}
 
 	function __toString() {

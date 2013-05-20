@@ -1,6 +1,7 @@
 <?php
 use Persistence\Pdo\SimpleHierarchyDao;
-use Persistence\Pdo\OrderedColorsDao;
+use Persistence\Pdo\OrderedColorsDao as OrderedColorsDaoPdo;
+use Persistence\Doctrine\OrderedColorsDao as OrderedColorsDaoDoctrine;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -24,6 +25,7 @@ use Persistence\Pdo\OrderedColorsDao;
  */
 
 require_once '../framework/Bee/Framework.php';
+require_once 'vendor/autoload.php';
 
 // Verzeichnis mit Applikations-Klassen zum Classpath hinzufügen
 Bee_Framework::addApplicationIncludePath('classes');
@@ -42,30 +44,74 @@ $ctx = new Bee_Context_Xml('conf/context.xml');
 
 $ctx->getBean('pdoConnection')->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 /*
- * == EXAMPLE : Ordered Dao =============================================
+ * == EXAMPLE : Ordered Dao (PDO) =============================================
  */
-$dao = $ctx->getBean('orderedColorsDao');
+$dao = $ctx->getBean('orderedColorsDaoPdo');
 
 $dao->createTable();
+$dao->deleteAllColors();
 
 $redId = $dao->addColor('Red', '#ff0000');
 $greenId = $dao->addColor('Green', '#00ff00');
-$dao->addColor('Blue', '#0000ff');
+$blueId = $dao->addColor('Blue', '#0000ff');
 $dao->addColor('Yellow', '#ffff00');
 $purpleId = $dao->addColor('Purple', '#ff00ff');
 $cyanId = $dao->addColor('Cyan', '#00ffff');
 
-//$dao->doInTransaction(function(OrderedColorsDao $dao, \Logger $log) use ($greenId, $purpleId) {
-//	$dao->getOrderedStrategy()->moveAfter($greenId, $purpleId);
-//});
-//
-//$dao->doInTransaction(function(OrderedColorsDao $dao, \Logger $log) use ($redId, $cyanId) {
-//	$dao->getOrderedStrategy()->moveAfter($redId, $cyanId);
-//});
-//
-//$dao->doInTransaction(function(OrderedColorsDao $dao, \Logger $log) use ($purpleId, $redId) {
-//	$dao->getOrderedStrategy()->moveBefore($purpleId, $redId);
-//});
+$dao->doInTransaction(function(OrderedColorsDaoPdo $dao, \Logger $log) use ($greenId, $purpleId) {
+	$dao->getOrderedStrategy()->moveAfter($greenId, $purpleId);
+});
+
+$dao->doInTransaction(function(OrderedColorsDaoPdo $dao, \Logger $log) use ($redId, $cyanId) {
+	$dao->getOrderedStrategy()->moveAfter($redId, $cyanId);
+});
+
+$dao->doInTransaction(function(OrderedColorsDaoPdo $dao, \Logger $log) use ($purpleId, $redId) {
+	$dao->getOrderedStrategy()->moveBefore($purpleId, $redId);
+});
+
+$dao->doInTransaction(function(OrderedColorsDaoPdo $dao, \Logger $log) use ($blueId) {
+	$dao->getOrderedStrategy()->remove($blueId);
+});
+
+$dao->doInTransaction(function(OrderedColorsDaoPdo $dao, \Logger $log) use ($redId) {
+	$dao->getOrderedStrategy()->remove($redId);
+});
+
+/*
+ * == EXAMPLE : Ordered Dao (Doctrine) =============================================
+ */
+$dao = $ctx->getBean('orderedColorsDaoDoctrine');
+
+$dao->createTable();
+$dao->deleteAllColors();
+
+$redId = $dao->addColor('Red', '#ff0000');
+$greenId = $dao->addColor('Green', '#00ff00');
+$blueId = $dao->addColor('Blue', '#0000ff');
+$dao->addColor('Yellow', '#ffff00');
+$purpleId = $dao->addColor('Purple', '#ff00ff');
+$cyanId = $dao->addColor('Cyan', '#00ffff');
+
+$dao->doInTransaction(function(OrderedColorsDaoDoctrine $dao, \Logger $log) use ($greenId, $purpleId) {
+	$dao->getOrderedStrategy()->moveAfter($greenId, $purpleId);
+});
+
+$dao->doInTransaction(function(OrderedColorsDaoDoctrine $dao, \Logger $log) use ($redId, $cyanId) {
+	$dao->getOrderedStrategy()->moveAfter($redId, $cyanId);
+});
+
+$dao->doInTransaction(function(OrderedColorsDaoDoctrine $dao, \Logger $log) use ($purpleId, $redId) {
+	$dao->getOrderedStrategy()->moveBefore($purpleId, $redId);
+});
+
+$dao->doInTransaction(function(OrderedColorsDaoDoctrine $dao, \Logger $log) use ($blueId) {
+	$dao->getOrderedStrategy()->remove($blueId);
+});
+
+$dao->doInTransaction(function(OrderedColorsDaoDoctrine $dao, \Logger $log) use ($redId) {
+	$dao->getOrderedStrategy()->remove($redId);
+});
 
 /*
  * == EXAMPLE : NestedSet Dao =============================================
@@ -73,6 +119,7 @@ $cyanId = $dao->addColor('Cyan', '#00ffff');
 $dao = $ctx->getBean('simpleHierarchyDao');
 
 $dao->createTable();
+$dao->deleteAll();
 
 $id1 = $dao->addEntry('Entry 1');
 $id2 = $dao->addEntry('Entry 2');
@@ -86,7 +133,7 @@ $id9 = $dao->addEntry('Entry 9');
 
 
 $dao->doInTransaction(function(SimpleHierarchyDao $dao, \Logger $log) use ($id9, $id1) {
-	$dao->getNestedSetStrategy()->moveAsPrevSibling($id9, $id1);
+	$dao->getNestedSetStrategy()->moveBefore($id9, $id1);
 });
 
 $dao->doInTransaction(function(SimpleHierarchyDao $dao, \Logger $log) use ($id5, $id4) {
@@ -102,7 +149,15 @@ $dao->doInTransaction(function(SimpleHierarchyDao $dao, \Logger $log) use ($id8,
 });
 
 $dao->doInTransaction(function(SimpleHierarchyDao $dao, \Logger $log) use ($id1, $id8) {
-	$dao->getNestedSetStrategy()->moveAsNextSibling($id1, $id8);
+	$dao->getNestedSetStrategy()->moveAfter($id1, $id8);
+});
+
+$dao->doInTransaction(function(SimpleHierarchyDao $dao, \Logger $log) use ($id6) {
+	$dao->getNestedSetStrategy()->remove($id6);
+});
+
+$dao->doInTransaction(function(SimpleHierarchyDao $dao, \Logger $log) use ($id6, $id9) {
+	$dao->getNestedSetStrategy()->moveAsLastChild($id6, $id9);
 });
 
 /*

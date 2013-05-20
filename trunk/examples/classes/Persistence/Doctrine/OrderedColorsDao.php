@@ -1,10 +1,5 @@
 <?php
-namespace Persistence\Pdo;
-
-use Bee\Persistence\Behaviors\Ordered\Strategy as OrderedStrategy;
-use Bee\Persistence\Pdo\Behaviors\GenericOrderedDelegate;
-use Bee\Persistence\Pdo\SimpleDaoBase;
-
+namespace Persistence\Doctrine;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -20,36 +15,28 @@ use Bee\Persistence\Pdo\SimpleDaoBase;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Persistence\Doctrine\Behaviors\GenericOrderedDelegate;
+use Bee\Persistence\Behaviors\Ordered\Strategy as OrderedStrategy;
 
 /**
  * User: mp
- * Date: 07.05.13
- * Time: 12:12
+ * Date: 20.05.13
+ * Time: 14:11
  */
  
-class OrderedColorsDao extends SimpleDaoBase {
+class OrderedColorsDao extends \Bee_Persistence_Doctrine_DaoBase {
+
+	const ENTITY_CLASS_NAME = 'Persistence\Doctrine\OrderedColorsEntity';
 
 	/**
 	 * @var OrderedStrategy
 	 */
 	private $orderedStrategy;
 
-	public function __construct(\PDO $pdoConnection) {
-		parent::__construct($pdoConnection);
-		$pdoOrderedDelagate = new GenericOrderedDelegate('ordered_colors_pdo', $pdoConnection);
+	public function __construct(\Doctrine_Connection $conn) {
+		$this->setDoctrineConnection($conn);
+		$pdoOrderedDelagate = new GenericOrderedDelegate(self::ENTITY_CLASS_NAME, $conn);
 		$this->orderedStrategy = new OrderedStrategy($pdoOrderedDelagate);
-	}
-
-	/**
-	 *
-	 */
-	public function createTable() {
-		$this->getPdoConnection()->exec('CREATE TABLE IF NOT EXISTS "ordered_colors_pdo" (
-			 "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-			 "name" text NOT NULL,
-			 "hex_value" text NOT NULL,
-			 "pos" integer DEFAULT NULL)'
-		);
 	}
 
 	/**
@@ -59,10 +46,14 @@ class OrderedColorsDao extends SimpleDaoBase {
 		return $this->orderedStrategy;
 	}
 
+	public function createTable() {
+		\Doctrine_Core::createTablesFromArray(array(self::ENTITY_CLASS_NAME));
+	}
+
 	public function deleteAllColors() {
 		$this->doInTransaction(function(OrderedColorsDao $dao, \Logger $log) {
 			$log->debug('deleting all colors');
-			$dao->getPdoConnection()->exec('DELETE FROM ordered_colors_pdo');
+			$dao->getDoctrineConnection()->createQuery()->delete(OrderedColorsDao::ENTITY_CLASS_NAME)->execute();
 		});
 	}
 
@@ -70,16 +61,16 @@ class OrderedColorsDao extends SimpleDaoBase {
 		self::getLog()->info("adding color ($colorName, $colorHex)");
 		return $this->doInTransaction(function(OrderedColorsDao $dao, \Logger $log) use ($colorName, $colorHex) {
 			$log->debug('inserting');
-			$insertStmt = $dao->getPdoConnection()->prepare('INSERT INTO ordered_colors_pdo (name, hex_value) VALUES (:name, :hex_value)');
-			$insertStmt->execute(array(':name' => $colorName, ':hex_value' => $colorHex));
+			$entity = new OrderedColorsEntity();
+			$entity->setName($colorName);
+			$entity->setHexValue($colorHex);
+			$entity->save($dao->getDoctrineConnection());
 
-			$id = $dao->getPdoConnection()->lastInsertId();
 			$log->debug('moving to end of list');
-			$pos = $dao->getOrderedStrategy()->moveToEnd($id);
+			$pos = $dao->getOrderedStrategy()->moveToEnd($entity);
 
-			$log->debug("committing ($id, $colorName, $colorHex, $pos)");
-			return $id;
-
+			$log->debug("committing ($entity->id, $colorName, $colorHex, $pos)");
+			return $entity;
 		});
 	}
 }

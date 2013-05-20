@@ -30,8 +30,9 @@ class GenericOrderedDelegate extends DelegateBase implements IDelegate {
 	const GET_POS_QUERY_TEMPLATE = 'SELECT %1$s FROM %2$s WHERE %3$s AND %4$s';
 	const MAX_POS_QUERY_TEMPLATE = 'SELECT MAX(%1$s) FROM %2$s WHERE %3$s';
 	const SHIFT_UP_QUERY_TEMPLATE = 'UPDATE %2$s SET %1$s = %1$s + 1 WHERE %1$s >= :newPos AND %1$s < :oldPos AND %3$s';
-	const SHIFT_UP_QUERY_OPEN_TEMPLATE = 'UPDATE %2$s SET %1$s = %1$s + 1 WHERE %1$s >= :newPos AND %3$s';
 	const SHIFT_DOWN_QUERY_TEMPLATE = 'UPDATE %2$s SET %1$s = %1$s - 1 WHERE %1$s <= :newPos AND %1$s > :oldPos AND %3$s';
+	const SHIFT_UP_QUERY_OPEN_TEMPLATE = 'UPDATE %2$s SET %1$s = %1$s + 1 WHERE %1$s >= :newPos AND %3$s';
+	const SHIFT_DOWN_QUERY_OPEN_TEMPLATE = 'UPDATE %2$s SET %1$s = %1$s - 1 WHERE %1$s > :oldPos AND %3$s';
 	const SET_POS_QUERY_TEMPLATE = 'UPDATE %2$s SET %1$s = :newPos WHERE %3$s AND %4$s';
 
 	/**
@@ -62,8 +63,7 @@ class GenericOrderedDelegate extends DelegateBase implements IDelegate {
 		$params = array();
 		$qryString = sprintf(self::GET_POS_QUERY_TEMPLATE, $this->getPosExpression(), $this->getQueryDomain(),
 			$this->getIdentityRestrictionString($orderedEntity, $params), $this->getDomainRestrictionString($orderedEntity, $params, $restriction));
-		$result = Utils::fetchOne($this->getPdo()->prepare($qryString), $params);
-		return is_numeric($result) ? $result : false;
+		return Utils::fetchOneNumericOrFalse($this->getPdo()->prepare($qryString), $params);
 	}
 
 	/**
@@ -75,8 +75,7 @@ class GenericOrderedDelegate extends DelegateBase implements IDelegate {
 		$params = array();
 		$qryString = sprintf(self::MAX_POS_QUERY_TEMPLATE, $this->getPosExpression(), $this->getQueryDomain(),
 			$this->getDomainRestrictionString($orderedEntity, $params, $restriction));
-		$result = Utils::fetchOne($this->getPdo()->prepare($qryString), $params);
-		return is_numeric($result) ? $result : false;
+		return Utils::fetchOneNumericOrFalse($this->getPdo()->prepare($qryString), $params);
 	}
 
 	/**
@@ -86,11 +85,17 @@ class GenericOrderedDelegate extends DelegateBase implements IDelegate {
 	 * @param mixed $restriction
 	 */
 	public function shiftPosition($orderedEntity, $newPos, $oldPos, $restriction = false) {
-		$params = array(':newPos' => $newPos);
+		$params = array();
 		if($oldPos !== false) {
 			$params[':oldPos'] = $oldPos;
-			$qryTempl = $newPos < $oldPos ? self::SHIFT_UP_QUERY_TEMPLATE : self::SHIFT_DOWN_QUERY_TEMPLATE;
+			if($newPos !== false) {
+				$params[':newPos'] = $newPos;
+				$qryTempl = $newPos < $oldPos ? self::SHIFT_UP_QUERY_TEMPLATE : self::SHIFT_DOWN_QUERY_TEMPLATE;
+			} else {
+				$qryTempl = self::SHIFT_DOWN_QUERY_OPEN_TEMPLATE;
+			}
 		} else {
+			$params[':newPos'] = $newPos;
 			$qryTempl = self::SHIFT_UP_QUERY_OPEN_TEMPLATE;
 		}
 		$qryDomain = $this->getQueryDomain();

@@ -48,8 +48,15 @@ class SimpleHierarchyDao extends SimpleDaoBase {
 			 "name" text NOT NULL,
 			 "lft" integer DEFAULT NULL,
 			 "rgt" integer DEFAULT NULL,
-			 "lvl" integer DEFAULT NULL
-		)');
+			 "lvl" integer DEFAULT NULL)'
+		);
+	}
+
+	public function deleteAll() {
+		$this->doInTransaction(function(SimpleHierarchyDao $dao, \Logger $log) {
+			$log->debug('deleting all hierarchy entries');
+			$dao->getPdoConnection()->exec('DELETE FROM simple_hierarchy');
+		});
 	}
 
 	/**
@@ -72,6 +79,6 @@ class SimpleHierarchyDao extends SimpleDaoBase {
 
 			$log->debug("committing ($id, $name, $info)");
 			return $id;
-		}, array('name' => $name));
+		});
 	}
 }
