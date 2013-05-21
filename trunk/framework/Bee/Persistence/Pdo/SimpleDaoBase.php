@@ -75,6 +75,5 @@ class SimpleDaoBase {
 			$this->pdoConnection->rollBack();
 			throw $e;
 		}
-
 	}
 }

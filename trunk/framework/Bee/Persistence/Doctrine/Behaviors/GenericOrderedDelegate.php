@@ -16,6 +16,7 @@ namespace Bee\Persistence\Doctrine\Behaviors;
  * limitations under the License.
  */
 use Bee\Persistence\Behaviors\Ordered\IDelegate;
+use Bee\Persistence\Pdo\FeatureDetector;
 use Bee\Persistence\Pdo\Utils;
 
 /**
@@ -61,7 +62,7 @@ class GenericOrderedDelegate extends DelegateBase implements IDelegate {
 	 * @return int
 	 */
 	public function getMaxPosition($orderedEntity, $restriction = false) {
-		$qry = $this->addCustomRestricitons($this->getEntityBaseQuery($orderedEntity, $restriction), $restriction);
+		$qry = $this->addGroupRestriction($this->getEntityBaseQuery($orderedEntity, $restriction), $orderedEntity, $restriction);
 		$result = $this->addMaxPositionSelect($qry)->fetchOne(array(), \Doctrine_Core::HYDRATE_SINGLE_SCALAR);
 		return Utils::numericOrFalse($result);
 	}
@@ -76,7 +77,7 @@ class GenericOrderedDelegate extends DelegateBase implements IDelegate {
 	public function shiftPosition($orderedEntity, $newPos, $oldPos, $restriction = false) {
 		$params = array();
 
-		$qry = $this->addCustomRestricitons($this->getEntityUpdateBaseQuery(), $restriction);
+		$qry = $this->addGroupRestriction($this->getEntityUpdateBaseQuery(), $orderedEntity, $restriction);
 
 		if($oldPos !== false) {
 			if($newPos !== false) {
@@ -108,8 +109,8 @@ class GenericOrderedDelegate extends DelegateBase implements IDelegate {
 
 
 		// if this is a single table update, add ORDER clause to avoid unique constraint violation (if driver supports it)
-		if ($oldPos !== false && $this->pdoSupportsFeature(self::FEATURE_ORDERED_UPDATE) /*&& stripos($qryDomain, ' JOIN ') === false*/) {
-			$qry->orderBy($this->getPosExpression() . ($newPos < $oldPos ? ' DESC' : ' ASC'));
+		if ($oldPos !== false && $this->pdoSupportsFeature(FeatureDetector::FEATURE_ORDERED_UPDATE) /*&& stripos($qryDomain, ' JOIN ') === false*/) {
+			$qry->orderBy($this->getPosExpression() . ($newPos !== false && ($newPos < $oldPos) ? ' DESC' : ' ASC'));
 		}
 
 		$qry->execute($params);
@@ -121,7 +122,7 @@ class GenericOrderedDelegate extends DelegateBase implements IDelegate {
 	 * @param mixed $restriction
 	 */
 	public function setPosition($orderedEntity, $newPos, $restriction = false) {
-		$qry = $this->addCustomRestricitons($this->getEntityUpdateBaseQuery(), $restriction);
+		$qry = $this->addGroupRestriction($this->getEntityUpdateBaseQuery(), $orderedEntity, $restriction);
 		$this->addIdentityRestriction($qry, $orderedEntity);
 		$qry->set($this->getPosExpression(), is_null($newPos) ? 'NULL' : $newPos)->execute();
 	}
@@ -134,7 +135,7 @@ class GenericOrderedDelegate extends DelegateBase implements IDelegate {
 	protected function getIdentityBaseQuery($orderedEntity, $restriction = false) {
 		$qry = $this->getEntityBaseQuery();
 		$this->addIdentityRestriction($qry, $orderedEntity);
-		return $this->addCustomRestricitons($qry, $restriction);
+		return $this->addGroupRestriction($qry, $orderedEntity, $restriction);
 	}
 
 	/**
@@ -151,15 +152,5 @@ class GenericOrderedDelegate extends DelegateBase implements IDelegate {
 	 */
 	protected function addMaxPositionSelect(\Doctrine_Query $qry) {
 		return $qry->select('MAX('.$this->getPosExpression().')');
-	}
-
-	/**
-	 * @param \Doctrine_Query $qry
-	 * @param mixed $restriction
-	 * @return \Doctrine_Query
-	 */
-	protected function addCustomRestricitons(\Doctrine_Query $qry, $restriction = false) {
-		// no default implementation
-		return $qry;
 	}
 }

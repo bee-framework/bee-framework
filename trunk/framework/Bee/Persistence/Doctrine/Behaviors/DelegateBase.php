@@ -15,7 +15,9 @@ namespace Bee\Persistence\Doctrine\Behaviors;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Persistence\Behaviors\AbstractFieldBasedDelegate;
 use Bee\Persistence\Pdo\FeatureDetector;
+use Bee\Persistence\Pdo\Utils;
 
 /**
  * User: mp
@@ -23,21 +25,12 @@ use Bee\Persistence\Pdo\FeatureDetector;
  * Time: 02:19
  */
  
-class DelegateBase extends FeatureDetector {
+class DelegateBase extends AbstractFieldBasedDelegate {
+
 	/**
 	 * @var \Doctrine_Connection
 	 */
 	private $doctrineConnection;
-
-	/**
-	 * @var string
-	 */
-	private $entityClass;
-
-	/**
-	 * @var string
-	 */
-	private $idFieldName = 'id';
 
 	/**
 	 * @param string $entityClass
@@ -45,7 +38,7 @@ class DelegateBase extends FeatureDetector {
 	 * @return \Bee\Persistence\Doctrine\Behaviors\DelegateBase
 	 */
 	public function __construct($entityClass, \Doctrine_Connection $doctrineConnection) {
-		$this->entityClass = $entityClass;
+		parent::__construct($entityClass);
 		$this->doctrineConnection = $doctrineConnection;
 	}
 
@@ -57,38 +50,17 @@ class DelegateBase extends FeatureDetector {
 	}
 
 	/**
-	 * @return string
-	 */
-	public function getEntityClass() {
-		return $this->entityClass;
-	}
-
-	/**
-	 * @param string $idFieldName
-	 */
-	public function setIdFieldName($idFieldName) {
-		$this->idFieldName = $idFieldName;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getIdFieldName() {
-		return $this->idFieldName;
-	}
-
-	/**
 	 * @return \Doctrine_Query
 	 */
 	protected function getEntityBaseQuery() {
-		return $this->getDoctrineConnection()->createQuery()->from($this->entityClass);
+		return $this->getDoctrineConnection()->createQuery()->from($this->getQueryDomain());
 	}
 
 	/**
 	 * @return \Doctrine_Query
 	 */
 	protected function getEntityUpdateBaseQuery() {
-		return $this->getDoctrineConnection()->createQuery()->update($this->entityClass);
+		return $this->getDoctrineConnection()->createQuery()->update($this->getQueryDomain());
 	}
 
 	/**
@@ -99,7 +71,7 @@ class DelegateBase extends FeatureDetector {
 	 */
 	protected function addIdentityRestriction(\Doctrine_Query $qry, $orderedEntity) {
 		if($orderedEntity instanceof \Doctrine_Record) {
-			$id = $orderedEntity->get($this->idFieldName);
+			$id = $orderedEntity->get($this->getIdFieldName());
 		} else if(is_numeric($orderedEntity)) {
 			$id = $orderedEntity;
 		} else {
@@ -108,11 +80,34 @@ class DelegateBase extends FeatureDetector {
 		return $qry->addWhere('id = :id', array(':id' => $id));
 	}
 
+	protected function addGroupRestriction(\Doctrine_Query $qry, $orderedEntity, $restriction = false) {
+		if ($this->getGroupFieldName()) {
+			if ($restriction === false) {
+				$restriction = $this->getGroup($orderedEntity);
+			}
+			$this->doAddGroupRestriction($qry, $restriction);
+		}
+		return $qry;
+	}
+
+	protected function doAddGroupRestriction(\Doctrine_Query $qry, $restriction = false) {
+		return $qry->addWhere($this->getGroupFieldName().' = :grp_id', array(':grp_id' => $restriction));
+	}
+
 	/**
 	 * @param string $feature
 	 * @return bool
 	 */
 	protected function pdoSupportsFeature($feature) {
-		return self::supports($feature, $this->getDoctrineConnection()->getDbh());
+		return FeatureDetector::supports($feature, $this->getDoctrineConnection()->getDbh());
+	}
+
+	/**
+	 * @param $entity
+	 * @return mixed
+	 */
+	protected function getGroup($entity) {
+		$grpQry = $this->getDoctrineConnection()->createQuery()->select($this->getGroupFieldName())->from($this->getQueryDomain());
+		return $this->addIdentityRestriction($grpQry, $entity)->fetchOne(array(), \Doctrine_Core::HYDRATE_SINGLE_SCALAR);
 	}
 }
