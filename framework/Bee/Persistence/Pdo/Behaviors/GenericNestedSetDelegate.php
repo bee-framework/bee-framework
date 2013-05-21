@@ -3,6 +3,7 @@ namespace Bee\Persistence\Pdo\Behaviors;
 
 use Bee\Persistence\Behaviors\NestedSet\IDelegate;
 use Bee\Persistence\Behaviors\NestedSet\NodeInfo;
+use Bee\Persistence\Pdo\FeatureDetector;
 use Bee\Persistence\Pdo\Utils;
 
 /*
@@ -138,7 +139,7 @@ class GenericNestedSetDelegate extends DelegateBase implements IDelegate {
 		$domRes = $this->getDomainRestrictionString($nestedSetEntity, $params, $restriction);
 
 		// order updates only if supported by the driver and not operating on a joined relation
-		$orderUpdate = $this->pdoSupportsFeature(self::FEATURE_ORDERED_UPDATE) && stripos($qryDomain, ' JOIN ') === false;
+		$orderUpdate = $this->pdoSupportsFeature(FeatureDetector::FEATURE_ORDERED_UPDATE) && stripos($qryDomain, ' JOIN ') === false;
 
 		// update left positions
 		$qryString = sprintf($qryTempl, $qryDomain, $this->leftFieldName, $domRes);

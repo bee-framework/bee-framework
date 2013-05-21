@@ -35,8 +35,9 @@ class OrderedColorsDao extends \Bee_Persistence_Doctrine_DaoBase {
 
 	public function __construct(\Doctrine_Connection $conn) {
 		$this->setDoctrineConnection($conn);
-		$pdoOrderedDelagate = new GenericOrderedDelegate(self::ENTITY_CLASS_NAME, $conn);
-		$this->orderedStrategy = new OrderedStrategy($pdoOrderedDelagate);
+		$delagate = new GenericOrderedDelegate(self::ENTITY_CLASS_NAME, $conn);
+		$delagate->setGroupFieldName('color_grp');
+		$this->orderedStrategy = new OrderedStrategy($delagate);
 	}
 
 	/**
@@ -57,19 +58,20 @@ class OrderedColorsDao extends \Bee_Persistence_Doctrine_DaoBase {
 		});
 	}
 
-	public function addColor($colorName, $colorHex) {
-		self::getLog()->info("adding color ($colorName, $colorHex)");
-		return $this->doInTransaction(function(OrderedColorsDao $dao, \Logger $log) use ($colorName, $colorHex) {
+	public function addColor($colorName, $colorHex, $grpId) {
+		self::getLog()->info("adding color ($colorName, $colorHex, $grpId)");
+		return $this->doInTransaction(function(OrderedColorsDao $dao, \Logger $log) use ($colorName, $colorHex, $grpId) {
 			$log->debug('inserting');
 			$entity = new OrderedColorsEntity();
 			$entity->setName($colorName);
 			$entity->setHexValue($colorHex);
+			$entity->setColorGrp($grpId);
 			$entity->save($dao->getDoctrineConnection());
 
 			$log->debug('moving to end of list');
 			$pos = $dao->getOrderedStrategy()->moveToEnd($entity);
 
-			$log->debug("committing ($entity->id, $colorName, $colorHex, $pos)");
+			$log->debug("committing ($entity->id, $colorName, $colorHex, $grpId, $pos)");
 			return $entity;
 		});
 	}

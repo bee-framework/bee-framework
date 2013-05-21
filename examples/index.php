@@ -24,6 +24,8 @@ use Persistence\Doctrine\OrderedColorsDao as OrderedColorsDaoDoctrine;
  * Time: 12:25
  */
 
+unlink('db/examples.sqlite');
+
 require_once '../framework/Bee/Framework.php';
 require_once 'vendor/autoload.php';
 
@@ -51,12 +53,17 @@ $dao = $ctx->getBean('orderedColorsDaoPdo');
 $dao->createTable();
 $dao->deleteAllColors();
 
-$redId = $dao->addColor('Red', '#ff0000');
-$greenId = $dao->addColor('Green', '#00ff00');
-$blueId = $dao->addColor('Blue', '#0000ff');
-$dao->addColor('Yellow', '#ffff00');
-$purpleId = $dao->addColor('Purple', '#ff00ff');
-$cyanId = $dao->addColor('Cyan', '#00ffff');
+$redId = $dao->addColor('Red', '#ff0000', 1);
+$greenId = $dao->addColor('Green', '#00ff00', 1);
+$blueId = $dao->addColor('Blue', '#0000ff', 1);
+$dao->addColor('Yellow', '#ffff00', 1);
+$purpleId = $dao->addColor('Purple', '#ff00ff', 1);
+$cyanId = $dao->addColor('Cyan', '#00ffff', 1);
+
+$redId2 = $dao->addColor('Red2', '#ff0000', 2);
+$greenId2 = $dao->addColor('Green2', '#00ff00', 2);
+$blueId2 = $dao->addColor('Blue2', '#0000ff', 2);
+$yellowId2 = $dao->addColor('Yellow2', '#ffff00', 2);
 
 $dao->doInTransaction(function(OrderedColorsDaoPdo $dao, \Logger $log) use ($greenId, $purpleId) {
 	$dao->getOrderedStrategy()->moveAfter($greenId, $purpleId);
@@ -86,12 +93,17 @@ $dao = $ctx->getBean('orderedColorsDaoDoctrine');
 $dao->createTable();
 $dao->deleteAllColors();
 
-$redId = $dao->addColor('Red', '#ff0000');
-$greenId = $dao->addColor('Green', '#00ff00');
-$blueId = $dao->addColor('Blue', '#0000ff');
-$dao->addColor('Yellow', '#ffff00');
-$purpleId = $dao->addColor('Purple', '#ff00ff');
-$cyanId = $dao->addColor('Cyan', '#00ffff');
+$redId = $dao->addColor('Red', '#ff0000', 1);
+$greenId = $dao->addColor('Green', '#00ff00', 1);
+$blueId = $dao->addColor('Blue', '#0000ff', 1);
+$dao->addColor('Yellow', '#ffff00', 1);
+$purpleId = $dao->addColor('Purple', '#ff00ff', 1);
+$cyanId = $dao->addColor('Cyan', '#00ffff', 1);
+
+$redId2 = $dao->addColor('Red2', '#ff0000', 2);
+$greenId2 = $dao->addColor('Green2', '#00ff00', 2);
+$blueId2 = $dao->addColor('Blue2', '#0000ff', 2);
+$yellowId2 = $dao->addColor('Yellow2', '#ffff00', 2);
 
 $dao->doInTransaction(function(OrderedColorsDaoDoctrine $dao, \Logger $log) use ($greenId, $purpleId) {
 	$dao->getOrderedStrategy()->moveAfter($greenId, $purpleId);

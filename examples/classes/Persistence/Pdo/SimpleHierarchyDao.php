@@ -35,27 +35,48 @@ class SimpleHierarchyDao extends SimpleDaoBase {
 
 	public function __construct(\PDO $pdoConnection) {
 		parent::__construct($pdoConnection);
-		$pdoNestedSetDelagate = new GenericNestedSetDelegate('simple_hierarchy', $pdoConnection);
-		$this->nestedSetStrategy = new NestedSetStrategy($pdoNestedSetDelagate);
+		$delagate = new GenericNestedSetDelegate('simple_hierarchy_pdo', $pdoConnection);
+		$delagate->setGroupFieldName('root_id');
+		$this->nestedSetStrategy = new NestedSetStrategy($delagate);
 	}
 
 	/**
 	 *
 	 */
 	public function createTable() {
-		$this->getPdoConnection()->exec('CREATE TABLE IF NOT EXISTS "simple_hierarchy" (
-			 "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-			 "name" text NOT NULL,
-			 "lft" integer DEFAULT NULL,
-			 "rgt" integer DEFAULT NULL,
-			 "lvl" integer DEFAULT NULL)'
-		);
+		$drvName = $this->getPdoConnection()->getAttribute(\PDO::ATTR_DRIVER_NAME);
+		switch ($drvName) {
+			case 'mysql':
+				$this->getPdoConnection()->exec('CREATE TABLE IF NOT EXISTS `simple_hierarchy_pdo` (
+					id bigint(20) NOT NULL AUTO_INCREMENT,
+					name varchar(255) NOT NULL,
+					root_id int(11) NOT NULL,
+					lft int(11) DEFAULT NULL,
+					rgt int(11) DEFAULT NULL,
+					lvl int(11) DEFAULT NULL,
+					PRIMARY KEY (id),
+					UNIQUE KEY grp_lft (root_id, lft),
+					UNIQUE KEY grp_rgt (root_id, rgt))
+					ENGINE=InnoDB CHARSET=utf8'
+				);
+				break;
+			case 'sqlite':
+				$this->getPdoConnection()->exec('CREATE TABLE IF NOT EXISTS "simple_hierarchy_pdo" (
+					"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+					"name" text NOT NULL,
+					"root_id" integer NOT NULL,
+					"lft" integer DEFAULT NULL,
+					"rgt" integer DEFAULT NULL,
+					"lvl" integer DEFAULT NULL)'
+				);
+				break;
+		}
 	}
 
 	public function deleteAll() {
 		$this->doInTransaction(function(SimpleHierarchyDao $dao, \Logger $log) {
 			$log->debug('deleting all hierarchy entries');
-			$dao->getPdoConnection()->exec('DELETE FROM simple_hierarchy');
+			$dao->getPdoConnection()->exec('DELETE FROM simple_hierarchy_pdo');
 		});
 	}
 
@@ -70,7 +91,7 @@ class SimpleHierarchyDao extends SimpleDaoBase {
 		return $this->doInTransaction(function(SimpleHierarchyDao $dao, \Logger $log) use ($name) {
 			$log->info("adding entry ($name)");
 			$log->debug('inserting');
-			$insertStmt = $dao->getPdoConnection()->prepare('INSERT INTO simple_hierarchy (name) VALUES (:name)');
+			$insertStmt = $dao->getPdoConnection()->prepare('INSERT INTO simple_hierarchy_pdo (name) VALUES (:name)');
 			$insertStmt->execute(array(':name' => $name));
 
 			$id = $dao->getPdoConnection()->lastInsertId();

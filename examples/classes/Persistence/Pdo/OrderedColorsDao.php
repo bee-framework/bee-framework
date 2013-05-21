@@ -26,7 +26,7 @@ use Bee\Persistence\Pdo\SimpleDaoBase;
  * Date: 07.05.13
  * Time: 12:12
  */
- 
+
 class OrderedColorsDao extends SimpleDaoBase {
 
 	/**
@@ -36,20 +36,39 @@ class OrderedColorsDao extends SimpleDaoBase {
 
 	public function __construct(\PDO $pdoConnection) {
 		parent::__construct($pdoConnection);
-		$pdoOrderedDelagate = new GenericOrderedDelegate('ordered_colors_pdo', $pdoConnection);
-		$this->orderedStrategy = new OrderedStrategy($pdoOrderedDelagate);
+		$delagate = new GenericOrderedDelegate('ordered_colors_pdo', $pdoConnection);
+		$delagate->setGroupFieldName('color_grp');
+		$this->orderedStrategy = new OrderedStrategy($delagate);
 	}
 
 	/**
 	 *
 	 */
 	public function createTable() {
-		$this->getPdoConnection()->exec('CREATE TABLE IF NOT EXISTS "ordered_colors_pdo" (
-			 "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-			 "name" text NOT NULL,
-			 "hex_value" text NOT NULL,
-			 "pos" integer DEFAULT NULL)'
-		);
+		$drvName = $this->getPdoConnection()->getAttribute(\PDO::ATTR_DRIVER_NAME);
+		switch ($drvName) {
+			case 'mysql':
+				$this->getPdoConnection()->exec('CREATE TABLE IF NOT EXISTS `ordered_colors_pdo` (
+					id bigint(20) NOT NULL AUTO_INCREMENT,
+					name varchar(255) NOT NULL,
+					hex_value varchar(7) NOT NULL,
+					color_grp int(11) NOT NULL,
+					pos int(11) DEFAULT NULL,
+					PRIMARY KEY (id),
+					UNIQUE KEY grp_pos_idx (color_grp, pos))
+					ENGINE=InnoDB CHARSET=utf8'
+				);
+				break;
+			case 'sqlite':
+				$this->getPdoConnection()->exec('CREATE TABLE IF NOT EXISTS "ordered_colors_pdo" (
+					"id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+					"name" text NOT NULL,
+					"hex_value" text NOT NULL,
+					"color_grp" integer NOT NULL,
+					"pos" integer DEFAULT NULL)'
+				);
+				break;
+		}
 	}
 
 	/**
@@ -60,24 +79,24 @@ class OrderedColorsDao extends SimpleDaoBase {
 	}
 
 	public function deleteAllColors() {
-		$this->doInTransaction(function(OrderedColorsDao $dao, \Logger $log) {
+		$this->doInTransaction(function (OrderedColorsDao $dao, \Logger $log) {
 			$log->debug('deleting all colors');
 			$dao->getPdoConnection()->exec('DELETE FROM ordered_colors_pdo');
 		});
 	}
 
-	public function addColor($colorName, $colorHex) {
-		self::getLog()->info("adding color ($colorName, $colorHex)");
-		return $this->doInTransaction(function(OrderedColorsDao $dao, \Logger $log) use ($colorName, $colorHex) {
+	public function addColor($colorName, $colorHex, $grpId) {
+		self::getLog()->info("adding color ($colorName, $colorHex, $grpId)");
+		return $this->doInTransaction(function (OrderedColorsDao $dao, \Logger $log) use ($colorName, $colorHex, $grpId) {
 			$log->debug('inserting');
-			$insertStmt = $dao->getPdoConnection()->prepare('INSERT INTO ordered_colors_pdo (name, hex_value) VALUES (:name, :hex_value)');
-			$insertStmt->execute(array(':name' => $colorName, ':hex_value' => $colorHex));
+			$insertStmt = $dao->getPdoConnection()->prepare('INSERT INTO ordered_colors_pdo (name, hex_value, color_grp) VALUES (:name, :hex_value, :grp_id)');
+			$insertStmt->execute(array(':name' => $colorName, ':hex_value' => $colorHex, ':grp_id' => $grpId));
 
 			$id = $dao->getPdoConnection()->lastInsertId();
 			$log->debug('moving to end of list');
 			$pos = $dao->getOrderedStrategy()->moveToEnd($id);
 
-			$log->debug("committing ($id, $colorName, $colorHex, $pos)");
+			$log->debug("committing ($id, $colorName, $colorHex, $grpId, $pos)");
 			return $id;
 
 		});

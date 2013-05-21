@@ -97,6 +97,7 @@ class Strategy implements IOrderedStrategy {
 	 * @return int
 	 */
 	public function moveRelative($subject, $ref, $before = true, $groupRestriction = false) {
+
 		// determine previous position of subject
 		$oldPos = $this->delegate->getPosition($subject, $groupRestriction);
 
@@ -113,10 +114,10 @@ class Strategy implements IOrderedStrategy {
 			}
 		} else {
 			// no, "move behind nothing" means "move to beginning", "move before nothing" means "move to the end"
-			$newPos = 0;
+			$newPos = 1;
 			if ($before) {
 				$maxPos = $this->delegate->getMaxPosition($subject, $groupRestriction);
-				$newPos = $maxPos !== false ? $maxPos + 1 : 0;
+				$newPos = $maxPos !== false ? $maxPos + 1 : 1;
 			}
 		}
 

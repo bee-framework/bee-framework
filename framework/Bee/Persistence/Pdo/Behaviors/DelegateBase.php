@@ -1,6 +1,7 @@
 <?php
 namespace Bee\Persistence\Pdo\Behaviors;
 
+use Bee\Persistence\Behaviors\AbstractFieldBasedDelegate;
 use Bee\Persistence\Pdo\FeatureDetector;
 use Bee\Persistence\Pdo\Utils;
 
@@ -27,7 +28,7 @@ use \PDOStatement;
  * Date: 05.05.13
  * Time: 23:52
  */
-abstract class DelegateBase extends FeatureDetector {
+abstract class DelegateBase extends AbstractFieldBasedDelegate {
 
 	const GROUP_QUERY_TEMPLATE = 'SELECT %1$s FROM %2$s WHERE %3$s';
 
@@ -37,28 +38,12 @@ abstract class DelegateBase extends FeatureDetector {
 	private $pdo;
 
 	/**
-	 * @var string
-	 */
-	private $queryDomain;
-
-	/**
-	 * @var string
-	 */
-	private $idFieldName = 'id';
-
-	/**
-	 * @var string
-	 */
-	private $groupFieldName;
-
-	/**
 	 * @param string $queryDomain
 	 * @param \PDO $pdo
 	 * @return \Bee\Persistence\Pdo\Behaviors\DelegateBase
 	 */
 	public function __construct($queryDomain, \PDO $pdo) {
-		\Bee_Utils_Assert::hasText($queryDomain, 'Query domain (table name / table joins) required, must not be empty');
-		$this->queryDomain = $queryDomain;
+		parent::__construct($queryDomain);
 		$this->pdo = $pdo;
 	}
 
@@ -70,46 +55,11 @@ abstract class DelegateBase extends FeatureDetector {
 	}
 
 	/**
-	 * @return string
-	 */
-	public function getQueryDomain() {
-		return $this->queryDomain;
-	}
-
-	/**
-	 * @param string $idFieldName
-	 */
-	public function setIdFieldName($idFieldName) {
-		$this->idFieldName = $idFieldName;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getIdFieldName() {
-		return $this->idFieldName;
-	}
-
-	/**
-	 * @param string $domainFieldName
-	 */
-	public function setGroupFieldName($domainFieldName) {
-		$this->groupFieldName = $domainFieldName;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getGroupFieldName() {
-		return $this->groupFieldName;
-	}
-
-	/**
 	 * @param string $feature
 	 * @return bool
 	 */
 	protected function pdoSupportsFeature($feature) {
-		return self::supports($feature, $this->getPdo());
+		return FeatureDetector::supports($feature, $this->getPdo());
 	}
 
 	/**
@@ -120,7 +70,7 @@ abstract class DelegateBase extends FeatureDetector {
 	 */
 	protected function getIdentityRestrictionString($entity, array &$params) {
 		$params[':id'] = $entity;
-		return $this->idFieldName . ' = :id';
+		return $this->getIdFieldName() . ' = :id';
 	}
 
 	/**
@@ -134,9 +84,7 @@ abstract class DelegateBase extends FeatureDetector {
 		if ($this->getGroupFieldName()) {
 			if ($restriction === false) {
 				// determine group value
-				$grpParams = array();
-				$qryString = sprintf(self::GROUP_QUERY_TEMPLATE, $this->getGroupFieldName(), $this->getQueryDomain(), $this->getIdentityRestrictionString($entity, $params));
-				$restriction = Utils::fetchOne($this->getPdo()->prepare($qryString), $grpParams);
+				$restriction = $this->getGroup($entity);
 			}
 			$result = $this->doCreateRestrictionString($params, $restriction);
 		}
@@ -151,5 +99,16 @@ abstract class DelegateBase extends FeatureDetector {
 	protected function doCreateRestrictionString(array &$params, $restriction) {
 		$params[':group_id'] = $restriction;
 		return $this->getGroupFieldName() . ' = :group_id';
+	}
+
+	/**
+	 * @param $entity
+	 * @return mixed
+	 */
+	protected function getGroup($entity) {
+		// determine group value
+		$params = array();
+		$qryString = sprintf(self::GROUP_QUERY_TEMPLATE, $this->getGroupFieldName(), $this->getQueryDomain(), $this->getIdentityRestrictionString($entity, $params));
+		return Utils::fetchOne($this->getPdo()->prepare($qryString), $params);
 	}
 }

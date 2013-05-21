@@ -2,6 +2,7 @@
 namespace Bee\Persistence\Pdo\Behaviors;
 
 use Bee\Persistence\Behaviors\Ordered\IDelegate;
+use Bee\Persistence\Pdo\FeatureDetector;
 use Bee\Persistence\Pdo\Utils;
 
 /*
@@ -69,7 +70,7 @@ class GenericOrderedDelegate extends DelegateBase implements IDelegate {
 	/**
 	 * @param $orderedEntity
 	 * @param $restriction
-	 * @return mixed
+	 * @return int|bool
 	 */
 	public function getMaxPosition($orderedEntity, $restriction = false) {
 		$params = array();
@@ -103,8 +104,8 @@ class GenericOrderedDelegate extends DelegateBase implements IDelegate {
 			$this->getDomainRestrictionString($orderedEntity, $params, $restriction));
 
 		// if this is a single table update, add ORDER clause to avoid unique constraint violation (if driver supports it)
-		if ($oldPos !== false && $this->pdoSupportsFeature(self::FEATURE_ORDERED_UPDATE) && stripos($qryDomain, ' JOIN ') === false) {
-			$qryString .= ' ORDER BY ' . $this->getPosExpression() . ($newPos < $oldPos ? ' DESC' : ' ASC');
+		if ($oldPos !== false && $this->pdoSupportsFeature(FeatureDetector::FEATURE_ORDERED_UPDATE) && stripos($qryDomain, ' JOIN ') === false) {
+			$qryString .= ' ORDER BY ' . $this->getPosExpression() . ($newPos !== false && ($newPos < $oldPos) ? ' DESC' : ' ASC');
 		}
 
 		$this->getPdo()->prepare($qryString)->execute($params);
