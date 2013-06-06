@@ -34,7 +34,7 @@ class Bee_Text_Normalization_PEARNormalizer implements Bee_Text_Normalization_IN
 	 * @return string
 	 */
 	public function normalize($input, $form = self::UNICODE_NORMALIZATION_COMPOSED) {
-		$this->normalizer->normalize($input, $form);
+		return $this->normalizer->normalize($input, $form);
 	}
 
 	public function __construct() {

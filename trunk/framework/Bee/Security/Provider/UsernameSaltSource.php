@@ -18,12 +18,14 @@
 /**
  * Provides alternative sources of the salt to use for encoding passwords.
  */
-interface Bee_Security_Provider_ISaltSource {
+class Bee_Security_Provider_UsernameSaltSource implements Bee_Security_Provider_ISaltSource {
 	/**
 	 * Returns the salt to use for the indicated user.
 	 *
 	 * @param Bee_Security_IUserDetails $user from the <code>AuthenticationDao</code>
 	 * @return String the salt to use for this <code>Bee_Security_IUserDetails</code>
 	 */
-    public function getSalt(Bee_Security_IUserDetails $user);
+    public function getSalt(Bee_Security_IUserDetails $user) {
+        return $user->getUsername();
+    }
 }
