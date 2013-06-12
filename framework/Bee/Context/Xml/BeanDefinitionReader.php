@@ -63,7 +63,10 @@ class Bee_Context_Xml_BeanDefinitionReader {
 		try {
 			$document = new DOMDocument();
 			$document->load($location);
-			$this->registerBeanDefinitions($document); 
+            if (is_null($document->documentElement)) {
+                throw new Exception('Failed to load XML document: '.$location);
+            }
+			$this->registerBeanDefinitions($document);
 		} catch (Exception $ex) {
 			unset($this->resourcesBeingLoaded[$location]);
 			throw $ex;
