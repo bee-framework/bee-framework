@@ -462,7 +462,9 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 		if (!$this->isDefaultNamespace($ele->namespaceURI)) {
 
 			// todo MP: why is this missing? prevents XMLs with e.g. nested <util:array/> elements from being parsed
-			return $this->parseNestedCustomElement($ele, $bd);
+//			return $this->parseNestedCustomElement($ele, $bd);
+//			return $this->parseCustomElement($ele, $bd);
+			throw new Bee_Context_BeanCreationException($bd->getBeanClassName(), 'Namespaced nested elements are currently not supported');
 
 		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::BEAN_ELEMENT)) {
 
@@ -630,7 +632,8 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	/**
 	 * Enter description here...
 	 *
-	 * @param DOMElement $root
+	 * @param DOMElement $ele
+	 * @param Bee_Context_Config_IBeanDefinition $containingBd
 	 * @return Bee_Context_Config_IBeanDefinition
 	 */
 	public function parseCustomElement(DOMElement $ele, Bee_Context_Config_IBeanDefinition $containingBd = null) {
