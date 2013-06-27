@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Persistence\Doctrine2;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -14,14 +15,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use \Doctrine\ORM\EntityManager;
 
-abstract class Bee_Context_Support_BeanUtils {
-	
-	public static function instantiateClass($className, array $args = null) {
-		$class = new ReflectionClass($className);
-		if(is_null($args)||count($args) == 0) {
-			return $class->newInstance();
-		}
-		return $class->newInstanceArgs($args);
+/**
+ * User: mp
+ * Date: 27.06.13
+ * Time: 04:17
+ */
+ 
+class EntityManagerHolder {
+
+	/**
+	 * @var EntityManager
+	 */
+	private $entityManager;
+
+	/**
+     * @return EntityManager $entityManager
+	 */
+    public function getEntityManager() {
+        return $this->entityManager;
 	}
+
+	/**
+     * @param $entityManager EntityManager
+	 */
+    public function setEntityManager(EntityManager $entityManager) {
+        $this->entityManager = $entityManager;
+    }
 }

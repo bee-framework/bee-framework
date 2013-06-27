@@ -84,13 +84,13 @@ class Bee_Utils_Assert {
 	}
 
 
-	
 	/**
 	 * Assert that the given String has valid text content; that is, it must not
 	 * be <code>null</code> and must contain at least one non-whitespace character.
 	 * <pre class="code">Assert.hasText(name, "'name' must not be empty");</pre>
-	 * @param text the String to check
-	 * @param message the exception message to use if the assertion fails
+	 * @param string $text the String to check
+	 * @param string $message the exception message to use if the assertion fails
+	 * @throws InvalidArgumentException
 	 * @see StringUtils#hasText
 	 */
 	public static function hasText($text, $message="[Assertion failed] - this String argument must have text; it must not be null, empty, or blank") {
@@ -108,11 +108,11 @@ class Bee_Utils_Assert {
 	}
 	
 	public static function notEmpty(array $arr, $message = '[Assertion failed] - array must not be empty') {
-        return self::isTrue(count($arr) > 0, $message); 
+        self::isTrue(count($arr) > 0, $message);
     }
 	
 	public static function isEmpty(array $arr, $message = '[Assertion failed] - array must be empty') {
-        return self::isTrue(count($arr) === 0, $message);
+        self::isTrue(count($arr) === 0, $message);
     }
 
 

@@ -41,12 +41,12 @@ class Bee_Utils_Strings {
         if(is_null($text)) {
             return false;
         }
-//        self::checkIsString($text);
+        self::checkIsString($text);
 		return self::hasLength(trim(strval($text)));
 	}
 
     private static function checkIsString($text) {
-        if (!is_string($text)) {
+        if ($text !== false && $text !== null && !is_string($text)) {
             throw new Bee_Exceptions_TypeMismatch(Bee_Utils_ITypeDefinitions::STRING, Bee_Utils_Types::getType($text));
         }
     }

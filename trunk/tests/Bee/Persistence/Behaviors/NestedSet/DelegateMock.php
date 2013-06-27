@@ -1,6 +1,5 @@
 <?php
 namespace Bee\Persistence\Behaviors\NestedSet;
-
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -19,25 +18,40 @@ namespace Bee\Persistence\Behaviors\NestedSet;
 
 /**
  * User: mp
- * Date: 07.05.13
- * Time: 15:58
+ * Date: 25.06.13
+ * Time: 21:05
  */
+ 
+class DelegateMock implements IDelegate {
 
-interface IDelegate {
+	public $protocol = array();
+
+	/**
+	 * @var NodeInfo
+	 */
+	private $nodeInfo;
+
+	public function __construct($lft = 1, $rgt = false, $lvl = 0) {
+		$this->nodeInfo = new NodeInfo(array(NodeInfo::LEFT_KEY => $lft, NodeInfo::LEVEL_KEY => $lvl, NodeInfo::RIGHT_KEY => $rgt));
+	}
 
 	/**
 	 * @param mixed $nestedSetEntity
 	 * @param mixed $restriction
 	 * @return NodeInfo
 	 */
-	public function getNodeInfo($nestedSetEntity, $restriction = false);
+	public function getNodeInfo($nestedSetEntity, $restriction = false) {
+		return $this->nodeInfo;
+	}
 
 	/**
 	 * @param mixed $nestedSetEntity
 	 * @param mixed $restriction
 	 * @return NodeInfo
 	 */
-	public function getTreeInfo($nestedSetEntity, $restriction = false);
+	public function getTreeInfo($nestedSetEntity, $restriction = false) {
+		// TODO: Implement getTreeInfo() method.
+	}
 
 	/**
 	 * @param mixed $nestedSetEntity
@@ -45,9 +59,10 @@ interface IDelegate {
 	 * @param bool|int $newLft
 	 * @param bool|int $newLvl
 	 * @param mixed $restriction
-	 * @return
 	 */
-	public function setPosition($nestedSetEntity, NodeInfo $nodeInfo, $newLft = false, $newLvl = false, $restriction = false);
+	public function setPosition($nestedSetEntity, NodeInfo $nodeInfo, $newLft = false, $newLvl = false, $restriction = false) {
+		array_push($this->protocol, sprintf('id=%s; lft=%d; rgt=%d; lvl=%d;', $nestedSetEntity->getId(), $nodeInfo->lft, $nodeInfo->rgt, $nodeInfo->lvl));
+	}
 
 	/**
 	 * @param mixed $nestedSetEntity
@@ -56,5 +71,7 @@ interface IDelegate {
 	 * @param int $upperBoundExcl
 	 * @param mixed $restriction
 	 */
-	public function shift($nestedSetEntity, $delta, $lowerBoundIncl, $upperBoundExcl, $restriction = false);
+	public function shift($nestedSetEntity, $delta, $lowerBoundIncl, $upperBoundExcl, $restriction = false) {
+		array_push($this->protocol, sprintf('delta=%d; %d<=lft/rgt%s;', $delta, $lowerBoundIncl, $upperBoundExcl !== false ? '<'.$upperBoundExcl : ''));
+	}
 }

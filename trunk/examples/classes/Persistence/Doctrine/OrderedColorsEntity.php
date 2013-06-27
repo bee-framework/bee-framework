@@ -21,7 +21,6 @@ namespace Persistence\Doctrine;
  * Date: 20.05.13
  * Time: 14:07
  */
-
 class OrderedColorsEntity extends \Doctrine_Record {
 
 	public function setTableDefinition() {

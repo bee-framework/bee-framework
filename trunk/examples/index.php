@@ -1,7 +1,4 @@
 <?php
-use Persistence\Pdo\SimpleHierarchyDao;
-use Persistence\Pdo\OrderedColorsDao as OrderedColorsDaoPdo;
-use Persistence\Doctrine\OrderedColorsDao as OrderedColorsDaoDoctrine;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -24,27 +21,12 @@ use Persistence\Doctrine\OrderedColorsDao as OrderedColorsDaoDoctrine;
  * Time: 12:25
  */
 
-unlink('db/examples.sqlite');
+require_once('bootstrap.php');
 
-require_once '../framework/Bee/Framework.php';
-require_once 'vendor/autoload.php';
+use Persistence\Pdo\SimpleHierarchyDao;
+use Persistence\Pdo\OrderedColorsDao as OrderedColorsDaoPdo;
+use Persistence\Doctrine\OrderedColorsDao as OrderedColorsDaoDoctrine;
 
-// Verzeichnis mit Applikations-Klassen zum Classpath hinzufügen
-Bee_Framework::addApplicationIncludePath('classes');
-
-Bee_Framework::addApplicationIncludePath('../libs/apache-log4php-2.3.0');
-Bee_Framework::addApplicationIncludePath('../libs/apache-log4php-2.3.0/helpers');
-Bee_Framework::addApplicationIncludePath('../libs/apache-log4php-2.3.0/pattern');
-Bee_Framework::addApplicationIncludePath('../libs/apache-log4php-2.3.0/layouts');
-Bee_Framework::addApplicationIncludePath('../libs/apache-log4php-2.3.0/appenders');
-Bee_Framework::addApplicationIncludePath('../libs/apache-log4php-2.3.0/configurators');
-Bee_Framework::addApplicationIncludePath('../libs/apache-log4php-2.3.0/renderers');
-
-Logger::configure('conf/log4php.xml');
-
-$ctx = new Bee_Context_Xml('conf/context.xml');
-
-$ctx->getBean('pdoConnection')->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 /*
  * == EXAMPLE : Ordered Dao (PDO) =============================================
  */

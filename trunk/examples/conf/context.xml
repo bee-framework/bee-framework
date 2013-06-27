@@ -1,41 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.beeframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:security="http://www.beeframework.org/schema/security"
+       xmlns:utils="http://www.beeframework.org/schema/util"
        xsi:schemaLocation="http://www.beeframework.org/schema/beans http://www.beeframework.org/schema/beans/bee-beans-1.2.xsd
-       http://www.beeframework.org/schema/security http://www.beeframework.org/schema/security/bee-security-1.0.xsd">
+       http://www.beeframework.org/schema/util http://www.beeframework.org/schema/utils/bee-utils-1.0.xsd">
 
     <!-- Persistence - PDO Connection -->
     <bean id="pdoConnection" class="PDO">
-   		<!-- LOCAL DB -->
-   		<!--<constructor-arg index="0" value="sqlite:db/examples.sqlite" />-->
+        <!-- LOCAL DB -->
+        <!--<constructor-arg index="0" value="sqlite:db/examples.sqlite" />-->
         <!--<constructor-arg index="1" value="sa" />-->
-        <constructor-arg index="0" value="mysql:host=127.0.0.1;dbname=bee_test" />
-   		<constructor-arg index="1" value="root" />
-   		<constructor-arg index="2" value="" />
-   	</bean>
+        <constructor-arg index="0" value="mysql:host=127.0.0.1;dbname=bee_test"/>
+        <constructor-arg index="1" value="root"/>
+        <constructor-arg index="2" value=""/>
+    </bean>
+
+    <utils:array id="doctrine2DbParams">
+        <assoc-item key="driver" value="pdo_mysql"/>
+        <assoc-item key="user" value="root"/>
+        <assoc-item key="password" value=""/>
+        <assoc-item key="dbname" value="bee_test"/>
+    </utils:array>
 
     <!-- PDO stuff -->
     <bean id="orderedColorsDaoPdo" class="Persistence\Pdo\OrderedColorsDao">
-        <constructor-arg index="0" ref="pdoConnection" />
+        <constructor-arg index="0" ref="pdoConnection"/>
     </bean>
 
     <bean id="simpleHierarchyDao" class="Persistence\Pdo\SimpleHierarchyDao">
-        <constructor-arg index="0" ref="pdoConnection" />
+        <constructor-arg index="0" ref="pdoConnection"/>
     </bean>
 
     <!-- Persistence - Doctrine 1 stuff -->
-   	<bean id="doctrineManager" class="Doctrine_Manager" factory-method="getInstance" />
+    <bean id="doctrineManager" class="Doctrine_Manager" factory-method="getInstance"/>
 
-   	<bean id="doctrineConnection" factory-bean="doctrineManager" factory-method="openConnection">
-   		<constructor-arg index="0" ref="pdoConnection" />
-   		<property name="charset" value="utf8" />
-   	</bean>
+    <bean id="doctrineConnection" factory-bean="doctrineManager" factory-method="openConnection">
+        <constructor-arg index="0" ref="pdoConnection"/>
+        <property name="charset" value="utf8"/>
+    </bean>
 
     <bean id="doctrineDaoTemplate" abstract="true">
-        <constructor-arg index="0" ref="doctrineConnection" />
-   	</bean>
+        <constructor-arg index="0" ref="doctrineConnection"/>
+    </bean>
 
-    <bean id="orderedColorsDaoDoctrine" class="Persistence\Doctrine\OrderedColorsDao" parent="doctrineDaoTemplate" />
+    <bean id="orderedColorsDaoDoctrine" class="Persistence\Doctrine\OrderedColorsDao" parent="doctrineDaoTemplate"/>
+
+    <bean id="doctrine2Config" class="Doctrine\ORM\Tools\Setup" factory-method="createAnnotationMetadataConfiguration">
+        <constructor-arg index="0">
+            <array>
+                <value>classes</value>
+            </array>
+        </constructor-arg>
+        <constructor-arg index="1" value="true"/>
+        <property name="sQLLogger">
+            <bean class="Bee\Persistence\Doctrine2\Log4PHPLogger"/>
+        </property>
+    </bean>
+
+    <bean id="entityManager" class="Doctrine\ORM\EntityManager" factory-method="create" scope="prototype">
+        <constructor-arg index="0" ref="doctrine2DbParams"/>
+        <constructor-arg index="1" ref="doctrine2Config"/>
+    </bean>
+
+    <bean id="cliHelperSet" class="Symfony\Component\Console\Helper\HelperSet">
+        <constructor-arg index="0">
+            <array>
+                <assoc-item key="db">
+                    <bean class="Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper">
+                        <constructor-arg index="0">
+                            <bean factory-bean="entityManager" factory-method="getConnection"/>
+                        </constructor-arg>
+                    </bean>
+                </assoc-item>
+                <assoc-item key="em">
+                    <bean class="Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper">
+                        <constructor-arg index="0" ref="entityManager"/>
+                    </bean>
+                </assoc-item>
+            </array>
+        </constructor-arg>
+    </bean>
+
+    <bean id="treeDao" class="Treetest\TreeDao">
+        <constructor-arg index="0" ref="entityManager"/>
+    </bean>
 
 </beans>

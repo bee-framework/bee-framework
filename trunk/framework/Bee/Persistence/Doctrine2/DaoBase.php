@@ -1,55 +1,33 @@
 <?php
 namespace Bee\Persistence\Doctrine2;
 
-use \Doctrine\ORM\EntityManager;
-
 /**
  * User: mp
  * Date: 05.05.13
  * Time: 17:26
  */
-class DaoBase {
+class DaoBase extends EntityManagerHolder {
 
 	/**
-	 * @var EntityManager
+	 * @param \Doctrine\ORM\QueryBuilder $queryBuilder
+	 * @param \Bee_Persistence_IRestrictionHolder $restrictionHolder
+	 * @param \Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder
+	 * @param array $defaultOrderMapping
+	 *
+	 * @internal param \Doctrine\ORM\QueryBuilder $query
+	 * @return array
 	 */
-	private $entityManager;
-
-	/**
-     * @return EntityManager $entityManager
-	 */
-    public function getEntityManager() {
-        return $this->entityManager;
-	}
-
-	/**
-     * @param $entityManager EntityManager
-	 */
-    public function setEntityManager(EntityManager $entityManager) {
-        $this->entityManager = $entityManager;
-    }
-
-
-
-
-    /**
-     * @param \Doctrine\ORM\QueryBuilder $query
-     * @param \Bee_Persistence_IRestrictionHolder $restrictionHolder
-     * @param \Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder
-     * @param array $defaultOrderMapping
-     *
-     * @return array
-     */
     public function executeListQuery(\Doctrine\ORM\QueryBuilder $queryBuilder, \Bee_Persistence_IRestrictionHolder $restrictionHolder = null, \Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping) {
         $this->applyFilterRestrictions($queryBuilder, $restrictionHolder);
         $this->applyOrderAndLimit($queryBuilder, $orderAndLimitHolder, $defaultOrderMapping);
         return $queryBuilder->getQuery()->execute();
     }
 
-    /**
-     * @param \Doctrine\ORM\QueryBuilder $query
-     * @param \Bee_Persistence_IRestrictionHolder $restrictionHolder
-     */
+	/**
+	 * @param \Doctrine\ORM\QueryBuilder $queryBuilder
+	 * @param \Bee_Persistence_IRestrictionHolder $restrictionHolder
+	 * @internal param \Doctrine\ORM\QueryBuilder $query
+	 */
     protected final function applyFilterRestrictions(\Doctrine\ORM\QueryBuilder &$queryBuilder, \Bee_Persistence_IRestrictionHolder $restrictionHolder = null) {
         if (is_null($restrictionHolder)) {
             return;
@@ -86,7 +64,7 @@ class DaoBase {
     }
 
 	/**
-	 * @param \Doctrine\ORM\QueryBuilder $query
+	 * @param \Doctrine\ORM\QueryBuilder $queryBuilder
 	 * @param \Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder
 	 * @param array $defaultOrderMapping
 	 */

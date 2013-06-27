@@ -22,7 +22,7 @@ namespace Bee\Persistence\Behaviors\NestedSet;
  * Time: 17:43
  */
 
-final class NodeInfo {
+class NodeInfo {
 
 	const LEFT_KEY = 'lft';
 	const RIGHT_KEY = 'rgt';
@@ -43,10 +43,12 @@ final class NodeInfo {
 	 */
 	public $lvl;
 
-	public function __construct(array $tuple) {
-		$this->lft = is_numeric($tuple[self::LEFT_KEY]) ? $tuple[self::LEFT_KEY] : false;
-		$this->rgt = is_numeric($tuple[self::RIGHT_KEY]) ? $tuple[self::RIGHT_KEY] : false;
-		$this->lvl = is_numeric($tuple[self::LEVEL_KEY]) ? $tuple[self::LEVEL_KEY] : false;
+	public function __construct(array $tuple = null) {
+		if(!is_null($tuple)) {
+			$this->lft = is_numeric($tuple[self::LEFT_KEY]) ? $tuple[self::LEFT_KEY] : false;
+			$this->rgt = is_numeric($tuple[self::RIGHT_KEY]) ? $tuple[self::RIGHT_KEY] : false;
+			$this->lvl = is_numeric($tuple[self::LEVEL_KEY]) ? $tuple[self::LEVEL_KEY] : false;
+		}
 	}
 
 	public function update($newLeft, $newLevel) {

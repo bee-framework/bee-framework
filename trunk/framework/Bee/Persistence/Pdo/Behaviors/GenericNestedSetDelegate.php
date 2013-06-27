@@ -101,18 +101,18 @@ class GenericNestedSetDelegate extends DelegateBase implements IDelegate {
 
 	/**
 	 * @param mixed $nestedSetEntity
-	 * @param NodeInfo $oldInfo
+	 * @param NodeInfo $nodeInfo
 	 * @param int $newLft
 	 * @param int $newLvl
 	 * @param mixed $restriction
 	 */
-	public function setPosition($nestedSetEntity, NodeInfo $oldInfo, $newLft, $newLvl, $restriction = false) {
-		if ($oldInfo->hasStructure()) {
-			$params = array(':pos_delta' => $newLft - $oldInfo->lft, ':lvl_delta' => $newLvl - $oldInfo->lvl, ':lft' => $oldInfo->lft, ':rgt' => $oldInfo->rgt);
+	public function setPosition($nestedSetEntity, NodeInfo $nodeInfo, $newLft = false, $newLvl = false, $restriction = false) {
+		if ($nodeInfo->hasStructure()) {
+			$params = array(':pos_delta' => $newLft - $nodeInfo->lft, ':lvl_delta' => $newLvl - $nodeInfo->lvl, ':lft' => $nodeInfo->lft, ':rgt' => $nodeInfo->rgt);
 			$qryString = sprintf(self::SET_POSITION_QUERY_TEMPLATE, $this->leftFieldName, $this->rightFieldName, $this->levelFieldName,
 				$this->getQueryDomain(), $this->getDomainRestrictionString($nestedSetEntity, $params, $restriction));
 		} else {
-			$params = array(':lft' => $newLft, ':rgt' => $newLft + $oldInfo->getSpan() - 1, ':lvl' => $newLvl);
+			$params = array(':lft' => $newLft, ':rgt' => $newLft + $nodeInfo->getSpan() - 1, ':lvl' => $newLvl);
 			$qryString = sprintf(self::SET_POSITION_QUERY_BY_ID_TEMPLATE, $this->leftFieldName, $this->rightFieldName,
 				$this->levelFieldName, $this->getQueryDomain(),
 				$this->getIdentityRestrictionString($nestedSetEntity, $params),

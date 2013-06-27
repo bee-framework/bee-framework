@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-abstract class Bee_Context_Support_BeanUtils {
-	
-	public static function instantiateClass($className, array $args = null) {
-		$class = new ReflectionClass($className);
-		if(is_null($args)||count($args) == 0) {
-			return $class->newInstance();
-		}
-		return $class->newInstanceArgs($args);
-	}
-}
+/**
+ * User: mp
+ * Date: 21.06.13
+ * Time: 14:40
+ */
+ 
+require_once "bootstrap.php";
+
+$helperSet = $ctx->getBean('cliHelperSet');
