@@ -1,4 +1,6 @@
 <?php
+namespace Bee\Persistence\Behaviors\NestedSet;
+
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -15,13 +17,20 @@
  * limitations under the License.
  */
 
-abstract class Bee_Context_Support_BeanUtils {
-	
-	public static function instantiateClass($className, array $args = null) {
-		$class = new ReflectionClass($className);
-		if(is_null($args)||count($args) == 0) {
-			return $class->newInstance();
-		}
-		return $class->newInstanceArgs($args);
-	}
+/**
+ * User: mp
+ * Date: 21.06.13
+ * Time: 14:07
+ */
+interface ITreeNode {
+
+	/**
+	 * @return ITreeNode
+	 */
+	public function getParent();
+
+	/**
+	 * @return ITreeNode[]
+	 */
+	public function getChildren();
 }

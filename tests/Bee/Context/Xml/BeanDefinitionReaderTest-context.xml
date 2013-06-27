@@ -3,7 +3,7 @@
 <beans xmlns="http://www.beeframework.org/schema/beans"
        xmlns:util="http://www.beeframework.org/schema/util"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.beeframework.org/schema/beans http://www.beeframework.org/schema/beans/bee-beans-1.1.xsd
+       xsi:schemaLocation="http://www.beeframework.org/schema/beans http://www.beeframework.org/schema/beans/bee-beans-1.2.xsd
        http://www.beeframework.org/schema/util http://www.beeframework.org/schema/beans/bee-utils-1.0.xsd" default-merge="true">
 
     <bean name="referencedBean,alias1,alias2" class="Bee_Context_Util_ArrayFactoryBean" />
@@ -12,9 +12,7 @@
         <value>Alpha</value>
         <value>Bravo</value>
         <value>Charlie</value>
-        <assoc-item key="d">
-            <bean class="Bee_Context_Util_ArrayFactoryBean" />
-        </assoc-item>
+        <bean class="Bee_Context_Util_ArrayFactoryBean" />
         <ref bean="referencedBean" />
     </util:array>
 
@@ -22,28 +20,28 @@
         <assoc-item key="d">
             <ref bean="referencedBean" />
         </assoc-item>
-        <value>Zulu</value>
+        <assoc-item key="a" value="Zulu" />
     </util:array>
 
     <util:array id="childArrayFactoryMergedDefault" scope="request" parent="arrayFactory" merge="default">
         <assoc-item key="d">
             <ref bean="referencedBean" />
         </assoc-item>
-        <value>Zulu</value>
+        <assoc-item key="a" value="Zulu" />
     </util:array>
 
     <util:array id="childArrayFactoryMergedFalse" scope="request" parent="arrayFactory" merge="false">
         <assoc-item key="d">
             <ref bean="referencedBean" />
         </assoc-item>
-        <value>Zulu</value>
+        <assoc-item key="a" value="Zulu" />
     </util:array>
 
     <util:array id="childArrayFactoryMergedNone" scope="request" parent="arrayFactory">
         <assoc-item key="d">
             <ref bean="referencedBean" />
         </assoc-item>
-        <value>Zulu</value>
+        <assoc-item key="a" value="Zulu" />
     </util:array>
 
 </beans>

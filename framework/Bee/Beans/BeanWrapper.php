@@ -34,31 +34,27 @@ class Bee_Beans_BeanWrapper {
 		$this->object = $object;
 	}
 	
-	
-	
 	public final function setPropertyValue($name, $value) {
-		$this->invokeSetter($name, $value);
+		call_user_func($this->findPropertyAccessor($name, 'set'), $value);
+	}
+
+	public final function getPropertyValue($name) {
+		return call_user_func($this->findPropertyAccessor($name, 'get'));
 	}
 	
-	
-	
-	protected function invokeSetter($name, $value) {
-		$setterMethodName = 'set'.ucfirst($name);
-		$setter = array($this->object, $setterMethodName);
-		if(!is_callable($setter)) {
-			 throw new Bee_Context_InvalidPropertyException($name, Bee_Utils_Types::getType($this->object), 'no setter found ('.$setterMethodName.')');
+	protected function findPropertyAccessor($propertyName, $prefix) {
+		$methodName = $prefix.ucfirst($propertyName);
+		$method = array($this->object, $methodName);
+		if(!is_callable($method)) {
+			 throw new Bee_Context_InvalidPropertyException($propertyName, Bee_Utils_Types::getType($this->object), 'no such method found: '.$methodName);
 		}
-		call_user_func($setter, $value);
+		return $method;
 	}
-	
-	
 	
 	public final function setPropertyValueWithPropertyValue(Bee_Beans_PropertyValue $propertyValue) {
 		$this->setPropertyValue($propertyValue->getName(), $propertyValue->getValue());
 	}
-	
-	
-	
+
 	public final function setPropertyValues(array $propertyValues) {
 		foreach ($propertyValues as $name => $propertyValue) {
 			if (!is_string($propertyValue) && Bee_Utils_Types::isAssignable($propertyValue, "Bee_Beans_PropertyValue")) {
@@ -69,4 +65,3 @@ class Bee_Beans_BeanWrapper {
 		}
 	}
 }
-?>

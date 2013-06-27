@@ -38,8 +38,11 @@ class Bee_Context_InvalidPropertyException extends Bee_Context_BeansException {
 	/**
 	 * Enter description here...
 	 *
-	 * @param string $name
-	 * @return void
+	 * @param string $propertyName
+	 * @param string $beanClassName
+	 * @param string $message
+	 * @internal param string $name
+	 * @return \Bee_Context_InvalidPropertyException
 	 */
 	public function __construct($propertyName, $beanClassName, $message=null) {
 		parent::__construct(sprintf(self::EXCEPTION_MESSAGE, $propertyName, $beanClassName, $message));

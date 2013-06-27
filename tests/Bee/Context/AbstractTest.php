@@ -49,7 +49,7 @@ class Bee_Context_AbstractTest extends PHPUnit_Framework_TestCase {
 	public function arrayMerged() {
 		$beanMerged = $this->context->getBean(self::BEAN_NAME_ARRAY_CHILD_MERGED);
 		$this->assertTrue(is_array($beanMerged));
-		$this->assertEquals(4, count($beanMerged));
+		$this->assertEquals(5, count($beanMerged));
 	}
 
 	/**

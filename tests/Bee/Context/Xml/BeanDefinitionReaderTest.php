@@ -77,7 +77,7 @@ class Bee_Context_Xml_BeanDefinitionReaderTest extends PHPUnit_Framework_TestCas
 
         $this->checkParentArrayContents($arrayValue);
 
-        $this->assertInstanceOf('Bee_Context_Config_BeanDefinitionHolder', $arrayValue['d']);
+        $this->assertInstanceOf('Bee_Context_Config_BeanDefinitionHolder', $arrayValue[3]);
     }
 
     /**
@@ -88,7 +88,7 @@ class Bee_Context_Xml_BeanDefinitionReaderTest extends PHPUnit_Framework_TestCas
         $this->assertTypedStringValue('Alpha', $arrayValue[0]);
         $this->assertTypedStringValue('Bravo', $arrayValue[1]);
         $this->assertTypedStringValue('Charlie', $arrayValue[2]);
-        $this->assertInstanceOf('Bee_Context_Config_RuntimeBeanReference', $arrayValue[3]);
+        $this->assertInstanceOf('Bee_Context_Config_RuntimeBeanReference', $arrayValue[4]);
     }
 
 	/**
@@ -103,7 +103,7 @@ class Bee_Context_Xml_BeanDefinitionReaderTest extends PHPUnit_Framework_TestCas
 
 	private function childArrayFactoryDefMerged($beanName) {
 		$arrayValue = $this->getSourceArrayValueForArrayFactory($beanName);
-		$this->assertArrayValueInstance($arrayValue, 6);
+		$this->assertArrayValueInstance($arrayValue, 7);
 		$this->checkParentArrayContents($arrayValue);
 		$this->assertInstanceOf('Bee_Context_Config_RuntimeBeanReference', $arrayValue['d']);
 	}
