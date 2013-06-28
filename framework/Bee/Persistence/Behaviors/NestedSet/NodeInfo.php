@@ -21,7 +21,6 @@ namespace Bee\Persistence\Behaviors\NestedSet;
  * Date: 07.05.13
  * Time: 17:43
  */
-
 class NodeInfo {
 
 	const LEFT_KEY = 'lft';
@@ -42,6 +41,11 @@ class NodeInfo {
 	 * @var int|bool
 	 */
 	public $lvl;
+
+	/**
+	 * @var array
+	 */
+	public $groupKey;
 
 	public function __construct(array $tuple = null) {
 		if(!is_null($tuple)) {
@@ -97,9 +101,21 @@ class NodeInfo {
 		return $this->rgt > 0 && $this->lft > 0;
 	}
 
-	function __toString() {
-		return "NodeInfo(lft:{$this->lft}|rgt:{$this->rgt}|lvl:{$this->lvl})";
+	/**
+	 * @return array
+	 */
+	public function getGroupKey() {
+		return $this->groupKey;
 	}
 
+	/**
+	 * @param array $groupKey
+	 */
+	public function setGroupKey($groupKey) {
+		$this->groupKey = $groupKey;
+	}
 
+	function __toString() {
+		return "NodeInfo(lft:{$this->lft}|rgt:{$this->rgt}|lvl:{$this->lvl}|group:[".implode(',', $this->groupKey)."])";
+	}
 }

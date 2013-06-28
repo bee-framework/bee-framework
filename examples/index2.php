@@ -22,54 +22,62 @@
  */
 
 use Treetest\Node;
+use Bee\Persistence\Behaviors\NestedSet\ITreeNode;
 
 require_once('bootstrap.php');
 
-function addChild(&$children, Node $node) {
+function addChild(ITreeNode $parent, Node $node) {
 	global $entityManager;
 	$entityManager->persist($node);
-	array_push($children, $node);
+	$parent->appendChild($node);
 }
 
-$root = new Node('Root Node');
+$treeDao = $ctx->getBean('treeDao', 'Treetest\TreeDao');
+
+$root = new Node('Root Node', 15);
 $entityManager->persist($root);
 
-addChild($root->getChildren(), new Node('Child 1-1'));
-addChild($root->getChildren(), new Node('Child 1-2'));
+addChild($root, new Node('Child 1-1'));
+addChild($root, new Node('Child 1-2'));
 
 $child13 = new Node('Child 1-3');
-addChild($root->getChildren(), $child13);
+addChild($root, $child13);
 
-addChild($child13->getChildren(), new Node('Child 1-3-1'));
-addChild($child13->getChildren(), new Node('Child 1-3-2'));
-
-$treeDao = $ctx->getBean('treeDao', 'Treetest\TreeDao');
+addChild($child13, new Node('Child 1-3-1'));
+addChild($child13, new Node('Child 1-3-2'));
 
 $treeDao->getNestedSetStrategy()->saveStructure($root);
 
 $entityManager->flush();
 $entityManager->close();
 
+//exit();
+
+
 // new EM instance
 $entityManager = $ctx->getBean('entityManager');
 
 $c12 = $entityManager->getRepository('Treetest\Node')->findOneBy(array('name' => 'Child 1-2'));
 
-addChild($c12->getChildren(), new Node('Child 1-2-1'));
-addChild($c12->getChildren(), new Node('Child 1-2-2'));
+addChild($c12, new Node('Child 1-2-1'));
+addChild($c12, new Node('Child 1-2-2'));
 
 $treeDao->getNestedSetStrategy()->saveStructure($c12);
 $entityManager->flush();
 $entityManager->close();
+
+//exit();
 
 // new EM instance
 $entityManager = $ctx->getBean('entityManager');
+//$entityManager = new \Doctrine\ORM\EntityManager();
+
 $c12 = $entityManager->getRepository('Treetest\Node')->findOneBy(array('name' => 'Child 1-2'));
 
-//array_pop($c12->getChildren());
-
 $treeDao->getNestedSetStrategy()->saveStructure($c12);
+
 $entityManager->flush();
 $entityManager->close();
 
+var_dump($treeDao->loadTree($root));
 

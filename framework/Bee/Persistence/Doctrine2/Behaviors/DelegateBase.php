@@ -31,11 +31,18 @@ class DelegateBase extends EntityManagerHolder {
 	private $entityName;
 
 	/**
-	 * @param string $entityName
+	 * @var array
 	 */
-	public function __construct($entityName) {
+	private $groupKeyFields;
+
+	/**
+	 * @param string $entityName
+	 * @param array $groupKeyFields
+	 */
+	public function __construct($entityName, array $groupKeyFields) {
 		\Bee_Utils_Assert::hasText($entityName, 'Entity name required, must not be empty');
 		$this->entityName = $entityName;
+		$this->groupKeyFields = $groupKeyFields;
 	}
 
 	/**
@@ -43,5 +50,12 @@ class DelegateBase extends EntityManagerHolder {
 	 */
 	public function getEntityName() {
 		return $this->entityName;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getGroupKeyFields() {
+		return $this->groupKeyFields;
 	}
 }

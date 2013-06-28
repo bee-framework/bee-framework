@@ -28,15 +28,22 @@ use Doctrine\ORM\EntityManager;
  
 class TreeDao extends DaoBase {
 
+	const ENTITY_CLASS_NAME = 'Treetest\Node';
+
 	/**
 	 * @var NestedSetStrategy
 	 */
 	private $nestedSetStrategy;
 
+	/**
+	 * @var GenericNestedSetDelegate
+	 */
+	private $nestedSetDelegate;
+
 	public function __construct(EntityManager $entityManager) {
-		$delagate = new GenericNestedSetDelegate($entityManager, 'Treetest\Node');
-//		$delagate->setGroupFieldName('root_id');
-		$this->nestedSetStrategy = new NestedSetStrategy($delagate);
+		$this->setEntityManager($entityManager);
+		$this->nestedSetDelegate = new GenericNestedSetDelegate($entityManager, self::ENTITY_CLASS_NAME);
+		$this->nestedSetStrategy = new NestedSetStrategy($this->nestedSetDelegate);
 	}
 
 	/**
@@ -44,5 +51,23 @@ class TreeDao extends DaoBase {
 	 */
 	public function getNestedSetStrategy() {
 		return $this->nestedSetStrategy;
+	}
+
+	public function loadTree($rootNodeIdOrEntity) {
+		if(!$rootNodeIdOrEntity instanceof Node) {
+			$rootNodeIdOrEntity = $this->getEntityManager()->find(self::ENTITY_CLASS_NAME, $rootNodeIdOrEntity);
+		}
+
+		// obtain NodeInfo (left / right boundaries + group info) for the tree part rooted at given node
+		$rootNodeInfo = $this->nestedSetDelegate->getNodeInfo($rootNodeIdOrEntity);
+
+		// construct our base query
+		$qb = $this->getEntityManager()->createQueryBuilder()->select('e')->from(self::ENTITY_CLASS_NAME, 'e');
+
+		// augment query with subtree limits
+		$this->nestedSetDelegate->augmentQueryWithSubtreeLimits($qb, $rootNodeInfo);
+
+		// execute query and create tree structure from result
+		return $this->nestedSetStrategy->buildTreeStructure($qb->getQuery()->execute());
 	}
 }
