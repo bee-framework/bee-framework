@@ -25,12 +25,13 @@ namespace Bee\Persistence\Behaviors\NestedSet;
 interface ITreeNode {
 
 	/**
-	 * @return ITreeNode
-	 */
-	public function getParent();
-
-	/**
 	 * @return ITreeNode[]
 	 */
 	public function getChildren();
+
+	/**
+	 * @param ITreeNode $child
+	 * @return void
+	 */
+	public function appendChild(ITreeNode $child);
 }

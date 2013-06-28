@@ -79,9 +79,10 @@ abstract class DelegateBase extends AbstractFieldBasedDelegate {
 	 * @param bool $restriction
 	 * @return string
 	 */
-	protected function getDomainRestrictionString($entity, array &$params, $restriction = false) {
+	protected function getDomainRestrictionString($entity, array &$params, array $groupKey = array()) {
 		$result = '1=1';
 		if ($this->getGroupFieldName()) {
+			//todo: fix this!
 			if ($restriction === false) {
 				// determine group value
 				$restriction = $this->getGroup($entity);

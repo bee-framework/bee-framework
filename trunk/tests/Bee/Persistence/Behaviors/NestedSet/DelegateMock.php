@@ -58,10 +58,9 @@ class DelegateMock implements IDelegate {
 	 * @param NodeInfo $nodeInfo
 	 * @param bool|int $newLft
 	 * @param bool|int $newLvl
-	 * @param mixed $restriction
 	 */
-	public function setPosition($nestedSetEntity, NodeInfo $nodeInfo, $newLft = false, $newLvl = false, $restriction = false) {
-		array_push($this->protocol, sprintf('id=%s; lft=%d; rgt=%d; lvl=%d;', $nestedSetEntity->getId(), $nodeInfo->lft, $nodeInfo->rgt, $nodeInfo->lvl));
+	public function setPosition($nestedSetEntity, NodeInfo $nodeInfo, $newLft = false, $newLvl = false) {
+		array_push($this->protocol, sprintf('id=%s; lft=%d; rgt=%d; lvl=%d; grp=[%s]', $nestedSetEntity->getId(), $nodeInfo->lft, $nodeInfo->rgt, $nodeInfo->lvl, implode(',', $nodeInfo->getGroupKey())));
 	}
 
 	/**
@@ -69,9 +68,17 @@ class DelegateMock implements IDelegate {
 	 * @param int $delta
 	 * @param int $lowerBoundIncl
 	 * @param int $upperBoundExcl
-	 * @param mixed $restriction
+	 * @param array $groupKey
 	 */
-	public function shift($nestedSetEntity, $delta, $lowerBoundIncl, $upperBoundExcl, $restriction = false) {
-		array_push($this->protocol, sprintf('delta=%d; %d<=lft/rgt%s;', $delta, $lowerBoundIncl, $upperBoundExcl !== false ? '<'.$upperBoundExcl : ''));
+	public function shift($nestedSetEntity, $delta, $lowerBoundIncl, $upperBoundExcl, array $groupKey) {
+		array_push($this->protocol, sprintf('delta=%d; %d<=lft/rgt%s; grp=[%s]', $delta, $lowerBoundIncl, $upperBoundExcl !== false ? '<'.$upperBoundExcl : '', implode(',', $groupKey)));
+	}
+
+	/**
+	 * @param NodeInfo $parentNodeInfo
+	 * @return void
+	 */
+	public function unsetChildGroupKeys(NodeInfo $parentNodeInfo) {
+		// TODO: Implement unsetChildGroupKeys() method.
 	}
 }

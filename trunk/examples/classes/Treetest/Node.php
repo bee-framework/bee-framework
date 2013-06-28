@@ -25,11 +25,7 @@ use Bee\Persistence\Behaviors\NestedSet\ITreeNode;
  *
  * @Entity
  * @Table(
- * 		name="tree_test",
- * 		uniqueConstraints={
- * 			@UniqueConstraint(name="grp_lft", columns={"root_id", "lft"}),
- * 			@UniqueConstraint(name="grp_rgt", columns={"root_id", "rgt"})
- * 		}
+ * 		name="tree_test"
  * )
  */
 class Node implements ITreeNode {
@@ -50,7 +46,7 @@ class Node implements ITreeNode {
 
 	/**
 	 * @var int
-	 * @Column(name="root_id", type="integer", nullable=false)
+	 * @Column(name="root_id", type="integer", nullable=true)
 	 */
 	private $rootId;
 
@@ -84,9 +80,11 @@ class Node implements ITreeNode {
 
 	/**
 	 * @param $name string
+	 * @param null $rootId
 	 */
-	public function __construct($name) {
+	public function __construct($name, $rootId = null) {
 		$this->name = $name;
+		$this->rootId = $rootId;
 	}
 
 	/**
@@ -166,18 +164,18 @@ class Node implements ITreeNode {
 		return $this->rootId;
 	}
 
-
-	/**
-	 * @return ITreeNode
-	 */
-	public function getParent() {
-		return $this->parent;
-	}
-
 	/**
 	 * @return ITreeNode[]
 	 */
-	public function &getChildren() {
+	public function getChildren() {
 		return $this->children;
+	}
+
+	/**
+	 * @param ITreeNode $child
+	 * @return void
+	 */
+	public function appendChild(ITreeNode $child) {
+		array_push($this->children, $child);
 	}
 }

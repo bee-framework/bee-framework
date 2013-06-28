@@ -40,30 +40,15 @@ class TestTreeNode extends NodeInfo implements ITreeNode {
 	private $children;
 
 	/**
+	 * @param array $id
 	 * @param TestTreeNode[] $children
 	 * @param array $nodeInfo
+	 * @return \Bee\Persistence\Behaviors\NestedSet\TestTreeNode
 	 */
 	public function __construct($id, $children, array $nodeInfo) {
 		parent::__construct($nodeInfo);
 		$this->id = $id;
 		$this->children = $children;
-		foreach($this->children as $child) {
-			$child->setParent($this);
-		}
-	}
-
-	/**
-	 * @return ITreeNode
-	 */
-	public function getParent() {
-		return $this->parent;
-	}
-
-	/**
-	 * @param \Bee\Persistence\Behaviors\NestedSet\ITreeNode $parent
-	 */
-	public function setParent($parent) {
-		$this->parent = $parent;
 	}
 
 	/**
@@ -78,5 +63,13 @@ class TestTreeNode extends NodeInfo implements ITreeNode {
 	 */
 	public function getId() {
 		return $this->id;
+	}
+
+	/**
+	 * @param ITreeNode $child
+	 * @return void
+	 */
+	public function appendChild(ITreeNode $child) {
+		array_push($this->children, $child);
 	}
 }

@@ -16,6 +16,7 @@ namespace Bee\Persistence\Doctrine2\Behaviors;
  * limitations under the License.
  */
 use Bee\Persistence\Behaviors\NestedSet\IDelegate;
+use Bee\Persistence\Behaviors\NestedSet\ITreeNode;
 use Bee\Persistence\Behaviors\NestedSet\NodeInfo;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
@@ -25,7 +26,7 @@ use Doctrine\ORM\QueryBuilder;
  * Date: 21.06.13
  * Time: 16:01
  */
- 
+
 class GenericNestedSetDelegate extends DelegateBase implements IDelegate {
 
 	/**
@@ -46,12 +47,12 @@ class GenericNestedSetDelegate extends DelegateBase implements IDelegate {
 	/**
 	 * @param EntityManager $entityManager
 	 * @param string $entityName
+	 * @param array $rootKeyFields
 	 */
-	public function __construct(EntityManager $entityManager, $entityName) {
-		parent::__construct($entityName);
+	public function __construct(EntityManager $entityManager, $entityName, array $rootKeyFields = array('rootId')) {
+		parent::__construct($entityName, $rootKeyFields);
 		$this->setEntityManager($entityManager);
 	}
-
 
 	/**
 	 * @param string $leftFieldName
@@ -85,11 +86,27 @@ class GenericNestedSetDelegate extends DelegateBase implements IDelegate {
 		$result->lft = $bw->getPropertyValue($this->leftFieldName);
 		$result->rgt = $bw->getPropertyValue($this->rightFieldName);
 		$result->lvl = $bw->getPropertyValue($this->levelFieldName);
-		if(is_null($result->lft)) {
+		if (is_null($result->lft)) {
 			$result->lft = 1;
 			$result->lvl = 0;
 		}
+		$result->setGroupKey($this->extractGroupKey($bw));
 		return $result;
+	}
+
+	/**
+	 * @param mixed|\Bee_Beans_BeanWrapper $nestedSetEntityOrBeanWrapper
+	 * @return array
+	 */
+	protected function extractGroupKey($nestedSetEntityOrBeanWrapper) {
+		if (!($nestedSetEntityOrBeanWrapper instanceof \Bee_Beans_BeanWrapper)) {
+			$nestedSetEntityOrBeanWrapper = new \Bee_Beans_BeanWrapper($nestedSetEntityOrBeanWrapper);
+		}
+		$groupKey = array();
+		foreach ($this->getGroupKeyFields() as $groupFieldName) {
+			$groupKey[$groupFieldName] = $nestedSetEntityOrBeanWrapper->getPropertyValue($groupFieldName);
+		}
+		return $groupKey;
 	}
 
 	/**
@@ -106,14 +123,38 @@ class GenericNestedSetDelegate extends DelegateBase implements IDelegate {
 	 * @param NodeInfo $nodeInfo
 	 * @param bool|int $newLft
 	 * @param bool|int $newLvl
-	 * @param mixed $restriction
 	 */
-	public function setPosition($nestedSetEntity, NodeInfo $nodeInfo, $newLft = false, $newLvl = false, $restriction = false) {
+	public function setPosition($nestedSetEntity, NodeInfo $nodeInfo, $newLft = false, $newLvl = false) {
 		$bw = new \Bee_Beans_BeanWrapper($nestedSetEntity);
 		$bw->setPropertyValue($this->leftFieldName, $nodeInfo->lft);
 		$bw->setPropertyValue($this->rightFieldName, $nodeInfo->rgt);
 		$bw->setPropertyValue($this->levelFieldName, $nodeInfo->lvl);
+
+		$grpKey = $nodeInfo->getGroupKey();
+		foreach ($this->getGroupKeyFields() as $groupKeyField) {
+			$bw->setPropertyValue($groupKeyField, $grpKey[$groupKeyField]);
+		}
 		// todo: implement the other cases (i.e. for the non-tree strategy API)
+	}
+
+	/**
+	 * @param NodeInfo $parentNodeInfo
+	 * @return void
+	 */
+	public function unsetChildGroupKeys(NodeInfo $parentNodeInfo) {
+		$qb = $this->createUpdateBaseQueryBuilder($parentNodeInfo->getGroupKey());
+
+		// set group key to null...
+		foreach ($this->getGroupKeyFields() as $groupKeyField) {
+			$qb->set("e.$groupKeyField", 'NULL');
+		}
+
+		// .. on all children of the parent node given by the NodeInfo
+		$qb->andWhere("e.{$this->leftFieldName} > :parentLft")
+				->setParameter('parentLft', $parentNodeInfo->lft)
+				->andWhere("e.{$this->rightFieldName} < :parentRgt")
+				->setParameter('parentRgt', $parentNodeInfo->rgt);
+		$qb->getQuery()->execute();
 	}
 
 	/**
@@ -121,12 +162,41 @@ class GenericNestedSetDelegate extends DelegateBase implements IDelegate {
 	 * @param int $delta
 	 * @param int $lowerBoundIncl
 	 * @param int $upperBoundExcl
-	 * @param mixed $restriction
+	 * @param array $groupKey
 	 */
-	public function shift($nestedSetEntity, $delta, $lowerBoundIncl, $upperBoundExcl, $restriction = false) {
-		$this->buildShiftQuery($this->leftFieldName, $delta, $lowerBoundIncl, $upperBoundExcl, $restriction)->execute();
-		$this->buildShiftQuery($this->rightFieldName, $delta, $lowerBoundIncl, $upperBoundExcl, $restriction)->execute();
+	public function shift($nestedSetEntity, $delta, $lowerBoundIncl, $upperBoundExcl, array $groupKey) {
+		$this->buildShiftQuery($this->leftFieldName, $delta, $lowerBoundIncl, $upperBoundExcl, $groupKey)->execute();
+		$this->buildShiftQuery($this->rightFieldName, $delta, $lowerBoundIncl, $upperBoundExcl, $groupKey)->execute();
 		// todo: implement the other cases (i.e. for the non-tree strategy API)
+	}
+
+	/**
+	 * @param QueryBuilder $qb
+	 * @param NodeInfo $rootNodeInfo
+	 * @param string $rootEntityAlias
+	 * @param bool $maxLvl
+	 */
+	public function augmentQueryWithSubtreeLimits(QueryBuilder $qb, NodeInfo $rootNodeInfo, $rootEntityAlias = 'e', $maxLvl = false) {
+		if ($rootEntityAlias) {
+			$rootEntityAlias = $rootEntityAlias . '.';
+		}
+
+		// limit to subtree of this root node
+		$qb->andWhere("$rootEntityAlias{$this->leftFieldName} >= :limitLft")
+				->setParameter('limitLft', $rootNodeInfo->lft)
+				->andWhere("$rootEntityAlias{$this->rightFieldName} <= :limitRgt")
+				->setParameter('limitRgt', $rootNodeInfo->rgt);
+
+		// make sure we get only results from current group
+		$this->augmentQueryWithGroupLimits($qb, $rootNodeInfo->getGroupKey());
+
+		// apply max level restriction if needed
+		if ($maxLvl) {
+			$qb->andWhere("$rootEntityAlias{$this->leftFieldName} <= :maxLvl")->setParameter('maxLvl', $maxLvl);
+		}
+
+		// proper ordering
+		$qb->orderBy("$rootEntityAlias{$this->leftFieldName}", 'ASC');
 	}
 
 	/**
@@ -134,13 +204,25 @@ class GenericNestedSetDelegate extends DelegateBase implements IDelegate {
 	 * @param int $delta
 	 * @param int $lowerBoundIncl
 	 * @param int $upperBoundExcl
-	 * @param mixed $restriction
+	 * @param array $groupKey
 	 * @return \Doctrine\ORM\Query
 	 */
-	protected function buildShiftQuery($fieldName, $delta, $lowerBoundIncl, $upperBoundExcl, $restriction = false) {
-		return $this->getEntityManager()->createQueryBuilder()->update($this->getEntityName(), 'e')
-				->set('e.'.$fieldName, 'e.'.$fieldName .' + :delta')->setParameter('delta', $delta)
-				->where('e.'.$fieldName . ' >= :lbIncl')->setParameter('lbIncl', $lowerBoundIncl)->getQuery();
-//				->orderBy('e.'.$fieldName, $delta > 0 ? 'DESC' : 'ASC')->getQuery();
+	protected function buildShiftQuery($fieldName, $delta, $lowerBoundIncl, $upperBoundExcl, array $groupKey) {
+		$qb = $this->createUpdateBaseQueryBuilder($groupKey);
+		$qb->set("e.$fieldName", "e.$fieldName + :delta")->setParameter('delta', $delta)
+				->andWhere("e.$fieldName >= :lbIncl")->setParameter('lbIncl', $lowerBoundIncl);
+		return $qb->getQuery();
+	}
+
+	protected function createUpdateBaseQueryBuilder(array $groupKey) {
+		$qb = $this->getEntityManager()->createQueryBuilder()->update($this->getEntityName(), 'e');
+		return $this->augmentQueryWithGroupLimits($qb, $groupKey);
+	}
+
+	protected function augmentQueryWithGroupLimits(QueryBuilder $qb, array $groupKey) {
+		foreach ($this->getGroupKeyFields() as $groupFieldName) {
+			$qb->andWhere("e.$groupFieldName = :$groupFieldName")->setParameter($groupFieldName, $groupKey[$groupFieldName]);
+		}
+		return $qb;
 	}
 }

@@ -178,7 +178,7 @@ class Strategy implements IOrderedStrategy{
 			if ($subjectInfo->isInTree()) {
 				// ... temporarily move it to a neutral position, so as to avoid any conflicts (e.g. SQL constraints)
 				// (keep its original level for now)
-				$this->delegate->setPosition($subject, $subjectInfo, -$subjectInfo->getSpan(), $subjectInfo->lvl, $groupRestriction);
+				$this->delegate->setPosition($subject, $subjectInfo, -$subjectInfo->getSpan(), $subjectInfo->lvl);
 				$subjectInfo->update(-$subjectInfo->getSpan(), $subjectInfo->lvl);
 			}
 
@@ -189,7 +189,7 @@ class Strategy implements IOrderedStrategy{
 			self::getLog()->debug("setting final position of subject to lft = $newLeft, lvl = $level");
 
 			// move subject to final position
-			$this->delegate->setPosition($subject, $subjectInfo, $newLeft, $level, $groupRestriction);
+			$this->delegate->setPosition($subject, $subjectInfo, $newLeft, $level);
 			$subjectInfo->update($newLeft, $level);
 		}
 
@@ -210,10 +210,10 @@ class Strategy implements IOrderedStrategy{
 		}
 
 		// store the subtree in the negative area (in case we do not want to delete it, but rather move it to a different tree)
-		$this->delegate->setPosition($subject, $subjectInfo, -$subjectInfo->getSpan(), 0, $groupRestriction);
+		$this->delegate->setPosition($subject, $subjectInfo, -$subjectInfo->getSpan(), 0);
 
 		// restore numbering consistency
-		$this->delegate->shift($subject, -$subjectInfo->getSpan(), $subjectInfo->rgt + 1, false, $groupRestriction);
+		$this->delegate->shift($subject, -$subjectInfo->getSpan(), $subjectInfo->rgt + 1, false, $subjectInfo->getGroupKey());
 	}
 
 	/**

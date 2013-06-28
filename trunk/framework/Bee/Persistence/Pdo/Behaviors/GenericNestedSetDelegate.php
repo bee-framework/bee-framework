@@ -102,21 +102,20 @@ class GenericNestedSetDelegate extends DelegateBase implements IDelegate {
 	/**
 	 * @param mixed $nestedSetEntity
 	 * @param NodeInfo $nodeInfo
-	 * @param int $newLft
-	 * @param int $newLvl
-	 * @param mixed $restriction
+	 * @param bool|int $newLft
+	 * @param bool|int $newLvl
 	 */
-	public function setPosition($nestedSetEntity, NodeInfo $nodeInfo, $newLft = false, $newLvl = false, $restriction = false) {
+	public function setPosition($nestedSetEntity, NodeInfo $nodeInfo, $newLft = false, $newLvl = false) {
 		if ($nodeInfo->hasStructure()) {
 			$params = array(':pos_delta' => $newLft - $nodeInfo->lft, ':lvl_delta' => $newLvl - $nodeInfo->lvl, ':lft' => $nodeInfo->lft, ':rgt' => $nodeInfo->rgt);
 			$qryString = sprintf(self::SET_POSITION_QUERY_TEMPLATE, $this->leftFieldName, $this->rightFieldName, $this->levelFieldName,
-				$this->getQueryDomain(), $this->getDomainRestrictionString($nestedSetEntity, $params, $restriction));
+				$this->getQueryDomain(), $this->getDomainRestrictionString($nestedSetEntity, $params, $nodeInfo->getGroupKey()));
 		} else {
 			$params = array(':lft' => $newLft, ':rgt' => $newLft + $nodeInfo->getSpan() - 1, ':lvl' => $newLvl);
 			$qryString = sprintf(self::SET_POSITION_QUERY_BY_ID_TEMPLATE, $this->leftFieldName, $this->rightFieldName,
 				$this->levelFieldName, $this->getQueryDomain(),
 				$this->getIdentityRestrictionString($nestedSetEntity, $params),
-				$this->getDomainRestrictionString($nestedSetEntity, $params, $restriction));
+				$this->getDomainRestrictionString($nestedSetEntity, $params, $nodeInfo->getGroupKey()));
 		}
 		$this->getPdo()->prepare($qryString)->execute($params);
 	}
@@ -126,9 +125,9 @@ class GenericNestedSetDelegate extends DelegateBase implements IDelegate {
 	 * @param int $delta
 	 * @param int $lowerBoundIncl
 	 * @param int $upperBoundExcl
-	 * @param mixed $restriction
+	 * @param array $groupKey
 	 */
-	public function shift($nestedSetEntity, $delta, $lowerBoundIncl, $upperBoundExcl, $restriction = false) {
+	public function shift($nestedSetEntity, $delta, $lowerBoundIncl, $upperBoundExcl, array $groupKey) {
 		$params = array(':delta' => $delta, ':lower_bound' => $lowerBoundIncl);
 		if ($upperBoundExcl !== false) {
 			$params[':upper_bound'] = $upperBoundExcl;
@@ -136,7 +135,7 @@ class GenericNestedSetDelegate extends DelegateBase implements IDelegate {
 		$qryTempl = $upperBoundExcl !== false ? self::SHIFT_QUERY_TEMPLATE : self::SHIFT_QUERY_OPEN_TEMPLATE;
 
 		$qryDomain = $this->getQueryDomain();
-		$domRes = $this->getDomainRestrictionString($nestedSetEntity, $params, $restriction);
+		$domRes = $this->getDomainRestrictionString($nestedSetEntity, $params, $groupKey);
 
 		// order updates only if supported by the driver and not operating on a joined relation
 		$orderUpdate = $this->pdoSupportsFeature(FeatureDetector::FEATURE_ORDERED_UPDATE) && stripos($qryDomain, ' JOIN ') === false;

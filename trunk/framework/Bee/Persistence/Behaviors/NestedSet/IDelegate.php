@@ -44,17 +44,23 @@ interface IDelegate {
 	 * @param NodeInfo $nodeInfo
 	 * @param bool|int $newLft
 	 * @param bool|int $newLvl
-	 * @param mixed $restriction
-	 * @return
+	 * @return void
 	 */
-	public function setPosition($nestedSetEntity, NodeInfo $nodeInfo, $newLft = false, $newLvl = false, $restriction = false);
+	public function setPosition($nestedSetEntity, NodeInfo $nodeInfo, $newLft = false, $newLvl = false);
+
+	/**
+	 * @param NodeInfo $parentNodeInfo
+	 * @return void
+	 */
+	public function unsetChildGroupKeys(NodeInfo $parentNodeInfo);
 
 	/**
 	 * @param mixed $nestedSetEntity
 	 * @param int $delta
 	 * @param int $lowerBoundIncl
 	 * @param int $upperBoundExcl
-	 * @param mixed $restriction
+	 * @param array $groupKey
+	 * @return void
 	 */
-	public function shift($nestedSetEntity, $delta, $lowerBoundIncl, $upperBoundExcl, $restriction = false);
+	public function shift($nestedSetEntity, $delta, $lowerBoundIncl, $upperBoundExcl, array $groupKey);
 }
