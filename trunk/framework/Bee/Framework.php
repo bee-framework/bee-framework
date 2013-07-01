@@ -259,14 +259,14 @@ class Bee_Framework {
 
                 echo '<div>';
                     echo '<div style="padding: 0 0 2px 0; margin: 10px; border: solid 1px #aaa; color: #aaa;">';
-                        echo '<div style="background-color: #aaa; color: #666; padding: 5px; cursor: pointer;" onclick="javascript:toggle(event);">Message</div>';
+                        echo '<div style="background-color: #aaa; color: #666; padding: 5px; cursor: pointer;" onclick="toggle(event);">Message</div>';
                         echo '<div style="padding: 5px;">';
                             echo $e->getMessage();
                         echo '</div>';
                     echo '</div>';
 
                     echo '<div style="padding: 0 0 2px 0; margin: 10px; border: solid 1px #aaa; color: #aaa;">';
-                        echo '<div style="background-color: #aaa; color: #666; padding: 5px; cursor: pointer;" onclick="javascript:toggle(event);">Stracktrace</div>';
+                        echo '<div style="background-color: #aaa; color: #666; padding: 5px; cursor: pointer;" onclick="toggle(event);">Stracktrace</div>';
                         echo '<div style="padding: 5px; font-size: 10px; display: none;">';
                             self::printArray($e->getTrace());
                         echo '</div>';

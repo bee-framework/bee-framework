@@ -219,7 +219,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 
 		return $exposedObject;
 	}
-	
+
 	/**
 	 * Initialize the given bean instance, applying factory callbacks
 	 * as well as init methods and bean post processors.
@@ -229,8 +229,10 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @param object $bean the new bean instance we may need to initialize
 	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition the bean definition that the bean was created with
 	 * (can also be <code>null</code>, if given an existing bean instance)
+	 * @throws Bee_Context_BeanCreationException
 	 * @return object the initialized bean instance (potentially wrapped)
 	 * @see Bee_Context_Config_IBeanNameAware
+	 * @see \Bee\Context\Config\IScopeAware
 	 * @see Bee_Context_Config_IContextAware
 	 * @see #invokeInitMethods
 	 */
@@ -239,10 +241,14 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 			$bean->setBeanName($beanName);
 		}
 
+		if ($bean instanceof \Bee\Context\Config\IScopeAware) {
+			$beanDefinition->getScope($this);
+		}
+
 		if ($bean instanceof Bee_Context_Config_IContextAware) {
 			$bean->setBeeContext($this);
 		}
-		
+
 		$wrappedBean = $bean;
 		if (is_null($beanDefinition) || !$beanDefinition->isSynthetic()) {
 			$wrappedBean = $this->applyBeanPostProcessorsBeforeInitialization($wrappedBean, $beanName);
