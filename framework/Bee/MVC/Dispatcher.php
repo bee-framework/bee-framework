@@ -54,7 +54,12 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 	 *
 	 * @var Bee_MVC_Dispatcher
 	 */
-	private static $currentDispatcher;	
+	private static $currentDispatcher;
+
+	/**
+	 * @var Bee_MVC_IHttpRequest
+	 */
+	private static $currentRequest;
 	
 	/**
 	 * The root context used by this dispatcher
@@ -101,8 +106,14 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 	public static function get() {
 		return self::$currentDispatcher;
 	}
-	
-	
+
+	/**
+	 * @return Bee_MVC_IHttpRequest
+	 */
+	public static function getCurrentRequest() {
+		return self::$currentRequest;
+	}
+
 	/**
 	 * Allows to dispatch control to sub-controllers from within a current request. Intended to be used to include hierarchical structures
 	 * which must be also available as first-class handlers (e.g. for AJAX-based updates). 
@@ -192,12 +203,12 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 	 */
 	public function dispatch() {
 		self::$currentDispatcher = $this;
-		$request = $this->buildRequestObject();
+		self::$currentRequest = $this->buildRequestObject();
 
 		if(!is_null($this->filterChainProxy)) {
-			$this->filterChainProxy->doFilter($request, $this);
+			$this->filterChainProxy->doFilter(self::$currentRequest, $this);
 		} else {
-			$this->doFilter($request);
+			$this->doFilter(self::$currentRequest);
 		}
 
 //		Bee_Cache_Manager::shutdown();
@@ -305,4 +316,3 @@ class B_DISPATCHER extends Bee_MVC_Dispatcher {
 		self::includeDispatch(Bee_MVC_HttpRequest::constructRequest(MODEL::get(MODEL::CURRENT_REQUEST_KEY), $pathInfo, $params, $method));
 	}
 }
-?>
