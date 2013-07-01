@@ -59,7 +59,7 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 	/**
 	 * @var Bee_MVC_IHttpRequest
 	 */
-	private static $currentRequest;
+	private static $currentRequest = null;
 	
 	/**
 	 * The root context used by this dispatcher
@@ -111,6 +111,10 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 	 * @return Bee_MVC_IHttpRequest
 	 */
 	public static function getCurrentRequest() {
+		if(is_null(self::$currentRequest)) {
+			throw new Bee_Exceptions_Base('No request object constructed yet');
+		}
+
 		return self::$currentRequest;
 	}
 
