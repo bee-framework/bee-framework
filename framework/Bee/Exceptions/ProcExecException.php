@@ -1,5 +1,5 @@
 <?php
-namespace Bee\Tools;
+namespace Bee\Exceptions;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
