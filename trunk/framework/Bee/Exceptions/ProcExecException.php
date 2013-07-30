@@ -32,7 +32,7 @@ class ProcExecException extends \Bee_Exceptions_Base {
 
 	private $stdErr;
 
-	function __construct($message, $returnValue, $stdOut, $stdErr) {
+	function __construct($message, $returnValue = false, $stdOut = false, $stdErr = false) {
 		parent::__construct($message);
 		$this->returnValue = $returnValue;
 		$this->stdOut = $stdOut;
