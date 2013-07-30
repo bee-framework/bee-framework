@@ -58,7 +58,7 @@ abstract class Bee_Context_Xml_Namespace_HandlerSupport implements Bee_Context_X
 	private function findParserForElement(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext) {
 		$parser = $this->parsers[$element->localName];
 		if (is_null($parser)) {
-			$parserContext->getReaderContext()->error('Cannot locate BeanDefinitionParser for element [' + $element->localName + ']', $element);
+			$parserContext->getReaderContext()->error('Cannot locate BeanDefinitionParser for element [' . $element->localName . ']', $element);
 		}
 		return $parser;
 	}
@@ -118,4 +118,3 @@ abstract class Bee_Context_Xml_Namespace_HandlerSupport implements Bee_Context_X
 	}
 	
 }
-?>
