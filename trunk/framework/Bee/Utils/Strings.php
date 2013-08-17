@@ -22,26 +22,36 @@
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
 class Bee_Utils_Strings {
-	
+
 	/**
 	 * Enter description here...
 	 *
 	 * @param String $text
+	 * @param bool $strict
 	 * @return boolean
 	 */
-	public static function hasLength($text) {
+	public static function hasLength($text, $strict=false) {
 		if(is_null($text)) {
 			return false;
 		}
-        self::checkIsString($text);
+        if ($strict) {
+            self::checkIsString($text);
+        }
 		return (mb_strlen($text) > 0);
 	}
 
-	public static function hasText($text) {
+	/**
+	 * @param $text
+	 * @param bool $strict
+	 * @return bool
+	 */
+	public static function hasText($text, $strict=false) {
         if(is_null($text)) {
             return false;
         }
-        self::checkIsString($text);
+        if ($strict) {
+            self::checkIsString($text);
+        }
 		return self::hasLength(trim(strval($text)));
 	}
 
@@ -118,17 +128,25 @@ class Bee_Utils_Strings {
 			}
 		}
 		return $result;
-	}	
-	
-	public static function startsWith($string, $prefix) {
+	}
+
+	/**
+	 * @param $string
+	 * @param $prefix
+	 * @param bool $strict
+	 * @return bool
+	 */
+	public static function startsWith($string, $prefix, $strict=false) {
         if(is_null($string)) {
             return is_null($prefix);
         }
         if(is_null($prefix)) {
             return false;
         }
-        self::checkIsString($string);
-        self::checkIsString($prefix);
+        if ($strict) {
+            self::checkIsString($string);
+            self::checkIsString($prefix);
+        }
         $prefTest = substr($string, 0, strlen($prefix));
 		return $prefTest === false ? "" === $prefix : $prefTest === $prefix;
 	}
@@ -152,18 +170,25 @@ class Bee_Utils_Strings {
 		}
 		return $str;
 	}
-	
-	public static function endsWith($string, $suffix) {
+
+	/**
+	 * @param $string
+	 * @param $suffix
+	 * @param bool $strict
+	 * @return bool
+	 */
+	public static function endsWith($string, $suffix, $strict=false) {
 		if(is_null($string)) {
 			return is_null($suffix);
 		}
 		if(is_null($suffix)) {
 			return false;
 		}
-		self::checkIsString($string);
-		self::checkIsString($suffix);
+        if ($strict) {
+            self::checkIsString($string);
+            self::checkIsString($suffix);
+        }
 		$sufTest = substr($string, (-strlen($suffix)));
 		return $sufTest === $string || $sufTest === false ? "" === $suffix : $sufTest === $suffix;
 	}
 }
-?>
