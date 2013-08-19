@@ -601,6 +601,7 @@
                 <xsd:any namespace="##other" processContents="strict"/>
             </xsd:choice>
         </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required" />
     </xsd:complexType>
 
     <xsd:complexType name="propertyType">
