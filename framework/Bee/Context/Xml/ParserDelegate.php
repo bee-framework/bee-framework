@@ -750,4 +750,3 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 		return (!Bee_Utils_Strings::hasLength($namespaceUri) || self::BEANS_NAMESPACE_URI === $namespaceUri);
 	}
 }
-?>
