@@ -278,7 +278,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 //			parseLookupOverrideSubElements(ele, bd.getMethodOverrides());
 //			parseReplacedMethodSubElements(ele, bd.getMethodOverrides());
 
-			$this->parseConstructorArgElements($ele, $bd);
+			$this->parseConstructorArgElements($ele, $bd, $bd);
 			$this->parsePropertyElements($ele, $bd);
 			$this->parseMethodInvocationElements($ele, $bd);
 
@@ -308,11 +308,11 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	 * @param Bee\Context\Config\IMethodArguments $argsHolder
 	 * @return void
 	 */
-	public function parseConstructorArgElements(DOMElement $beanEle, Bee\Context\Config\IMethodArguments $argsHolder) {
+	public function parseConstructorArgElements(DOMElement $beanEle, Bee\Context\Config\IMethodArguments $argsHolder, Bee_Context_Config_IBeanDefinition $bd) {
 		$nl = $beanEle->childNodes;
 		foreach($nl as $node) {
 			if ($node instanceof DOMElement && Bee_Utils_Dom::nodeNameEquals($node, self::CONSTRUCTOR_ARG_ELEMENT)) {
-				$this->parseConstructorArgElement($node, $argsHolder);
+				$this->parseConstructorArgElement($node, $argsHolder, $bd);
 			}
 		}
 	}
@@ -354,7 +354,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	/**
 	 * Parse a constructor-arg element.
 	 */
-	public function parseConstructorArgElement(DOMElement $ele, Bee\Context\Config\IMethodArguments $argsHolder) {
+	public function parseConstructorArgElement(DOMElement $ele, Bee\Context\Config\IMethodArguments $argsHolder, Bee_Context_Config_IBeanDefinition $bd) {
 		
 		$indexAttr = $ele->getAttribute(self::INDEX_ATTRIBUTE);
 
@@ -365,7 +365,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 			} else {
 				try {
 					array_push($this->parseState, "Constructor_Arg_Idx_$index");
-					$value = $this->parsePropertyValue($ele, $argsHolder, null);
+					$value = $this->parsePropertyValue($ele, $bd, null);
 					$valueHolder = new Bee_Beans_PropertyValue($index, $value);
 					$argsHolder->addConstructorArgumentValue($valueHolder);
 					array_pop($this->parseState);
@@ -420,7 +420,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 		array_push($this->parseState, $methodName);
 		try {
 			$methodInvocation = new \Bee\Beans\MethodInvocation($methodName);
-			$this->parseConstructorArgElements($ele, $methodInvocation);
+			$this->parseConstructorArgElements($ele, $methodInvocation, $bd);
 			$bd->addMethodInvocation($methodInvocation);
 
 			array_pop($this->parseState);
