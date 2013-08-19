@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Beans\MethodInvocation;
+use Bee\Context\Config\MethodArgumentsHolder;
 
 /**
  * Enter description here...
@@ -21,7 +23,7 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-abstract class Bee_Context_Config_BeanDefinition_Abstract implements Bee_Context_Config_IBeanDefinition {
+abstract class Bee_Context_Config_BeanDefinition_Abstract extends MethodArgumentsHolder implements Bee_Context_Config_IBeanDefinition {
 
 	/**
 	 * String representation of the scope that this bean should live in.
@@ -56,21 +58,17 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract implements Bee_Context
 	 */
 	private $dependsOn = array();
 	
-	
-	/**
-	 * Enter description here...
-	 *
-	 * @var Bee_Beans_PropertyValue[]
-	 */
-	private $constructorArgumentValues = array();
-	
-
 	/**
 	 * Enter description here...
 	 *
 	 * @var Bee_Beans_PropertyValue[] array of PropertyValue instances
 	 */
 	private $propertyValues = array();
+
+	/**
+	 * @var MethodInvocation[]
+	 */
+	private $methodInvocations = array();
 	
 	/**
 	 * Name of the factory bean, if this bean should be obtained by using another bean instance from the container as its factory.
@@ -137,6 +135,7 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract implements Bee_Context
 			$this->setAbstract($original->isAbstract());
 			$this->setConstructorArgumentValues($original->getConstructorArgumentValues());
 			$this->setPropertyValues($original->getPropertyValues());
+			$this->setMethodInvocations($original->getMethodInvocations());
 			$this->setDependsOn($original->getDependsOn());
 			$this->setInitMethodName($original->getInitMethodName());
 			$this->setEnforceInitMethod($original->isEnforceInitMethod());
@@ -159,11 +158,9 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract implements Bee_Context
 		return $this->beanClassName;
 	}
 	
-	
 	public function setBeanClassName($beanClassName) {
 		$this->beanClassName = $beanClassName;
 	}
-	
 	
 	/**
 	 * Set if this bean is "abstract", i.e. not meant to be instantiated itself but
@@ -199,42 +196,7 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract implements Bee_Context
 	public function setDependsOn(array $dependsOn) {
 		$this->dependsOn = $dependsOn;
 	}
-	
-	
-	public function getConstructorArgumentValues() {
-		return $this->constructorArgumentValues;
-	}
-	
-	
-	public function setConstructorArgumentValues(array $args) {
-		$this->constructorArgumentValues = $args;
-	}
-	
-	public function addConstructorArgumentValues(array $args) {
-		foreach($args as $arg) {
-			$this->addConstructorArgumentValue($arg);
-		}
-	}
-	
-	public function addConstructorArgumentValue(Bee_Beans_PropertyValue $arg) {
-		$idx = $arg->getName();
-		if(!is_int($idx) || $idx < 0) {
-			trigger_error("Constructor argument index is not an integer or lower than 0 : $idx", E_USER_ERROR);
-		} else {
-			if(array_key_exists($idx, $this->constructorArgumentValues)) {
-				$this->mergePropertyValuesIfPossible($this->constructorArgumentValues[$idx], $arg);
-			}
-			$this->constructorArgumentValues[$idx] = $arg;				
-		}
-	}
-	
-	private function mergePropertyValuesIfPossible (Bee_Beans_PropertyValue $parent, Bee_Beans_PropertyValue $child) {
-        $childValue = $child->getValue();
-		if($childValue instanceof Bee_Context_Config_IMergeable && $childValue->getMergeEnabled() && $parent->getValue() instanceof Traversable) {
-            $childValue->merge($parent->getValue());
-		}
-	}
-	
+
 	public function getPropertyValues() {
 		return $this->propertyValues;
 	}
@@ -255,14 +217,44 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract implements Bee_Context
 			trigger_error("Property must have a name set", E_USER_ERROR);
 		} else {
 			if(array_key_exists($name, $this->propertyValues)) {
-				$this->mergePropertyValuesIfPossible($this->propertyValues[$name], $prop);
+				Bee_Context_Support_BeanUtils::mergePropertyValuesIfPossible($this->propertyValues[$name], $prop);
 			}
 			$this->propertyValues[$name] = $prop;
 		}
 		return $this;
 	}
 	
-	
+	/**
+	 * @return MethodInvocation[]
+	 */
+	public function getMethodInvocations() {
+		return $this->methodInvocations;
+	}
+
+	/**
+	 * @param MethodInvocation[] $methodInvocations
+	 */
+	public function setMethodInvocations(array $methodInvocations) {
+		$this->methodInvocations = $methodInvocations;
+	}
+
+	/**
+	 * @param MethodInvocation[] $methodInvocations
+	 */
+	public function addMethodInvocations(array $methodInvocations) {
+		foreach($methodInvocations as $invocation) {
+			$this->addMethodInvocation($invocation);
+		}
+	}
+
+	/**
+	 * @param MethodInvocation $methodInvocation
+	 * @return void
+	 */
+	public function addMethodInvocation(MethodInvocation $methodInvocation) {
+		array_push($this->methodInvocations, $methodInvocation);
+	}
+
 	public function getFactoryBeanName() {
 		return $this->factoryBeanName;
 	}
@@ -389,6 +381,7 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract implements Bee_Context
 		$this->setAbstract($other->isAbstract());
 		$this->addConstructorArgumentValues($other->getConstructorArgumentValues());
 		$this->addPropertyValues($other->getPropertyValues());
+		$this->addMethodInvocations($other->getMethodInvocations());
 
 		$this->addDependsOn($other->getDependsOn());
 		if(!is_null($other->getInitMethodName())) {
@@ -405,5 +398,3 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract implements Bee_Context
 		
 	}
 }
-
-?>

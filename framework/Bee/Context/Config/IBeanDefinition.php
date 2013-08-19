@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Beans\MethodInvocation;
 
 /**
  * Enter description here...
@@ -21,7 +22,7 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-interface Bee_Context_Config_IBeanDefinition {
+interface Bee_Context_Config_IBeanDefinition extends Bee\Context\Config\IMethodArguments {
 	
 	const SCOPE_CACHE = 'cache';
 	const SCOPE_SESSION = 'session';
@@ -34,7 +35,6 @@ interface Bee_Context_Config_IBeanDefinition {
 	 * @return String
 	 */
 	public function getParentName();
-	
 	
 	/**
 	 * Set the name of the parent definition of this bean definition, if any.
@@ -55,8 +55,6 @@ interface Bee_Context_Config_IBeanDefinition {
 	 */
 	public function getBeanClassName();
 	
-	
-	
 	/**
 	 * Override the bean class name of this bean definition.
 	 * <p>The class name can be modified during bean factory post-processing,
@@ -67,16 +65,12 @@ interface Bee_Context_Config_IBeanDefinition {
 	 */
 	public function setBeanClassName($beanClassName);
 	
-	
-	
 	/**
 	 * Return the factory bean name, if any.
 	 *
 	 * @return String
 	 */
 	public function getFactoryBeanName();
-	
-	
 	
 	/**
 	 * Specify the factory bean to use, if any.
@@ -86,8 +80,6 @@ interface Bee_Context_Config_IBeanDefinition {
 	 */
 	public function setFactoryBeanName($factoryBeanName);
 	
-	
-	
 	/**
 	 * Return a factory method, if any.
 	 *
@@ -95,8 +87,6 @@ interface Bee_Context_Config_IBeanDefinition {
 	 */
 	public function getFactoryMethodName();
 	
-	
-
 	/**
 	 * Specify a factory method, if any. This method will be invoked with
 	 * constructor arguments, or with no arguments if none are specified.
@@ -110,8 +100,6 @@ interface Bee_Context_Config_IBeanDefinition {
 	 */
 	public function setFactoryMethodName($factoryMethodName);
 	
-	
-	
 	/**
 	 * Override the target scope of this bean, specifying a new scope name.
 	 * @see #SCOPE_SINGLETON
@@ -120,9 +108,7 @@ interface Bee_Context_Config_IBeanDefinition {
 	 * @return String
 	 */
 	public function getScope();
-	
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -130,27 +116,7 @@ interface Bee_Context_Config_IBeanDefinition {
 	 * @return void
 	 */
 	public function setScope($scope);
-	
-	
-	
-	/**
-	 * Return the constructor argument values for this bean.
-	 * <p>The returned instance can be modified during bean factory post-processing.
-	 *
-	 * @return Bee_Beans_PropertyValue[]
-	 */
-	public function getConstructorArgumentValues();
-	
 
-	/**
-	 * Enter description here...
-	 *
-	 * @param Bee_Beans_PropertyValue $arg
-	 * @return void
-	 */
-	public function addConstructorArgumentValue(Bee_Beans_PropertyValue $arg);
-	
-	
 	/**
 	 * Return the property values to be applied to a new instance of the bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
@@ -159,7 +125,6 @@ interface Bee_Context_Config_IBeanDefinition {
 	 */
 	public function getPropertyValues();
 
-	
 	/**
 	 * Add a PropertyValue object, replacing any existing one
 	 * for the corresponding property.
@@ -169,16 +134,24 @@ interface Bee_Context_Config_IBeanDefinition {
 	 * PropertyValues in a single statement
 	 */
 	public function addPropertyValue(Bee_Beans_PropertyValue $prop);
-	
-	
+
+	/**
+	 * @return MethodInvocation[]
+	 */
+	public function getMethodInvocations();
+
+	/**
+	 * @param MethodInvocation $methodInvocation
+	 * @return void
+	 */
+	public function addMethodInvocation(MethodInvocation $methodInvocation);
+
 	/**
 	 * Return whether this bean is "abstract", that is, not meant to be instantiated.
 	 * 
 	 * @return boolean
 	 */
 	public function isAbstract();
-
-	
 
 	/**
 	 * Enter description here...
@@ -187,16 +160,12 @@ interface Bee_Context_Config_IBeanDefinition {
 	 */
 	public function getDependsOn();
 	
-	
-	
 	/**
 	 * Enter description here...
 	 *
 	 * @param array $dependsOn
 	 */
 	public function setDependsOn(array $dependsOn);
-	
-	
 	
 	/**
 	 * Enter description here...
@@ -205,8 +174,6 @@ interface Bee_Context_Config_IBeanDefinition {
 	 * @return void
 	 */
 	public function setInitMethodName($initMethodName);
-	
-	
 	
 	/**
 	 * Enter description here...
@@ -275,5 +242,3 @@ interface Bee_Context_Config_IBeanDefinition {
 	 */
 	public function isSynthetic();
 }
-
-?>

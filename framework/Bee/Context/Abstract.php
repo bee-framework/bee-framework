@@ -1,4 +1,5 @@
 <?php
+use Bee\Beans\MethodInvocation;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -203,6 +204,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		try {
 			
 			$this->applyPropertyValues($beanName, $beanDefinition, $instanceWrapper, $beanDefinition->getPropertyValues());
+			$this->invokeMethods($beanName, $beanInstance, $beanDefinition->getMethodInvocations());
 			$exposedObject = $this->initializeBean($beanName, $beanInstance, $beanDefinition);
 		} catch (Exception $ex) {
 			if ($ex instanceof Bee_Context_BeanCreationException && $beanName === $ex->getBeanName()) {
@@ -253,7 +255,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		if (is_null($beanDefinition) || !$beanDefinition->isSynthetic()) {
 			$wrappedBean = $this->applyBeanPostProcessorsBeforeInitialization($wrappedBean, $beanName);
 		}
-		
+
 		try {
 			$this->invokeInitMethods($beanName, $wrappedBean, $beanDefinition);
 		} catch (Exception $ex) {
@@ -412,15 +414,13 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		return $beanClass->newInstanceArgs($this->createArgsArray($beanName, $beanDefinition));
 	}
 	
-	
-	
-	private function createArgsArray($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
+	private function createArgsArray($beanName, \Bee\Context\Config\IMethodArguments $methodArguments) {
 //		$typeConverter = null; // @todo: ???????????????????????????????????????????		
 //		$valueResolver = new Bee_Context_BeanDefinitionValueResolver($this, $beanName, $beanDefinition, $typeConverter);
-		$valueResolver = new Bee_Context_BeanDefinitionValueResolver($this, $beanName, $beanDefinition);
+		$valueResolver = new Bee_Context_BeanDefinitionValueResolver($this, $beanName, $methodArguments);
 		
 		$args = array();
-		foreach ($beanDefinition->getConstructorArgumentValues() as $propValue) {
+		foreach ($methodArguments->getConstructorArgumentValues() as $propValue) {
 //			$value = $valueResolver->resolveValueIfNecessary('constructor/factory method argument', $propValue->getValue());
 //			$args[] = $typeConverter->convertIfNecessary($value, $propValue->getTypeName());
 			$args[] = $valueResolver->resolveValueIfNecessary('constructor/factory method argument', $propValue->getValue());
@@ -428,8 +428,6 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		return $args;
 	}
 	
-
-
 	/**
 	 * Apply the given property values, resolving any runtime references
 	 * to other beans in this context.
@@ -456,6 +454,22 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 			$beanWrapper->setPropertyValues($deepCopy);
 		} catch (Bee_Context_BeansException $ex) {
 			throw new Bee_Context_BeanCreationException($beanName);
+		}
+	}
+
+	/**
+	 * @param $beanName
+	 * @param $beanInstance
+	 * @param MethodInvocation[] $methodInvocations
+	 */
+	protected function invokeMethods($beanName, $beanInstance, array $methodInvocations = array()) {
+		foreach($methodInvocations as $methodInvocation) {
+			$method = array($beanInstance, $methodInvocation->getMethodName());
+			if(!is_callable($method)) {
+				 throw new Bee_Context_InvalidPropertyException($methodInvocation->getMethodName(), Bee_Utils_Types::getType($beanInstance), 'no such method found: '.$methodInvocation->getMethodName());
+			}
+			// todo: validate method signature??
+			call_user_func_array($method, $this->createArgsArray($beanName, $methodInvocation));
 		}
 	}
 
@@ -859,5 +873,3 @@ final class Bee_Context_Abstract_ObjectFactoryImpl implements Bee_Context_Config
         return $this->context->getModificationTimestamp();
     }
 }
-
-?>
