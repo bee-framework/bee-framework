@@ -419,19 +419,12 @@
         </xsd:annotation>
     </xsd:element>
 
-    <xsd:element name="method-invocation">
+    <xsd:element name="method-invocation" type="methodInvocationType">
         <xsd:annotation>
             <xsd:documentation><![CDATA[
-	Bean definitions can have zero or more properties.
-	Property elements correspond to JavaBean setter methods exposed
-	by the bean classes. Spring supports primitives, references to other
-	beans in the same or related factories, lists, maps and properties.
+	Bean definitions can have zero or more method invocations defined. These will be invoked upon initialization.
 			]]></xsd:documentation>
         </xsd:annotation>
-        <xsd:complexType>
-            <xsd:choice minOccurs="0" maxOccurs="unbounded">
-            </xsd:choice>
-        </xsd:complexType>
     </xsd:element>
 
     <xsd:element name="ref">
@@ -598,6 +591,16 @@
     <!-- base type for collections that have (possibly) typed nested values -->
     <xsd:complexType name="collectionType">
         <xsd:attributeGroup ref="collectionBeanAttributes"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="methodInvocationType">
+        <xsd:sequence>
+            <xsd:element ref="description" minOccurs="0"/>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element ref="constructor-arg" />
+                <xsd:any namespace="##other" processContents="strict"/>
+            </xsd:choice>
+        </xsd:sequence>
     </xsd:complexType>
 
     <xsd:complexType name="propertyType">
