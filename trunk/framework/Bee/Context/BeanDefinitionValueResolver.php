@@ -40,21 +40,12 @@ class Bee_Context_BeanDefinitionValueResolver {
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Context_Config_IBeanDefinition
-	 */
-	private $beanDefinition;
-	
-	/**
-	 * Enter description here...
-	 *
 	 * @param Bee_Context_Abstract $context
 	 * @param String $beanName
-	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition
 	 */
-	public function __construct(Bee_Context_Abstract $context, $beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
+	public function __construct(Bee_Context_Abstract $context, $beanName) {
 		$this->context = $context;
 		$this->beanName = $beanName;
-		$this->beanDefinition = $beanDefinition;
 	}
 	
 	
