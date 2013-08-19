@@ -42,7 +42,7 @@ class ViewResolverBeanDefinitionCreator implements \Bee_Context_Xml_Namespace_IB
 
 		$resolverDefinition = Bee_Context_Support_BeanDefinitionReaderUtils::createBeanDefinition(null, 'Bee_MVC_ViewResolver_Basic');
 		$resolverDefinition->addPropertyValue(new Bee_Beans_PropertyValue('context', new Bee_Context_Config_RuntimeBeanReference(array(self::DEFAULT_VIEW_CONTEXT_BEAN_NAME))));
-		$resolverDefHolder = new Bee_Context_Config_BeanDefinitionHolder($contextDefinition, Bee_MVC_Dispatcher::VIEW_RESOLVER_BEAN_NAME);
+		$resolverDefHolder = new Bee_Context_Config_BeanDefinitionHolder($resolverDefinition, Bee_MVC_Dispatcher::VIEW_RESOLVER_BEAN_NAME);
 		Bee_Context_Support_BeanDefinitionReaderUtils::registerBeanDefinition($resolverDefHolder, $parserContext->getRegistry());
 	}
 }
