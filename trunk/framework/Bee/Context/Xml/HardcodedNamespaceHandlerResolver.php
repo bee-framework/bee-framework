@@ -27,7 +27,8 @@ class Bee_Context_Xml_HardcodedNamespaceHandlerResolver implements Bee_Context_X
 		'http://www.beeframework.org/schema/security' => 'Bee_Security_Namespace_Handler',
 		'http://www.beeframework.org/schema/tx' => null,
 		'http://www.beeframework.org/schema/util' => 'Bee_Context_Util_Namespace_Handler',
-		'http://www.beeframework.org/schema/batch' => 'Bee\Tools\Batch\XmlNamespace\Handler'
+		'http://www.beeframework.org/schema/batch' => 'Bee\Tools\Batch\XmlNamespace\Handler',
+		'http://www.beeframework.org/schema/mvc' => 'Bee\MVC\XmlNamespace\Handler'
 	);
 	
 	public function resolve($namespaceUri) {
