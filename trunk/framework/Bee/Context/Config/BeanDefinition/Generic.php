@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Beans\MethodInvocation;
 
 /**
  * Enter description here...
@@ -74,5 +75,3 @@ class Bee_Context_Config_BeanDefinition_Generic extends Bee_Context_Config_BeanD
 		echo '<hr/>';
 	}
 }
-
-?>

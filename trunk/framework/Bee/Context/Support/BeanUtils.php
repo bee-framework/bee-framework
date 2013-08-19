@@ -24,4 +24,11 @@ abstract class Bee_Context_Support_BeanUtils {
 		}
 		return $class->newInstanceArgs($args);
 	}
+
+	public static function mergePropertyValuesIfPossible (Bee_Beans_PropertyValue $parent, Bee_Beans_PropertyValue $child) {
+        $childValue = $child->getValue();
+		if($childValue instanceof Bee_Context_Config_IMergeable && $childValue->getMergeEnabled() && $parent->getValue() instanceof Traversable) {
+            $childValue->merge($parent->getValue());
+		}
+	}
 }

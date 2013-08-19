@@ -59,6 +59,8 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 
 	const PROPERTY_ELEMENT = 'property';
 
+	const METHOD_INVOCATION_ELEMENT = 'method-invocation';
+
 	const REF_ELEMENT = 'ref';
 
 	const IDREF_ELEMENT = 'idref';
@@ -278,6 +280,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 
 			$this->parseConstructorArgElements($ele, $bd);
 			$this->parsePropertyElements($ele, $bd);
+			$this->parseMethodInvocationElements($ele, $bd);
 
 //			bd.setResource(this.readerContext.getResource());
 //			bd.setSource(extractSource(ele));
@@ -302,14 +305,14 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	 * Parse constructor-arg sub-elements of the given bean element.
 	 *
 	 * @param DOMElement $beanEle
-	 * @param Bee_Context_Config_IBeanDefinition $bd
+	 * @param Bee\Context\Config\IMethodArguments $argsHolder
 	 * @return void
 	 */
-	public function parseConstructorArgElements(DOMElement $beanEle, Bee_Context_Config_IBeanDefinition $bd) {
+	public function parseConstructorArgElements(DOMElement $beanEle, Bee\Context\Config\IMethodArguments $argsHolder) {
 		$nl = $beanEle->childNodes;
 		foreach($nl as $node) {
 			if ($node instanceof DOMElement && Bee_Utils_Dom::nodeNameEquals($node, self::CONSTRUCTOR_ARG_ELEMENT)) {
-				$this->parseConstructorArgElement($node, $bd);
+				$this->parseConstructorArgElement($node, $argsHolder);
 			}
 		}
 	}
@@ -331,24 +334,40 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 		}
 	}
 
-	
+	/**
+	 * Parse method-invocation sub-elements of the given bean element.
+	 *
+	 * @param DOMElement $beanEle
+	 * @param Bee_Context_Config_IBeanDefinition $bd
+	 * @return void
+	 */
+	public function parseMethodInvocationElements(DOMElement $beanEle, Bee_Context_Config_IBeanDefinition $bd) {
+		$nl = $beanEle->childNodes;
+		foreach($nl as $node) {
+			if ($node instanceof DOMElement && Bee_Utils_Dom::nodeNameEquals($node, self::METHOD_INVOCATION_ELEMENT)) {
+				$this->parseMethodInvocationElement($node, $bd);
+			}
+		}
+	}
+
+
 	/**
 	 * Parse a constructor-arg element.
 	 */
-	public function parseConstructorArgElement(DOMElement $ele, Bee_Context_Config_IBeanDefinition $bd) {
+	public function parseConstructorArgElement(DOMElement $ele, Bee\Context\Config\IMethodArguments $argsHolder) {
 		
 		$indexAttr = $ele->getAttribute(self::INDEX_ATTRIBUTE);
 
 		if (Bee_Utils_Strings::hasLength($indexAttr) && is_numeric($indexAttr) && ($index = intval($indexAttr)) >= 0) {
-			$existingArgs = $bd->getConstructorArgumentValues(); 
+			$existingArgs = $argsHolder->getConstructorArgumentValues();
 			if(isset($existingArgs[$index])) {
 				$this->readerContext->error("Multiple occurrences of value $index for attribute 'index' of tag 'constructor-arg'", $ele);
 			} else {
 				try {
 					array_push($this->parseState, "Constructor_Arg_Idx_$index");
-					$value = $this->parsePropertyValue($ele, $bd, null);
+					$value = $this->parsePropertyValue($ele, $argsHolder, null);
 					$valueHolder = new Bee_Beans_PropertyValue($index, $value);
-					$bd->addConstructorArgumentValue($valueHolder);
+					$argsHolder->addConstructorArgumentValue($valueHolder);
 					array_pop($this->parseState);
 				} catch (Exception $ex) {
 					array_pop($this->parseState);
@@ -364,7 +383,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	 * Parse a property element.
 	 */
 	public function parsePropertyElement(DOMElement $ele, Bee_Context_Config_IBeanDefinition $bd) {
-		
+
 		$propertyName = $ele->getAttribute(self::NAME_ATTRIBUTE);
 		if (!Bee_Utils_Strings::hasText($propertyName)) {
 			$this->readerContext->error("Tag 'property' must have a 'name' attribute", $ele);
@@ -388,7 +407,30 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 		}
 	}
 
-	
+	/**
+	 * Parse a property element.
+	 */
+	public function parseMethodInvocationElement(DOMElement $ele, Bee_Context_Config_IBeanDefinition $bd) {
+
+		$methodName = $ele->getAttribute(self::NAME_ATTRIBUTE);
+		if (!Bee_Utils_Strings::hasText($methodName)) {
+			$this->readerContext->error("Tag 'method-invocation' must have a 'name' attribute", $ele);
+			return;
+		}
+		array_push($this->parseState, $methodName);
+		try {
+			$methodInvocation = new \Bee\Beans\MethodInvocation($methodName);
+			$this->parseConstructorArgElements($ele, $methodInvocation);
+			$bd->addMethodInvocation($methodInvocation);
+
+			array_pop($this->parseState);
+		} catch (Exception $ex) {
+			array_pop($this->parseState);
+			throw $ex;
+		}
+	}
+
+
 	/**
 	 * Get the value of a property element. May be a list etc.
 	 * Also used for constructor arguments, "propertyName" being null in this case.
