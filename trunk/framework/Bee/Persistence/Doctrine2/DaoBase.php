@@ -1,5 +1,7 @@
 <?php
 namespace Bee\Persistence\Doctrine2;
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * User: mp
@@ -17,11 +19,19 @@ class DaoBase extends EntityManagerHolder {
 	 * @internal param \Doctrine\ORM\QueryBuilder $query
 	 * @return array
 	 */
-    public function executeListQuery(\Doctrine\ORM\QueryBuilder $queryBuilder, \Bee_Persistence_IRestrictionHolder $restrictionHolder = null, \Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping) {
+    public function executeListQuery(\Doctrine\ORM\QueryBuilder $queryBuilder, \Bee_Persistence_IRestrictionHolder $restrictionHolder = null, \Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping, $hydrationMode = null) {
         $this->applyFilterRestrictions($queryBuilder, $restrictionHolder);
         $this->applyOrderAndLimit($queryBuilder, $orderAndLimitHolder, $defaultOrderMapping);
-        return $queryBuilder->getQuery()->execute();
+        return $this->getQueryFromBuilder($queryBuilder)->execute(null, $hydrationMode);
     }
+
+	/**
+	 * @param QueryBuilder $qb
+	 * @return Query
+	 */
+	protected function getQueryFromBuilder(QueryBuilder $qb) {
+		return $qb->getQuery();
+	}
 
 	/**
 	 * @param \Doctrine\ORM\QueryBuilder $queryBuilder
@@ -87,7 +97,7 @@ class DaoBase extends EntityManagerHolder {
             $queryBuilder->setMaxResults($orderAndLimitHolder->getPageSize());
 
             // TODO: build a performant count-query! This is simply bullshit!
-            $pageCount = ceil(count($queryBuilder->getQuery()->execute()) / $orderAndLimitHolder->getPageSize());
+            $pageCount = ceil(count($this->getQueryFromBuilder($queryBuilder)->execute()) / $orderAndLimitHolder->getPageSize());
             $orderAndLimitHolder->setPageCount($pageCount);
 
             if ($orderAndLimitHolder->getCurrentPage() > $pageCount) {
