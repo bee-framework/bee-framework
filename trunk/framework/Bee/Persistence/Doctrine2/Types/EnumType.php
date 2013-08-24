@@ -17,11 +17,6 @@ abstract class EnumType extends Type {
 	private $values;
 
 	/**
-	 * @var string
-	 */
-	private $name;
-
-	/**
 	 * @var \ReflectionClass
 	 */
 	private $reflClass;
@@ -29,22 +24,22 @@ abstract class EnumType extends Type {
 	/**
 	 * @return string
 	 */
-	protected abstract function getEnumClassName();
+	protected static function getEnumClassName() {
+		return null;
+	}
 
 	public function __construct() {
-		$this->reflClass = new \ReflectionClass($this->getEnumClassName());
+		$this->reflClass = new \ReflectionClass(static::getEnumClassName());
 		if (!$this->reflClass->isSubclassOf(self::ENUM_BASE_TYPE)) {
 			throw new \UnexpectedValueException('"' . $this->reflClass . '" is not a subclass of "' . self::ENUM_BASE_TYPE . '"');
 		}
-
-		$this->name = 'enum_' . str_replace('\\', '', $this->getEnumClassName());
 	}
 
 	public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform) {
 		$values = array_map(function ($val) {
 			return "'" . $val . "'";
 		}, $this->reflClass->getMethod('getValues')->invoke(null));
-		return "ENUM(" . implode(", ", $values) . ") COMMENT '(DC2Type:" . $this->name . ")'";
+		return "ENUM(" . implode(", ", $values) . ") COMMENT '(DC2Type:" . $this->getName() . ")'";
 	}
 
 	public function convertToPHPValue($value, AbstractPlatform $platform) {
@@ -62,6 +57,10 @@ abstract class EnumType extends Type {
 	}
 
 	public function getName() {
-		return $this->name;
+		return self::getEnumName();
+	}
+
+	public static function getEnumName() {
+		return 'enum_' . str_replace('\\', '', static::getEnumClassName());
 	}
 }
