@@ -9,31 +9,21 @@ use Doctrine\DBAL\Types\Type;
  */
 abstract class EnumType extends Type
 {
-	/**
-	 * @var \ReflectionClass
-	 */
-	private $reflClass;
-
 	private $values;
 
 	private $name;
 
+	protected abstract function getEnumClassName();
+
 	public function __construct() {
-		$this->reflClass = new \ReflectionClass($this);
-		$this->values = array_diff_key($this->reflClass->getConstants(), array('ENUM_NAME'));
-
-		echo '<hr/>EnumType ' . get_class($this) . '<br/>';
-		var_dump($this);
-		echo '<hr/>';
-	}
-
-	protected function getValues() {
-		return $this->values;
+		$reflClass = new \ReflectionClass($this->getEnumClassName());
+		$this->values = $reflClass->getConstants();
+		$this->name = 'enum_' . str_replace('\\', '_', $this->getEnumClassName());
 	}
 
     public function getSqlDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
     {
-        $values = array_map(function($val) { return "'".$val."'"; }, $this->getValues());
+        $values = array_map(function($val) { return "'".$val."'"; }, $this->values);
         return "ENUM(".implode(", ", $values).") COMMENT '(DC2Type:".$this->name.")'";
     }
 
@@ -45,7 +35,7 @@ abstract class EnumType extends Type
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
 
-        if (!in_array($value, $this->getValues())) {
+        if (!in_array($value, $this->values)) {
             throw new \InvalidArgumentException("Invalid '".$this->name."' value.");
         }
         return $value;
