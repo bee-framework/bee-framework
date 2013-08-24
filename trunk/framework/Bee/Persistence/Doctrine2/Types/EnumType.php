@@ -59,6 +59,6 @@ abstract class EnumType extends Type {
 	}
 
 	public static function getEnumName() {
-		return 'enum_' . str_replace('\\', '', static::getEnumClassName());
+		return 'enum'.substr(static::getEnumClassName(), strrpos(static::getEnumClassName(), '\\'));
 	}
 }
