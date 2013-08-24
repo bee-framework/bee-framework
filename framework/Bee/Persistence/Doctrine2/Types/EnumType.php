@@ -23,10 +23,6 @@ abstract class EnumType extends Type
 		$reflClass = new \ReflectionClass($this);
 		$this->values = array_diff_key($reflClass->getConstants(), array('ENUM_NAME'));
 		$this->name = $reflClass->getConstant('ENUM_NAME');
-
-		echo '<hr/>EnumType ' . get_class($this) . '<br/>';
-		var_dump($this);
-		echo '<hr/>';
 	}
 
 	protected function getValues() {
@@ -46,7 +42,6 @@ abstract class EnumType extends Type
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform)
     {
-
         if (!in_array($value, $this->getValues())) {
             throw new \InvalidArgumentException("Invalid '".$this->name."' value.");
         }
