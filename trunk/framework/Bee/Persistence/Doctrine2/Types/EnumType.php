@@ -10,6 +10,7 @@ use Doctrine\DBAL\Types\Type;
 abstract class EnumType extends Type {
 
 	const ENUM_BASE_TYPE = 'Bee\Utils\EnumBase';
+
 	/**
 	 * @var array
 	 */
@@ -20,8 +21,14 @@ abstract class EnumType extends Type {
 	 */
 	private $name;
 
+	/**
+	 * @var \ReflectionClass
+	 */
 	private $reflClass;
 
+	/**
+	 * @return string
+	 */
 	protected abstract function getEnumClassName();
 
 	public function __construct() {
