@@ -9,18 +9,22 @@ use Doctrine\DBAL\Types\Type;
  */
 abstract class EnumType extends Type
 {
-    protected $name;
-
 	/**
 	 * @var \ReflectionClass
 	 */
-	protected $reflClass;
+	private $reflClass;
 
 	private $values;
 
+	private $name;
+
 	public function __construct() {
 		$this->reflClass = new \ReflectionClass($this);
-		$this->values = $this->reflClass->getConstants();
+		$this->values = array_diff_key($this->reflClass->getConstants(), array('ENUM_NAME'));
+
+		echo '<hr/>EnumType ' . get_class($this) . '<br/>';
+		var_dump($this);
+		echo '<hr/>';
 	}
 
 	protected function getValues() {
