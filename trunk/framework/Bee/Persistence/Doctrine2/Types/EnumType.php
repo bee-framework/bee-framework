@@ -61,4 +61,8 @@ abstract class EnumType extends Type {
 	public static function getEnumName() {
 		return 'enum'.substr(static::getEnumClassName(), strrpos(static::getEnumClassName(), '\\'));
 	}
+
+	public function getMappedDatabaseTypes(AbstractPlatform $platform) {
+		return array('enum');
+	}
 }
