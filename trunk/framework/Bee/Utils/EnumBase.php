@@ -24,22 +24,17 @@ use ReflectionClass;
 abstract class EnumBase {
 
 	/**
-	 * @var ReflectionClass
-	 */
-	private static $reflClass = null;
-
-	/**
 	 * @var array
 	 */
 	private static $valueToName = null;
 
 	/**
-	 * @var EnumBase
+	 * @var EnumBase[]
 	 */
 	private static $instancesByValue = null;
 
 	/**
-	 * @var EnumBase
+	 * @var EnumBase[]
 	 */
 	private static $instancesByOid = null;
 
@@ -63,8 +58,8 @@ abstract class EnumBase {
 	 * @return array
 	 */
 	public static function getValues() {
-		self::init();
-		return array_keys(self::$valueToName);
+		static::init();
+		return array_keys(self::$valueToName[get_called_class()]);
 	}
 
 	/**
@@ -85,31 +80,36 @@ abstract class EnumBase {
 	 * @throws \UnexpectedValueException
 	 */
 	public static function get($value) {
-		self::init();
-		if(!isset(self::$valueToName[$value])) {
-			throw new \UnexpectedValueException('Invalid value "' . $value . '" for enum ' . self::$reflClass->getShortName());
+		if(is_null($value)) {
+			return $value;
+		}
+		static::init();
+		$calledClass = get_called_class();
+		if(!isset(self::$valueToName[$calledClass][$value])) {
+			throw new \UnexpectedValueException('Invalid value "' . $value . '" for enum ' . $calledClass);
 		}
 
-		if(!isset(self::$instancesByValue[$value])) {
-			$name = self::$valueToName[$value];
-			$className = self::$reflClass->getName();
-			$instanceClassName = class_exists($className . '_' . $name, false) ? $className . '_' . $name : $className;
+		if(!isset(self::$instancesByValue[$calledClass][$value])) {
+			$name = self::$valueToName[$calledClass][$value];
+			$instanceClassName = class_exists($calledClass . '_' . $name, false) ? $calledClass . '_' . $name : $calledClass;
 			$inst = new $instanceClassName($value);
-			self::$instancesByValue[$value] = $inst;
+			self::$instancesByValue[$calledClass][$value] = $inst;
 			self::$instancesByOid[spl_object_hash($inst)] = $inst;
 		}
 
-		return self::$instancesByValue[$value];
+		return self::$instancesByValue[$calledClass][$value];
 	}
 
 	private static function init() {
-		if(is_null(self::$reflClass)) {
-			self::$reflClass = new \ReflectionClass(new static(false));
-			$constants = self::$reflClass->getConstants();
-			self::$valueToName = array_flip($constants);
-			if(count($constants) !== count(self::$valueToName)) {
-				throw new \UnexpectedValueException('Invalid enum definition ' . self::$reflClass->getName() .' : const values probably not unique');
+		$calledClass = get_called_class();
+		if(!isset(self::$valueToName[$calledClass])) {
+			$reflClass = new \ReflectionClass($calledClass);
+			$constants = $reflClass->getConstants();
+			$flipped = array_flip($constants);
+			if(count($constants) !== count($flipped)) {
+				throw new \UnexpectedValueException('Invalid enum definition ' . $reflClass->getName() .' : const values probably not unique');
 			}
+			self::$valueToName[$calledClass] = $flipped;
 		}
 	}
 
@@ -119,4 +119,3 @@ abstract class EnumBase {
 	private function __wakeup() {
 	}
 }
- 

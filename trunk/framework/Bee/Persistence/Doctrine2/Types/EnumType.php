@@ -38,8 +38,11 @@ abstract class EnumType extends Type {
 
 	public function convertToDatabaseValue($value, AbstractPlatform $platform) {
 		if (!$this->reflClass) self::init();
+		if(is_null($val)) {
+			return $value;
+		}
 		if (!$this->reflClass->isInstance($value)) {
-			throw new \UnexpectedValueException('Not a valid enum element for "' . self::ENUM_BASE_TYPE . '": ' . $value);
+			throw new \UnexpectedValueException('Not a valid enum element for "' . static::getEnumClassName() . '": ' . $value);
 		}
 		// check if value is valid
 		self::convertToPHPValue($value->val(), $platform);
