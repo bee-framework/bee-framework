@@ -168,7 +168,7 @@ class Bee_Framework {
         }
 
         foreach(self::getClassFileLocations($className) as $loc) {
-            include $loc;
+            include_once $loc;
             if (class_exists($className, false) || interface_exists($className, false)) {
                 return true;
             }
