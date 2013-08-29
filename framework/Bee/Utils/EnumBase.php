@@ -118,4 +118,10 @@ abstract class EnumBase {
 
 	private function __wakeup() {
 	}
+
+	// todo:
+	function __toString() {
+		return $this->val();
+	}
+
 }
