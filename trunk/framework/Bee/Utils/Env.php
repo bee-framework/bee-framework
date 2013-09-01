@@ -26,6 +26,8 @@ class Bee_Utils_Env {
 	const PATH_INFO = 'PATH_INFO';
 	const ORIG_PATH_INFO = 'ORIG_PATH_INFO';
 
+	const PATH_INFO_REWRITE_QUERY_PARAM = 'BEE_PATH_INFO_REWRITE';
+
 	public static $USER_AGENTS = array('msie', 'firefox', 'safari', 'webkit', 'opera', 'netscape', 'konqueror', 'gecko');
 
 	private static $pathInfo;
@@ -210,21 +212,18 @@ class Bee_Utils_Env {
 
 		if (is_null(self::$pathInfo)) {
 			$pathInfo = array_key_exists(self::PATH_INFO, $_SERVER) ? $_SERVER[self::PATH_INFO] : null;
-			if (Bee_Utils_Strings::hasText($pathInfo)) {
-				self::$pathInfo = $pathInfo;
-
-			} else {
+			if (!Bee_Utils_Strings::hasText($pathInfo) && array_key_exists(self::PATH_INFO_REWRITE_QUERY_PARAM, $_GET)) {
+				$pathInfo = '/' . $_GET['BEE_PATH_INFO_REWRITE'];
+			}
+			if (!Bee_Utils_Strings::hasText($pathInfo)) {
 				$pathInfo = array_key_exists(self::ORIG_PATH_INFO, $_SERVER) ? $_SERVER[self::ORIG_PATH_INFO] : null;
 				if (Bee_Utils_Strings::hasText($pathInfo)) {
-					if ($pathInfo == $_SERVER['ORIG_SCRIPT_NAME']) {
-						return '';
+					if ($pathInfo == $_SERVER['ORIG_SCRIPT_NAME'] || $_SERVER['SCRIPT_NAME']) {
+						$pathInfo = '';
 					}
-					if ($pathInfo == $_SERVER['SCRIPT_NAME']) {
-						return '';
-					}
-					self::$pathInfo = $pathInfo;
 				}
 			}
+			self::$pathInfo = $pathInfo;
 		}
 		return self::$pathInfo;
 	}
