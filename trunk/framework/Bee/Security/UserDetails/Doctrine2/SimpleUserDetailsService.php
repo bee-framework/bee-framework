@@ -20,7 +20,7 @@ class SimpleUserDetailsService implements Bee_Security_IUserDetailsService {
 	/**
 	 * @var string
 	 */
-	private $userEntityName = 'Bee\Tools\Security\Auth\Doctrine2\SimpleUser';
+	private $userEntityName = 'Bee\Security\UserDetails\Doctrine2\SimpleUser';
 
 	/**
 	 * Locates the user based on the username. In the actual implementation, the search may possibly be case
