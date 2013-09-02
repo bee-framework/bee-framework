@@ -13,7 +13,7 @@ class SimpleUser extends UserBase {
 
 	/**
 	 * @var array
-	 * @Column(name="roles", type="simple_array", nullable=false)
+	 * @Column(name="roles", type="simple_array", nullable=true)
 	 */
 	private $roles = array();
 
