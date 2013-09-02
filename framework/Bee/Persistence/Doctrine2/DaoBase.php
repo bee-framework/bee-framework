@@ -1,7 +1,9 @@
 <?php
 namespace Bee\Persistence\Doctrine2;
+use Bee_Framework;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use Logger;
 
 /**
  * User: mp
@@ -11,11 +13,27 @@ use Doctrine\ORM\QueryBuilder;
 class DaoBase extends EntityManagerHolder {
 
 	/**
+	 * @var Logger
+	 */
+	protected $log;
+
+	/**
+	 * @return Logger
+	 */
+	protected function getLog() {
+		if (!$this->log) {
+			$this->log = Logger::getLogger(get_class($this));
+		}
+		return $this->log;
+	}
+
+	/**
 	 * @param \Doctrine\ORM\QueryBuilder $queryBuilder
 	 * @param \Bee_Persistence_IRestrictionHolder $restrictionHolder
 	 * @param \Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder
 	 * @param array $defaultOrderMapping
 	 *
+	 * @param null $hydrationMode
 	 * @internal param \Doctrine\ORM\QueryBuilder $query
 	 * @return array
 	 */
@@ -114,20 +132,22 @@ class DaoBase extends EntityManagerHolder {
 	 * @return mixed
 	 */
 	public function doInTransaction($func) {
-		$this->getDoctrineConnection()->beginTransaction();
+		$this->getLog()->info('Begin transaction.');
+		$this->getEntityManager()->beginTransaction();
 		try {
-			$result = $func($this, self::getLog());
+			$result = $func($this, $this->getLog());
 
-			$this->getDoctrineConnection()->commit();
-			$this->getDoctrineConnection()->flush();
+			$this->getLog()->info('Transaction committing...');
 
+			$this->getEntityManager()->commit();
+			$this->getEntityManager()->flush();
+
+			$this->getLog()->info('Transaction committed!');
 			return $result;
-		} catch(\Exception $e) {
-			self::getLog()->debug('exception caught', $e);
-			$this->getDoctrineConnection()->rollBack();
+		} catch (\Exception $e) {
+			$this->getLog()->warn('Exception caught, rolling back!', $e);
+			$this->getEntityManager()->rollBack();
 			throw $e;
 		}
-
 	}
-
 }
