@@ -9,147 +9,52 @@ use Bee_Security_IUserDetails;
  * @Entity
  * @Table(name="bee_security_user")
  */
-class SimpleUser implements Bee_Security_IUserDetails {
+class SimpleUser extends UserBase {
 
 	/**
-	 * @var integer
-	 *
-	 * @Id
-	 * @GeneratedValue
-	 * @Column(type="integer")
+	 * @var array
+	 * @Column(name="roles", type="simple_array", nullable=false)
 	 */
-	private $id;
+	private $roles = array();
 
 	/**
-	 * @var string
-	 * @Column(name="username", type="string", length=20, nullable=false)
+	 * @var null|array
 	 */
-	private $username;
-
-	/**
-	 * @var string
-	 * @Column(name="password", type="string", length=20, nullable=false)
-	 */
-	private $password;
-
-	/**
-	 * @var boolean
-	 * @Column(name="disabled", type="boolean", nullable=false)
-	 */
-	private $disabled = false;
-
-	/**
-	 * @var string
-	 * @Column(name="name", type="string", length=200, nullable=true)
-	 */
-	private $name;
-
-	/**
-	 * Get the identifier
-	 *
-	 * @return integer
-	 */
-	public function getId() {
-		return $this->id;
-	}
-
+	private $rolesTransformed = null;
 
 	/**
 	 * Returns the authorities granted to the user. Cannot return <code>null</code>.
 	 *
 	 * @return Bee_Security_IGrantedAuthority[] the authorities, sorted by natural key (never <code>null</code>)
 	 */
-	function getAuthorities() {
-		return array();
+	public function getAuthorities() {
+		if(!$this->rolesTransformed) {
+			$this->rolesTransformed = array_fill_keys($this->roles, true);
+		}
+		return $this->rolesTransformed;
 	}
 
 	/**
-	 * Returns the password used to authenticate the user. Cannot return <code>null</code>.
-	 *
-	 * @return String the password (never <code>null</code>)
+	 * @param string $role
 	 */
-	function getPassword() {
-		return $this->password;
+	public function addRole($role) {
+		$this->getAuthorities();
+		$this->rolesTransformed[$role] = true;
+		$this->updateRoles();
 	}
 
-	/**
-	 * @param string $password
-	 */
-	public function setPassword($password) {
-		$this->password = $password;
+	public function removeRole($role) {
+		$this->getAuthorities();
+		unset($this->rolesTransformed[$role]);
+		$this->updateRoles();
 	}
 
-	/**
-	 * Returns the username used to authenticate the user. Cannot return <code>null</code>.
-	 *
-	 * @return String the username (never <code>null</code>)
-	 */
-	public function getUsername() {
-		return $this->username;
+	public function hasRole($role) {
+		return array_key_exists($role, $this->getAuthorities());
 	}
 
-	/**
-	 * @param string $username
-	 */
-	public function setUsername($username) {
-		$this->username = $username;
-	}
-
-	/**
-	 * Indicates whether the user's account has expired. An expired account cannot be authenticated.
-	 *
-	 * @return boolean <code>true</code> if the user's account is valid (ie non-expired), <code>false</code> if no longer valid
-	 *         (ie expired)
-	 */
-	public function isAccountNonExpired() {
-		return true;
-	}
-
-	/**
-	 * Indicates whether the user is locked or unlocked. A locked user cannot be authenticated.
-	 *
-	 * @return boolean <code>true</code> if the user is not locked, <code>false</code> otherwise
-	 */
-	public function isAccountNonLocked() {
-		return true;
-	}
-
-	/**
-	 * Indicates whether the user's credentials (password) has expired. Expired credentials prevent
-	 * authentication.
-	 *
-	 * @return boolean <code>true</code> if the user's credentials are valid (ie non-expired), <code>false</code> if no longer
-	 *         valid (ie expired)
-	 */
-	public function isCredentialsNonExpired() {
-		return true;
-	}
-
-	/**
-	 * Indicates whether the user is enabled or disabled. A disabled user cannot be authenticated.
-	 *
-	 * @return boolean <code>true</code> if the user is enabled, <code>false</code> otherwise
-	 */
-	public function isEnabled() {
-		return !$this->getDisabled();
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public function getDisabled() {
-		return $this->disabled;
-	}
-
-	/**
-	 * @param boolean $disabled
-	 */
-	public function setDisabled($disabled) {
-		$this->disabled = $disabled;
-	}
-
-	public function __toString() {
-		return $this->getUsername();
+	private function updateRoles() {
+		$this->roles = array_keys($this->rolesTransformed);
 	}
 }
 
