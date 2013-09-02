@@ -33,36 +33,8 @@ abstract class AbstractGenericDao extends DaoBase {
 	 * @return mixed
 	 */
 	public function getById($id) {
-		$idFields = $this->getIdFieldName();
-
-		$expectedDim = count($idFields);
-		$actualDim = count($id);
-
-		// unpack single-valued id if necessary
-		if(is_array($id) && $actualDim === 1) {
-			$id = $id[0];
-		}
-
-		$baseEntityAlias = $this->getEntityAlias();
 		$qb = $this->getBaseQuery();
-		if($expectedDim > 1) {
-			// composite key
-			if($actualDim === 1) {
-				$id = DaoUtils::explodeScalarId($id, $idFields);
-			} else if($actualDim !== $expectedDim) {
-				throw new UnexpectedValueException('Dimension of given ID ('.count($id).') does not match expected dimension ('.count($idFields).').');
-			}
-
-			// here we can be sure that the dimensions match - both branches above would have thrown otherwise
-			$whereParts = array();
-			array_walk($id, function($value, $key) use($baseEntityAlias, &$whereParts) {
-				$whereParts[] = $baseEntityAlias . '.' . $key . ' = ' . ':' . $key;
-			});
-			$qb->where(implode(' AND ', $whereParts))->setParameters($id);
-		} else {
-			$qb->where($baseEntityAlias . '.' . $idFields . ' = :id')->setParameter('id', $id);
-		}
-
+		$this->applyWhereId($id, $qb);
 		return $this->getSingleResult($qb);
 	}
 
@@ -118,5 +90,41 @@ abstract class AbstractGenericDao extends DaoBase {
 		$classMetadata = $this->getEntityManager()->getClassMetadata($this->getEntity());
 		$idFields = $classMetadata->getIdentifierFieldNames();
 		return count($idFields) > 1 ? $idFields : $idFields[0];
+	}
+
+	/**
+	 * @param mixed $id
+	 * @param QueryBuilder $qb
+	 * @throws \UnexpectedValueException
+	 */
+	protected function applyWhereId($id, QueryBuilder $qb) {
+		$idFields = $this->getIdFieldName();
+
+		$expectedDim = count($idFields);
+		$actualDim = count($id);
+
+		// unpack single-valued id if necessary
+		if (is_array($id) && $actualDim === 1) {
+			$id = $id[0];
+		}
+
+		$baseEntityAlias = $this->getEntityAlias();
+		if ($expectedDim > 1) {
+			// composite key
+			if ($actualDim === 1) {
+				$id = DaoUtils::explodeScalarId($id, $idFields);
+			} else if ($actualDim !== $expectedDim) {
+				throw new UnexpectedValueException('Dimension of given ID (' . count($id) . ') does not match expected dimension (' . count($idFields) . ').');
+			}
+
+			// here we can be sure that the dimensions match - both branches above would have thrown otherwise
+			$whereParts = array();
+			array_walk($id, function ($value, $key) use ($baseEntityAlias, &$whereParts) {
+				$whereParts[] = $baseEntityAlias . '.' . $key . ' = ' . ':' . $key;
+			});
+			$qb->where(implode(' AND ', $whereParts))->setParameters($id);
+		} else {
+			$qb->where($baseEntityAlias . '.' . $idFields . ' = :id')->setParameter('id', $id);
+		}
 	}
 }
