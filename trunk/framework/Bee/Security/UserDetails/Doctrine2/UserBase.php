@@ -141,4 +141,18 @@ abstract class UserBase implements Bee_Security_IUserDetails {
 	public function __toString() {
 		return $this->getUsername();
 	}
+
+	/**
+	 * @param string $name
+	 */
+	public function setName($name) {
+		$this->name = $name;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getName() {
+		return $this->name ? $this->name : $this->getUsername();
+	}
 }
