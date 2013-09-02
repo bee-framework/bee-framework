@@ -39,9 +39,9 @@ class Bee_Security_Helper {
      */
     private static $userDetailsService;
 
-    public static function construct(Bee_Security_IAccessDecisionManager $accessDecisionManager,
-                                     Bee_Security_IAfterInvocationManager $afterInvocationProviderManager,
-                                     Bee_Security_IUserDetailsService $userDetailsService) {
+    public static function construct(Bee_Security_IAccessDecisionManager $accessDecisionManager = null,
+                                     Bee_Security_IAfterInvocationManager $afterInvocationProviderManager = null,
+                                     Bee_Security_IUserDetailsService $userDetailsService = null) {
         self::$accessDecisionManager = $accessDecisionManager;
         self::$afterInvocationProviderManager = $afterInvocationProviderManager;
         self::$userDetailsService = $userDetailsService;
