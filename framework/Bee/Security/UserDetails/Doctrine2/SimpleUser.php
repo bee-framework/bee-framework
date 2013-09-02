@@ -22,7 +22,7 @@ class SimpleUser extends UserBase {
 	 */
 	private $rolesTransformed = null;
 
-	/**
+	/*
 	 * Returns the authorities granted to the user. Cannot return <code>null</code>.
 	 *
 	 * @return Bee_Security_IGrantedAuthority[] the authorities, sorted by natural key (never <code>null</code>)
