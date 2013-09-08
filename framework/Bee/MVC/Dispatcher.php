@@ -257,17 +257,19 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 					throw $e;
 				}
 			}
-			
-			$mav->addModelValue(Bee_MVC_Model::CURRENT_REQUEST_KEY, $request);			
-			$this->resolveModelAndView($mav);
-			
-			// Apply postHandle methods of registered interceptors.
-			for ($i = $interceptors_length - 1; $i >= 0; $i--) {
-				$interceptor = $interceptors[$i];
-				$interceptor->postHandle($request, $handler, $mav);
+
+			if($mav instanceof Bee_MVC_ModelAndView) {
+				$mav->addModelValue(Bee_MVC_Model::CURRENT_REQUEST_KEY, $request);
+				$this->resolveModelAndView($mav);
+
+				// Apply postHandle methods of registered interceptors.
+				for ($i = $interceptors_length - 1; $i >= 0; $i--) {
+					$interceptor = $interceptors[$i];
+					$interceptor->postHandle($request, $handler, $mav);
+				}
+
+				$mav->renderModelInView();
 			}
-			
-			$mav->renderModelInView();
 		} catch (Exception $e) {
 			throw $e;
 		}
