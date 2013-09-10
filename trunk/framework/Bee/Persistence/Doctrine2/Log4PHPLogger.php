@@ -46,7 +46,7 @@ class Log4PHPLogger implements SQLLogger {
 	 * @return void
 	 */
 	public function startQuery($sql, array $params = null, array $types = null) {
-		self::getLog()->trace('SQL : [' . $sql . '] PARAMS : [' . var_export($params, true) . '] TYPES: ['. implode(', ', $types) . ']');
+		self::getLog()->trace('SQL : [' . $sql . '] PARAMS : [' . var_export($params, true) . '] TYPES: ['. var_export($types, true) . ']');
 		$this->startTime = microtime(true);
 	}
 
