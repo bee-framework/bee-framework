@@ -67,6 +67,7 @@ class Bee_MVC_SimpleMappingExceptionResolver implements Bee_MVC_IHandlerExceptio
 
 	public function resolveException(Bee_MVC_IHttpRequest $request, Bee_MVC_IController $handler = null, Exception $ex) {
 		$exceptionClass = get_class($ex);
+		$viewName = false;
 		if(is_array($this->exceptionMapping) && array_key_exists($exceptionClass, $this->exceptionMapping)) {
 			$viewName = $this->exceptionMapping[$exceptionClass];
 		}
