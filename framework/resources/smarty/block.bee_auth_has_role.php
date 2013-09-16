@@ -35,15 +35,15 @@ function smarty_block_bee_auth_has_role ($params, $content, &$smarty, &$repeat) 
 	if($repeat) {
 		$roles = Bee_Security_Helper::getRoles();
 
-		$requiredRoles = array_map('trim', explode(',', $params['all']));
-		$possibleRoles = array_map('trim', explode(',', $params['any']));
-		$forbiddenRoles = array_map('trim', explode(',', $params['none']));
+		$requiredRoles = array_filter(array_map('trim', explode(',', $params['all'])));
+		$possibleRoles = array_filter(array_map('trim', explode(',', $params['any'])));
+		$forbiddenRoles = array_filter(array_map('trim', explode(',', $params['none'])));
 
 		// check if all required roles present
 		$repeat = array_intersect($roles, $requiredRoles) === $requiredRoles;
 
 		// check if any of the possible roles are present
-		$repeat = $repeat && count($possibleRoles) > 0 ? count(array_intersect($roles, $possibleRoles)) > 0 : true;
+		$repeat = $repeat && (count($possibleRoles) > 0 ? count(array_intersect($roles, $possibleRoles)) > 0 : true);
 
 		// check that none of the forbidden roles are present
 		$repeat = $repeat && count(array_intersect($roles, $forbiddenRoles)) === 0;
