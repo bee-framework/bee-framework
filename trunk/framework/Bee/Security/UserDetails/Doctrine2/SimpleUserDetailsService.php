@@ -77,4 +77,8 @@ class SimpleUserDetailsService implements Bee_Security_IUserDetailsService {
 		return $this->entityManager->
 				createQuery('SELECT u FROM ' . $this->getUserEntityName() . ' u ORDER BY u.username ASC')->execute();
 	}
+
+	public function loadById($id) {
+		return $this->entityManager->find($this->getUserEntityName(), $id);
+	}
 }

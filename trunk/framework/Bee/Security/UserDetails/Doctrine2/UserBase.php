@@ -22,7 +22,7 @@ abstract class UserBase implements Bee_Security_IUserDetails {
 
 	/**
 	 * @var string
-	 * @Column(name="username", type="string", length=20, nullable=false)
+	 * @Column(name="username", type="string", length=20, nullable=false, unique=true)
 	 */
 	private $username;
 
