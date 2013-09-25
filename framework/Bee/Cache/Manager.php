@@ -47,7 +47,22 @@ class Bee_Cache_Manager {
 	private static $useSessionCacheFallback = true;
 
 	/**
-	 * Map PHP cache extension names to class name of the respective cache provider adapter 
+	 * @var \Logger
+	 */
+	private static $log;
+
+	/**
+	 * @return \Logger
+	 */
+	protected static function getLog() {
+		if (!self::$log) {
+			self::$log = \Bee_Framework::getLoggerForClass(__CLASS__);
+		}
+		return self::$log;
+	}
+
+	/**
+	 * Map PHP cache extension names to class name of the respective cache provider adapter
 	 *
 	 * @var array
 	 */
@@ -79,9 +94,11 @@ class Bee_Cache_Manager {
 	}
 
 	private static function initProviderClass($providerClass) {
+		static::getLog()->info('initializing cache provider class ' . $providerClass);
 		$loc = Bee_Framework::getClassFileLocations($providerClass);
 		require_once $loc[0];
 		self::$provider = new $providerClass();
+		static::getLog()->info('cache initialized : ' . static::$provider);
 	}
 	
 	public static function init($providerInstanceOrClassName = false) {

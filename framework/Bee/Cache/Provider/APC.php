@@ -68,6 +68,5 @@ class Bee_Cache_Provider_APC extends Bee_Cache_Provider_Base {
 //
 //	protected final function doRetrieveSerialized($key) {
 //		return apc_fetch($key);
-//	}	
+//	}
 }
-?>
