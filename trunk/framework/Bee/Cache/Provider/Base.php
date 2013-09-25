@@ -51,5 +51,8 @@ abstract class Bee_Cache_Provider_Base implements Bee_Cache_IProvider {
 	protected final function getTTL($etime) {
 		return $etime - time();
 	}
+
+	function __toString() {
+		return get_class($this)."{}";
+	}
 }
-?>

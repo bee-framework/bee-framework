@@ -96,4 +96,8 @@ class Bee_Cache_Provider_File extends Bee_Cache_Provider_AbstractSerializing {
         }
         return true;
    	}
+
+	function __toString() {
+		return __CLASS__."{cacheDir={$this->cacheDir},cacheFile={$this->cacheFile}}";
+	}
 }
