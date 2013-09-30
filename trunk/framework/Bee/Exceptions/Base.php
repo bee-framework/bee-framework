@@ -17,29 +17,24 @@
 
 /**
  * Base class for framework exception hierarchies. Adds support for root causes (i.e. Exceptions, as a result
- * of which this exception has been thrown). 
+ * of which this exception has been thrown).
+ *
+ * @deprecated base the Bee Exception hierarchy on the regular PHP exception (which has a "previous" property starting
+ * with PHP 5.3.0)
  */
 class Bee_Exceptions_Base extends Exception {
 	
-	/**
-	 * Enter description here...
-	 *
-	 * @var Exception
-	 */
-	private $cause;
-	
 	public function __construct($message, Exception $cause = null) {
-		parent::__construct($message);
-		$this->cause = $cause;
+		parent::__construct($message, 0, $cause);
 	}
 	
 	/**
 	 * Enter description here...
 	 *
+	 * for backward-compatibility...
 	 * @return Exception
 	 */
 	public final function getCause() {
-		return $this->cause;
+		return $this->getPrevious();
 	}
 }
-?>
