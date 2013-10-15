@@ -295,7 +295,7 @@ class PhpMailerWrapper {
 
 
 		// SET RECIPIENT
-		if (is_null($recipient)) {
+		if (!$recipient) {
 			$recipient = array();
 			$recipient['address'] = $this->getDefaultRecipientAddress();
 			$recipient['name'] = $this->getDefaultRecipientName();
@@ -321,7 +321,7 @@ class PhpMailerWrapper {
 
 
 		// SET SENDER
-		if (is_null($sender)) {
+		if (!$sender) {
 			$sender = array();
 			$sender['address'] = $this->getDefaultSenderAddress();
 			$sender['name'] = $this->getDefaultSenderName();
