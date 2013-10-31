@@ -76,6 +76,11 @@ class PhpMailerWrapper {
 	private $mailType = 'mail';
 
 	/**
+	 * @var array
+	 */
+	private $ccRecipients = array();
+
+	/**
 	 * Enter description here...
 	 *
 	 * @return string
@@ -264,6 +269,20 @@ class PhpMailerWrapper {
 		$this->mailType = $mailType;
 	}
 
+	/**
+	 * @param array $ccRecipients
+	 */
+	public function setCcRecipients(array $ccRecipients) {
+		$this->ccRecipients = $ccRecipients;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getCcRecipients() {
+		return $this->ccRecipients;
+	}
+
 	protected function createMailer($sender, $recipient, $charSet = 'UTF-8', $html = true) {
 		$phpMailer = new PHPMailer(true);
 		$phpMailer->CharSet = $charSet;
@@ -319,6 +338,9 @@ class PhpMailerWrapper {
 			throw new Exception('SmartyMailer failed: mailformed recipient. Type-mismatch. Recipient must be either string or array, but is: "' . gettype($recipient) . '" instead.');
 		}
 
+		foreach($this->ccRecipients as $ccRec) {
+			$phpMailer->addCC($ccRec);
+		}
 
 		// SET SENDER
 		if (!$sender) {
