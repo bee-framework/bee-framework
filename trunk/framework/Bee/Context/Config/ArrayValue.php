@@ -82,8 +82,9 @@ class Bee_Context_Config_ArrayValue implements ArrayAccess, IteratorAggregate, C
 
 	function merge(Traversable $parent) {
 		$tmpArray = array();
+		$parentAssoc = $parent instanceof Bee_Context_Config_ArrayValue && $parent->associative;
 		foreach ($parent as $key => $value) {
-			if($this->associative) {
+			if($parentAssoc) {
 				$tmpArray[$key] = $value;
 			} else {
 				array_push($tmpArray, $value);
