@@ -31,8 +31,6 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	 */
 	const BEANS_NAMESPACE_URI = 'http://www.beeframework.org/schema/beans';
 
-	const TRUE_VALUE = 'true';
-
     const DEFAULT_VALUE = 'default';
 
 	const BEAN_ELEMENT = 'bean';
@@ -129,7 +127,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	
 	public function initDefaults(DOMElement $root) {
 		$defaults = new Bee_Context_Xml_DocumentDefaultsDefinition();
-		$defaults->setMerge($root->getAttribute(self::DEFAULT_MERGE_ATTRIBUTE) === self::TRUE_VALUE);
+		$defaults->setMerge(filter_var($root->getAttribute(self::DEFAULT_MERGE_ATTRIBUTE), FILTER_VALIDATE_BOOLEAN));
 		if($root->hasAttribute(self::DEFAULT_INIT_METHOD_ATTRIBUTE)) {
 			$defaults->setInitMethod($root->getAttribute(self::DEFAULT_INIT_METHOD_ATTRIBUTE));
 		}
@@ -234,7 +232,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
             Bee_Context_Xml_Utils::parseScopeAttribute($ele, $bd, $containingBd);
 
 			if ($ele->hasAttribute(self::ABSTRACT_ATTRIBUTE)) {
-				$bd->setAbstract(self::TRUE_VALUE === $ele->getAttribute(self::ABSTRACT_ATTRIBUTE));
+				$bd->setAbstract(filter_var($ele->getAttribute(self::ABSTRACT_ATTRIBUTE), FILTER_VALIDATE_BOOLEAN));
 			}
 
             Bee_context_Xml_Utils::parseDependsOnAttribute($ele, $bd);
@@ -654,7 +652,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 		if($collectionElement->hasAttribute(self::MERGE_ATTRIBUTE)) {
 			$value = $collectionElement->getAttribute(self::MERGE_ATTRIBUTE);
 			if (self::DEFAULT_VALUE !== $value) {
-				return self::TRUE_VALUE === $value;
+				return filter_var($value, FILTER_VALIDATE_BOOLEAN);
 			}
 		}
 		return $this->defaults->getMerge();
