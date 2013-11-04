@@ -36,13 +36,13 @@ abstract class UserBase implements Bee_Security_IUserDetails {
 	 * @var boolean
 	 * @Column(name="disabled", type="boolean", nullable=false)
 	 */
-	private $disabled = false;
+	protected $disabled = false;
 
 	/**
 	 * @var string
 	 * @Column(name="name", type="string", length=200, nullable=true)
 	 */
-	private $name;
+	protected $name;
 
 	/**
 	 * Get the identifier
