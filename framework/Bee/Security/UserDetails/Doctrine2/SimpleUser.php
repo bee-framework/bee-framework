@@ -15,7 +15,7 @@ class SimpleUser extends UserBase {
 	 * @var array
 	 * @Column(name="roles", type="simple_array", nullable=true)
 	 */
-	private $roles = array();
+	protected $roles = array();
 
 	/**
 	 * @var null|array
