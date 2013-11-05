@@ -387,6 +387,28 @@ class Bee_Utils_AntPathMatcher implements Bee_Utils_IPathMatcher {
 
 		return $buffer;
 	}
-	
+
+	/**
+	 * @param string $path
+	 * @param array $array
+	 * @param mixed $defaultValue
+	 * @return mixed
+	 */
+	public static function getElementByMatchingArrayKey($path, array $array, $defaultValue = null) {
+		$result = $defaultValue;
+		if (array_key_exists($path, $array)) {
+			// shortcut for direct path matches
+			$result = $array[$path];
+		} else {
+			$matcher = new Bee_Utils_AntPathMatcher();
+			foreach($array as $mapping => $element) {
+				if($matcher->match($mapping, $path)) {
+//				if(($matcher->isPattern($mapping) && $matcher->match($mapping, $pathInfo)) || Bee_Utils_Strings::startsWith($pathInfo, $mapping)) {
+					$result = $element;
+					break;
+				}
+			}
+		}
+		return $result;
+	}
 }
-?>
