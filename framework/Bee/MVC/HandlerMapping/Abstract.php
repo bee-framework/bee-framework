@@ -22,36 +22,32 @@
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
 abstract class Bee_MVC_HandlerMapping_Abstract implements Bee_MVC_IHandlerMapping, Bee_Context_Config_IContextAware {
-	 
+
 	/**
 	 * Enter description here...
 	 *
 	 * @var Bee_IContext
 	 */
 	private $context;
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
 	 * @var Bee_IContext
 	 */
 	private $defaultControllerBeanName;
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
 	 * @var array
 	 */
 	private $interceptors = array();
-	
 
 	public function setBeeContext(Bee_IContext $context) {
 		$this->context = $context;
 	}
 
-	
 	/**
 	 * Enter description here...
 	 *
@@ -60,8 +56,7 @@ abstract class Bee_MVC_HandlerMapping_Abstract implements Bee_MVC_IHandlerMappin
 	public function getDefaultControllerBeanName() {
 		return $this->defaultControllerBeanName;
 	}
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -72,7 +67,6 @@ abstract class Bee_MVC_HandlerMapping_Abstract implements Bee_MVC_IHandlerMappin
 		$this->defaultControllerBeanName = $defaultControllerBeanName;
 	}
 
-	
 	/**
 	 * Enter description here...
 	 *
@@ -81,8 +75,7 @@ abstract class Bee_MVC_HandlerMapping_Abstract implements Bee_MVC_IHandlerMappin
 	public function setInterceptors(array $interceptors) {
 		$this->interceptors = $interceptors;
 	}
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -91,29 +84,21 @@ abstract class Bee_MVC_HandlerMapping_Abstract implements Bee_MVC_IHandlerMappin
 	public function getInterceptors() {
 		return $this->interceptors;
 	}
-	
-	
-	
-	public function getHandler(Bee_MVC_IHttpRequest $request) {
-		
-		$controllerBeanName = $this->getControllerBeanName($request);
-		if(is_string($controllerBeanName)) {
-			$handlerBean = $this->context->getBean($controllerBeanName, 'Bee_MVC_IController');
-		} else if($controllerBeanName instanceof Bee_MVC_IController) {
-			$handlerBean = $controllerBeanName;
-		} 
 
-		if(is_null($handlerBean)) {
+	public function getHandler(Bee_MVC_IHttpRequest $request) {
+		$controllerBeanName = $this->getControllerBeanName($request);
+		$handlerBean = is_string($controllerBeanName) ?
+				$handlerBean = $this->context->getBean($controllerBeanName, 'Bee_MVC_IController') :
+				$controllerBeanName;
+
+		if (!$handlerBean instanceof Bee_MVC_IController) {
 			throw new Exception('Error retrieving handler bean: must be a valid bean name or Bee_MVC_IController instance');
 		}
 		
 		$hec = new Bee_MVC_HandlerExecutionChain($handlerBean);
 		$hec->addInterceptors($this->interceptors);
-		
 		return $hec;
 	}
 
-
 	protected abstract function getControllerBeanName(Bee_MVC_IHttpRequest $request);
 }
-?>
