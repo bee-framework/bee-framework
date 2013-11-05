@@ -47,15 +47,18 @@ class Bee_Security_Helper {
         self::$userDetailsService = $userDetailsService;
     }
 
-    public static function isAuthenticated() {
+	/**
+	 * @return bool
+	 */
+	public static function isAuthenticated() {
         $auth = Bee_Security_Context_Holder::getContext()->getAuthentication();
-        if(is_null($auth) || !$auth->isAuthenticated()) {
-            return array();
-        }
-        return $auth->isAuthenticated();
+        return is_null($auth) ? false : $auth->isAuthenticated();
     }
 
-    public static function getRoles() {
+	/**
+	 * @return array
+	 */
+	public static function getRoles() {
         $auth = Bee_Security_Context_Holder::getContext()->getAuthentication();
         if(is_null($auth) || !$auth->isAuthenticated()) {
             return array();
@@ -63,7 +66,12 @@ class Bee_Security_Helper {
         return (array_keys($auth->getAuthorities()));
     }
 
-    public static function checkRole($role) {
+	/**
+	 * @param $role
+	 * @return bool
+	 * @throws Bee_Security_Exception_Authentication
+	 */
+	public static function checkRole($role) {
         $auth = Bee_Security_Context_Holder::getContext()->getAuthentication();
         if(is_null($auth) || !$auth->isAuthenticated()) {
             throw new Bee_Security_Exception_Authentication('Not authenticated');
@@ -72,7 +80,13 @@ class Bee_Security_Helper {
         return true;
     }
 
-    public static function checkAccess($configAttribute, $secureObject = null) {
+	/**
+	 * @param $configAttribute
+	 * @param null $secureObject
+	 * @return bool
+	 * @throws Bee_Security_Exception_Authentication
+	 */
+	public static function checkAccess($configAttribute, $secureObject = null) {
         $auth = Bee_Security_Context_Holder::getContext()->getAuthentication();
         if(is_null($auth) || !$auth->isAuthenticated()) {
             throw new Bee_Security_Exception_Authentication('Not authenticated');
@@ -81,7 +95,14 @@ class Bee_Security_Helper {
         return true;
     }
 
-    public static function checkResultAccess($configAttribute, $secureObject = null, $returnedObject = null) {
+	/**
+	 * @param $configAttribute
+	 * @param null $secureObject
+	 * @param null $returnedObject
+	 * @return mixed
+	 * @throws Bee_Security_Exception_Authentication
+	 */
+	public static function checkResultAccess($configAttribute, $secureObject = null, $returnedObject = null) {
         $auth = Bee_Security_Context_Holder::getContext()->getAuthentication();
         if(is_null($auth) || !$auth->isAuthenticated()) {
             throw new Bee_Security_Exception_Authentication('Not authenticated');
@@ -89,7 +110,12 @@ class Bee_Security_Helper {
         return self::$afterInvocationProviderManager->decide($auth, $secureObject, new Bee_Security_ConfigAttributeDefinition($configAttribute), $returnedObject);
     }
 
-    public static function getIdentity($identityName) {
+	/**
+	 * @param $identityName
+	 * @return mixed
+	 * @throws Bee_Security_Exception_Authentication
+	 */
+	public static function getIdentity($identityName) {
         $auth = self::$userDetailsService->getGroupByName($identityName);
         if ($auth instanceof Potiscom_Auth_Doctrine_Group) {
             return $auth;
@@ -101,14 +127,27 @@ class Bee_Security_Helper {
         throw new Bee_Security_Exception_Authentication('Not authenticated');
     }
 
-    public static function checkAccessForIdentity($identityName, $configAttribute, $secureObject = null) {
+	/**
+	 * @param $identityName
+	 * @param $configAttribute
+	 * @param null $secureObject
+	 * @return bool
+	 */
+	public static function checkAccessForIdentity($identityName, $configAttribute, $secureObject = null) {
         $identity = self::getIdentity($identityName);
         $auth = new Bee_Security_UsernamePasswordAuthenticationToken($username, $password);
         self::$accessDecisionManager->decide($auth, $secureObject, new Bee_Security_ConfigAttributeDefinition($configAttribute));
         return true;
     }
 
-    public static function checkResultAccessForIdentity($identityName, $configAttribute, $secureObject = null, $returnedObject = null) {
+	/**
+	 * @param $identityName
+	 * @param $configAttribute
+	 * @param null $secureObject
+	 * @param null $returnedObject
+	 * @return mixed
+	 */
+	public static function checkResultAccessForIdentity($identityName, $configAttribute, $secureObject = null, $returnedObject = null) {
         $auth = self::getIdentity($identityName);
         return self::$afterInvocationProviderManager->decide($auth, $secureObject, new Bee_Security_ConfigAttributeDefinition($configAttribute), $returnedObject);
     }
