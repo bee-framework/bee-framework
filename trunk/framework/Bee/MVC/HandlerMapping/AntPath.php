@@ -38,16 +38,14 @@ class Bee_MVC_HandlerMapping_AntPath extends Bee_MVC_HandlerMapping_Abstract {
 	}
 	
 	protected function getControllerBeanName(Bee_MVC_IHttpRequest $request) {
-		$matcher = new Bee_Utils_AntPathMatcher();
-//		$pathInfo = Bee_Utils_Env::getPathInfo();
 		$pathInfo = $request->getPathInfo();
-		
 		$controllerBeanName = $this->getDefaultControllerBeanName();
 		
 		if (array_key_exists($pathInfo, $this->handlerMappings)) {
 			// shortcut for direct path matches
 			$controllerBeanName = $this->handlerMappings[$pathInfo];
 		} else {
+			$matcher = new Bee_Utils_AntPathMatcher();
 			foreach($this->handlerMappings as $mapping => $handler) {
 				if($matcher->match($mapping, $pathInfo)) {
 //				if(($matcher->isPattern($mapping) && $matcher->match($mapping, $pathInfo)) || Bee_Utils_Strings::startsWith($pathInfo, $mapping)) {
@@ -60,4 +58,3 @@ class Bee_MVC_HandlerMapping_AntPath extends Bee_MVC_HandlerMapping_Abstract {
 		return $controllerBeanName;
 	}
 }
-?>
