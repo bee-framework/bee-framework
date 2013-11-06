@@ -103,15 +103,17 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		$this->registerScopes();
 		$this->loadBeanDefinitions();
 	}
-	
+
 	/**
 	 * This method is supposed to be protected, but due to php's inability to define
 	 * anonymous classes.
-	 * 
+	 *
 	 * **** DON'T CALL THIS METHOD ****
-	 * 
+	 *
 	 * @param String $beanName
 	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition
+	 * @throws Exception
+	 * @return null|object
 	 */
 	public function _createBean($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
 		$instance = null;
@@ -129,12 +131,13 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	public function setBeeContext(Bee_IContext $context) {
 		$this->setParent($context);
 	}
-	
+
 	/**
-	 * 
-	 * @param String $beanName
+	 *
+	 * @param string $beanName
 	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition
-	 * @return Object
+	 * @throws Bee_Context_BeanCreationException
+	 * @return object
 	 */
 	protected function createBean($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
 
@@ -178,20 +181,17 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
         return $bean;
     }
 
-	
-	
+
 	/**
 	 * Actually create the specified bean. Pre-creation processing has already happened
 	 * at this point, e.g. checking <code>postProcessBeforeInstantiation</code> callbacks.
 	 * <p>Differentiates between default bean instantiation, use of a
 	 * factory method, and autowiring a constructor.
-	 * @param beanName the name of the bean
-	 * @param mbd the merged bean definition for the bean
-	 * @param args arguments to use if creating a prototype using explicit arguments to a
-	 * static factory method. This parameter must be <code>null</code> except in this case.
-	 * 
+	 * @param string $beanName name of the bean
+	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition
+	 * @throws Bee_Context_BeanCreationException
+	 *
 	 * @return Object a new instance of the bean
-	 * @throws BeanCreationException if the bean could not be created
 	 * @see #instantiateBean
 	 * @see #instantiateUsingFactoryMethod
 	 * @see #autowireConstructor
@@ -340,7 +340,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @param String $beanName the name of the bean
 	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition the bean definition for the bean
 	 * 
-	 * @return BeanWrapper for the new instance
+	 * @return Bee_Beans_BeanWrapper for the new instance
 	 * @see #instantiateUsingFactoryMethod
 	 * @see #instantiateBean
 	 */
@@ -354,15 +354,16 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	}
 
 
-
 	/**
 	 * Instantiate the bean using a named factory method. The method may be static, if the
 	 * mbd parameter specifies a class, rather than a factoryBean, or an instance variable
 	 * on a factory object itself configured using Dependency Injection.
-	 * 
+	 *
 	 * @param String $beanName the name of the bean
 	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition the bean definition for the bean
-	 * @return BeanWrapper for the new instance
+	 * @throws Bee_Context_BeanDefinitionStoreException
+	 * @throws Bee_Context_BeanCreationException
+	 * @return Bee_Beans_BeanWrapper for the new instance
 	 * @see #getBean(String, Object[])
 	 */
 	protected function instantiateUsingFactoryMethod($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
@@ -394,14 +395,14 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 
 		return call_user_func_array($factory, $this->createArgsArray($beanName, $beanDefinition));
 	}
-	
-	
-	
+
+
 	/**
 	 * Enter description here...
 	 *
 	 * @param String $beanName
 	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition
+	 * @return object
 	 */
 	protected function instantiateBean($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
 		$beanClassName = $beanDefinition->getBeanClassName();
@@ -427,7 +428,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		}
 		return $args;
 	}
-	
+
 	/**
 	 * Apply the given property values, resolving any runtime references
 	 * to other beans in this context.
@@ -435,6 +436,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition the bean definition
 	 * @param Bee_Beans_BeanWrapper $beanWrapper the BeanWrapper wrapping the target object
 	 * @param Bee_Beans_PropertyValue[] $propertyValues the new property values
+	 * @throws Bee_Context_BeanCreationException
 	 */
 	protected function applyPropertyValues($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition, Bee_Beans_BeanWrapper $beanWrapper, array $propertyValues = null) {
 		if (is_null($propertyValues) || count($propertyValues) === 0) {
@@ -461,6 +463,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @param $beanName
 	 * @param $beanInstance
 	 * @param MethodInvocation[] $methodInvocations
+	 * @throws Bee_Context_InvalidPropertyException
 	 */
 	protected function invokeMethods($beanName, $beanInstance, array $methodInvocations = array()) {
 		foreach($methodInvocations as $methodInvocation) {
@@ -516,13 +519,13 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	protected function afterBeanCreation($beanName) {
 		unset($this->beansInCreation[$beanName]);
 	}
-	
-	
+
 
 	/**
 	 * Return whether the specified bean is currently in creation.
-	 * 
+	 *
 	 * @param String $beanName the name of the bean
+	 * @return bool
 	 */
 	public function isBeanCurrentlyInCreation($beanName) {
 		return array_key_exists($beanName, $this->beansInCreation);
@@ -550,7 +553,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 
 	/**
 	 * Determine whether a dependent bean has been registered under the given name.
-	 * @param String beanName the name of the bean
+	 * @param string $beanName the name of the bean
 	 * @return boolean
 	 */
 	protected function hasDependentBean($beanName) {
@@ -596,7 +599,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		if ($this->containsBeanDefinition($beanName)) {
 			return true;
 		}
-		return (!is_null($this->getParent()) && $this->getParent()->containsBeanDefinition($beanName)); 
+		return (!is_null($this->getParent()) && $this->getParent()->containsBean($beanName));
 	}
 	
 
@@ -648,15 +651,16 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		
 	}
 
-    /**
-     * Get the object for the given bean instance, either the bean
-     * instance itself or its created object in case of a FactoryBean.
-     * @param mixed $beanInstance the shared bean instance
-     * @param string $name name that may include factory dereference prefix
-     * @param string $beanName the canonical bean name
-     * @param Bee_Context_Config_IBeanDefinition $mbd the merged bean definition
-     * @return the object to expose for the bean
-     */
+	/**
+	 * Get the object for the given bean instance, either the bean
+	 * instance itself or its created object in case of a FactoryBean.
+	 * @param mixed $beanInstance the shared bean instance
+	 * @param string $name name that may include factory dereference prefix
+	 * @param string $beanName the canonical bean name
+	 * @param Bee_Context_Config_IBeanDefinition $mbd the merged bean definition
+	 * @throws Bee_Context_BeanIsNotAFactoryException
+	 * @return object the object to expose for the bean
+	 */
     protected function getObjectForBeanInstance(
             $beanInstance, $name, $beanName, Bee_Context_Config_IBeanDefinition $mbd) {
 
@@ -705,7 +709,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
      * @param string $beanName the name of the bean
      * @param boolean $shouldPostProcess whether the bean is subject for post-processing
      * @return mixed the object obtained from the FactoryBean
-     * @throws BeanCreationException if FactoryBean object creation failed
+     * @throws Bee_Context_BeanCreationException if FactoryBean object creation failed
      * @see org.springframework.beans.factory.FactoryBean#getObject()
      */
     protected function getObjectFromFactoryBean(Bee_Context_IFactoryBean $factory, $beanName, $shouldPostProcess) {
@@ -722,15 +726,16 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
         }
     }
 
-    /**
-     * Obtain an object to expose from the given FactoryBean.
-     * @param Bee_Context_IFactoryBean $factory the FactoryBean instance
-     * @param string $beanName the name of the bean
-     * @param boolean $shouldPostProcess whether the bean is subject for post-processing
-     * @return mixed the object obtained from the FactoryBean
-     * @throws BeanCreationException if FactoryBean object creation failed
-     * @see org.springframework.beans.factory.FactoryBean#getObject()
-     */
+	/**
+	 * Obtain an object to expose from the given FactoryBean.
+	 * @param Bee_Context_IFactoryBean $factory the FactoryBean instance
+	 * @param string $beanName the name of the bean
+	 * @param boolean $shouldPostProcess whether the bean is subject for post-processing
+	 * @throws Bee_Context_BeanCurrentlyInCreationException
+	 * @throws Bee_Context_BeanCreationException
+	 * @return mixed the object obtained from the FactoryBean
+	 * @see org.springframework.beans.factory.FactoryBean#getObject()
+	 */
     private function doGetObjectFromFactoryBean(Bee_Context_IFactoryBean $factory, $beanName, $shouldPostProcess) {
         try {
             $object = $factory->getObject();
@@ -817,6 +822,9 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 */
 	public function setParent(Bee_IContext $parent) {
 		$this->parent = $parent;
+		if($parent instanceof Bee_Context_Config_IBeanDefinitionRegistry) {
+			$this->setParentRegistry($parent);
+		}
 	}
 
     public function getModificationTimestamp() {

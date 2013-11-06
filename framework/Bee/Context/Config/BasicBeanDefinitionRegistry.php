@@ -40,7 +40,12 @@ class Bee_Context_Config_BasicBeanDefinitionRegistry extends Bee_Context_AliasRe
      * @var boolean
      */
     private $hasDestructionAwareBeanPostProcessors;
-	
+
+	/**
+	 * @var Bee_Context_Config_IBeanDefinitionRegistry
+	 */
+	private $parentRegistry;
+
 	public function containsBeanDefinition($beanName) {
 		return array_key_exists($beanName, $this->beanDefinitions);
 	}
@@ -65,7 +70,9 @@ class Bee_Context_Config_BasicBeanDefinitionRegistry extends Bee_Context_AliasRe
                 $this->beanDefinitions[$beanName] = $bd;
             }
             return $bd;
-
+		}
+		if(!is_null($this->parentRegistry)) {
+			return $this->parentRegistry->getBeanDefinition($beanName);
 		}
 		throw new Bee_Context_NoSuchBeanDefinitionException($beanName);
 	}
@@ -187,5 +194,17 @@ class Bee_Context_Config_BasicBeanDefinitionRegistry extends Bee_Context_AliasRe
         return $this->beanDefinitions;
     }
 
+	/**
+	 * @param \Bee_Context_Config_IBeanDefinitionRegistry $parentRegistry
+	 */
+	public function setParentRegistry(\Bee_Context_Config_IBeanDefinitionRegistry $parentRegistry) {
+		$this->parentRegistry = $parentRegistry;
+	}
+
+	/**
+	 * @return \Bee_Context_Config_IBeanDefinitionRegistry
+	 */
+	public function getParentRegistry() {
+		return $this->parentRegistry;
+	}
 }
-?>
