@@ -1,8 +1,11 @@
 <?php
 namespace Bee\Persistence\Doctrine2;
-use Bee_Framework;
+use Bee_Persistence_IOrderAndLimitHolder;
+use Bee_Persistence_IRestrictionHolder;
+use Bee_Utils_Strings;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use Exception;
 use Logger;
 
 /**
@@ -28,16 +31,14 @@ class DaoBase extends EntityManagerHolder {
 	}
 
 	/**
-	 * @param \Doctrine\ORM\QueryBuilder $queryBuilder
-	 * @param \Bee_Persistence_IRestrictionHolder $restrictionHolder
-	 * @param \Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder
+	 * @param QueryBuilder $queryBuilder
+	 * @param Bee_Persistence_IRestrictionHolder $restrictionHolder
+	 * @param Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder
 	 * @param array $defaultOrderMapping
-	 *
 	 * @param null $hydrationMode
-	 * @internal param \Doctrine\ORM\QueryBuilder $query
 	 * @return array
 	 */
-    public function executeListQuery(\Doctrine\ORM\QueryBuilder $queryBuilder, \Bee_Persistence_IRestrictionHolder $restrictionHolder = null, \Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping, $hydrationMode = null) {
+    public function executeListQuery(QueryBuilder $queryBuilder, Bee_Persistence_IRestrictionHolder $restrictionHolder = null, Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping, $hydrationMode = null) {
         $this->applyFilterRestrictions($queryBuilder, $restrictionHolder);
         $this->applyOrderAndLimit($queryBuilder, $orderAndLimitHolder, $defaultOrderMapping);
         return $this->getQueryFromBuilder($queryBuilder)->execute(null, $hydrationMode);
@@ -52,36 +53,37 @@ class DaoBase extends EntityManagerHolder {
 	}
 
 	/**
-	 * @param \Doctrine\ORM\QueryBuilder $queryBuilder
-	 * @param \Bee_Persistence_IRestrictionHolder $restrictionHolder
-	 * @internal param \Doctrine\ORM\QueryBuilder $query
+	 * @param QueryBuilder $queryBuilder
+	 * @param Bee_Persistence_IRestrictionHolder $restrictionHolder
+	 * @internal param QueryBuilder $query
 	 */
-    protected final function applyFilterRestrictions(\Doctrine\ORM\QueryBuilder &$queryBuilder, \Bee_Persistence_IRestrictionHolder $restrictionHolder = null) {
+    protected final function applyFilterRestrictions(QueryBuilder &$queryBuilder, Bee_Persistence_IRestrictionHolder $restrictionHolder = null) {
         if (is_null($restrictionHolder)) {
             return;
         }
 
-        if (!\Bee_Utils_Strings::hasText($restrictionHolder->getFilterString())) {
+        if (!Bee_Utils_Strings::hasText($restrictionHolder->getFilterString())) {
             return;
         }
 
-        $filterTokens = \Bee_Utils_Strings::tokenizeToArray($restrictionHolder->getFilterString(), ' ');
+        $filterTokens = Bee_Utils_Strings::tokenizeToArray($restrictionHolder->getFilterString(), ' ');
         foreach ($filterTokens as $no => $token) {
             $andWhereString = '';
             $params = array();
 
+			$tokenName = 'filtertoken'.$no;
+			$params[$tokenName] = '%'.$token.'%';
+
             foreach ($restrictionHolder->getFilterableFields() as $fieldName) {
                 // $fieldName MUST BE A DOCTRINE NAME
-                if (\Bee_Utils_Strings::hasText($andWhereString)) {
+                if (Bee_Utils_Strings::hasText($andWhereString)) {
                     $andWhereString .= ' OR ';
                 }
 
-                $tokenName = 'filtertoken'.$no;
                 $andWhereString .= $fieldName.' LIKE :'.$tokenName;
-                $params[$tokenName] = '%'.$token.'%';
             }
 
-            if (\Bee_Utils_Strings::hasText($andWhereString)) {
+            if (Bee_Utils_Strings::hasText($andWhereString)) {
                 $queryBuilder->andWhere($andWhereString);
 
                 foreach ($params as $key => $value) {
@@ -92,11 +94,11 @@ class DaoBase extends EntityManagerHolder {
     }
 
 	/**
-	 * @param \Doctrine\ORM\QueryBuilder $queryBuilder
-	 * @param \Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder
+	 * @param QueryBuilder $queryBuilder
+	 * @param Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder
 	 * @param array $defaultOrderMapping
 	 */
-    protected final function applyOrderAndLimit(\Doctrine\ORM\QueryBuilder &$queryBuilder, \Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = array()) {
+    protected final function applyOrderAndLimit(QueryBuilder &$queryBuilder, Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = array()) {
         if (is_null($orderAndLimitHolder)) {
             $orderMapping = $defaultOrderMapping;
         } else {
@@ -128,7 +130,7 @@ class DaoBase extends EntityManagerHolder {
 
 	/**
 	 * @param callback $func
-	 * @throws \Exception
+	 * @throws Exception
 	 * @return mixed
 	 */
 	public function doInTransaction($func) {
@@ -144,7 +146,7 @@ class DaoBase extends EntityManagerHolder {
 
 			$this->getLog()->info('Transaction committed!');
 			return $result;
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			$this->getLog()->warn('Exception caught, rolling back!', $e);
 			$this->getEntityManager()->rollBack();
 			throw $e;
