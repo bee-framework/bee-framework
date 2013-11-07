@@ -40,7 +40,7 @@ abstract class Bee_MVC_HandlerMapping_Abstract implements Bee_MVC_IHandlerMappin
 	/**
 	 * Enter description here...
 	 *
-	 * @var array
+	 * @var Bee_MVC_IHandlerInterceptor[]
 	 */
 	private $interceptors = array();
 
@@ -70,7 +70,7 @@ abstract class Bee_MVC_HandlerMapping_Abstract implements Bee_MVC_IHandlerMappin
 	/**
 	 * Enter description here...
 	 *
-	 * @param array $interceptors
+	 * @param Bee_MVC_IHandlerInterceptor[] $interceptors
 	 */
 	public function setInterceptors(array $interceptors) {
 		$this->interceptors = $interceptors;
@@ -79,12 +79,17 @@ abstract class Bee_MVC_HandlerMapping_Abstract implements Bee_MVC_IHandlerMappin
 	/**
 	 * Enter description here...
 	 *
-	 * @return array
+	 * @return Bee_MVC_IHandlerInterceptor[]
 	 */
 	public function getInterceptors() {
 		return $this->interceptors;
 	}
 
+	/**
+	 * @param Bee_MVC_IHttpRequest $request
+	 * @return Bee_MVC_HandlerExecutionChain
+	 * @throws Exception
+	 */
 	public function getHandler(Bee_MVC_IHttpRequest $request) {
 		$controllerBeanName = $this->getControllerBeanName($request);
 		$handlerBean = is_string($controllerBeanName) ?
@@ -100,5 +105,10 @@ abstract class Bee_MVC_HandlerMapping_Abstract implements Bee_MVC_IHandlerMappin
 		return $hec;
 	}
 
+	/**
+	 * Resolves the actual controller bean name (may also return a controller instance directly)
+	 * @param Bee_MVC_IHttpRequest $request
+	 * @return mixed
+	 */
 	protected abstract function getControllerBeanName(Bee_MVC_IHttpRequest $request);
 }

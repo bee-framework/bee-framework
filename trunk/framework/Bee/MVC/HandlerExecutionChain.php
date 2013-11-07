@@ -29,16 +29,13 @@ final class Bee_MVC_HandlerExecutionChain {
 	 * @var Bee_MVC_IController
 	 */
 	private $handler;
-	
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
-	 * @var array
+	 * @var Bee_MVC_IHandlerInterceptor[]
 	 */
 	private $interceptors = array();
-
 
 	/**
 	 * Enter description here...
@@ -49,9 +46,7 @@ final class Bee_MVC_HandlerExecutionChain {
 	public function __construct(Bee_MVC_IController $handler) {
 		$this->handler = $handler;
 	}
-	
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -61,9 +56,7 @@ final class Bee_MVC_HandlerExecutionChain {
 	public function addInterceptor(Bee_MVC_IHandlerInterceptor $interceptor) {
 		array_push($this->interceptors, $interceptor);
 	}
-	
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -73,8 +66,7 @@ final class Bee_MVC_HandlerExecutionChain {
 	public function addInterceptors(array $interceptors) {
 		$this->interceptors = array_merge($this->interceptors, $interceptors);
 	}
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -83,9 +75,7 @@ final class Bee_MVC_HandlerExecutionChain {
 	public function getHandler() {
 		return $this->handler;
 	}
-	
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
