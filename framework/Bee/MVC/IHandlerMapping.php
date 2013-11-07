@@ -24,20 +24,23 @@
  * @author Benjamin Hartmann
  */
 interface Bee_MVC_IHandlerMapping {
-	
-	
+
 	/**
 	 * Based on the current request object, returns a handler execution chain, containing the back controller to be used, as well as any
 	 * interceptors applicable to this request.
 	 *
-	 * @param Bee_MVC_HttpRequest $request
+	 * @param Bee_MVC_HttpRequest|Bee_MVC_IHttpRequest $request
 	 * @return Bee_MVC_HandlerExecutionChain
-	 * 
+	 *
 	 * @see Bee_MVC_IController
 	 * @see Bee_MVC_IHandlerInterceptor
 	 * @see Bee_MVC_HandlerExecutionChain
 	 */
 	public function getHandler(Bee_MVC_IHttpRequest $request);
-}
 
-?>
+	/**
+	 * Get all configured interceptors
+	 * @return Bee_MVC_IHandlerInterceptor[]
+	 */
+	public function getInterceptors();
+}
