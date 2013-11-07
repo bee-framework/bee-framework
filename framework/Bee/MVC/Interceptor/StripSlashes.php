@@ -38,12 +38,11 @@ class Bee_MVC_Interceptor_StripSlashes implements Bee_MVC_IHandlerInterceptor {
 		return $param;
 	}
 	
-	public function postHandle(Bee_MVC_IHttpRequest $request, Bee_MVC_IController $handler, Bee_MVC_ModelAndView $mav) {
+	public function postHandle(Bee_MVC_IHttpRequest $request, Bee_MVC_IController $handler = null, Bee_MVC_ModelAndView $mav) {
 		
 	}
 
-	public function afterCompletion(Bee_MVC_IHttpRequest $request, Bee_MVC_IController $handler, Exception $ex) {
+	public function afterCompletion(Bee_MVC_IHttpRequest $request, Bee_MVC_IController $handler = null, Exception $ex) {
 		
 	}
 }
-?>

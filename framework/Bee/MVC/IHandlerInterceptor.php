@@ -45,7 +45,7 @@ interface Bee_MVC_IHandlerInterceptor {
 	 * @param Bee_MVC_ModelAndView $mav
 	 * @return void
 	 */
-	public function postHandle(Bee_MVC_IHttpRequest $request, Bee_MVC_IController $handler, Bee_MVC_ModelAndView $mav);
+	public function postHandle(Bee_MVC_IHttpRequest $request, Bee_MVC_IController $handler = null, Bee_MVC_ModelAndView $mav);
 
 	
 	/**
@@ -56,7 +56,5 @@ interface Bee_MVC_IHandlerInterceptor {
 	 * @param Exception $ex
 	 * @return void
 	 */
-	public function afterCompletion(Bee_MVC_IHttpRequest $request, Bee_MVC_IController $handler, Exception $ex);
+	public function afterCompletion(Bee_MVC_IHttpRequest $request, Bee_MVC_IController $handler = null, Exception $ex);
 }
-
-?>
