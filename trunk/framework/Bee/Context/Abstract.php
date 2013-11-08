@@ -210,7 +210,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 			if ($ex instanceof Bee_Context_BeanCreationException && $beanName === $ex->getBeanName()) {
 				throw $ex;
 			} else {
-				throw new Bee_Context_BeanCreationException($beanName, 'Initialization of bean failed - '.$ex->getMessage());
+				throw new Bee_Context_BeanCreationException($beanName, 'Initialization of bean failed - '.$ex->getMessage(), $ex);
 			}
 		}
 
