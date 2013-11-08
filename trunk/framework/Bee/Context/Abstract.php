@@ -161,7 +161,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 			}
 		}
 		catch (Exception $ex) {
-            throw new Bee_Context_BeanCreationException($beanName, 'BeanPostProcessor before instantiation of bean failed - '.$ex->getMessage());
+            throw new Bee_Context_BeanCreationException($beanName, 'BeanPostProcessor before instantiation of bean failed - '.$ex->getMessage(), $ex);
 		}
 		return $this->doCreateBean($beanName, $beanDefinition);
 	}
@@ -259,7 +259,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		try {
 			$this->invokeInitMethods($beanName, $wrappedBean, $beanDefinition);
 		} catch (Exception $ex) {
-			throw new Bee_Context_BeanCreationException($beanName, 'Invocation of init method failed - '.$ex->getMessage());
+			throw new Bee_Context_BeanCreationException($beanName, 'Invocation of init method failed - '.$ex->getMessage(), $ex);
 		}
 
 		if (is_null($beanDefinition) || !$beanDefinition->isSynthetic()) {
@@ -455,7 +455,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		try {
 			$beanWrapper->setPropertyValues($deepCopy);
 		} catch (Bee_Context_BeansException $ex) {
-			throw new Bee_Context_BeanCreationException($beanName);
+			throw new Bee_Context_BeanCreationException($beanName, 'Error applying property values', $ex);
 		}
 	}
 
