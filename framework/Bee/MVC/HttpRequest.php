@@ -122,7 +122,7 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 //			$val = $val[0];
 //		}
 //		return $val;
-        return $this->parameters[$name];
+        return array_key_exists($name, $this->parameters) ? $this->parameters[$name] : null;
 	}
 
 	public function setParameter($name, $value) {
