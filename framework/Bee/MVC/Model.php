@@ -62,6 +62,10 @@ class Bee_MVC_Model {
 		return self::$modelValues[$key];
 	}
 	
+	public static function hasValue($key) {
+		return array_key_exists($key, self::$modelValues);
+	}
+
 	public static function getModelValues() {
 		return self::$modelValues;
 	}
@@ -74,7 +78,10 @@ class Bee_MVC_Model {
  */
 class MODEL extends Bee_MVC_Model {
 	
-	public static function get($key) {
+	public static function get($key, $defaultValue=null) {
+        if (!is_null($defaultValue) && !Bee_MVC_Model::hasValue($key)) {
+            return $defaultValue;
+        }
 		return Bee_MVC_Model::getValue($key);
 	}
 
@@ -82,4 +89,3 @@ class MODEL extends Bee_MVC_Model {
 		return Bee_MVC_Model::getModelValues();
 	}
 }
-?>
