@@ -36,8 +36,6 @@ class Bee_MVC_Model {
 		self::$modelValues = array_merge(self::$modelValues, $values);
 	}
 
-	
-	
 	/**
 	 * Add a single value to the model under the given key
 	 *
@@ -48,8 +46,6 @@ class Bee_MVC_Model {
 		self::$modelValues[$key] = $value;
 	}
 
-	
-	
 	/**
 	 * Clear the model, removing all 
 	 *
