@@ -23,6 +23,16 @@
  */
 class Bee_Utils_Strings {
 
+    public static $DEFAULT_ASCII_REPLACEMENTS_TABLE = array(
+        'ä' => 'ae',
+        'ö' => 'oe',
+        'ü' => 'ue',
+        'Ä' => 'Ae',
+        'Ö' => 'Oe',
+        'Ü' => 'Ue',
+        'ß' => 'ss'
+    );
+
 	/**
 	 * Enter description here...
 	 *
@@ -190,5 +200,27 @@ class Bee_Utils_Strings {
         }
 		$sufTest = substr($string, (-strlen($suffix)));
 		return $sufTest === $string || $sufTest === false ? "" === $suffix : $sufTest === $suffix;
+	}
+
+    /**
+     * Creates ascii-slug from any string. Make sure iconv is installed and setLocale() is called before using this
+     * E.g. setlocale(LC_ALL, 'en_US.UTF8');
+     *
+     * @param $string
+     * @param array $table
+     * @param string $delimiter
+     * @param bool $toLowercase
+     *
+     * @return string
+     */
+    public static function toAscii($string, $table=array(), $delimiter='-', $toLowercase=true) {
+        if (count($table)>0) {
+            $string = strtr($string, $table);
+       	}
+       	$ascii = iconv('UTF-8', 'ASCII//TRANSLIT', $string);
+        $ascii = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $ascii);
+        $ascii = trim($ascii, '-');
+        $ascii = preg_replace("/[\/_|+ -]+/", $delimiter, $ascii);
+       	return $toLowercase ? strtolower($ascii) : $ascii;
 	}
 }

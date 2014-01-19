@@ -121,52 +121,7 @@ class Bee_Security_Helper {
 		}
 		return $auth;
 	}
-
-	/**
-	 * @param $identityName
-	 * @return mixed
-	 * @throws Bee_Security_Exception_Authentication
-	 */
-	public static function getIdentity($identityName) {
-		$auth = self::$userDetailsService->getGroupByName($identityName);
-		if ($auth instanceof Potiscom_Auth_Doctrine_Group) {
-			return $auth;
-		}
-		$auth = self::$userDetailsService->getUserByName($identityName);
-		if ($auth instanceof Potiscom_Auth_Doctrine_User) {
-			return $auth;
-		}
-		throw new Bee_Security_Exception_Authentication('Not authenticated');
-	}
-
-	/**
-	 * @param $identityName
-	 * @param $configAttribute
-	 * @param null $secureObject
-	 * @return bool
-	 */
-	public static function checkAccessForIdentity($identityName, $configAttribute, $secureObject = null) {
-		$identity = self::getIdentity($identityName);
-		$auth = new Bee_Security_UsernamePasswordAuthenticationToken($username, $password);
-		self::$accessDecisionManager->decide($auth, $secureObject, new Bee_Security_ConfigAttributeDefinition($configAttribute));
-		return true;
-	}
-
-	/**
-	 * @param $identityName
-	 * @param $configAttribute
-	 * @param null $secureObject
-	 * @param null $returnedObject
-	 * @return mixed
-	 */
-	public static function checkResultAccessForIdentity($identityName, $configAttribute, $secureObject = null, $returnedObject = null) {
-		$auth = self::getIdentity($identityName);
-		return self::$afterInvocationProviderManager->decide($auth, $secureObject, new Bee_Security_ConfigAttributeDefinition($configAttribute), $returnedObject);
-	}
-
 }
 
 class SEC extends Bee_Security_Helper {
 }
-
-?>
