@@ -96,9 +96,9 @@ class Bee_Persistence_Doctrine_ManagerAugmenter implements Bee_Context_Config_II
     }
 
     public function afterPropertiesSet() {
-//		$this->doctrineManager->setAttribute(Doctrine::ATTR_USE_DQL_CALLBACKS, true);
-//		$this->doctrineManager->setAttribute(Doctrine::ATTR_AUTO_FREE_QUERY_OBJECTS, true);
-//		$this->doctrineManager->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, true);
+//		$this->doctrineManager->setAttribute(Doctrine_Core::ATTR_USE_DQL_CALLBACKS, true);
+//		$this->doctrineManager->setAttribute(Doctrine_Core::ATTR_AUTO_FREE_QUERY_OBJECTS, true);
+//		$this->doctrineManager->setAttribute(Doctrine_Core::ATTR_QUOTE_IDENTIFIER, true);
 
 		if($this->queryCacheDriver) {
 			$this->doctrineManager->setAttribute(Doctrine_Core::ATTR_QUERY_CACHE, $this->queryCacheDriver);

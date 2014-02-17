@@ -1,4 +1,14 @@
 {
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://dev.iter8.de/composer/"
+        },
+        {
+            "type": "pear",
+            "url": "pear.php.net"
+        }
+    ],
     "name": "bee-framework/bee-framework",
     "type": "library",
     "description": "Bee Framework - PHP 5 DI/IoC application framework",
@@ -19,7 +29,8 @@
         "doctrine/orm": "~2.4@RC",
         "doctrine/doctrine1": "~1.2@stable",
         "niktux/addendum": "0.4.1",
-        "apache/log4php": "~2.3@stable"
+        "apache/log4php": "~2.3@stable",
+        "pear-pear/I18N_UnicodeNormalizer": "*@stable"
     },
     "require-dev": {
         "smarty/smarty": "~3.1@stable",
