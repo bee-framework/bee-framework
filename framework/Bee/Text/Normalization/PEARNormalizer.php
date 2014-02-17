@@ -26,7 +26,7 @@ class Bee_Text_Normalization_PEARNormalizer implements Bee_Text_Normalization_IN
 	private static $pearDataDir;
 
 	/**
-	 * @param mixed $pearDataDir
+	 * @param string $pearDataDir
 	 */
 	public static function setPearDataDir($pearDataDir) {
 		self::$pearDataDir = $pearDataDir;
