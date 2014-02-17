@@ -1,4 +1,10 @@
 {
+    "repositories": [
+        {
+            "type": "pear",
+            "url": "pear.php.net"
+        }
+    ],
     "name": "bee-framework/bee-framework",
     "type": "library",
     "description": "Bee Framework - PHP 5 DI/IoC application framework",
@@ -17,7 +23,8 @@
     "require": {
         "php": ">=5.3",
         "niktux/addendum": "0.4.1",
-        "apache/log4php": "2.3.0"
+        "apache/log4php": "~2.3@stable",
+        "pear-pear/I18N_UnicodeNormalizer": "*@stable"
     },
     "autoload": {
         "psr-0": {
