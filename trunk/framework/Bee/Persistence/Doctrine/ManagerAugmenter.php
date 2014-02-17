@@ -101,11 +101,11 @@ class Bee_Persistence_Doctrine_ManagerAugmenter implements Bee_Context_Config_II
 //		$this->doctrineManager->setAttribute(Doctrine::ATTR_QUOTE_IDENTIFIER, true);
 
 		if($this->queryCacheDriver) {
-			$this->doctrineManager->setAttribute(Doctrine::ATTR_QUERY_CACHE, $this->queryCacheDriver);
+			$this->doctrineManager->setAttribute(Doctrine_Core::ATTR_QUERY_CACHE, $this->queryCacheDriver);
 		}
 
 		if($this->resultCacheDriver) {
-			$this->doctrineManager->setAttribute(Doctrine::ATTR_RESULT_CACHE, $this->resultCacheDriver);
+			$this->doctrineManager->setAttribute(Doctrine_Core::ATTR_RESULT_CACHE, $this->resultCacheDriver);
 		}
 	}
 }
