@@ -23,6 +23,15 @@
  
 class Bee_Text_Normalization_PEARNormalizer implements Bee_Text_Normalization_INormalizer {
 
+	private static $pearDataDir;
+
+	/**
+	 * @param mixed $pearDataDir
+	 */
+	public static function setPearDataDir(mixed $pearDataDir) {
+		self::$pearDataDir = $pearDataDir;
+	}
+
 	/**
 	 * @var I18N_UnicodeNormalizer
 	 */
@@ -38,6 +47,6 @@ class Bee_Text_Normalization_PEARNormalizer implements Bee_Text_Normalization_IN
 	}
 
 	public function __construct() {
-		$this->normalizer = new I18N_UnicodeNormalizer();
+		$this->normalizer = new I18N_UnicodeNormalizer(self::$pearDataDir);
 	}
 }
