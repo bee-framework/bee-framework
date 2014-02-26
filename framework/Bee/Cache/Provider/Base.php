@@ -44,9 +44,14 @@ abstract class Bee_Cache_Provider_Base implements Bee_Cache_IProvider {
 		return $this->doStore($key, serialize($value), $etime);
 	}
 
-	protected function doRetrieveSerialized($key) {
-		return unserialize($this->doRetrieve($key));
-	}
+    protected function doRetrieveSerialized($key) {
+		$serialized = $this->doRetrieve($key);
+   		$data = @unserialize($serialized);
+   		if ($data === false && $serialized !== serialize(false)) {
+   			throw new Exception('unserialize failed for key: '.$key);
+   		}
+   		return $data;
+   	}
 
 	protected final function getTTL($etime) {
 		return $etime - time();

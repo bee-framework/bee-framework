@@ -143,52 +143,77 @@ class Bee_Cache_Manager {
 		}
 	}
 	
-	/**
-	 * Enter description here...
-	 *
-	 * @param Bee_Cache_ICachableResource $resource
-	 * @return mixed
-	 */
-	public static function &retrieveCachable(Bee_Cache_ICachableResource $resource, $returnInfoArray = false) {
-		if(is_null(self::$provider)) {
-			// no cache provider found, no caching or unsupported cache type installed
-			$data =& $resource->createContent();
-			$result = $returnInfoArray ? array(self::INFO_NO_CACHE_KEY => true, self::INFO_CACHE_HIT_KEY => false, self::INFO_IN_CACHE_SINCE_KEY => false, self::INFO_DATA_KEY => &$data) : $data;
-			return $result;
-		}
-		
-		// caching supported, check if in cache and not stale
-		$key = self::getQualifiedKey($resource->getKey());
-		$ctimeKey = $key . self::CTIME_KEY_SUFFIX;
+    /**
+   	 * Enter description here...
+   	 *
+   	 * @param Bee_Cache_ICachableResource $resource
+   	 * @return mixed
+   	 */
+   	public static function &retrieveCachable(Bee_Cache_ICachableResource $resource, $returnInfoArray = false) {
+   		if(is_null(self::$provider)) {
+   			// no cache provider found, no caching or unsupported cache type installed
+   			$data =& $resource->createContent();
+   			$result = $returnInfoArray ? array(self::INFO_NO_CACHE_KEY => true, self::INFO_CACHE_HIT_KEY => false, self::INFO_IN_CACHE_SINCE_KEY => false, self::INFO_DATA_KEY => &$data) : $data;
+   			return $result;
+   		}
 
-		$inCacheSince = self::$provider->retrieve($ctimeKey);
-		$inCacheSince = $inCacheSince === false ? -1 : $inCacheSince;
+   		// caching supported, check if in cache and not stale
+   		$key = self::getQualifiedKey($resource->getKey());
+   		$ctimeKey = $key . self::CTIME_KEY_SUFFIX;
 
-		$mtime = $resource->getModificationTimestamp();
+   		try {
+   			$inCacheSince = self::$provider->retrieve($ctimeKey);
+   			$inCacheSince = $inCacheSince === false ? -1 : $inCacheSince;
 
-		if($inCacheSince < $mtime) {
-			// @todo: provide logging
-			// resource not found in cache or stale, re-create and store in cache
+   		} catch (Exception $e) {
+   			$inCacheSince = -1;
+   		}
 
-			$etime = 0;
-			$data =& $resource->createContent($etime);
+   		$mtime = $resource->getModificationTimestamp();
 
-			self::$provider->store($ctimeKey, $mtime, $etime);
-			self::$provider->store($key, $data, $etime);
+   		if($inCacheSince < $mtime) {
+   			// @todo: provide logging
+   			// resource not found in cache or stale, re-create and store in cache
 
-			$cacheHit = false;
-		} else {
-			// @todo: provide logging
-			// resource in cache is current, fetch from cache
-			$data = self::$provider->retrieve($key);
-			$cacheHit = true;
-		}
+   			$etime = 0;
+   			$data =& $resource->createContent($etime);
 
-		if($returnInfoArray) {
-			$data = array(self::INFO_CACHE_HIT_KEY => $cacheHit, self::INFO_IN_CACHE_SINCE_KEY => $inCacheSince, self::INFO_DATA_KEY => &$data);
-		}
-		return $data;
-	}
+   			self::$provider->store($ctimeKey, $mtime, $etime);
+   			self::$provider->store($key, $data, $etime);
+
+   			$cacheHit = false;
+   		} else {
+   			// @todo: provide logging
+   			// resource in cache is current, fetch from cache
+   			try {
+   				$data = self::$provider->retrieve($key);
+   				$cacheHit = true;
+
+   			} catch (Exception $e) {
+                // ACHTUNG!!!!!!!!
+                // ACHTUNG!!!!!!!!
+                // ACHTUNG!!!!!!!!
+                // ACHTUNG!!!!!!!!
+                //
+                // hier habe ich einfach ein stück code aus dem if ... zweig dupliziert
+                //
+                // @todo: provide logging
+   				// resource not found in cache or stale, re-create and store in cache
+   				$etime = 0;
+   				$data =& $resource->createContent($etime);
+
+   				self::$provider->store($ctimeKey, $mtime, $etime);
+   				self::$provider->store($key, $data, $etime);
+
+   				$cacheHit = false;
+   			}
+   		}
+
+   		if($returnInfoArray) {
+   			$data = array(self::INFO_CACHE_HIT_KEY => $cacheHit, self::INFO_IN_CACHE_SINCE_KEY => $inCacheSince, self::INFO_DATA_KEY => &$data);
+   		}
+   		return $data;
+   	}
 
 	public static function retrieve($key) {
 		return self::$provider->retrieve(self::getQualifiedKey($key));

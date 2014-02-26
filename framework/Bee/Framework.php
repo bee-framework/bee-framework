@@ -126,7 +126,10 @@ class Bee_Framework {
 
 		if(self::$productionMode) {
 			if(!is_array(self::$classFileMap)) {
-				self::$classFileMap = Bee_Cache_Manager::retrieve(self::CLASS_FILE_CACHE_PREFIX);
+                try {
+                    self::$classFileMap = Bee_Cache_Manager::retrieve(self::CLASS_FILE_CACHE_PREFIX);
+                } catch (Exception $e) {
+                }
 				if(!is_array(self::$classFileMap)) {
 					self::$classFileMap = array();
 				}
