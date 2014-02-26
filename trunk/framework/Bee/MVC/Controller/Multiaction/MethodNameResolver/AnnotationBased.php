@@ -70,7 +70,10 @@ class Bee_MVC_Controller_Multiaction_MethodNameResolver_AnnotationBased extends 
 			$delegateClassName = get_class($this->getController()->getDelegate());
 
 			if(Bee_Framework::getProductionMode()) {
-				$this->methodResolvers = Bee_Cache_Manager::retrieve(self::CACHE_KEY_PREFIX.$delegateClassName);
+                try {
+                    $this->methodResolvers = Bee_Cache_Manager::retrieve(self::CACHE_KEY_PREFIX . $delegateClassName);
+                } catch (Exception $e) {
+                }
 			}
 
 			if(!$this->methodResolvers) {
