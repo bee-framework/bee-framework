@@ -180,6 +180,7 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 	 * @return void
 	 */
 	protected function init() {
+		self::$currentRequest = $this->buildRequestObject();
 		$this->handlerMapping = $this->context->getBean(self::HANDLER_MAPPING_BEAN_NAME, 'Bee_MVC_IHandlerMapping');
 		$this->viewResolver = $this->context->getBean(self::VIEW_RESOLVER_BEAN_NAME, 'Bee_MVC_IViewResolver');
 
@@ -224,7 +225,7 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 	 */
 	public function dispatch() {
 		self::$currentDispatcher = $this;
-		self::$currentRequest = $this->buildRequestObject();
+//		self::$currentRequest = $this->buildRequestObject();
 
 		if (!is_null($this->filterChainProxy)) {
 			$this->filterChainProxy->doFilter(self::$currentRequest, $this);
