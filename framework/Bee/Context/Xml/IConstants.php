@@ -45,4 +45,5 @@ interface Bee_Context_Xml_IConstants {
 
     const KEY_ATTRIBUTE = 'key';
 
+    const NUMERIC_KEYS_ATTRIBUTE = 'numeric-keys';
 }
