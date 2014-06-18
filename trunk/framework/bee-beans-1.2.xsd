@@ -318,6 +318,11 @@
                 <xsd:documentation><![CDATA[Default type for value elements]]></xsd:documentation>
             </xsd:annotation>
         </xsd:attribute>
+        <xsd:attribute name="numeric-keys" type="xsd:boolean">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[Whether keys of assoc items should be interpreted as numeric]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
     </xsd:attributeGroup>
 
     <xsd:element name="bean">

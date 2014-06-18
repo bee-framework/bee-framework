@@ -625,6 +625,8 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	public function parseArrayElement(DOMElement $collectionEle, Bee_Context_Config_IBeanDefinition $bd) {
 		$defaultType = $collectionEle->getAttribute(self::VALUE_TYPE_ATTRIBUTE);
 
+		$numericKeys = $collectionEle->hasAttribute(self::NUMERIC_KEYS_ATTRIBUTE) ? filter_var($collectionEle->getAttribute(self::NUMERIC_KEYS_ATTRIBUTE), FILTER_VALIDATE_BOOLEAN) : false;
+
 		$assoc = false;
 		$numeric = false;
 
@@ -635,7 +637,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
                 if (Bee_Utils_Dom::nodeNameEquals($ele, self::ASSOC_ITEM_ELEMENT)) {
 					$assoc = true;
 					list($key, $value) = $this->parseAssocItemElement($ele, $bd, $defaultType);
-                    $list[$key] = $value;
+                    $list[$numericKeys ? intval($key) : $key] = $value;
                 } else {
 					$numeric = true;
                     array_push($list, $this->parsePropertySubElement($ele, $bd, $defaultType));

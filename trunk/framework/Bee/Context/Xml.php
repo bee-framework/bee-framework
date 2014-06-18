@@ -32,7 +32,8 @@ class Bee_Context_Xml extends Bee_Context_Abstract {
 	 * Enter description here...
 	 *
 	 * @param String $locations
-	 * @return void
+	 * @param bool $callInitMethod
+	 * @return \Bee_Context_Xml
 	 */
 	public function __construct($locations='', $callInitMethod=true) {
 		parent::__construct($locations, false);
@@ -112,4 +113,3 @@ class Bee_Context_Xml_CachableConfig implements Bee_Cache_ICachableResource {
 		return $registry;
 	}
 }
-?>
