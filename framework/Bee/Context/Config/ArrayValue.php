@@ -35,10 +35,13 @@ class Bee_Context_Config_ArrayValue implements ArrayAccess, IteratorAggregate, C
 
 	private $associative = false;
 
-	public function __construct(array &$sourceArray, $mergeEnabled = false, $associative = false) {
+	private $numericKeys = false;
+
+	public function __construct(array &$sourceArray, $mergeEnabled = false, $associative = false, $numericKeys = false) {
 		$this->sourceArray =& $sourceArray;
 		$this->mergeEnabled = $mergeEnabled;
 		$this->associative = $associative;
+		$this->numericKeys = $numericKeys;
 	}
 
 	/**
@@ -83,18 +86,23 @@ class Bee_Context_Config_ArrayValue implements ArrayAccess, IteratorAggregate, C
 	function merge(Traversable $parent) {
 		$tmpArray = array();
 		$parentAssoc = $parent instanceof Bee_Context_Config_ArrayValue && $parent->associative;
-		foreach ($parent as $key => $value) {
-			if($parentAssoc) {
-				$tmpArray[$key] = $value;
-			} else {
-				array_push($tmpArray, $value);
+		if($parentAssoc && $this->associative && $parent->numericKeys && $this->numericKeys) {
+			$tmpArray = array_replace($parent->sourceArray, $this->sourceArray);
+			ksort($tmpArray);
+		} else {
+			foreach ($parent as $key => $value) {
+				if($parentAssoc) {
+					$tmpArray[$key] = $value;
+				} else {
+					array_push($tmpArray, $value);
+				}
 			}
-		}
-		foreach ($this->sourceArray as $key => $value) {
-			if($this->associative) {
-				$tmpArray[$key] = $value;
-			} else {
-				array_push($tmpArray, $value);
+			foreach ($this->sourceArray as $key => $value) {
+				if($this->associative) {
+					$tmpArray[$key] = $value;
+				} else {
+					array_push($tmpArray, $value);
+				}
 			}
 		}
 		$this->sourceArray =& $tmpArray;

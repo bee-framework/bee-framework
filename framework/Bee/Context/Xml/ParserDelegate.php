@@ -647,7 +647,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 				$this->readerContext->error('Must not combine \'assoc-item\' elements and other elements in the same \'array\' element!', $collectionEle);
 			}
 		}
-		return new Bee_Context_Config_ArrayValue($list, $this->parseMergeAttribute($collectionEle), $assoc);
+		return new Bee_Context_Config_ArrayValue($list, $this->parseMergeAttribute($collectionEle), $assoc, $numericKeys);
 	}
 
     public function parseMergeAttribute(DOMElement $collectionElement) {
