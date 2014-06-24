@@ -16,6 +16,7 @@ namespace Bee\Persistence\Pdo;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use PDO;
 
 /**
  * User: mp
@@ -41,20 +42,32 @@ class SimpleDaoBase {
 	}
 
 	/**
-	 * @var \PDO
+	 * @var PDO
 	 */
 	private $pdoConnection;
 
-	public function __construct(\PDO $pdoConnection) {
-		self::getLog()->info('DAO constructed, got PDO connection');
-		$this->pdoConnection = $pdoConnection;
+	/**
+	 * @param PDO $pdoConnection
+	 */
+	public function __construct(PDO $pdoConnection = null) {
+		if(!is_null($pdoConnection)) {
+			self::getLog()->info('DAO constructed, got PDO connection');
+			$this->pdoConnection = $pdoConnection;
+		}
 	}
 
 	/**
-	 * @return \PDO
+	 * @return PDO
 	 */
 	public function getPdoConnection() {
 		return $this->pdoConnection;
+	}
+
+	/**
+	 * @param PDO $pdoConnection
+	 */
+	public function setPdoConnection(PDO $pdoConnection) {
+		$this->pdoConnection = $pdoConnection;
 	}
 
 	/**
