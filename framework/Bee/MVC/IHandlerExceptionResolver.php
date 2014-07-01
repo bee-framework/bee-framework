@@ -25,6 +25,4 @@ interface Bee_MVC_IHandlerExceptionResolver {
 	 * @return Bee_MVC_ModelAndView
 	 */
 	public function resolveException(Bee_MVC_IHttpRequest $request, Bee_MVC_IController $handler = null, Exception $ex);
-	
 }
-?>
