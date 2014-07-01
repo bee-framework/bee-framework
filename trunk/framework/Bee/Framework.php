@@ -83,7 +83,7 @@ class Bee_Framework {
 
 		require_once dirname(__FILE__) . '/Cache/Manager.php';
 
-		spl_autoload_register(array(__CLASS__, 'autoload'));
+//		spl_autoload_register(array(__CLASS__, 'autoload'));
 
 		register_shutdown_function(array(__CLASS__, 'shutdown'));
 //		Bee_Cache_Manager::init();
@@ -117,6 +117,7 @@ class Bee_Framework {
      *
      * @param string $className
      * @return boolean
+	 * @deprecated
      */
     public static function autoload($className) {
 
