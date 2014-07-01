@@ -157,11 +157,13 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 	}
 			
 	public function getHeader($name) {
-		return $this->headers[strtoupper($name)];
+		$name = strtoupper($name);
+		return array_key_exists($name, $this->headers) ? $this->headers[$name] : false;
 	}
 	
 	public function getHeaderNames() {
 		if(is_null($this->headerNames)) {
+			$this->headerNames = array_keys($this->headers);
 		}
 		return $this->headerNames;
 	}
@@ -190,4 +192,3 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 		return new Bee_MVC_HttpRequest($params, $pathInfo, $method, $headers);
 	}
 }
-?>
