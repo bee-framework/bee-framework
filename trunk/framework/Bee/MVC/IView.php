@@ -27,25 +27,22 @@
  * @author Benjamin Hartmann
  */
 interface Bee_MVC_IView {
+
 	/**
 	 * Return the content type of the view, if predetermined.
 	 * <p>Can be used to check the content type upfront,
 	 * before the actual rendering process.
-	 * @return the content type string (optionally including a character set),
+	 * @return string content type string (optionally including a character set),
 	 * or <code>null</code> if not predetermined.
 	 */
 	public function getContentType();
 
 	/**
 	 * Render the view given the specified model.
-	 * <p>The first step will be preparing the request: In the JSP case,
-	 * this would mean setting model objects as request attributes.
-	 * The second step will be the actual rendering of the view,
-	 * for example including the JSP via a RequestDispatcher.
-	 * @param model associative array with name strings as keys and corresponding model
+	 *
+	 * @param array $model associative array with name strings as keys and corresponding model
 	 * objects as values (can also be omitted in case of empty model)
 	 * @throws Exception if rendering failed
 	 */
 	public function render(array $model = array());
 }
-?>
