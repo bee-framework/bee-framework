@@ -68,8 +68,7 @@ class Bee_MVC_Controller_Multiaction_MethodNameResolver_AnnotationBased extends 
 		
 		$this->init();
 				
-		$httpMethod = strtoupper($request->getMethod());
-		
+		$httpMethod = $this->getMethodNameKey($request->getMethod());
 		$ajaxKeyPart = $this->getAjaxTypeKey($request->getAjax());
 		return $this->selectHandlerMethod(array(
 			$httpMethod . $ajaxKeyPart,
@@ -126,13 +125,8 @@ class Bee_MVC_Controller_Multiaction_MethodNameResolver_AnnotationBased extends 
 						$annotations = $method->getAllAnnotations('Bee_MVC_Controller_Multiaction_RequestHandler');
 
 						foreach($annotations as $annotation) {
-							$httpMethod = strtoupper($annotation->httpMethod);
-							$ajax = filter_var($annotation->ajax, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-							$ajax = $this->getAjaxTypeKey($ajax);
-							if(!Bee_Utils_Strings::hasText($httpMethod)) {
-								$httpMethod = self::DEFAULT_HTTP_METHOD_KEY;
-							}
-							$httpMethod .= $httpMethod . $ajax;
+							$httpMethod = $this->getMethodNameKey($annotation->httpMethod) .
+									$this->getAjaxTypeKey(filter_var($annotation->ajax, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE));
 							if(!array_key_exists($httpMethod, $mappings)) {
 								$mappings[$httpMethod] = array();
 							}
@@ -155,6 +149,14 @@ class Bee_MVC_Controller_Multiaction_MethodNameResolver_AnnotationBased extends 
 				Bee_Cache_Manager::store(self::CACHE_KEY_PREFIX.$delegateClassName, $this->methodResolvers);
 			}
 		}
+	}
+
+	/**
+	 * @param $methodName
+	 * @return string
+	 */
+	protected function getMethodNameKey($methodName) {
+		return Bee_Utils_Strings::hasText($methodName) ? strtoupper($methodName) : self::DEFAULT_HTTP_METHOD_KEY;
 	}
 
 	/**
