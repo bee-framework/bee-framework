@@ -25,4 +25,3 @@ interface Bee_MVC_IFilter {
     public function doFilter(Bee_MVC_IHttpRequest $request, Bee_MVC_IFilterChain $filterChain);
 	
 }
-?>

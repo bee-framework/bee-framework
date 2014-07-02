@@ -69,4 +69,3 @@ class Bee_Security_Context_HttpSessionIntegrationFilter implements Bee_MVC_IFilt
 	}
 	
 }
-?>

@@ -57,8 +57,8 @@ class HashManager {
             return $row['hash'];
 
         } catch (Exception $e) {
-            $hash = $this->createHash();
-            if ($this->persistHash($this->createHash(), $id, $group)) {
+            $hash = self::createHash();
+            if ($this->persistHash(self::createHash(), $id, $group)) {
                 return $hash;
             }
             return false;
@@ -93,7 +93,10 @@ class HashManager {
         }
     }
 
-    private function createHash() {
+	/**
+	 * @return mixed
+	 */
+	public static function createHash() {
         return preg_replace('/\./', 'b', uniqid('', true));
     }
 

@@ -75,15 +75,15 @@ class Bee_MVC_VirtualFilterChain implements Bee_MVC_IFilterChain {
      */
     private $currentPosition = 0;
 
-    /**
-     * @param Bee_MVC_IFilterChain $origFilterChain
-     * @param Bee_MVC_IFilter[] $filters
-     * @return void
-     */
+	/**
+	 * @param Bee_MVC_IFilterChain $origFilterChain
+	 * @param Bee_MVC_IFilter[] $filters
+	 */
     public function __construct(Bee_MVC_IFilterChain $origFilterChain, array $filters) {
         $this->origFilterChain = $origFilterChain;
         $this->filters = $filters;
     }
+
     public function doFilter(Bee_MVC_IHttpRequest $request) {
         if($this->currentPosition == sizeof($this->filters)) {
             $this->origFilterChain->doFilter($request);
@@ -95,4 +95,3 @@ class Bee_MVC_VirtualFilterChain implements Bee_MVC_IFilterChain {
     }
 
 }
-?>

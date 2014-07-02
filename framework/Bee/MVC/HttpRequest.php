@@ -103,17 +103,19 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 	}
 
 	/**
-	 * Returns the PATH_INFO (i.e. any additional path trailing the actual PHP file)
+	 * Check whether the given parameter exists
 	 *
-	 * @return string
+	 * @param $name
+	 * @return bool
 	 */
 	public function hasParameter($name) {
         return array_key_exists($name, $this->parameters);
 	}
 
 	/**
-	 * Returns the PATH_INFO (i.e. any additional path trailing the actual PHP file)
+	 * Returns the value of the given parameter, or null if no parameter with that name exists
 	 *
+	 * @param string $name
 	 * @return string
 	 */
 	public function getParameter($name) {
@@ -122,9 +124,14 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 //			$val = $val[0];
 //		}
 //		return $val;
-        return array_key_exists($name, $this->parameters) ? $this->parameters[$name] : null;
+        return $this->hasParameter($name) ? $this->parameters[$name] : null;
 	}
 
+	/**
+	 * Set the value of the given parameter
+	 * @param $name
+	 * @param $value
+	 */
 	public function setParameter($name, $value) {
 		if(is_null($value)) {
 			unset($this->parameters[$name]);
@@ -162,9 +169,6 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 	}
 	
 	public function getHeaderNames() {
-		if(is_null($this->headerNames)) {
-			$this->headerNames = array_keys($this->headers);
-		}
 		return $this->headerNames;
 	}
 	

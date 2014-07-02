@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\DefaultRequestBuilder;
 
 /**
  * The dispatcher is the main entry point into an Bee MVC application. It acts as a front controller, i.e. it handles incoming
@@ -40,6 +41,8 @@
  * @author Benjamin Hartmann
  */
 class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
+
+	const REQUEST_BUILDER_BEAN_NAME = 'requestBuilder';
 
 	const HANDLER_MAPPING_BEAN_NAME = 'handlerMapping';
 
@@ -83,6 +86,10 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 	 */
 	private $context;
 
+	/**
+	 * @var \Bee\MVC\IRequestBuilder
+	 */
+	private $requestBuilder;
 
 	/**
 	 * The handler mapping used by this dispatcher
@@ -180,7 +187,26 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 	 * @return void
 	 */
 	protected function init() {
-		self::$currentRequest = $this->buildRequestObject();
+		if ($this->context->containsBean(Bee_MVC_Session_DispatcherAdapter::SESSION_HANDLER_NAME)) {
+			$this->getLog()->info('custom session handler configured, setting it as PHP session_set_save_handler()');
+			$sessionAdapter = new Bee_MVC_Session_DispatcherAdapter($this->context);
+			session_set_save_handler(
+				array(&$sessionAdapter, "open"),
+				array(&$sessionAdapter, "close"),
+				array(&$sessionAdapter, "read"),
+				array(&$sessionAdapter, "write"),
+				array(&$sessionAdapter, "destroy"),
+				array(&$sessionAdapter, "gc")
+			);
+		}
+
+		try {
+			$this->requestBuilder = $this->context->getBean(self::HANDLER_MAPPING_BEAN_NAME, '\Bee\MVC\IRequestBuilder');
+		} catch (Bee_Context_NoSuchBeanDefinitionException $ex) {
+			$this->getLog()->info('no RequestBuilder configured, using DefaultRequestBuilder');
+			$this->requestBuilder = new DefaultRequestBuilder();
+		}
+
 		$this->handlerMapping = $this->context->getBean(self::HANDLER_MAPPING_BEAN_NAME, 'Bee_MVC_IHandlerMapping');
 		$this->viewResolver = $this->context->getBean(self::VIEW_RESOLVER_BEAN_NAME, 'Bee_MVC_IViewResolver');
 
@@ -196,18 +222,7 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 			$this->getLog()->info('no exception resolver configured');
 		}
 
-		if ($this->context->containsBean(Bee_MVC_Session_DispatcherAdapter::SESSION_HANDLER_NAME)) {
-			$this->getLog()->info('custom session handler configured, setting it as PHP session_set_save_handler()');
-			$sessionAdapter = new Bee_MVC_Session_DispatcherAdapter($this->context);
-			session_set_save_handler(
-				array(&$sessionAdapter, "open"),
-				array(&$sessionAdapter, "close"),
-				array(&$sessionAdapter, "read"),
-				array(&$sessionAdapter, "write"),
-				array(&$sessionAdapter, "destroy"),
-				array(&$sessionAdapter, "gc")
-			);
-		}
+		self::$currentRequest = $this->requestBuilder->buildRequestObject();
 	}
 
 	/**
@@ -326,15 +341,6 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 				$this->resolveModelInternals($modelElem);
 			}
 		}
-	}
-
-	/**
-	 * Enter description here...
-	 *
-	 * @return Bee_MVC_HttpRequest
-	 */
-	private function buildRequestObject() {
-		return new Bee_MVC_HttpRequest();
 	}
 }
 

@@ -54,10 +54,7 @@ class Bee_MVC_View_Redirect implements Bee_MVC_IView, IHttpStatusCodes {
 		if (array_key_exists(self::MODEL_KEY_GET_PARAMS, $model)) {
 			$params = $model[self::MODEL_KEY_GET_PARAMS];
 			Bee_Utils_Assert::isTrue(is_array($params), 'Bee_MVC_View_Redirect: getParams must be an array');
-			array_walk($params, function (&$value, $key) {
-				$value = urlencode($key) . '=' . urlencode($value);
-			});
-			$redirectUrl .= (strpos($redirectUrl, '?') !== false ? '&' : '?') . implode('&', $params);
+			$redirectUrl .= (strpos($redirectUrl, '?') !== false ? '&' : '?') . http_build_query($params);
 		}
 		header('Location: ' . $redirectUrl, true, $this->getStatusCode());
 	}
