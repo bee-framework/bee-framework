@@ -23,5 +23,3 @@
  */
 class Bee_Context_BeansException extends Bee_Exceptions_Base {
 }
-
-?>

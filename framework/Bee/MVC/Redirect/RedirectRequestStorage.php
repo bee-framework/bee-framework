@@ -49,13 +49,14 @@ class RedirectRequestStorage extends AbstractRedirectStorage {
 	}
 
 	/**
+	 * @param RedirectedRequestBuilder $requestBuilder
 	 * @return \Bee_MVC_IHttpRequest
 	 */
-	public function restoreRequestObject() {
+	public function restoreRequestObject(RedirectedRequestBuilder $requestBuilder) {
 		$_GET = $this->getParams;
 		$_POST = $this->postParams;
 		$_REQUEST = $this->requestParams;
 		$_SERVER = $this->serverVars;
-		return new \Bee_MVC_HttpRequest(null, null, null, $this->headers);
+		return $requestBuilder->massageConstructedRequest(new \Bee_MVC_HttpRequest(null, null, null, $this->headers));
 	}
 }

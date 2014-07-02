@@ -33,11 +33,6 @@ class Bee_MVC_SimpleMappingExceptionResolver implements Bee_MVC_IHandlerExceptio
 	private $defaultErrorView;
 
 	/**
-	 * @var string
-	 */
-	private $ajaxViewNameSuffix = '.ajax';
-
-	/**
 	 *
 	 * @return array
 	 */
@@ -102,23 +97,6 @@ class Bee_MVC_SimpleMappingExceptionResolver implements Bee_MVC_IHandlerExceptio
 			$viewName = $this->defaultErrorView;
 		}
 
-		return $viewName ? new Bee_MVC_ModelAndView(array(self::MODEL_HANDLER_EXCEPTION_KEY => $ex), $this->modifyResolvedViewName($viewName, $request)) : false;
-	}
-
-	/**
-	 * @param $viewName
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return string
-	 */
-	protected function modifyResolvedViewName($viewName, Bee_MVC_IHttpRequest $request) {
-		return $this->isAjaxRequest($request) ? $viewName . $this->ajaxViewNameSuffix : $viewName;
-	}
-
-	/**
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return bool
-	 */
-	protected function isAjaxRequest(Bee_MVC_IHttpRequest $request) {
-		return $request->getHeader('X-Requested-With') == 'XMLHttpRequest';
+		return $viewName ? new Bee_MVC_ModelAndView(array(self::MODEL_HANDLER_EXCEPTION_KEY => $ex), $viewName) : false;
 	}
 }

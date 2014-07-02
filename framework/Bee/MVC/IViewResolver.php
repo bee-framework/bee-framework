@@ -28,19 +28,17 @@
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
 interface Bee_MVC_IViewResolver {
-	/** 
+	/**
 	 * Resolve the given view by name.
 	 * <p>Note: To allow for ViewResolver chaining, a ViewResolver should
 	 * return <code>null</code>  if a view with the given name is not defined in it.
 	 * However, this is not required: Some ViewResolvers will always attempt
-	 * to build View objects with the given name, unable to return <code>null</code> 
+	 * to build View objects with the given name, unable to return <code>null</code>
 	 * (rather throwing an exception when View creation failed).
-	 * @param String viewName name of the view to resolve
+	 * @param String $viewName name of the view to resolve
+	 * @param Bee_MVC_IHttpRequest $request
 	 * @return Bee_MVC_IView the IView object, or <code>null</code> if not found
 	 * (optional, to allow for ViewResolver chaining)
-	 * @throws Exception if the view cannot be resolved
-	 * (typically in case of problems creating an actual View object)
 	 */
-	public function resolveViewName($viewName);
+	public function resolveViewName($viewName, Bee_MVC_IHttpRequest $request);
 }
-?>
