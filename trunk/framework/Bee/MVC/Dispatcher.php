@@ -201,7 +201,7 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 		}
 
 		try {
-			$this->requestBuilder = $this->context->getBean(self::HANDLER_MAPPING_BEAN_NAME, '\Bee\MVC\IRequestBuilder');
+			$this->requestBuilder = $this->context->getBean(self::REQUEST_BUILDER_BEAN_NAME, '\Bee\MVC\IRequestBuilder');
 		} catch (Bee_Context_NoSuchBeanDefinitionException $ex) {
 			$this->getLog()->info('no RequestBuilder configured, using DefaultRequestBuilder');
 			$this->requestBuilder = new DefaultRequestBuilder();
