@@ -28,5 +28,5 @@ use Addendum\Annotation;
 class Bee_MVC_Controller_Multiaction_RequestHandler extends Annotation {
 	public $httpMethod;
 	public $pathPattern;
+	public $ajax;
 }
-?>

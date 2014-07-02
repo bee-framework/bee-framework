@@ -25,16 +25,16 @@ use Addendum\ReflectionAnnotatedMethod;
 
 class Bee_Annotations_Utils {
 
-    /**
-     * Get a single {@link Annotation} of <code>annotationType</code> from the
-     * supplied {@link Method}, traversing its super methods if no annotation
-     * can be found on the given method itself.
-     * <p>Annotations on methods are not inherited by default, so we need to handle
-     * this explicitly. Tge
-     * @param method the method to look for annotations on
-     * @param annotationType the annotation class to look for
-     * @return the annotation found, or <code>null</code> if none found
-     */
+	/**
+	 * Get a single {@link Annotation} of <code>annotationType</code> from the
+	 * supplied {@link Method}, traversing its super methods if no annotation
+	 * can be found on the given method itself.
+	 * <p>Annotations on methods are not inherited by default, so we need to handle
+	 * this explicitly. Tge
+	 * @param ReflectionMethod $method
+	 * @param $annotationClassName
+	 * @return the annotation found, or <code>null</code> if none found
+	 */
     public static function findAnnotation(ReflectionMethod $method, $annotationClassName) {
         $annotatedMethod = self::getReflectionAnnotatedMethodIfNecessary($method);
         $annotation = $annotatedMethod->getAnnotation($annotationClassName);

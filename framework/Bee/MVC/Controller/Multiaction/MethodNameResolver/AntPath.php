@@ -77,4 +77,3 @@ class Bee_MVC_Controller_Multiaction_MethodNameResolver_AntPath extends Bee_MVC_
 		return $handlerMethodName;
 	}
 }
-?>
