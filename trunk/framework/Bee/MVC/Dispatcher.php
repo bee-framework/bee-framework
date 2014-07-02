@@ -298,7 +298,7 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 
 			if ($mav instanceof Bee_MVC_ModelAndView) {
 				$mav->addModelValue(Bee_MVC_Model::CURRENT_REQUEST_KEY, $request);
-				$this->resolveModelAndView($mav);
+				$this->resolveModelAndView($mav, $request);
 
 				if(!is_null($handlerException) && !count($interceptors)) {
 					// We were unable to resolve a handler and its interceptors due to an exception being thrown along
@@ -319,8 +319,8 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 		}
 	}
 
-	public function resolveModelAndView(Bee_MVC_ModelAndView $mav) {
-		$resolvedView = $this->viewResolver->resolveViewName($mav->getViewName());
+	public function resolveModelAndView(Bee_MVC_ModelAndView $mav, Bee_MVC_IHttpRequest $request) {
+		$resolvedView = $this->viewResolver->resolveViewName($mav->getViewName(), $request);
 		$mav->setResolvedView($resolvedView);
 		if ($resolvedView instanceof Bee_MVC_View_Abstract) {
 			$statics = $resolvedView->getStaticAttributes();
@@ -330,15 +330,15 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 			$model = array_merge($statics, $mav->getModel());
 			$mav->setModel($model);
 		}
-		$this->resolveModelInternals($mav->getModel());
+		$this->resolveModelInternals($mav->getModel(), $request);
 	}
 
-	private function resolveModelInternals(array $model) {
+	private function resolveModelInternals(array $model, Bee_MVC_IHttpRequest $request) {
 		foreach ($model as $modelElem) {
 			if ($modelElem instanceof Bee_MVC_ModelAndView) {
-				$this->resolveModelAndView($modelElem);
+				$this->resolveModelAndView($modelElem, $request);
 			} else if (is_array($modelElem)) {
-				$this->resolveModelInternals($modelElem);
+				$this->resolveModelInternals($modelElem, $request);
 			}
 		}
 	}

@@ -42,7 +42,8 @@ abstract class AbstractRedirectStorage {
 	abstract protected function doStoreData(array $model);
 
 	/**
+	 * @param RedirectedRequestBuilder $requestBuilder
 	 * @return \Bee_MVC_IHttpRequest
 	 */
-	abstract public function restoreRequestObject();
+	abstract public function restoreRequestObject(RedirectedRequestBuilder $requestBuilder);
 }

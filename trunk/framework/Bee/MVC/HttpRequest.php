@@ -60,7 +60,12 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 	 * @var array
 	 */
 	private $headerNames;
-	
+
+	/**
+	 * @var bool
+	 */
+	private $ajax;
+
 	public function __construct(array $parameters = null, $pathInfo = null, $method = null, array $headers = null) {
 		if(is_null($headers)) {
 			$headers = Bee_Utils_Env::getRequestHeaders();
@@ -194,5 +199,19 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 			$headers[$header] = $request->getHeader($header);
 		}
 		return new Bee_MVC_HttpRequest($params, $pathInfo, $method, $headers);
+	}
+
+	/**
+	 * @param boolean $ajax
+	 */
+	public function setAjax($ajax) {
+		$this->ajax = $ajax;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function getAjax() {
+		return $this->ajax;
 	}
 }

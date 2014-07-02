@@ -1,7 +1,7 @@
 <?php
 
 namespace Bee\MVC\Redirect;
-use Bee\MVC\IRequestBuilder;
+use Bee\MVC\DefaultRequestBuilder;
 
 /**
  * Class RedirectedRequestBuilder - restores a previously stored request from the session if applicable, or creates a
@@ -9,7 +9,7 @@ use Bee\MVC\IRequestBuilder;
  *
  * @package Bee\MVC\Redirect
  */
-class RedirectedRequestBuilder implements IRequestBuilder {
+class RedirectedRequestBuilder extends DefaultRequestBuilder {
 
 	private $requestIdParamName = 'storedRequestId';
 
@@ -35,11 +35,11 @@ class RedirectedRequestBuilder implements IRequestBuilder {
 			$id = $_GET[$this->requestIdParamName];
 			if(array_key_exists($id, $_SESSION) && ($storage = $_SESSION[$id]) instanceof AbstractRedirectStorage) {
 				/** @var AbstractRedirectStorage $storage */
-				return $storage->restoreRequestObject();
+				return $storage->restoreRequestObject($this);
 			}
 			$this->throwNotFoundException($id);
 		}
-		return new \Bee_MVC_HttpRequest();
+		return parent::buildRequestObject();
 	}
 
 	/**
@@ -49,5 +49,4 @@ class RedirectedRequestBuilder implements IRequestBuilder {
 	protected function throwNotFoundException($id) {
 		throw new \Exception('Stored request with ID ' . $id . ' not found');
 	}
-
 }

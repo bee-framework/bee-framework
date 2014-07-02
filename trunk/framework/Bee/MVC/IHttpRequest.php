@@ -44,13 +44,14 @@ interface Bee_MVC_IHttpRequest {
 	 * @return String
 	 */
 	public function getMethod();
-	
-	
-    /**
-   	 * Enter description here...
-   	 *
-   	 * @return bool
-   	 */
+
+
+	/**
+	 * Enter description here...
+	 *
+	 * @param string $name
+	 * @return bool
+	 */
    	public function hasParameter($name);
 
 	/**
@@ -99,4 +100,10 @@ interface Bee_MVC_IHttpRequest {
 //	public function getParamArray();
 	
 	public function addParameters(array $params);
+
+	/**
+	 * True if this is an AJAX request, false in case of a regular GET or POSTback.
+	 * @return bool
+	 */
+	public function getAjax();
 }
