@@ -207,6 +207,8 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 			$this->requestBuilder = new DefaultRequestBuilder();
 		}
 
+		self::$currentRequest = $this->requestBuilder->buildRequestObject();
+
 		$this->handlerMapping = $this->context->getBean(self::HANDLER_MAPPING_BEAN_NAME, 'Bee_MVC_IHandlerMapping');
 		$this->viewResolver = $this->context->getBean(self::VIEW_RESOLVER_BEAN_NAME, 'Bee_MVC_IViewResolver');
 
@@ -221,8 +223,6 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 		} catch (Bee_Context_NoSuchBeanDefinitionException $ex) {
 			$this->getLog()->info('no exception resolver configured');
 		}
-
-		self::$currentRequest = $this->requestBuilder->buildRequestObject();
 	}
 
 	/**
