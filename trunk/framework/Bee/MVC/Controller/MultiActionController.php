@@ -54,7 +54,7 @@ class MultiActionController extends AbstractController {
 	/**
 	 * Enter description here...
 	 *
-	 * @var \Bee_MVC_Controller_Multiaction_IMethodNameResolver
+	 * @var \Bee\MVC\Controller\Multiaction\IMethodNameResolver
 	 */
 	private $methodNameResolver;
 
@@ -157,7 +157,7 @@ class MultiActionController extends AbstractController {
 	/**
 	 * Enter description here...
 	 *
-	 * @param \Bee_MVC_Controller_Multiaction_IMethodNameResolver $methodNameResolver
+	 * @param \Bee\MVC\Controller\Multiaction\IMethodNameResolver $methodNameResolver
 	 * @return void
 	 */
 	public final function setMethodNameResolver($methodNameResolver) {
@@ -170,7 +170,7 @@ class MultiActionController extends AbstractController {
 	/**
 	 * Enter description here...
 	 *
-	 * @return \Bee_MVC_Controller_Multiaction_IMethodNameResolver
+	 * @return \Bee\MVC\Controller\Multiaction\IMethodNameResolver
 	 */
 	public function getMethodNameResolver() {
 		return $this->methodNameResolver;
