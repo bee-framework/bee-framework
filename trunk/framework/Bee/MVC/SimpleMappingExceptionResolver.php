@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+use Bee\MVC\IController;
+
 class Bee_MVC_SimpleMappingExceptionResolver implements Bee_MVC_IHandlerExceptionResolver {
 
 	const MODEL_HANDLER_EXCEPTION_KEY = 'handler_excpetion';
@@ -68,11 +70,11 @@ class Bee_MVC_SimpleMappingExceptionResolver implements Bee_MVC_IHandlerExceptio
 
 	/**
 	 * @param Bee_MVC_IHttpRequest $request
-	 * @param Bee_MVC_IController $handler
+	 * @param IController $handler
 	 * @param Exception $ex
 	 * @return Bee_MVC_ModelAndView|bool
 	 */
-	public function resolveException(Bee_MVC_IHttpRequest $request, Bee_MVC_IController $handler = null, Exception $ex) {
+	public function resolveException(Bee_MVC_IHttpRequest $request, IController $handler = null, Exception $ex) {
 
 		$viewName = false;
 

@@ -1,4 +1,5 @@
 <?php
+namespace Bee\MVC;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -14,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee_MVC_IHttpRequest;
 
 /**
  * Base interface for handler mappings. Used by the Dispatcher.
@@ -23,24 +25,24 @@
  * @author Michael Plomer <michael.plomer@iter8.de>
  * @author Benjamin Hartmann
  */
-interface Bee_MVC_IHandlerMapping {
+interface IHandlerMapping {
 
 	/**
 	 * Based on the current request object, returns a handler execution chain, containing the back controller to be used, as well as any
 	 * interceptors applicable to this request.
 	 *
-	 * @param Bee_MVC_HttpRequest|Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_HandlerExecutionChain
+	 * @param \Bee_MVC_HttpRequest|Bee_MVC_IHttpRequest $request
+	 * @return \Bee_MVC_HandlerExecutionChain
 	 *
-	 * @see Bee_MVC_IController
-	 * @see Bee_MVC_IHandlerInterceptor
+	 * @see IController
+	 * @see Bee\MVC\IHandlerInterceptor
 	 * @see Bee_MVC_HandlerExecutionChain
 	 */
 	public function getHandler(Bee_MVC_IHttpRequest $request);
 
 	/**
 	 * Get all configured interceptors
-	 * @return Bee_MVC_IHandlerInterceptor[]
+	 * @return \Bee\MVC\IHandlerInterceptor[]
 	 */
 	public function getInterceptors();
 }

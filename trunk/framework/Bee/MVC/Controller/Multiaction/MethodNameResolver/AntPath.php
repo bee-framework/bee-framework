@@ -14,66 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\Controller\Multiaction\MethodNameResolver\AntPathMethodNameResolver;
 
 /**
  * A method name resolver that uses a mapping from ant-style path definitions to handler method names. The path definitions are parsed
  * by <code>Bee_Utils_AntPathMatcher</code> and can contain wildcards (*, ?).
  *
- * @see Bee_MVC_Controller_MultiAction
- * @see Bee_MVC_Controller_Multiaction_IMethodNameResolver
- * @see Bee_Utils_AntPathMatcher
- * 
  * @author Michael Plomer <michael.plomer@iter8.de>
+ * @deprecated replaced by Bee\MVC\Controller\Multiaction\MethodNameResolver\AntPathMethodNameResolver
  */
-class Bee_MVC_Controller_Multiaction_MethodNameResolver_AntPath extends Bee_MVC_Controller_Multiaction_MethodNameResolver_Abstract {
-
-	/**
-	 * Enter description here...
-	 *
-	 * @var array
-	 */
-	private $methodMappings;
-	
-	
-	/**
-	 * Enter description here...
-	 *
-	 * @param array $methodMapping
-	 * @return void
-	 */
-	public function setMethodMappings(array $methodMappings) {
-		$this->methodMappings = $methodMappings;
-	}
-	
-	
-	/**
-	 * Enter description here...
-	 *
-	 * @return array
-	 */
-	public function getMethodMappings() {
-		return $this->methodMappings;
-	}	
-	
-	
-	public function getHandlerMethodName(Bee_MVC_IHttpRequest $request) {
-		$matcher = new Bee_Utils_AntPathMatcher();
-		$pathInfo = $request->getPathInfo();
-
-		$handlerMethodName = null;
-
-		if(array_key_exists($pathInfo, $this->methodMappings)) {
-			// shortcut for direct path matches
-			$handlerMethodName = $this->methodMappings[$pathInfo];
-		} else {
-			foreach($this->methodMappings as $mapping => $method) {
-				if($matcher->match($mapping, $pathInfo)) {
-					$handlerMethodName = $method;
-					break;
-				}
-			}
-		}
-		
-		return $handlerMethodName;
-	}
+class Bee_MVC_Controller_Multiaction_MethodNameResolver_AntPath extends AntPathMethodNameResolver {
 }

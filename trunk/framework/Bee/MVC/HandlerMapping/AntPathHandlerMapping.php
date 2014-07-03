@@ -1,4 +1,5 @@
 <?php
+namespace Bee\MVC\HandlerMapping;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -14,14 +15,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\HandlerMapping\AntPathHandlerMapping;
+use Bee\Utils\AntPathMatcher;
+use Bee_MVC_IHttpRequest;
 
 /**
  * Enter description here...
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
- *
- * @deprecated replaced by Bee\MVC\HandlerMapping\AntPathHandlerMapping
  */
-class Bee_MVC_HandlerMapping_AntPath extends AntPathHandlerMapping {
+class AntPathHandlerMapping extends AbstractHandlerMapping {
+	
+	/**
+	 * Enter description here...
+	 *
+	 * @var array
+	 */
+	private $handlerMappings;
+
+	public function getHandlerMappings() {
+		return $this->handlerMappings;
+	}
+	
+	public function setHandlerMappings($handlerMappings) {
+		$this->handlerMappings = $handlerMappings;
+	}
+	
+	protected function getControllerBeanName(Bee_MVC_IHttpRequest $request) {
+		$pathInfo = $request->getPathInfo();
+		return AntPathMatcher::getElementByMatchingArrayKey($pathInfo, $this->handlerMappings, $this->getDefaultControllerBeanName());
+	}
 }

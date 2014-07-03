@@ -23,7 +23,7 @@ use Bee\MVC\DefaultRequestBuilder;
  * The dispatcher uses for its configuration a bean container (the 'context'), which is an instance of <code>Bee_IContext</code>.
  * All collaborators required by the dispatcher are looked up from this context. The two collaborators required in any case are:
  * <ul>
- * <li><b>handlerMapping</b>: an instance of <code>Bee_MVC_IHandlerMapping</code> that is used to determine the name of the back
+ * <li><b>handlerMapping</b>: an instance of <code>Bee\MVC\IHandlerMapping</code> that is used to determine the name of the back
  * controller bean for the curret request.</li>
  * <li><b>viewResolver</b>: an instance of <code>Bee_MVC_IViewResolver</code> that is used to map view names returned by the back
  * controllers to actual view implementations.</li>
@@ -34,7 +34,7 @@ use Bee\MVC\DefaultRequestBuilder;
  * For additional information on the concepts, please refer to the chapter on Web MVC in the Spring documentation.
  *
  * @see Bee_IContext
- * @see Bee_MVC_IHandlerMapping
+ * @see Bee\MVC\IHandlerMapping
  * @see Bee_MVC_IViewResolver
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
@@ -94,7 +94,7 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 	/**
 	 * The handler mapping used by this dispatcher
 	 *
-	 * @var Bee_MVC_IHandlerMapping
+	 * @var \Bee\MVC\IHandlerMapping
 	 */
 	private $handlerMapping;
 
@@ -209,7 +209,7 @@ class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 
 		self::$currentRequest = $this->requestBuilder->buildRequestObject();
 
-		$this->handlerMapping = $this->context->getBean(self::HANDLER_MAPPING_BEAN_NAME, 'Bee_MVC_IHandlerMapping');
+		$this->handlerMapping = $this->context->getBean(self::HANDLER_MAPPING_BEAN_NAME, 'Bee\MVC\IHandlerMapping');
 		$this->viewResolver = $this->context->getBean(self::VIEW_RESOLVER_BEAN_NAME, 'Bee_MVC_IViewResolver');
 
 		try {

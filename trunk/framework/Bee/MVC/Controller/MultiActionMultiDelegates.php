@@ -35,11 +35,12 @@ class Bee_MVC_Controller_MultiActionMultiDelegates extends Bee_MVC_Controller_Mu
 
     // determine what delegate to select
 
-    /**
-     * Enter description here...
-     *
-     * @return Bee_MVC_ModelAndView
-     */
+	/**
+	 * Enter description here...
+	 *
+	 * @param Bee_MVC_IHttpRequest $request
+	 * @return Bee_MVC_ModelAndView
+	 */
     protected function handleRequestInternally(Bee_MVC_IHttpRequest $request) {
         $this->setDelegate($this->delegateResolver->resolveDelegate($request));
         return parent::handleRequestInternally($request);
@@ -85,7 +86,4 @@ class Bee_MVC_Controller_MultiActionMultiDelegates extends Bee_MVC_Controller_Mu
         }
         return parent::getDelegate();
     }
-
 }
-
-?>
