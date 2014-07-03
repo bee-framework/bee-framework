@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 use Bee\MVC\IHttpStatusCodes;
+use Bee\MVC\IView;
 
 /**
  * Class Bee_MVC_View_Redirect -
  */
-class Bee_MVC_View_Redirect implements Bee_MVC_IView, IHttpStatusCodes {
+class Bee_MVC_View_Redirect implements IView, IHttpStatusCodes {
 
 	const MODEL_KEY_REDIRECT_URL = 'redirectUrl';
 	const MODEL_KEY_GET_PARAMS = 'getParams';

@@ -1,6 +1,7 @@
 <?php
+namespace Bee\MVC;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee_MVC_IHttpRequest;
 
 /**
  * Interface to be implemented by objects that can resolve views by name.
@@ -27,7 +29,7 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-interface Bee_MVC_IViewResolver {
+interface IViewResolver {
 	/**
 	 * Resolve the given view by name.
 	 * <p>Note: To allow for ViewResolver chaining, a ViewResolver should
@@ -37,7 +39,7 @@ interface Bee_MVC_IViewResolver {
 	 * (rather throwing an exception when View creation failed).
 	 * @param String $viewName name of the view to resolve
 	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_IView the IView object, or <code>null</code> if not found
+	 * @return IView the IView object, or <code>null</code> if not found
 	 * (optional, to allow for ViewResolver chaining)
 	 */
 	public function resolveViewName($viewName, Bee_MVC_IHttpRequest $request);
