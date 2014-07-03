@@ -103,7 +103,7 @@ class Bee_MVC_Dispatcher implements IFilterChain {
 	/**
 	 * The view resolver used by this dispatcher
 	 *
-	 * @var IViewResolver
+	 * @var Bee\MVC\IViewResolver
 	 */
 	private $viewResolver;
 
@@ -116,7 +116,7 @@ class Bee_MVC_Dispatcher implements IFilterChain {
 
 	/**
 	 *
-	 * @var Bee_MVC_IHandlerExceptionResolver
+	 * @var Bee\MVC\IHandlerExceptionResolver
 	 */
 	private $handlerExceptionResolver;
 
@@ -220,7 +220,7 @@ class Bee_MVC_Dispatcher implements IFilterChain {
 		}
 
 		try {
-			$this->handlerExceptionResolver = $this->context->getBean(self::HANDLER_EXCEPTION_RESOLVER_NAME, 'Bee_MVC_IHandlerExceptionResolver');
+			$this->handlerExceptionResolver = $this->context->getBean(self::HANDLER_EXCEPTION_RESOLVER_NAME, 'Bee\MVC\IHandlerExceptionResolver');
 		} catch (Bee_Context_NoSuchBeanDefinitionException $ex) {
 			$this->getLog()->info('no exception resolver configured');
 		}

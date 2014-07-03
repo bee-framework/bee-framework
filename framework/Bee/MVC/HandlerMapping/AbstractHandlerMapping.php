@@ -104,7 +104,7 @@ abstract class AbstractHandlerMapping implements IHandlerMapping, Bee_Context_Co
 	public function getHandler(Bee_MVC_IHttpRequest $request) {
 		$controllerBeanName = $this->getControllerBeanName($request);
 		$handlerBean = is_string($controllerBeanName) ?
-				$handlerBean = $this->context->getBean($controllerBeanName, 'IController') :
+				$handlerBean = $this->context->getBean($controllerBeanName, 'Bee\MVC\IController') :
 				$controllerBeanName;
 
 		if (!$handlerBean instanceof IController) {
