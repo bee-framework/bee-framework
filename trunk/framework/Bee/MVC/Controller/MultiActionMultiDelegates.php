@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\Controller\MultiActionController;
 
 /**
  * The multiaction controller handles requests by delegating to method calls on a delegate object. The methods to be used are
@@ -26,7 +27,7 @@
  * 
  * @author Benjamin Hartmann
  */
-class Bee_MVC_Controller_MultiActionMultiDelegates extends Bee_MVC_Controller_MultiAction {
+class Bee_MVC_Controller_MultiActionMultiDelegates extends MultiActionController {
 
     /**
      * @var Bee_MVC_Controller_MultiActionMultiDelegates_IDelegateResolver

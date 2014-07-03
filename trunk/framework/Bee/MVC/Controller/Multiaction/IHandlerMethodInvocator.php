@@ -1,6 +1,7 @@
 <?php
+namespace Bee\MVC\Controller\Multiaction;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee_MVC_IHttpRequest;
 
 /**
- * User: mp
- * Date: 01.07.11
- * Time: 16:34
+ * Interface MethodInvocator
+ * @package Bee\MVC\Controller\Multiaction
  */
+interface IHandlerMethodInvocator {
 
-$loader = require '../vendor/autoload.php';
-$loader->add('Bee\\', __DIR__);
-
+	/**
+	 * @param Bee_MVC_IHttpRequest $request
+	 * @return \Bee_MVC_ModelAndView
+	 */
+	public function invokeHandlerMethod(Bee_MVC_IHttpRequest $request);
+} 
