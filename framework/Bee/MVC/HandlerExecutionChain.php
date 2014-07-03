@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\IController;
+use Bee\MVC\IHandlerInterceptor;
 
 /**
  * Enter description here...
@@ -26,41 +28,40 @@ final class Bee_MVC_HandlerExecutionChain {
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_MVC_IController
+	 * @var \Bee\MVC\IController
 	 */
 	private $handler;
 
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_MVC_IHandlerInterceptor[]
+	 * @var IHandlerInterceptor[]
 	 */
 	private $interceptors = array();
 
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IController $handler
-	 * @internal param \Bee_MVC_IController $controller
+	 * @param IController $handler
 	 */
-	public function __construct(Bee_MVC_IController $handler) {
+	public function __construct(IController $handler) {
 		$this->handler = $handler;
 	}
 
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHandlerInterceptor $interceptor
+	 * @param IHandlerInterceptor $interceptor
 	 * @return void
 	 */
-	public function addInterceptor(Bee_MVC_IHandlerInterceptor $interceptor) {
+	public function addInterceptor(IHandlerInterceptor $interceptor) {
 		array_push($this->interceptors, $interceptor);
 	}
 
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHandlerInterceptor[] $interceptors
+	 * @param IHandlerInterceptor[] $interceptors
 	 * @return void
 	 */
 	public function addInterceptors(array $interceptors) {
@@ -70,7 +71,7 @@ final class Bee_MVC_HandlerExecutionChain {
 	/**
 	 * Enter description here...
 	 *
-	 * @return Bee_MVC_IController
+	 * @return IController
 	 */
 	public function getHandler() {
 		return $this->handler;
@@ -79,7 +80,7 @@ final class Bee_MVC_HandlerExecutionChain {
 	/**
 	 * Enter description here...
 	 *
-	 * @return Bee_MVC_IHandlerInterceptor[]
+	 * @return IHandlerInterceptor[]
 	 */
 	public function getInterceptors() {
 		return $this->interceptors;

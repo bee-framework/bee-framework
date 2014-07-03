@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Utils;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -14,13 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee_Utils_Strings;
 
 /**
  * Enter description here...
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Utils_AntPathMatcher implements Bee_Utils_IPathMatcher {
+class AntPathMatcher implements IPathMatcher {
 
 	/** Default path separator: "/" */
 	const DEFAULT_PATH_SEPARATOR = '/';
@@ -54,15 +56,13 @@ class Bee_Utils_AntPathMatcher implements Bee_Utils_IPathMatcher {
 		return $this->doMatch($pattern, $path, false);
 	}
 
-
 	/**
 	 * Actually match the given <code>path</code> against the given <code>pattern</code>.
-	 * @param pattern the pattern to match against
-	 * @param path the path String to test
-	 * @param fullMatch whether a full pattern match is required
-	 * (else a pattern match as far as the given base path goes is sufficient)
-	 * @return <code>true</code> if the supplied <code>path</code> matched,
-	 * <code>false</code> if it didn't
+	 * @param string $pattern the pattern to match against
+	 * @param string $path the path to test
+	 * @param bool $fullMatch whether a full pattern match is required (else a pattern match as far as the given base
+	 * path goes is sufficient)
+	 * @return bool <code>true</code> if the supplied <code>path</code> matched
 	 */
 	protected function doMatch($pattern, $path, $fullMatch) {
 		
@@ -195,12 +195,9 @@ class Bee_Utils_AntPathMatcher implements Bee_Utils_IPathMatcher {
 	 * The pattern may contain two special characters:<br>
 	 * '*' means zero or more characters<br>
 	 * '?' means one and only one character
-	 * @param pattern pattern to match against.
-	 * Must not be <code>null</code>.
-	 * @param str string which must be matched against the pattern.
-	 * Must not be <code>null</code>.
-	 * @return <code>true</code> if the string matches against the
-	 * pattern, or <code>false</code> otherwise.
+	 * @param string $pattern pattern to match against. Must not be <code>null</code>.
+	 * @param string $str which must be matched against the pattern. Must not be <code>null</code>.
+	 * @return bool <code>true</code> if the string matches against the
 	 */
 	private function matchStrings($pattern, $str) {
 		$patArr = str_split($pattern);
@@ -401,7 +398,7 @@ class Bee_Utils_AntPathMatcher implements Bee_Utils_IPathMatcher {
 				// shortcut for direct path matches
 				$result = $array[$path];
 			} else {
-				$matcher = new Bee_Utils_AntPathMatcher();
+				$matcher = new AntPathMatcher();
 				foreach($array as $mapping => $element) {
 					if($matcher->match($mapping, $path)) {
 	//				if(($matcher->isPattern($mapping) && $matcher->match($mapping, $pathInfo)) || Bee_Utils_Strings::startsWith($pathInfo, $mapping)) {

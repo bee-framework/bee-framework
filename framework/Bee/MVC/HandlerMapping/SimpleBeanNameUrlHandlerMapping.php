@@ -1,4 +1,5 @@
 <?php
+namespace Bee\MVC\HandlerMapping;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -14,15 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\Controller\Multiaction\MethodNameResolver\ParameterMethodNameResolver;
+use Bee_MVC_IHttpRequest;
+use Bee_Utils_Strings;
 
 /**
- * Method name resolver implementation that uses the value of a request parameter ('action' by default) as the name of the handler method.
+ * Enter description here...
  *
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  *
- * @deprecated replaced by Bee\MVC\Controller\Multiaction\MethodNameResolver\ParameterMethodNameResolver
  */
-class Bee_MVC_Controller_Multiaction_MethodNameResolver_Parameter extends ParameterMethodNameResolver {
+class SimpleBeanNameUrlHandlerMapping extends AbstractHandlerMapping {
+	
+	protected function getControllerBeanName(Bee_MVC_IHttpRequest $request) {
+		$pathInfo = $request->getPathInfo();
+		
+		$parts = explode('/', $pathInfo);
+		
+		if(Bee_Utils_Strings::hasText($parts[1])) {
+			$controllerBeanName = '/'.$parts[1];
+		} else {
+			$controllerBeanName = $this->getDefaultControllerBeanName();
+		}
+		
+		return $controllerBeanName;
+	}
 }

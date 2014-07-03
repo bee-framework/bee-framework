@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Utils;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -20,7 +21,7 @@
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-interface Bee_Utils_IPathMatcher {
+interface IPathMatcher {
 
 	/**
 	 * Does the given <code>path</code> represent a pattern that can be matched
@@ -80,6 +81,4 @@ interface Bee_Utils_IPathMatcher {
 	 * (never <code>null</code>)
 	 */
 	function extractPathWithinPattern($pattern, $path);
-
 }
-?>

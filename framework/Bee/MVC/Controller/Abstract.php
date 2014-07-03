@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\Controller\AbstractController;
 
 /**
  * Abstract base class for request controllers.
@@ -22,35 +23,8 @@
  * 
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
+ *
+ * @deprecated replaced by \Bee\MVC\Controller\AbstractController
  */
-abstract class Bee_MVC_Controller_Abstract implements Bee_MVC_IController {
-	
-	
-	/**
-	 * Enter description here...
-	 *
-	 * @return Bee_MVC_ModelAndView
-	 */
-	public final function handleRequest(Bee_MVC_IHttpRequest $request) {
-		$this->init();
-		return $this->handleRequestInternally($request);
-	}
-	
-	
-	/**
-	 * Enter description here...
-	 * 
-	 * @return void
-	 */
-	protected abstract function init();
-	
-	
-	/**
-	 * Enter description here...
-	 * 
-	 * @return Bee_MVC_ModelAndView
-	 */
-	protected abstract function handleRequestInternally(Bee_MVC_IHttpRequest $request);
+abstract class Bee_MVC_Controller_Abstract extends AbstractController {
 }
-
-?>

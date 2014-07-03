@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\HandlerMapping\SimpleBeanNameUrlHandlerMapping;
 
 /**
  * Enter description here...
@@ -23,21 +24,5 @@
  *
  * @deprecated
  */
-class Bee_MVC_HandlerMapping_SimpleBeanNameUrl extends Bee_MVC_HandlerMapping_AbstractPathInfoBased {
-	
-	protected function getControllerBeanName(Bee_MVC_IHttpRequest $request) {
-		$pathInfo = $request->getPathInfo();
-		
-		$parts = explode('/', $pathInfo);
-		
-		if(Bee_Utils_Strings::hasText($parts[1])) {
-			$controllerBeanName = '/'.$parts[1];
-		} else {
-			$controllerBeanName = $this->getDefaultControllerBeanName();
-		}
-		
-		return $controllerBeanName;
-	}
-	
+class Bee_MVC_HandlerMapping_SimpleBeanNameUrl extends SimpleBeanNameUrlHandlerMapping {
 }
-?>

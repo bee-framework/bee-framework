@@ -1,4 +1,5 @@
 <?php
+namespace Bee\MVC\Controller\Multiaction\MethodNameResolver;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -14,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\Controller\Multiaction\IMethodNameResolver;
+use Bee\MVC\Controller\MultiActionController;
 
 /**
  * Abstract base class for method name resolvers. Carries a reference to the controller that uses it.
@@ -21,32 +24,30 @@
  * <b>ATTENTION:</b> if a method name resolver is implemented statefully (which is the case if its functionality depends on the owning
  * controller), care must be taken that the method name resolver is either not injected into multiple controllers or has prototype scope! 
  * 
- * @see Bee_MVC_Controller_MultiAction
- * @see Bee_MVC_Controller_Multiaction_IMethodNameResolver
+ * @see Bee\MVC\Controller\MultiAction
+ * @see Bee\MVC\Controller\Multiaction\IMethodNameResolver
  * 
  * @author Michael Plomer <michael.plomer@iter8.de> 
  */
-abstract class Bee_MVC_Controller_Multiaction_MethodNameResolver_Abstract implements Bee_MVC_Controller_Multiaction_IMethodNameResolver {
+abstract class AbstractMethodNameResolver implements IMethodNameResolver {
 
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_MVC_Controller_MultiAction
+	 * @var MultiActionController
 	 */
 	private $controller;
 		
-	public function setController(Bee_MVC_Controller_MultiAction $controller) {
+	public function setController(MultiActionController $controller) {
 		$this->controller = $controller;
 	}
-	
+
 	/**
 	 * Enter description here...
 	 * 
-	 * @return Bee_MVC_Controller_MultiAction
+	 * @return MultiActionController
 	 */
 	public function getController() {
 		return $this->controller;
 	}	
 }
-
-?>

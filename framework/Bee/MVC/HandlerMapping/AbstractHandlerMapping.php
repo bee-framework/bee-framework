@@ -1,4 +1,5 @@
 <?php
+namespace Bee\MVC\HandlerMapping;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -14,6 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\IController;
+use Bee\MVC\IHandlerMapping;
+use Bee_Context_Config_IContextAware;
+use Bee_IContext;
+use Bee_MVC_HandlerExecutionChain;
+use Bee_MVC_IHttpRequest;
+use Exception;
 
 /**
  * Abstract base class for HandlerMappings
@@ -21,7 +29,7 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-abstract class Bee_MVC_HandlerMapping_Abstract implements Bee_MVC_IHandlerMapping, Bee_Context_Config_IContextAware {
+abstract class AbstractHandlerMapping implements IHandlerMapping, Bee_Context_Config_IContextAware {
 
 	/**
 	 * Enter description here...
@@ -40,10 +48,13 @@ abstract class Bee_MVC_HandlerMapping_Abstract implements Bee_MVC_IHandlerMappin
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_MVC_IHandlerInterceptor[]
+	 * @var \Bee\MVC\IHandlerInterceptor[]
 	 */
 	private $interceptors = array();
 
+	/**
+	 * @param Bee_IContext $context
+	 */
 	public function setBeeContext(Bee_IContext $context) {
 		$this->context = $context;
 	}
@@ -70,7 +81,7 @@ abstract class Bee_MVC_HandlerMapping_Abstract implements Bee_MVC_IHandlerMappin
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHandlerInterceptor[] $interceptors
+	 * @param \Bee\MVC\IHandlerInterceptor[] $interceptors
 	 */
 	public function setInterceptors(array $interceptors) {
 		$this->interceptors = $interceptors;
@@ -79,7 +90,7 @@ abstract class Bee_MVC_HandlerMapping_Abstract implements Bee_MVC_IHandlerMappin
 	/**
 	 * Enter description here...
 	 *
-	 * @return Bee_MVC_IHandlerInterceptor[]
+	 * @return \Bee\MVC\IHandlerInterceptor[]
 	 */
 	public function getInterceptors() {
 		return $this->interceptors;
@@ -93,11 +104,11 @@ abstract class Bee_MVC_HandlerMapping_Abstract implements Bee_MVC_IHandlerMappin
 	public function getHandler(Bee_MVC_IHttpRequest $request) {
 		$controllerBeanName = $this->getControllerBeanName($request);
 		$handlerBean = is_string($controllerBeanName) ?
-				$handlerBean = $this->context->getBean($controllerBeanName, 'Bee_MVC_IController') :
+				$handlerBean = $this->context->getBean($controllerBeanName, 'IController') :
 				$controllerBeanName;
 
-		if (!$handlerBean instanceof Bee_MVC_IController) {
-			throw new Exception('Error retrieving handler bean: must be a valid bean name or Bee_MVC_IController instance');
+		if (!$handlerBean instanceof IController) {
+			throw new Exception('Error retrieving handler bean: must be a valid bean name or Bee\MVC\IController instance');
 		}
 		
 		$hec = new Bee_MVC_HandlerExecutionChain($handlerBean);
