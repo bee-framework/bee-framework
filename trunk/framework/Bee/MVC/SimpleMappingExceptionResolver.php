@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 use Bee\MVC\IController;
+use Bee\MVC\IHandlerExceptionResolver;
 
-class Bee_MVC_SimpleMappingExceptionResolver implements Bee_MVC_IHandlerExceptionResolver {
+class Bee_MVC_SimpleMappingExceptionResolver implements IHandlerExceptionResolver {
 
 	const MODEL_HANDLER_EXCEPTION_KEY = 'handler_excpetion';
 
