@@ -21,6 +21,21 @@ class Bee_MVC_SimpleMappingExceptionResolver implements Bee_MVC_IHandlerExceptio
 	const MODEL_HANDLER_EXCEPTION_KEY = 'handler_excpetion';
 
 	/**
+	 * @var Logger
+	 */
+	protected $log;
+
+	/**
+	 * @return Logger
+	 */
+	protected function getLog() {
+		if (!$this->log) {
+			$this->log = Logger::getLogger(get_class($this));
+		}
+		return $this->log;
+	}
+
+	/**
 	 *
 	 * @var array
 	 */
@@ -73,6 +88,7 @@ class Bee_MVC_SimpleMappingExceptionResolver implements Bee_MVC_IHandlerExceptio
 	 * @return Bee_MVC_ModelAndView|bool
 	 */
 	public function resolveException(Bee_MVC_IHttpRequest $request, IController $handler = null, Exception $ex) {
+		$this->getLog()->info('Trying to map exception', $ex);
 
 		$viewName = false;
 
@@ -95,8 +111,10 @@ class Bee_MVC_SimpleMappingExceptionResolver implements Bee_MVC_IHandlerExceptio
 
 		if (!$viewName && Bee_Utils_Strings::hasText($this->defaultErrorView)) {
 			$viewName = $this->defaultErrorView;
+			$this->getLog()->debug('Resolving to default error view');
 		}
 
+		$this->getLog()->debug('Resolved error view: ' . $viewName);
 		return $viewName ? new Bee_MVC_ModelAndView(array(self::MODEL_HANDLER_EXCEPTION_KEY => $ex), $viewName) : false;
 	}
 }
