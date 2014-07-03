@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\IView;
 
 /**
  * Enter description here...
@@ -23,15 +24,13 @@
  */
 final class Bee_MVC_ModelAndView {
 
-	
 	/**
 	 * Enter description here...
 	 *
 	 * @var array
 	 */
 	private $model;
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -42,10 +41,9 @@ final class Bee_MVC_ModelAndView {
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_MVC_IView
+	 * @var IView
 	 */
 	private $resolvedView;
-	
 	
 	/**
 	 * Enter description here...
@@ -99,16 +97,16 @@ final class Bee_MVC_ModelAndView {
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IView $view
+	 * @param IView $resolvedView
 	 */
-	public function setResolvedView(Bee_MVC_IView $resolvedView) {
+	public function setResolvedView(IView $resolvedView) {
 		$this->resolvedView = $resolvedView;
 	}
 	
 	/**
 	 * Enter description here...
 	 *
-	 * @return Bee_MVC_IView
+	 * @return IView
 	 */
 	public function getResolvedView() {
 		return $this->resolvedView;

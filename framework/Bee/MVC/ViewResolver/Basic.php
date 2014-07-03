@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\IViewResolver;
 
 /**
- * Basic implementation of the Bee_MVC_IViewResolver interface. Uses a Bee_IContext for view name resolution, looking up
- * beans of type Bee_MVC_IView by using the view name as bean name.
+ * Basic implementation of the IViewResolver interface. Uses a Bee_IContext for view name resolution, looking up
+ * beans of type IView by using the view name as bean name.
  *
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_MVC_ViewResolver_Basic implements Bee_MVC_IViewResolver {
+class Bee_MVC_ViewResolver_Basic implements IViewResolver {
 
 	/**
 	 * @var Logger
@@ -73,7 +74,7 @@ class Bee_MVC_ViewResolver_Basic implements Bee_MVC_IViewResolver {
 	/**
 	 * @param String $viewName
 	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_IView|Object
+	 * @return Bee\MVC\IView|Object
 	 */
 	public function resolveViewName($viewName, Bee_MVC_IHttpRequest $request) {
 		$modifiedViewName = $this->modifyViewName($viewName, $request);
@@ -91,10 +92,10 @@ class Bee_MVC_ViewResolver_Basic implements Bee_MVC_IViewResolver {
 
 	/**
 	 * @param string $viewName
-	 * @return Bee_MVC_IView
+	 * @return Bee\MVC\IView
 	 */
 	protected function getViewForName($viewName) {
-		return $this->context->getBean($viewName, 'Bee_MVC_IView');
+		return $this->context->getBean($viewName, 'Bee\MVC\IView');
 	}
 
 	/**
