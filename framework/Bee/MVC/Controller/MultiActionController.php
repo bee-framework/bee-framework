@@ -15,6 +15,8 @@ namespace Bee\MVC\Controller;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\Controller\Multiaction\IHandlerMethodInvocator;
+use Bee\MVC\Controller\Multiaction\IMethodNameResolver;
 use Bee_MVC_IHttpRequest;
 use Bee_Utils_Assert;
 use Bee_Utils_Reflection;
@@ -52,15 +54,23 @@ class MultiActionController extends AbstractController {
 	private $delegate;
 
 	/**
+	 * @var IHandlerMethodInvocator
+	 */
+	private $methodInvocator;
+
+	/**
 	 * Enter description here...
 	 *
-	 * @var \Bee\MVC\Controller\Multiaction\IMethodNameResolver
+	 * @var IMethodNameResolver
 	 */
 	private $methodNameResolver;
 
 	protected function init() {
 		Bee_Utils_Assert::notNull($this->delegate, '\'delegate\' property is required in Bee_MVC_Controller_MultiAction');
-		Bee_Utils_Assert::notNull($this->methodNameResolver, '\'methodNameResolver\' property is required in Bee_MVC_Controller_MultiAction');
+		Bee_Utils_Assert::isTrue(
+			!is_null($this->methodInvocator) || !is_null($this->methodNameResolver),
+				'either \'methodInvocator\' or \'methodNameResolver\' property required in Bee_MVC_Controller_MultiAction'
+		);
 	}
 
 	/**
@@ -71,6 +81,9 @@ class MultiActionController extends AbstractController {
 	 * @return \Bee_MVC_ModelAndView
 	 */
 	protected function handleRequestInternally(Bee_MVC_IHttpRequest $request) {
+		if(!is_null($this->methodInvocator)) {
+			return $this->methodInvocator->invokeHandlerMethod($request);
+		}
 		$methodName = $this->methodNameResolver->getHandlerMethodName($request);
 		if ($methodName instanceof ReflectionMethod) {
 			$method = $methodName;
@@ -85,8 +98,7 @@ class MultiActionController extends AbstractController {
 				throw new Exception('No request handling method with name ' . $methodName . ' in class [' . Bee_Utils_Types::getType($this->delegate) . ']');
 			}
 		}
-		$mav = $method->invokeArgs($this->delegate, array($request));
-		return $mav;
+		return $method->invokeArgs($this->delegate, array($request));
 	}
 
 	/**
@@ -157,20 +169,18 @@ class MultiActionController extends AbstractController {
 	/**
 	 * Enter description here...
 	 *
-	 * @param \Bee\MVC\Controller\Multiaction\IMethodNameResolver $methodNameResolver
+	 * @param IMethodNameResolver $methodNameResolver
 	 * @return void
 	 */
-	public final function setMethodNameResolver($methodNameResolver) {
+	public final function setMethodNameResolver(IMethodNameResolver $methodNameResolver) {
 		$this->methodNameResolver = $methodNameResolver;
-		if (!is_null($this->methodNameResolver)) {
-			$this->methodNameResolver->setController($this);
-		}
+		$this->methodNameResolver->setController($this);
 	}
 
 	/**
 	 * Enter description here...
 	 *
-	 * @return \Bee\MVC\Controller\Multiaction\IMethodNameResolver
+	 * @return IMethodNameResolver
 	 */
 	public function getMethodNameResolver() {
 		return $this->methodNameResolver;

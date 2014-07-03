@@ -15,6 +15,8 @@ namespace Bee\MVC\Controller\Multiaction\MethodNameResolver;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\Controller\Multiaction\AbstractControllerHolder;
+use Bee\MVC\Controller\Multiaction\IMethodNameResolver;
 use Bee_MVC_IHttpRequest;
 
 /**
@@ -26,7 +28,7 @@ use Bee_MVC_IHttpRequest;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class ParameterMethodNameResolver extends AbstractMethodNameResolver {
+class ParameterMethodNameResolver extends AbstractControllerHolder implements IMethodNameResolver {
 
 	const DEFAULT_PARAM_NAME = 'action';
 

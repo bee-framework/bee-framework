@@ -30,7 +30,7 @@
         "phpmailer/phpmailer": "~5@stable",
         "doctrine/orm": "~2.4@RC",
         "doctrine/doctrine1": "~1.2@stable",
-        "niktux/addendum": "0.4.1",
+        "niktux/addendum": "~0.4",
         "apache/log4php": "~2.3@stable",
         "pear-pear.php.net/I18N_UnicodeNormalizer": "~1.0"
     },
