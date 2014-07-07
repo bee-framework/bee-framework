@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Beans\PropertyValue;
 
 /**
  * User: mp
  * Date: Feb 17, 2010
  * Time: 11:56:39 PM
  */
-
 class Bee_Context_Support_BeanDefinitionBuilder {
 
     /**
@@ -115,7 +115,7 @@ class Bee_Context_Support_BeanDefinitionBuilder {
      * @return Bee_Context_Support_BeanDefinitionBuilder
      */
     public function addConstructorArgValue($value) {
-        $this->beanDefinition->addConstructorArgumentValue(new Bee_Beans_PropertyValue($this->constructorArgIndex++, $value));
+        $this->beanDefinition->addConstructorArgumentValue(new PropertyValue($this->constructorArgIndex++, $value));
         return $this;
     }
 
@@ -135,7 +135,7 @@ class Bee_Context_Support_BeanDefinitionBuilder {
      * @return Bee_Context_Support_BeanDefinitionBuilder
      */
     public function addPropertyValue($name, $value) {
-        $this->beanDefinition->addPropertyValue(new Bee_Beans_PropertyValue($name, $value));
+        $this->beanDefinition->addPropertyValue(new PropertyValue($name, $value));
         return $this;
     }
 

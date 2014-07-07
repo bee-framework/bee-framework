@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Utils;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use ReflectionClass;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,19 +25,35 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Utils_Constants {
+class Constants {
 
     /**
      * @var ReflectionClass
      */
     private $reflectedClass;
 
-    public function __construct($className) {
+	/**
+	 * @param $className
+	 */
+	public function __construct($className) {
         $this->reflectedClass = new ReflectionClass($className);
     }
 
-    public function valueFor($name) {
+	/**
+	 * @param $name
+	 * @return mixed
+	 */
+	public function valueFor($name) {
         return $this->reflectedClass->getConstant($name);
     }
+
+	/**
+	 * @param $strVal
+	 * @return mixed
+	 */
+	public static function getValueFromString($strVal) {
+		$sepPos = strpos($strVal, '::');
+		$inst = new Constants(substr($strVal, 0, $sepPos));
+		return $inst->valueFor(substr($strVal, $sepPos + 2));
+	}
 }
-?>

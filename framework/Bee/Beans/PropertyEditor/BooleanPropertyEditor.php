@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Beans\PropertyEditor;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee_Utils_Strings;
 
 /**
  * Enter description here...
  *
  * @author Benjamin Hartmann
  */
-class Bee_Beans_PropertyEditor_Boolean extends Bee_Beans_PropertyEditor_Abstract {
+class BooleanPropertyEditor extends AbstractPropertyEditor {
 
 	const VALUE_TRUE = 'true';
 	const VALUE_FALSE = 'false';

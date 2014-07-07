@@ -107,5 +107,3 @@ interface Bee_Context_Config_IBeanDefinitionRegistry {
 	 */
 	public function getBeanPostProcessorNames();
 }
-
-?>

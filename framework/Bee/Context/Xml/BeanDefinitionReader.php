@@ -114,4 +114,3 @@ class Bee_Context_Xml_BeanDefinitionReader {
 		return $this->registry;
 	}
 }
-?>

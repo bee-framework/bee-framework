@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Beans\PropertyValue;
 
+/**
+ * Class Bee_Context_Support_BeanUtils
+ */
 abstract class Bee_Context_Support_BeanUtils {
 	
 	public static function instantiateClass($className, array $args = null) {
@@ -25,7 +29,7 @@ abstract class Bee_Context_Support_BeanUtils {
 		return $class->newInstanceArgs($args);
 	}
 
-	public static function mergePropertyValuesIfPossible (Bee_Beans_PropertyValue $parent, Bee_Beans_PropertyValue $child) {
+	public static function mergePropertyValuesIfPossible (PropertyValue $parent, PropertyValue $child) {
         $childValue = $child->getValue();
 		if($childValue instanceof Bee_Context_Config_IMergeable && $childValue->getMergeEnabled() && $parent->getValue() instanceof Traversable) {
             $childValue->merge($parent->getValue());

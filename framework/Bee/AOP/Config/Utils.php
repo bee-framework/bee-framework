@@ -58,7 +58,7 @@ class Bee_AOP_Config_Utils {
 
         $beanDefinition = new Bee_Context_Config_BeanDefinition_Generic();
         $beanDefinition->setBeanClassName($className);
-//        $beanDefinition->addPropertyValue(new Bee_Beans_PropertyValue('order', Ordered.HIGHEST_PRECEDENCE)); // todo: implement bean ordering
+//        $beanDefinition->addPropertyValue(new PropertyValue('order', Ordered.HIGHEST_PRECEDENCE)); // todo: implement bean ordering
         $registry->registerBeanDefinition(self::AUTO_PROXY_CREATOR_BEAN_NAME, $beanDefinition);
         return $beanDefinition;
     }

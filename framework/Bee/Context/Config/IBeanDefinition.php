@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 use Bee\Beans\MethodInvocation;
+use Bee\Beans\PropertyValue;
 
 /**
  * Enter description here...
@@ -121,7 +122,7 @@ interface Bee_Context_Config_IBeanDefinition extends Bee\Context\Config\IMethodA
 	 * Return the property values to be applied to a new instance of the bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
 	 *
-	 * @return Bee_Beans_PropertyValue[]
+	 * @return PropertyValue[]
 	 */
 	public function getPropertyValues();
 
@@ -129,11 +130,11 @@ interface Bee_Context_Config_IBeanDefinition extends Bee\Context\Config\IMethodA
 	 * Add a PropertyValue object, replacing any existing one
 	 * for the corresponding property.
 	 *
-	 * @param Bee_Beans_PropertyValue $prop PropertyValue object to add
+	 * @param PropertyValue $prop PropertyValue object to add
 	 * @return Bee_Context_Config_IBeanDefinition this object to allow creating objects, adding multiple
 	 * PropertyValues in a single statement
 	 */
-	public function addPropertyValue(Bee_Beans_PropertyValue $prop);
+	public function addPropertyValue(PropertyValue $prop);
 
 	/**
 	 * @return MethodInvocation[]
