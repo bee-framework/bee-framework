@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
+use Bee\Beans\PropertyValue;
+use Bee\Context\Config\TypedStringValue;
 
 /**
  * Enter description here...
@@ -98,7 +101,6 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	 */
 	private $readerContext;
 	
-	
 	/**
 	 * Enter description here...
 	 *
@@ -112,8 +114,12 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	 * @var array
 	 */
 	private $parseState = array();
-	
-	
+
+	/**
+	 * @var PropertyEditorRegistry
+	 */
+	private $propertyEditorRegistry;
+
 	/**
 	 * Enter description here...
 	 *
@@ -121,7 +127,8 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	 */
 	public function __construct(Bee_Context_Xml_ReaderContext $readerContext) {
 		Bee_Utils_Assert::notNull($readerContext, 'XmlReaderContext must not be null');
-		$this->readerContext = $readerContext;		
+		$this->readerContext = $readerContext;
+		$this->propertyEditorRegistry = new PropertyEditorRegistry();
 	}
 	
 	
@@ -140,12 +147,13 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 
 		$this->defaults = $defaults;
 	}
-	
-	
+
+
 	/**
 	 * Enter description here...
 	 *
 	 * @param DOMElement $ele
+	 * @param Bee_Context_Config_IBeanDefinition $containingBd
 	 * @return Bee_Context_Config_BeanDefinitionHolder
 	 */
 	public function parseBeanDefinitionElement(DOMElement $ele, Bee_Context_Config_IBeanDefinition $containingBd = null) {
@@ -364,7 +372,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 				try {
 					array_push($this->parseState, "Constructor_Arg_Idx_$index");
 					$value = $this->parsePropertyValue($ele, $bd, null);
-					$valueHolder = new Bee_Beans_PropertyValue($index, $value);
+					$valueHolder = new PropertyValue($index, $value);
 					$argsHolder->addConstructorArgumentValue($valueHolder);
 					array_pop($this->parseState);
 				} catch (Exception $ex) {
@@ -393,7 +401,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 				$this->readerContext->error("Multiple 'property' definitions for property '$propertyName'", $ele);
 			}
 			$val = $this->parsePropertyValue($ele, $bd, $propertyName);
-			$pv = new Bee_Beans_PropertyValue($propertyName, $val);
+			$pv = new PropertyValue($propertyName, $val);
 //			$pv->setSource(extractSource(ele));
 
 			$bd->addPropertyValue($pv);
@@ -495,7 +503,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	 * @param DOMElement $ele subelement of property element; we don't know which yet
 	 * @param Bee_Context_Config_IBeanDefinition $bd
 	 * @param string|null $defaultType the default type (class name) for any <code>&lt;value&gt;</code> tag that might be created
-	 * @return Bee_Context_Config_ArrayValue|Bee_Context_Config_BeanDefinitionHolder|Bee_Context_Config_RuntimeBeanNameReference|Bee_Context_Config_RuntimeBeanReference|Bee_Context_Config_TypedStringValue|null
+	 * @return Bee_Context_Config_ArrayValue|Bee_Context_Config_BeanDefinitionHolder|Bee_Context_Config_RuntimeBeanNameReference|Bee_Context_Config_RuntimeBeanReference|TypedStringValue|null
 	 */
 	public function parsePropertySubElement(DOMElement $ele, Bee_Context_Config_IBeanDefinition $bd, $defaultType = null) {
 
@@ -577,7 +585,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 
 			// It's a distinguished null value. Let's wrap it in a TypedStringValue
 			// object in order to preserve the source location.
-			$nullHolder = new Bee_Context_Config_TypedStringValue(null);
+			$nullHolder = new TypedStringValue(null, $this->propertyEditorRegistry);
 			// @todo provide source info via BeanMetadataElement
 //			$nullHolder->setSource(extractSource(ele));
 			return $nullHolder;
@@ -600,14 +608,14 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	 * @param String $value
 	 * @param String $targetTypeName
 	 * @param DOMElement $ele
-	 * @return Bee_Context_Config_TypedStringValue
+	 * @return TypedStringValue
 	 */
 	protected function buildTypedStringValue($value, $targetTypeName, DOMElement $ele) {
 		$typedValue = null;
 		if (!Bee_Utils_Strings::hasText($targetTypeName)) {
-			$typedValue = new Bee_Context_Config_TypedStringValue($value);
+			$typedValue = new TypedStringValue($value, $this->propertyEditorRegistry);
 		} else {
-			$typedValue = new Bee_Context_Config_TypedStringValue($value, $targetTypeName);
+			$typedValue = new TypedStringValue($value, $this->propertyEditorRegistry, $targetTypeName);
 		}
 		// @todo provide source info via BeanMetadataElement
 //		$typedValue->setSource(extractSource(ele));

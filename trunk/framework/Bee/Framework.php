@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\ITypeDefinitions;
 
+/**
+ * Class Bee_Framework
+ */
 class Bee_Framework {
 
     const WEAVING_PACKAGE_PREFIX = 'Bee_';
@@ -355,5 +359,5 @@ Bee_Framework::init();
 
 //require_once dirname(__FILE__) . '/Utils/ITypeDefinitions.php';
 
-interface TYPES extends Bee_Utils_ITypeDefinitions {
+interface TYPES extends ITypeDefinitions {
 }

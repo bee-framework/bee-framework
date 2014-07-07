@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 use Bee\Beans\MethodInvocation;
+use Bee\Beans\PropertyValue;
 use Bee\Context\Config\MethodArgumentsHolder;
 
 /**
@@ -61,7 +62,7 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract extends MethodArgument
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Beans_PropertyValue[] array of PropertyValue instances
+	 * @var PropertyValue[] array of PropertyValue instances
 	 */
 	private $propertyValues = array();
 
@@ -211,7 +212,7 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract extends MethodArgument
 		}
 	}
 	
-	public function addPropertyValue(Bee_Beans_PropertyValue $prop) {
+	public function addPropertyValue(PropertyValue $prop) {
 		$name = $prop->getName();
 		if(!Bee_Utils_Strings::hasText($name)) {
 			trigger_error("Property must have a name set", E_USER_ERROR);

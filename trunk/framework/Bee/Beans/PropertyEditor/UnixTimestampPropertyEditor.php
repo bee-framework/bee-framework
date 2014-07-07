@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Beans\PropertyEditor;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Beans\IPropertyEditor;
+use DateTime;
+use DateTimeZone;
+use Exception;
 
 /**
  * User: mp
@@ -21,7 +26,7 @@
  * Time: 16:50
  */
 
-class Bee_Beans_PropertyEditor_UnixTimestamp implements Bee_Beans_IPropertyEditor {
+class UnixTimestampPropertyEditor implements IPropertyEditor {
 
 	const REGEX = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d)(?: (.+))?$/';
 	const FORMAT = 'Y-m-d H:i:s e';
@@ -41,6 +46,7 @@ class Bee_Beans_PropertyEditor_UnixTimestamp implements Bee_Beans_IPropertyEdito
 	 * Enter description here...
 	 *
 	 * @param String $value
+	 * @throws Exception
 	 * @return mixed
 	 */
 	public function fromString($value) {

@@ -15,7 +15,6 @@ namespace Bee\Utils;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_Utils_ITypeDefinitions;
 
 /**
  * Class AntPathToRegexTransformer
@@ -31,12 +30,12 @@ class AntPathToRegexTransformer {
 	);
 
 	public static $TYPE_EXPRESSION_MAP = array(
-			Bee_Utils_ITypeDefinitions::INT => '\d+',
-			Bee_Utils_ITypeDefinitions::INTEGER => '\d+',
-			Bee_Utils_ITypeDefinitions::BOOLEAN => '1|0|true|false|on|off|yes|no',
-			Bee_Utils_ITypeDefinitions::DOUBLE => '\d+(?:\[.]\d+)?',
-			Bee_Utils_ITypeDefinitions::FLOAT => '\d+(?:\[.]\d+)?',
-			Bee_Utils_ITypeDefinitions::STRING => '[^/]+'
+			ITypeDefinitions::INT => '\d+',
+			ITypeDefinitions::INTEGER => '\d+',
+			ITypeDefinitions::BOOLEAN => '1|0|true|false|on|off|yes|no',
+			ITypeDefinitions::DOUBLE => '\d+(?:\[.]\d+)?',
+			ITypeDefinitions::FLOAT => '\d+(?:\[.]\d+)?',
+			ITypeDefinitions::STRING => '[^/]+'
 	);
 
 	const PARAMETER_MATCH = '#{((?:\d+)|(?:[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*))}#';
@@ -57,11 +56,12 @@ class AntPathToRegexTransformer {
 	 */
 	public static function getRegexForParametrizedPattern($antPathPattern, array $parameterTypes, array &$positionMap = array()) {
 		$result = self::getRegexForSimplePattern($antPathPattern);
-		return preg_replace_callback(self::PARAMETER_MATCH, function($matches) use ($parameterTypes, &$positionMap) {
-			$positionMap[] = $matches[1];
+		$matchPos = 1;
+		return preg_replace_callback(self::PARAMETER_MATCH, function($matches) use ($parameterTypes, &$positionMap, &$matchPos) {
+			$positionMap[$matchPos++] = $matches[1];
 			$typeName = $parameterTypes[$matches[1]];
 			if(!array_key_exists($typeName, AntPathToRegexTransformer::$TYPE_EXPRESSION_MAP)) {
-				$typeName = Bee_Utils_ITypeDefinitions::STRING;
+				$typeName = ITypeDefinitions::STRING;
 			}
 			return '(' . AntPathToRegexTransformer::$TYPE_EXPRESSION_MAP[$typeName] . ')';
 		}, $result);

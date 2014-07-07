@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Beans\PropertyValue;
 
 /**
  * User: mp
@@ -50,7 +51,7 @@ class Bee_AOP_Scope_ScopedProxyUtils {
 //        $scopedProxyDefinition->setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 
         $targetBeanName = self::getTargetBeanName($originalBeanName);
-        $scopedProxyDefinition->addPropertyValue(new Bee_Beans_PropertyValue('targetBeanName', $targetBeanName));
+        $scopedProxyDefinition->addPropertyValue(new PropertyValue('targetBeanName', $targetBeanName));
 
         // Register the target bean as separate bean in the factory.
         $registry->registerBeanDefinition($targetBeanName, $targetDefinition);

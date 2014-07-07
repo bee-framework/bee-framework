@@ -1,7 +1,6 @@
 <?php
-use Bee\Beans\MethodInvocation;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +14,10 @@ use Bee\Beans\MethodInvocation;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Beans\BeanWrapper;
+use Bee\Beans\MethodInvocation;
+use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
+use Bee\Beans\PropertyValue;
 
 /**
  * Enter description here...
@@ -74,6 +77,11 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
      */
     private $factoryBeanObjectCache = array();
 
+	/**
+	 * @var PropertyEditorRegistry
+	 */
+	private $propertyEditorRegistry;
+
     /**
      * @static
      * @param string $identifier
@@ -89,19 +97,33 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 */
 	public function __construct($identifier='', $callInitMethod=true) {
         $this->identifier = $identifier;
+		$this->propertyEditorRegistry = new PropertyEditorRegistry($this);
 		if ($callInitMethod) {
 			$this->init();
 		}
         self::$registeredContexts[$identifier] = $this;
 	}
 
-    public function getIdentifier() {
+	/**
+	 * @return string
+	 */
+	public function getIdentifier() {
         return $this->identifier;
     }
 
+	/**
+	 *
+	 */
 	protected function init() {
 		$this->registerScopes();
 		$this->loadBeanDefinitions();
+	}
+
+	/**
+	 * @return PropertyEditorRegistry
+	 */
+	public function getPropertyEditorRegistry() {
+		return $this->propertyEditorRegistry;
 	}
 
 	/**
@@ -128,6 +150,9 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		return $instance;
 	}
 
+	/**
+	 * @param Bee_IContext $context
+	 */
 	public function setBeeContext(Bee_IContext $context) {
 		$this->setParent($context);
 	}
@@ -165,8 +190,13 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		}
 		return $this->doCreateBean($beanName, $beanDefinition);
 	}
-	
-    protected function resolveBeforeInstantiation($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
+
+	/**
+	 * @param $beanName
+	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition
+	 * @return mixed|null
+	 */
+	protected function resolveBeforeInstantiation($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
         $bean = null;
 //        if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
             // Make sure bean class is actually resolved at this point.
@@ -198,7 +228,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 */
 	protected function doCreateBean($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
 		$beanInstance = $this->createBeanInstance($beanName, $beanDefinition);
-		$instanceWrapper = new Bee_Beans_BeanWrapper($beanInstance);
+		$instanceWrapper = new BeanWrapper($beanInstance);
 		
 		// Initialize the bean instance.
 		try {
@@ -268,8 +298,13 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 
 		return $wrappedBean;
 	}
-	
-    protected function applyBeanPostProcessorsBeforeInstantiation($beanClassName, $beanName) {
+
+	/**
+	 * @param $beanClassName
+	 * @param $beanName
+	 * @return mixed|null
+	 */
+	protected function applyBeanPostProcessorsBeforeInstantiation($beanClassName, $beanName) {
         foreach($this->getBeanPostProcessorNames() as $beanProcessorName) {
             if($beanName !== $beanProcessorName) {
                 $beanProcessor = $this->getBean($beanProcessorName, 'Bee_Context_Config_IBeanPostProcessor');
@@ -284,6 +319,11 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
         return null;
     }
 
+	/**
+	 * @param $existingBean
+	 * @param $beanName
+	 * @return mixed
+	 */
 	public function applyBeanPostProcessorsBeforeInitialization($existingBean, $beanName) {
 		$result = $existingBean;
         foreach($this->getBeanPostProcessorNames() as $beanProcessorName) {
@@ -295,6 +335,11 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		return $result;
 	}
 
+	/**
+	 * @param $existingBean
+	 * @param $beanName
+	 * @return mixed
+	 */
 	public function applyBeanPostProcessorsAfterInitialization($existingBean, $beanName) {
 		$result = $existingBean;
         foreach($this->getBeanPostProcessorNames() as $beanProcessorName) {
@@ -332,15 +377,14 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 			}
 		}
 	}
-	
-	
+
 	/**
 	 * Create a new instance for the specified bean, using an appropriate instantiation strategy:
 	 * factory method or simple instantiation.
 	 * @param String $beanName the name of the bean
 	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition the bean definition for the bean
 	 * 
-	 * @return Bee_Beans_BeanWrapper for the new instance
+	 * @return BeanWrapper for the new instance
 	 * @see #instantiateUsingFactoryMethod
 	 * @see #instantiateBean
 	 */
@@ -353,7 +397,6 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		return $this->instantiateBean($beanName, $beanDefinition);
 	}
 
-
 	/**
 	 * Instantiate the bean using a named factory method. The method may be static, if the
 	 * mbd parameter specifies a class, rather than a factoryBean, or an instance variable
@@ -363,7 +406,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition the bean definition for the bean
 	 * @throws Bee_Context_BeanDefinitionStoreException
 	 * @throws Bee_Context_BeanCreationException
-	 * @return Bee_Beans_BeanWrapper for the new instance
+	 * @return BeanWrapper for the new instance
 	 * @see #getBean(String, Object[])
 	 */
 	protected function instantiateUsingFactoryMethod($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
@@ -396,7 +439,6 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		return call_user_func_array($factory, $this->createArgsArray($beanName, $beanDefinition));
 	}
 
-
 	/**
 	 * Enter description here...
 	 *
@@ -414,7 +456,12 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		}
 		return $beanClass->newInstanceArgs($this->createArgsArray($beanName, $beanDefinition));
 	}
-	
+
+	/**
+	 * @param $beanName
+	 * @param \Bee\Context\Config\IMethodArguments $methodArguments
+	 * @return array
+	 */
 	private function createArgsArray($beanName, \Bee\Context\Config\IMethodArguments $methodArguments) {
 //		$typeConverter = null; // @todo: ???????????????????????????????????????????		
 //		$valueResolver = new Bee_Context_BeanDefinitionValueResolver($this, $beanName, $beanDefinition, $typeConverter);
@@ -434,11 +481,11 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * to other beans in this context.
 	 * @param String $beanName the bean name passed for better exception information
 	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition the bean definition
-	 * @param Bee_Beans_BeanWrapper $beanWrapper the BeanWrapper wrapping the target object
-	 * @param Bee_Beans_PropertyValue[] $propertyValues the new property values
+	 * @param BeanWrapper $beanWrapper the BeanWrapper wrapping the target object
+	 * @param PropertyValue[] $propertyValues the new property values
 	 * @throws Bee_Context_BeanCreationException
 	 */
-	protected function applyPropertyValues($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition, Bee_Beans_BeanWrapper $beanWrapper, array $propertyValues = null) {
+	protected function applyPropertyValues($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition, BeanWrapper $beanWrapper, array $propertyValues = null) {
 		if (is_null($propertyValues) || count($propertyValues) === 0) {
 			return;
 		}
@@ -505,9 +552,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	protected function beforeBeanCreation($beanName) {
 		$this->beansInCreation[$beanName] = TRUE;
 	}
-	
 
-	
 	/**
 	 * Callback after bean creation.
 	 * <p>The default implementation marks the bean as not in creation anymore.
@@ -519,7 +564,6 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	protected function afterBeanCreation($beanName) {
 		unset($this->beansInCreation[$beanName]);
 	}
-
 
 	/**
 	 * Return whether the specified bean is currently in creation.
@@ -560,8 +604,6 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		return array_key_exists($beanName, $this->dependentBeanMap);
 	}
 
-	
-	
 	/**
 	 * Return the names of all beans which depend on the specified bean, if any.
 	 * @param String $beanName the name of the bean
@@ -574,8 +616,6 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		return array_keys($this->dependentBeanMap[$beanName]);
 	}
 
-	
-	
 	/**
 	 * Return the names of all beans that the specified bean depends on, if any.
 	 * @param String $beanName the name of the bean
@@ -589,21 +629,24 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		return array_keys($this->dependenciesForBeanMap[$beanName]);
 	}
 
-	
-
 	// ***************************************************************************************************
 	// IMPLEMENTATION OF Bee_IContext
 	// ***************************************************************************************************
-	
 	public function containsBean($beanName) {
 		if ($this->containsBeanDefinition($beanName)) {
 			return true;
 		}
 		return (!is_null($this->getParent()) && $this->getParent()->containsBean($beanName));
 	}
-	
 
-
+	/**
+	 * @param String $name
+	 * @param null $requiredType
+	 * @return Object
+	 * @throws Bee_Context_BeanCurrentlyInCreationException
+	 * @throws Bee_Context_BeanNotOfRequiredTypeException
+	 * @throws Exception
+	 */
 	public function getBean($name, $requiredType=null) {
 
 		$beanName = $this->transformedBeanName($name);
@@ -766,6 +809,11 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
         return $object;
     }
 
+	/**
+	 * @param String $beanName
+	 * @param String $type
+	 * @return bool
+	 */
 	public function isTypeMatch($beanName, $type) {
 		if(!is_null($this->getParent()) && !$this->containsBeanDefinition($beanName)) {
 			return $this->getParent()->isTypeMatch($beanName, $type);
@@ -773,16 +821,22 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		// @todo: TEST THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		return is_subclass_of($this->getBeanDefinition($beanName)->getBeanClassName(), $type);
 	}
-	
-	
-	
+
+	/**
+	 * @param String $beanName
+	 * @return String
+	 */
 	public function getType($beanName) {
 		if(!is_null($this->getParent()) && !$this->containsBeanDefinition($beanName)) {
 			return $this->getParent()->getType($beanName);
 		}
 		return $this->getBeanDefinition($beanName)->getBeanClassName();
 	}
-	
+
+	/**
+	 * @param $className
+	 * @return array
+	 */
 	public function getBeanNamesForType($className) {
         $allDefs = $this->getBeanDefinitions();
         $matches = array();
@@ -827,7 +881,10 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		}
 	}
 
-    public function getModificationTimestamp() {
+	/**
+	 * @return int
+	 */
+	public function getModificationTimestamp() {
         return 0;
     }
 }
@@ -873,11 +930,17 @@ final class Bee_Context_Abstract_ObjectFactoryImpl implements Bee_Context_Config
 		$this->context = $context;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function getObject() {
 		return $this->context->_createBean($this->beanName, $this->beanDefinition);
 	}
 
-    function getModificationTimestamp() {
+	/**
+	 * @return int
+	 */
+	function getModificationTimestamp() {
         return $this->context->getModificationTimestamp();
     }
 }

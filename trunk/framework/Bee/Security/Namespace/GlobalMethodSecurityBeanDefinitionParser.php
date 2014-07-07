@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Beans\PropertyValue;
 
 /**
  * Created by IntelliJ IDEA.
@@ -83,16 +84,16 @@ class Bee_Security_Namespace_GlobalMethodSecurityBeanDefinitionParser implements
         }
         $delegatingMethodDefinitionSource = new Bee_Context_Config_BeanDefinition_Generic();
         $delegatingMethodDefinitionSource->setBeanClassName('Bee_Security_Intercept_DelegatingMethodDefinitionSource');
-        $delegatingMethodDefinitionSource->addPropertyValue(new Bee_Beans_PropertyValue('methodDefinitionSources', $delegates));
+        $delegatingMethodDefinitionSource->addPropertyValue(new PropertyValue('methodDefinitionSources', $delegates));
         $parserContext->getRegistry()->registerBeanDefinition(Bee_Security_Config_IBeanIds::DELEGATING_METHOD_DEFINITION_SOURCE, $delegatingMethodDefinitionSource);
     }
 
     private function registerMethodSecurityInterceptor(Bee_Context_Xml_ParserContext $parserContext, $accessManagerId, DOMElement $element) {
         $interceptor = new Bee_Context_Config_BeanDefinition_Generic();
         $interceptor->setBeanClassName('Bee_Security_Intercept_MethodSecurityInterceptor');
-        $interceptor->addPropertyValue(new Bee_Beans_PropertyValue('accessDecisionManager', new Bee_Context_Config_RuntimeBeanReference(array($accessManagerId))));
-        $interceptor->addPropertyValue(new Bee_Beans_PropertyValue('authenticationManager', new Bee_Context_Config_RuntimeBeanReference(array(Bee_Security_Config_IBeanIds::AUTHENTICATION_MANAGER))));
-        $interceptor->addPropertyValue(new Bee_Beans_PropertyValue('objectDefinitionSource', new Bee_Context_Config_RuntimeBeanReference(array(Bee_Security_Config_IBeanIds::DELEGATING_METHOD_DEFINITION_SOURCE))));
+        $interceptor->addPropertyValue(new PropertyValue('accessDecisionManager', new Bee_Context_Config_RuntimeBeanReference(array($accessManagerId))));
+        $interceptor->addPropertyValue(new PropertyValue('authenticationManager', new Bee_Context_Config_RuntimeBeanReference(array(Bee_Security_Config_IBeanIds::AUTHENTICATION_MANAGER))));
+        $interceptor->addPropertyValue(new PropertyValue('objectDefinitionSource', new Bee_Context_Config_RuntimeBeanReference(array(Bee_Security_Config_IBeanIds::DELEGATING_METHOD_DEFINITION_SOURCE))));
         $parserContext->getRegistry()->registerBeanDefinition(Bee_Security_Config_IBeanIds::METHOD_SECURITY_INTERCEPTOR, $interceptor);
 
 //        $parserContext->registerComponent(new BeanComponentDefinition($interceptor, Bee_Security_Config_IBeanIds::METHOD_SECURITY_INTERCEPTOR));
@@ -105,9 +106,8 @@ class Bee_Security_Namespace_GlobalMethodSecurityBeanDefinitionParser implements
     private function registerAdvisor(Bee_Context_Xml_ParserContext $parserContext) {
         $advisor = new Bee_Context_Config_BeanDefinition_Generic();
         $advisor->setBeanClassName('Bee_Security_Intercept_MethodDefinitionSourceAdvisor');
-        $advisor->addConstructorArgumentValue(new Bee_Beans_PropertyValue(0, Bee_Security_Config_IBeanIds::METHOD_SECURITY_INTERCEPTOR));
-        $advisor->addConstructorArgumentValue(new Bee_Beans_PropertyValue(1, new Bee_Context_Config_RuntimeBeanReference(array(Bee_Security_Config_IBeanIds::DELEGATING_METHOD_DEFINITION_SOURCE))));
+        $advisor->addConstructorArgumentValue(new PropertyValue(0, Bee_Security_Config_IBeanIds::METHOD_SECURITY_INTERCEPTOR));
+        $advisor->addConstructorArgumentValue(new PropertyValue(1, new Bee_Context_Config_RuntimeBeanReference(array(Bee_Security_Config_IBeanIds::DELEGATING_METHOD_DEFINITION_SOURCE))));
         $parserContext->getRegistry()->registerBeanDefinition(Bee_Security_Config_IBeanIds::METHOD_DEFINITION_SOURCE_ADVISOR, $advisor);
     }
 }
-?>

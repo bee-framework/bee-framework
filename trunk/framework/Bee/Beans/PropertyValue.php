@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Beans;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +20,9 @@
  * Enter description here...
  *
  * @author Benjamin Hartmann
+ * @author Michael Plomer (michael.plomer@iter8.de)
  */
-class Bee_Beans_PropertyValue {
+class PropertyValue {
 	
 	/**
 	 * Enter description here...
@@ -79,4 +81,3 @@ class Bee_Beans_PropertyValue {
 		$this->value = $value; 
 	}
 }
-?>
