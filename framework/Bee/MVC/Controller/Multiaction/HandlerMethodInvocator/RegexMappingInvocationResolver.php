@@ -15,10 +15,9 @@ namespace Bee\MVC\Controller\Multiaction\HandlerMethodInvocator;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Addendum\ReflectionAnnotatedMethod;
 use Bee\Utils\AntPathToRegexTransformer;
-use Bee\Utils\ITypeDefinitions;
 use Bee_MVC_IHttpRequest;
-use ReflectionClass;
 use ReflectionMethod;
 
 /**
@@ -28,65 +27,59 @@ use ReflectionMethod;
 class RegexMappingInvocationResolver implements IInvocationResolver {
 
 	/**
-	 * @var array
+	 * @var HandlerMethodMetadata[]
+	 */
+	private static $methodMetadataMap = array();
+
+	/**
+	 * @var MethodInvocation[]
 	 */
 	private $mappedMethods = array();
 
 	/**
-	 * @param array|\ReflectionMethod[] $mapping
+	 * @param array|ReflectionAnnotatedMethod[] $mapping
 	 */
 	public function __construct(array $mapping) {
-		foreach($mapping as $antPathPattern => $method) {
-			$paramTypes = array();
-			$nameToPos = array();
-			$fixedParamPos = array();
-			foreach($method->getParameters() as $param) {
-				$typeName = $param->getClass();
-				$typeName = $typeName instanceof ReflectionClass ? $typeName->getName() : null;
-				if(!\Bee_Utils_Strings::hasText($typeName)) {
-					// todo: derive primitive type names from @var annotations
-					$typeName = ITypeDefinitions::STRING;
-				} else if($typeName == 'Bee_MVC_IHttpRequest') {
-					$fixedParamPos[$param->getPosition()] = true;
-				}
-				$paramTypes[$param->getName()] = $typeName;
-				$paramTypes[$param->getPosition()] = $typeName;
-				$nameToPos[$param->getName()] = $param->getPosition();
-			}
-			$positionMap = array();
-			$regex = AntPathToRegexTransformer::getRegexForParametrizedPattern($antPathPattern, $paramTypes, $positionMap);
-			$positionMap = array_map(function ($value) use ($nameToPos) {
+		foreach ($mapping as $antPathPattern => $method) {
+			$methodMeta = new HandlerMethodMetadata($method);
+
+			$urlParameterPositions = array();
+			$regex = AntPathToRegexTransformer::getRegexForParametrizedPattern($antPathPattern, $methodMeta->getTypeMap(), $urlParameterPositions);
+			$nameToPos = $methodMeta->getParameterPositions();
+			$urlParameterPositions = array_map(function ($value) use ($nameToPos) {
 				return array_key_exists($value, $nameToPos) ? $nameToPos[$value] : $value;
-			}, $positionMap);
+			}, $urlParameterPositions);
 			// positionMap should only contain numeric values, mapping from match position to parameter position
-			$positionMap = array_flip($positionMap);
+			$urlParameterPositions = array_flip($urlParameterPositions);
 			// now from parameter pos to match pos
 
-			if(!array_key_exists($regex, $this->mappedMethods)) {
-				// todo: object?
-				$this->mappedMethods[$regex] = array(
-					'method' => $method,
-					'positionMap' => $positionMap,
-					'requestParamPos' => $fixedParamPos,
-					'typeMap' => $paramTypes
-				);
+			if (!array_key_exists($regex, $this->mappedMethods)) {
+				$this->mappedMethods[$regex] = new MethodInvocation($methodMeta, $urlParameterPositions);
 			}
 		}
 	}
 
 	/**
 	 * @param Bee_MVC_IHttpRequest $request
-	 * @return array
+	 * @return MethodInvocation
 	 */
 	public function getInvocationDefinition(Bee_MVC_IHttpRequest $request) {
 		$pathInfo = $request->getPathInfo();
-		foreach($this->mappedMethods as $regex => $invocInfo) {
+		foreach ($this->mappedMethods as $regex => $invocInfo) {
 			$matches = array();
-			if(preg_match($regex, $pathInfo, $matches) === 1) {
-				return array_merge($invocInfo, array('paramValues' => $matches));
+			if (preg_match($regex, $pathInfo, $matches) === 1) {
+				$invocInfo->setParamValues($matches);
+				return $invocInfo;
 			}
 		}
-		// todo: maybe throw exception? how do we determine if method could not be found?
 		return null;
+	}
+
+	public static function getCachedMethodMetadata(ReflectionMethod $method) {
+		$methodFullName = $method->getDeclaringClass()->getName() .'::' . $method->getName();
+		if(!array_key_exists($methodFullName, self::$methodMetadataMap)) {
+			self::$methodMetadataMap[$methodFullName] = new HandlerMethodMetadata($method);
+		}
+		return self::$methodMetadataMap[$methodFullName];
 	}
 }

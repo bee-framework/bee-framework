@@ -2,7 +2,8 @@
 
 namespace Test\Mvc;
 use Bee_MVC_IHttpRequest;
-use Test\MiscClass;
+use Bee_MVC_ModelAndView;
+use Test\MiscClass as MC;
 
 
 /**
@@ -13,20 +14,30 @@ class ParamTestDelegate {
 
 	/**
 	 *
-	 * @Bee_MVC_Controller_Multiaction_RequestHandler(httpMethod = "GET", pathPattern = "/**\/testParam/{paramA}/{paramB}")
+	 * @param int $paramA
+	 * @param Bee_MVC_IHttpRequest $request
+	 * @param MC $paramB
+	 * @param boolean $boolParam
+	 * @param MC $testParam
+	 * @param boolean $getParam
+	 * @return bool
+	 * @Bee_MVC_Controller_Multiaction_RequestHandler(httpMethod = "GET", pathPattern = "/**\/testParam/{0}/{2}/{boolParam}")
 	 */
-	public function handleTestParams($paramA, MiscClass $paramB, Bee_MVC_IHttpRequest $request) {
+	public function handleTestParams($paramA, Bee_MVC_IHttpRequest $request, MC $paramB, $boolParam = false, $testParam = null, $getParam = false) {
 		var_dump($paramA);
 		var_dump($paramB);
 		var_dump($request);
-		return true;
+		var_dump($boolParam);
+		var_dump($testParam);
+		var_dump($getParam);
+		return new Bee_MVC_ModelAndView(array('paramA' => $paramA, 'paramB' => $paramB, 'boolParam' => $boolParam), 'testview');
 	}
 
 	/**
 	 *
 	 * @Bee_MVC_Controller_Multiaction_RequestHandler(httpMethod = "GET", pathPattern = "/**\/testParam/{paramA}/")
 	 */
-	public function handleTestParams2(MiscClass $paramB, Bee_MVC_IHttpRequest $request) {
+	public function handleTestParams2(MC $paramB, Bee_MVC_IHttpRequest $request) {
 		var_dump($paramB);
 		var_dump($request);
 		return true;

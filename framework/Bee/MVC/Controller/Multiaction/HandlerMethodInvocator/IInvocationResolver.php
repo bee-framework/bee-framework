@@ -22,5 +22,9 @@ use Bee_MVC_IHttpRequest;
  * @package Bee\MVC\Controller\Multiaction\HandlerMethodInvocator
  */
 interface IInvocationResolver {
+	/**
+	 * @param Bee_MVC_IHttpRequest $request
+	 * @return MethodInvocation
+	 */
 	public function getInvocationDefinition(Bee_MVC_IHttpRequest $request);
 } 

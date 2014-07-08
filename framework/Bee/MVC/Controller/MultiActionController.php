@@ -17,6 +17,7 @@ namespace Bee\MVC\Controller;
  */
 use Bee\MVC\Controller\Multiaction\IHandlerMethodInvocator;
 use Bee\MVC\Controller\Multiaction\IMethodNameResolver;
+use Bee\MVC\Controller\Multiaction\NoHandlerMethodFoundException;
 use Bee_MVC_IHttpRequest;
 use Bee_Utils_Assert;
 use Bee_Utils_Reflection;
@@ -95,7 +96,7 @@ class MultiActionController extends AbstractController {
 			// @todo: this might pose a security risk. introduce a set of allowed method names
 			$method = new ReflectionMethod($this->delegate, $methodName);
 			if (!$this->isHandlerMethod($method)) {
-				throw new Exception('No request handling method with name ' . $methodName . ' in class [' . Bee_Utils_Types::getType($this->delegate) . ']');
+				throw new NoHandlerMethodFoundException('No request handling method with name ' . $methodName . ' in class [' . Bee_Utils_Types::getType($this->delegate) . ']');
 			}
 		}
 		return $method->invokeArgs($this->delegate, array($request));

@@ -1,4 +1,5 @@
 <?php
+namespace Bee\MVC\Controller\Multiaction;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -14,20 +15,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Addendum\Annotation;
 
 /**
- * Addendum annotation for the annotation-based method name resolver.
+ * Class RequestHandlerMapping
+ * @package Bee\MVC\Controller\Multiaction
  *
- * @see Bee_MVC_Controller_Multiaction_MethodNameResolver_AnnotationBased
- * 
- * @author Michael Plomer <michael.plomer@iter8.de>
- * 
  * @Annotation
- * @Target("METHOD")
+ * @Target({"METHOD"})
  */
-class Bee_MVC_Controller_Multiaction_RequestHandler extends Annotation {
+class RequestHandlerMapping {
+
+	/**
+	 * @var string
+	 */
 	public $httpMethod;
+
+	/**
+	 * @var string
+	 */
 	public $pathPattern;
+
+	/**
+	 * @var boolean
+	 */
 	public $ajax;
-}
+
+} 
