@@ -74,18 +74,20 @@ abstract class AntPathDataProvider extends PHPUnit_Framework_TestCase {
 				array("/?", "/a", True), // #40
 
 			// test matching with **'s
-				array("/**", "/testing/testing", True),
-				array("/*/**", "/testing/testing", True),
-				array("/**/*", "/testing/testing", True),
-				array("/bla/**/bla", "/bla/testing/testing/bla", True),
+				array("/**", "/testing/testing", True),						// #41
+				array("/*/**", "/testing/testing", True),					// #42
+				array("/**/*", "/testing/testing", True),					// #43
+				array("/bla/**/bla", "/bla/testing/testing/bla", True),		// #44
 				array("/bla/**/bla", "/bla/testing/testing/bla/bla", True), // #45
-				array("/**/test", "/bla/bla/test", True),
-				array("/bla/**/**/bla", "/bla/bla/bla/bla/bla/bla", True),
-				array("/bla*bla/test", "/blaXXXbla/test", True),
-				array("/*bla/test", "/XXXbla/test", True),
-				array("/bla*bla/test", "/blaXXXbl/test", False), // #50
-				array("/*bla/test", "XXXblab/test", False),
-				array("/*bla/test", "XXXbl/test", False),
+				array("/**/test", "/bla/bla/test", True),					// #48
+				array("/**/test", "/test", True),							// #47
+				array("/bla/**/**/bla", "/bla/bla/bla/bla/bla/bla", True),	// #48
+				array("/bla*bla/test", "/blaXXXbla/test", True),			// #49
+				array("/*bla/test", "/XXXbla/test", True),					// #50
+				array("/bla*bla/test", "/blaXXXbl/test", False),			// #51
+				array("/*bla/test", "XXXblab/test", False),					// #52
+				array("/*bla/test", "XXXbl/test", False),					// #53
+				array("/*bla/test", "/bla/test", true),						// #54
 
 				array("/????", "/bala/bla", False),
 				array("/**/*bla", "/bla/bla/bla/bbb", False),
@@ -102,7 +104,7 @@ abstract class AntPathDataProvider extends PHPUnit_Framework_TestCase {
 
 				array("/x/x/**/bla", "/x/x/x/", False),
 
-				array("", "", True) //,
+				array("", "", True)//,
 
 //            array("/{bla}.*", "/testing.html", True)                                                // #65
 		);
@@ -170,6 +172,7 @@ abstract class AntPathDataProvider extends PHPUnit_Framework_TestCase {
 				array("/bla/**/bla", "/bla/testing/testing/bla", True),
 				array("/bla/**/bla", "/bla/testing/testing/bla/bla", True),
 				array("/**/test", "/bla/bla/test", True),
+				array("/**/test", "/test", True),
 				array("/bla/**/**/bla", "/bla/bla/bla/bla/bla/bla", True),
 				array("/bla*bla/test", "/blaXXXbla/test", True),
 				array("/*bla/test", "/XXXbla/test", True),

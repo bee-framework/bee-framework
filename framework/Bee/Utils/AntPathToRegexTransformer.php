@@ -25,8 +25,9 @@ class AntPathToRegexTransformer {
 	private static $SIMPLE_REPLACEMENTS = array(
 			'#\.#' => '\\.',
 			'#\*#' => '[^/]*',
+			'#\[\^/\]\*\[\^/\]\*/#' => '(?:[^/]+/)*',
 			'#\[\^/\]\*\[\^/\]\*#' => '.*',
-			'#\?#' => '[^/]'
+			'#(^|(?<=[^(]))\?#' => '[^/]'
 	);
 
 	public static $TYPE_EXPRESSION_MAP = array(

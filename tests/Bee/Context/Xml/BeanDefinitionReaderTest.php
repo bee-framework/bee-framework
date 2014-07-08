@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
+use Bee\Context\Config\TypedStringValue;
 
 /**
  * User: mp
@@ -28,11 +30,23 @@ class Bee_Context_Xml_BeanDefinitionReaderTest extends PHPUnit_Framework_TestCas
      */
     private static $registry;
 
+	/**
+	 * @var PropertyEditorRegistry
+	 */
+	private $propertyEditorRegistry;
+
     public static function setUpBeforeClass() {
         self::$registry = new Bee_Context_Config_BasicBeanDefinitionRegistry();
         $reader = new Bee_Context_Xml_BeanDefinitionReader(self::$registry);
         $reader->loadBeanDefinitions('Bee/Context/Xml/BeanDefinitionReaderTest-context.xml');
     }
+
+	/**
+	 *
+	 */
+	public function setUp() {
+		$this->propertyEditorRegistry = new PropertyEditorRegistry();
+	}
 
     /**
      * @test
@@ -58,7 +72,7 @@ class Bee_Context_Xml_BeanDefinitionReaderTest extends PHPUnit_Framework_TestCas
         $this->assertTrue(is_array($propValues));
 
         $sourceArrayProp = $propValues['sourceArray'];
-        $this->assertInstanceOf('Bee_Beans_PropertyValue', $sourceArrayProp);
+        $this->assertInstanceOf('Bee\Beans\PropertyValue', $sourceArrayProp);
 
         $this->assertEquals('sourceArray', $sourceArrayProp->getName());
     }
@@ -118,13 +132,17 @@ class Bee_Context_Xml_BeanDefinitionReaderTest extends PHPUnit_Framework_TestCas
 		$beanDefinition = self::$registry->getBeanDefinition($beanName);
 		$propValues = $beanDefinition->getPropertyValues();
 		$sourceArrayProp = $propValues['sourceArray'];
-		$this->assertInstanceOf('Bee_Beans_PropertyValue', $sourceArrayProp);
+		$this->assertInstanceOf('Bee\Beans\PropertyValue', $sourceArrayProp);
 		return $sourceArrayProp->getValue();
 	}
 
-    protected function assertTypedStringValue($stringValue, $propValue) {
-        $this->assertInstanceOf('Bee_Context_Config_TypedStringValue', $propValue);
-        $this->assertEquals($stringValue, $propValue->getValue());
+	/**
+	 * @param $stringValue
+	 * @param TypedStringValue $propValue
+	 */
+	protected function assertTypedStringValue($stringValue, $propValue) {
+        $this->assertInstanceOf('Bee\Context\Config\TypedStringValue', $propValue);
+        $this->assertEquals($stringValue, $propValue->getValue($this->propertyEditorRegistry));
     }
 
     protected function assertArrayValueInstance($arrayValue, $expectedSize) {

@@ -31,7 +31,6 @@ class StringPropertyEditor implements IPropertyEditor {
 	 * @return String
 	 */
 	public function toString($value) {
-		assert(is_string($value));
 		return $value;
 	}
 
@@ -42,7 +41,6 @@ class StringPropertyEditor implements IPropertyEditor {
 	 * @return int
 	 */
 	public function fromString($value) {
-		assert(is_string($value));
 		return $value;
 	}
 }

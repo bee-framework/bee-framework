@@ -56,16 +56,6 @@ class AnnotationBasedMethodNameResolver extends AbstractAnnotationBasedResolver 
 	}
 
 	/**
-	 * @param $pathPattern
-	 * @param ReflectionAnnotatedMethod $method
-	 * @return mixed
-	 */
-	protected function massagePathPattern($pathPattern, ReflectionAnnotatedMethod $method) {
-		// replace special escape syntax needed to allow */ patterns in PHPDoc comments
-		return str_replace('*\/', '*/', $pathPattern);
-	}
-
-	/**
 	 * @param array $mapping
 	 * @return mixed
 	 */
