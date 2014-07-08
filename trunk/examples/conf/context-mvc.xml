@@ -23,7 +23,7 @@
 
     <!-- METHOD NAME RESOLVER -->
     <bean id="multiactionControllerTemplate" class="Bee\MVC\Controller\MultiActionController">
-        <property name="defaultMethodName" value="__INVALID__"/>
+        <property name="defaultMethodName" value="handleDefault"/>
     </bean>
 
     <!-- ++++++++++++++++++++++++++++++++++++++++++++++ -->

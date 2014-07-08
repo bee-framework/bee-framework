@@ -42,4 +42,13 @@ class ParamTestDelegate {
 		var_dump($request);
 		return true;
 	}
+
+	/**
+	 * @param int $getParam
+	 * @return Bee_MVC_ModelAndView
+	 */
+	public function handleDefault($getParam = 1000) {
+		var_dump($getParam);
+		return new Bee_MVC_ModelAndView(array(), 'defaultview');
+	}
 }
