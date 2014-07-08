@@ -15,16 +15,23 @@ namespace Bee\MVC\Controller\Multiaction\HandlerMethodInvocator;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Addendum\ReflectionAnnotatedMethod;
+use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
 use Bee\MVC\Controller\Multiaction\AbstractAnnotationBasedResolver;
 use Bee\MVC\Controller\Multiaction\IHandlerMethodInvocator;
+use Bee_Context_Config_IContextAware;
+use Bee_IContext;
 use Bee_MVC_IHttpRequest;
 
 /**
  * Class AnnotationBasedInvocator
  * @package Bee\MVC\Controller\Multiaction\HandlerMethodInvocator
  */
-class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implements IHandlerMethodInvocator  {
+class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implements IHandlerMethodInvocator, Bee_Context_Config_IContextAware {
+
+	/**
+	 * @var PropertyEditorRegistry
+	 */
+	private $propertyEditorRegistry;
 
 	/**
 	 * @param Bee_MVC_IHttpRequest $request
@@ -32,24 +39,33 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 	 */
 	public function invokeHandlerMethod(Bee_MVC_IHttpRequest $request) {
 		$resolvedMethod = $this->resolveMethodForRequest($request);
+
+		/** @var \ReflectionMethod $method */
+		$method = $resolvedMethod['method'];
+
+		$args = array();
+
+		foreach($method->getParameters() as $parameter) {
+			$pos = $parameter->getPosition();
+			$type = $resolvedMethod['typeMap'][$pos];
+			if($type == 'Bee_MVC_IHttpRequest') {
+				$args[$pos] = $request;
+			} else {
+				$propEditor = $this->propertyEditorRegistry->getEditor($type);
+				$urlPos = $resolvedMethod['positionMap'][$pos];
+				$args[$pos] = $propEditor->fromString($resolvedMethod['paramValues'][$urlPos]);
+			}
+		}
+		$method->invokeArgs($this->getController()->getDelegate(), $args);
 	}
 
 	/**
-	 * @param $delegate
+	 * @param IInvocationResolver $delegate
 	 * @param Bee_MVC_IHttpRequest $request
 	 * @return mixed
 	 */
 	protected function obtainMethodFromDelegate($delegate, Bee_MVC_IHttpRequest $request) {
-		// TODO: Implement obtainMethodFromDelegate() method.
-	}
-
-	/**
-	 * @param $pathPattern
-	 * @param ReflectionAnnotatedMethod $method
-	 * @return mixed
-	 */
-	protected function massagePathPattern($pathPattern, ReflectionAnnotatedMethod $method) {
-		// TODO: Implement massagePathPattern() method.
+		return $delegate->getInvocationDefinition($request);
 	}
 
 	/**
@@ -57,6 +73,13 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 	 * @return mixed
 	 */
 	protected function createDelegate(array $mapping) {
-		// TODO: Implement createDelegate() method.
+		return new RegexMappingInvocationResolver($mapping);
+	}
+
+	/**
+	 * @param Bee_IContext $context
+	 */
+	public function setBeeContext(Bee_IContext $context) {
+		$this->propertyEditorRegistry = new PropertyEditorRegistry($context);
 	}
 }

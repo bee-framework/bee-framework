@@ -37,7 +37,8 @@
     "minimum-stability": "RC",
     "autoload": {
         "psr-0": {
-            "Bee": "framework/"
+            "Bee": "framework/",
+            "Test": "examples/classes/"
         }
     }
 }

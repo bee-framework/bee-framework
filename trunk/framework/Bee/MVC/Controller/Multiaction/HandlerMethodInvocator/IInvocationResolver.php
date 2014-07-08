@@ -1,5 +1,5 @@
 <?php
-namespace Bee\MVC\Controller\Multiaction;
+namespace Bee\MVC\Controller\Multiaction\HandlerMethodInvocator;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -15,24 +15,12 @@ namespace Bee\MVC\Controller\Multiaction;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\Controller\MultiActionController;
 use Bee_MVC_IHttpRequest;
 
 /**
- * Interface MethodInvocator
- * @package Bee\MVC\Controller\Multiaction
+ * Interface IInvocationResolver
+ * @package Bee\MVC\Controller\Multiaction\HandlerMethodInvocator
  */
-interface IHandlerMethodInvocator {
-
-	/**
-	 * @param MultiActionController $controller
-	 * @return mixed
-	 */
-	public function setController(MultiActionController $controller);
-
-	/**
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return \Bee_MVC_ModelAndView
-	 */
-	public function invokeHandlerMethod(Bee_MVC_IHttpRequest $request);
+interface IInvocationResolver {
+	public function getInvocationDefinition(Bee_MVC_IHttpRequest $request);
 } 

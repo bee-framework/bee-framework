@@ -111,13 +111,14 @@ class PropertyEditorRegistry implements Bee_Context_Config_IContextAware {
 		}
 		$failureReason = null;
 		try {
-			return $this->context->getBean(self::PROPERTY_EDITOR_BEAN_NAME_PREFIX . $type, 'Bee\Beans\IPropertyEditor');
+			$idSafeTypeName = preg_replace('#\\\\#', '_', $type);
+			return $this->context->getBean(self::PROPERTY_EDITOR_BEAN_NAME_PREFIX . $idSafeTypeName, 'Bee\Beans\IPropertyEditor');
 		} catch(Bee_Context_NoSuchBeanDefinitionException $e) {
 			$failureReason = $e;
 		} catch(Bee_Context_BeanNotOfRequiredTypeException $e) {
 			$failureReason = $e;
 		}
-		throw new PropertyEditorNotFoundException('The type "' . $type . '" has no registered type editors', $failureReason);
+		throw new PropertyEditorNotFoundException('The type "' . $type . '" has no registered type editors', 0, $failureReason);
 	}
 }
 

@@ -14,13 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
+use Bee\Context\Config\TypedStringValue;
 
 /**
  * User: mp
  * Date: 06.07.11
  * Time: 18:53
  */
- 
 class Bee_Context_AbstractTest extends PHPUnit_Framework_TestCase {
 
 	const BEAN_NAME_ARRAY_PARENT = 'arrayParent';
@@ -80,10 +81,11 @@ class Bee_Context_AbstractTestStub extends Bee_Context_Abstract {
 
 	private function registerArrayFactoryParent() {
 		$builder = Bee_Context_Support_BeanDefinitionBuilder::genericBeanDefinition('Bee_Context_Util_ArrayFactoryBean');
+		$propEditRegistry = new PropertyEditorRegistry();
 		$list = array(
-			'keyA' => new Bee_Context_Config_TypedStringValue('valueA'),
-			'keyB' => new Bee_Context_Config_TypedStringValue('valueB'),
-			'keyC' => new Bee_Context_Config_TypedStringValue('valueC')
+				'keyA' => new TypedStringValue('valueA', $propEditRegistry),
+				'keyB' => new TypedStringValue('valueB', $propEditRegistry),
+				'keyC' => new TypedStringValue('valueC', $propEditRegistry)
 		);
 		$builder->addPropertyValue('sourceArray', new Bee_Context_Config_ArrayValue($list, false));
 		$this->registerBeanDefinition(Bee_Context_AbstractTest::BEAN_NAME_ARRAY_PARENT, $builder->getBeanDefinition());
@@ -91,9 +93,10 @@ class Bee_Context_AbstractTestStub extends Bee_Context_Abstract {
 
 	private function createArrayFactoryChild($merge) {
 		$builder = Bee_Context_Support_BeanDefinitionBuilder::genericBeanDefinition('Bee_Context_Util_ArrayFactoryBean');
+		$propEditRegistry = new PropertyEditorRegistry();
 		$list = array(
-			'keyB' => new Bee_Context_Config_TypedStringValue('valueB_Child'),
-			'keyD' => new Bee_Context_Config_TypedStringValue('valueD_Child'),
+				'keyB' => new TypedStringValue('valueB_Child', $propEditRegistry),
+				'keyD' => new TypedStringValue('valueD_Child', $propEditRegistry),
 		);
 		$builder->setParentName(Bee_Context_AbstractTest::BEAN_NAME_ARRAY_PARENT)
 				->addPropertyValue('sourceArray', new Bee_Context_Config_ArrayValue($list, $merge));

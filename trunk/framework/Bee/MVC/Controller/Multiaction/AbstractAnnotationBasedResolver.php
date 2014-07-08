@@ -21,6 +21,7 @@ use Addendum\ReflectionAnnotatedMethod;
 use Bee_Cache_Manager;
 use Bee_Framework;
 use Bee_MVC_IHttpRequest;
+use Bee_Utils_Reflection;
 use Bee_Utils_Strings;
 use Exception;
 use ReflectionMethod;
@@ -83,7 +84,10 @@ abstract class AbstractAnnotationBasedResolver extends AbstractControllerHolder 
 	 * @param ReflectionAnnotatedMethod $method
 	 * @return mixed
 	 */
-	abstract protected function massagePathPattern($pathPattern, ReflectionAnnotatedMethod $method);
+	protected function massagePathPattern($pathPattern, ReflectionAnnotatedMethod $method) {
+		// replace special escape syntax needed to allow */ patterns in PHPDoc comments
+		return str_replace('*\/', '*/', $pathPattern);
+	}
 
 	/**
 	 * @param array $mapping
@@ -115,12 +119,11 @@ abstract class AbstractAnnotationBasedResolver extends AbstractControllerHolder 
 				$mappings = array();
 				foreach ($methods as $method) {
 
-					if ($this->getController()->isHandlerMethod($method)) {
+					if (Bee_Utils_Reflection::isCallableRegularMethod($method)) {
 
 						// is possible handler method, check for annotations
 						/** @var \Bee_MVC_Controller_Multiaction_RequestHandler[] $annotations */
 						$annotations = $method->getAllAnnotations('Bee_MVC_Controller_Multiaction_RequestHandler');
-
 						foreach ($annotations as $annotation) {
 							$requestTypeKey = $this->getMethodNameKey($annotation->httpMethod) .
 									$this->getAjaxTypeKey(filter_var($annotation->ajax, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE));

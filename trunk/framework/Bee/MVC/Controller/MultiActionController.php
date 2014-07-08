@@ -167,6 +167,21 @@ class MultiActionController extends AbstractController {
 	}
 
 	/**
+	 * @param IHandlerMethodInvocator $methodInvocator
+	 */
+	public function setMethodInvocator(IHandlerMethodInvocator $methodInvocator) {
+		$this->methodInvocator = $methodInvocator;
+		$this->methodInvocator->setController($this);
+	}
+
+	/**
+	 * @return IHandlerMethodInvocator
+	 */
+	public function getMethodInvocator() {
+		return $this->methodInvocator;
+	}
+
+	/**
 	 * Enter description here...
 	 *
 	 * @param IMethodNameResolver $methodNameResolver
