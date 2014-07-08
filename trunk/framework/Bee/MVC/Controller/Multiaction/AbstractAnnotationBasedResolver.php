@@ -37,7 +37,7 @@ abstract class AbstractAnnotationBasedResolver extends AbstractControllerHolder 
 	const AJAX_TYPE_FALSE_KEY = '_FALSE';
 	const AJAX_TYPE_ANY_KEY = '_ANY';
 
-	const CACHE_KEY_PREFIX = 'BeeMethodNameResolverAnnotationCache_';
+	const CACHE_KEY_PREFIX = 'BeeMethodResolverAnnotationCache_';
 
 	/**
 	 * @var
