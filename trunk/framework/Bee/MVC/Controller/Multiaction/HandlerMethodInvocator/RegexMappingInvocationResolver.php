@@ -1,6 +1,5 @@
 <?php
 namespace Bee\MVC\Controller\Multiaction\HandlerMethodInvocator;
-
 /*
  * Copyright 2008-2014 the original author or authors.
  *
