@@ -28,6 +28,11 @@ class MethodInvocation {
 	private $methodMeta;
 
 	/**
+	 * @var string
+	 */
+	private $antPathPattern;
+
+	/**
 	 * @var array
 	 */
 	private $paramValues;
@@ -37,8 +42,9 @@ class MethodInvocation {
 	 */
 	private $urlParameterPositions;
 
-	function __construct(HandlerMethodMetadata $methodMetadata, array $urlParameterPositions = array()) {
+	function __construct(HandlerMethodMetadata $methodMetadata, $antPathPattern = false, array $urlParameterPositions = array()) {
 		$this->methodMeta = $methodMetadata;
+		$this->antPathPattern = $antPathPattern;
 		$this->urlParameterPositions = $urlParameterPositions;
 	}
 
@@ -76,5 +82,12 @@ class MethodInvocation {
 	 */
 	public function getParamValue($pos) {
 		return $this->paramValues[$pos];
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAntPathPattern() {
+		return $this->antPathPattern;
 	}
 }

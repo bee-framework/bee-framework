@@ -23,11 +23,11 @@ namespace Bee\Utils;
 class AntPathToRegexTransformer {
 
 	private static $SIMPLE_REPLACEMENTS = array(
-			'#\.#' => '\\.',
-			'#\*#' => '[^/]*',
-			'#\[\^/\]\*\[\^/\]\*/#' => '(?:[^/]+/)*',
-			'#\[\^/\]\*\[\^/\]\*#' => '.*',
-			'#(^|(?<=[^(]))\?#' => '[^/]'
+			'#\.#' => '\\.',											// keep "." as literals
+			'#\*#' => '([^/]*)',										// "*" matches any string that does not contain slashes
+			'#\(\[\^/\]\*\)\(\[\^/\]\*\)/#' => '((?:[^/]+/)*?)',			// "**/" - replaced by "([^/]+)" above - matches 0:n path elements
+			'#\(\[\^/\]\*\)\(\[\^/\]\*\)#' => '(.*?)',
+			'#(^|(?<=[^(*]))\?#' => '[^/]'
 	);
 
 	public static $TYPE_EXPRESSION_MAP = array(
@@ -39,7 +39,7 @@ class AntPathToRegexTransformer {
 			ITypeDefinitions::STRING => '[^/]+'
 	);
 
-	const PARAMETER_MATCH = '#{((?:\d+)|(?:[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*))}#';
+	const PARAMETER_MATCH = '#(?:{((?:\d+)|(?:[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*))})|\(\(\[\^/\]\+/\)\*\?\)|\(.*?\)#';
 
 	/**
 	 * @param string $antPathPattern
@@ -59,6 +59,10 @@ class AntPathToRegexTransformer {
 		$result = self::getRegexForSimplePattern($antPathPattern);
 		$matchPos = 1;
 		return preg_replace_callback(self::PARAMETER_MATCH, function($matches) use ($parameterTypes, &$positionMap, &$matchPos) {
+			if(count($matches) == 1) {
+				$matchPos++;
+				return $matches[0];
+			}
 			$positionMap[$matchPos++] = $matches[1];
 			$typeName = $parameterTypes[$matches[1]];
 			if(!array_key_exists($typeName, AntPathToRegexTransformer::$TYPE_EXPRESSION_MAP)) {

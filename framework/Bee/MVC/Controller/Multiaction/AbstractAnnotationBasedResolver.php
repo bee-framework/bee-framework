@@ -113,12 +113,11 @@ abstract class AbstractAnnotationBasedResolver extends AbstractControllerHolder 
 			if (!$this->delegates) {
 				$classReflector = new ReflectionAnnotatedClass($delegateClassName);
 
-				/** @var ReflectionAnnotatedMethod[] $methods */
 				$methods = $classReflector->getMethods(ReflectionMethod::IS_PUBLIC);
 
 				$mappings = array();
-				foreach ($methods as $method) {
-
+				foreach (array_reverse($methods) as $method) {
+					/** @var ReflectionAnnotatedMethod $method */
 					if (Bee_Utils_Reflection::isCallableRegularMethod($method)) {
 
 						// is possible handler method, check for annotations
