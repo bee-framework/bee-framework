@@ -151,7 +151,6 @@ class RegexMappingInvocationResolver implements IInvocationResolver {
 			$matchingAntPaths = array_map(function (MethodInvocation $item) {
 				return $item->getAntPathPattern();
 			}, $matchingPatterns);
-//			self::getLog()->debug('Sorted patterns for pathInfo "' . $pathInfo . '" are ' . implode("\n", array_keys($matchingPatterns)));
 			self::getLog()->debug('Sorted patterns for pathInfo "' . $pathInfo . '" are ' . "\n" . implode("\n", $matchingAntPaths));
 		}
 
