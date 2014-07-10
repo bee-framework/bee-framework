@@ -17,6 +17,7 @@
             <array>
                 <assoc-item key="/**/testClassic/**" value="classicController" />
                 <assoc-item key="/**/testParam/**" value="paramController" />
+                <assoc-item key="/**/testParamSub/**" value="paramSubController" />
             </array>
         </property>
     </bean>
@@ -44,6 +45,15 @@
         </property>
         <property name="delegate">
             <bean class="Test\Mvc\ParamTestDelegate" />
+        </property>
+    </bean>
+
+    <bean id="paramSubController" parent="multiactionControllerTemplate">
+        <property name="methodInvocator">
+            <bean class="Bee\MVC\Controller\Multiaction\HandlerMethodInvocator\AnnotationBasedInvocator" scope="prototype"/>
+        </property>
+        <property name="delegate">
+            <bean class="Test\Mvc\SubTestDelegate" />
         </property>
     </bean>
 

@@ -102,8 +102,6 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 						(array_key_exists($parameter->getName(), $_REQUEST) ? $_REQUEST[$parameter->getName()] : null);
 				if (!is_null($value) || !$parameter->isOptional()) {
 					$args[$pos] = $propEditor->fromString($value);
-//				} else {
-//					$args[$pos] = null;
 				}
 			}
 		}
