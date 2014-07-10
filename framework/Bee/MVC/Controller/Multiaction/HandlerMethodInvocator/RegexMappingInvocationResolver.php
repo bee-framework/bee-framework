@@ -169,16 +169,4 @@ class RegexMappingInvocationResolver implements IInvocationResolver {
 		return self::$methodMetadataMap[$methodFullName];
 	}
 
-	public static function getWildcardCount($pattern) {
-		$len = strlen(self::IGNORE_WILDCARD_TRAILING_PATTERN);
-		if (substr($pattern, $len) == self::IGNORE_WILDCARD_TRAILING_PATTERN) {
-			$pattern = substr(self::IGNORE_WILDCARD_TRAILING_PATTERN, 0, -$len);
-		}
-		return substr_count($pattern, '[^/]*') + 2 * substr_count($pattern, '(?:[^/]+/)*') + 2 * substr_count($pattern, '.*');
-	}
-
-	public static function getPatternLength($pattern) {
-		$pattern = preg_replace('#\([^?].*?\)#', '#', $pattern);
-		return strlen($pattern);
-	}
 }
