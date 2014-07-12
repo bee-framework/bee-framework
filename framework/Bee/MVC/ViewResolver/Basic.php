@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\IViewResolver;
+use Bee\MVC\ViewResolver\BasicViewResolver;
 
 /**
  * Basic implementation of the IViewResolver interface. Uses a Bee_IContext for view name resolution, looking up
@@ -22,90 +22,7 @@ use Bee\MVC\IViewResolver;
  *
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
+ * @deprecated replaced by BasicViewResolver
  */
-class Bee_MVC_ViewResolver_Basic implements IViewResolver {
-
-	/**
-	 * @var Logger
-	 */
-	protected $log;
-
-	/**
-	 * @return Logger
-	 */
-	protected function getLog() {
-		if (!$this->log) {
-			$this->log = Logger::getLogger(get_class($this));
-		}
-		return $this->log;
-	}
-
-	/**
-	 * Enter description here...
-	 *
-	 * @var Bee_IContext
-	 */
-	private $context;
-
-	/**
-	 * @var string
-	 */
-	private $ajaxViewNameSuffix = '.ajax';
-
-	/**
-	 * Enter description here...
-	 *
-	 * @param Bee_IContext $context
-	 * @return void
-	 */
-	public function setContext(Bee_IContext $context) {
-		$this->context = $context;
-	}
-
-	/**
-	 * Enter description here...
-	 *
-	 * @return Bee_IContext
-	 */
-	public function getContext() {
-		return $this->context;
-	}
-
-	/**
-	 * @param String $viewName
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee\MVC\IView|Object
-	 */
-	public function resolveViewName($viewName, Bee_MVC_IHttpRequest $request) {
-		$modifiedViewName = $this->modifyViewName($viewName, $request);
-		if ($modifiedViewName != $viewName) {
-			try {
-				return $this->getViewForName($viewName);
-			} catch (Bee_Context_BeansException $bex) {
-				if($this->getLog()->isDebugEnabled()) {
-					$this->getLog()->debug('Modified view name "' . $modifiedViewName . '" not found, trying base bean name "' . $viewName . '"', $bex);
-				}
-			}
-		}
-		return $this->getViewForName($viewName);
-	}
-
-	/**
-	 * @param string $viewName
-	 * @return Bee\MVC\IView
-	 */
-	protected function getViewForName($viewName) {
-		return $this->context->getBean($viewName, 'Bee\MVC\IView');
-	}
-
-	/**
-	 * Modify the view name according to request specifics. By default, the suffix '.ajax' is appended to the view names
-	 * for AJAX requests. Otherwise, the view name is left untouched.
-	 * @param $viewName
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return string
-	 */
-	protected function modifyViewName($viewName, Bee_MVC_IHttpRequest $request) {
-		return $request->getAjax() ? $viewName . $this->ajaxViewNameSuffix : $viewName;
-	}
+class Bee_MVC_ViewResolver_Basic extends BasicViewResolver {
 }
