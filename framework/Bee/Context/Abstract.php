@@ -18,6 +18,12 @@ use Bee\Beans\BeanWrapper;
 use Bee\Beans\MethodInvocation;
 use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
 use Bee\Beans\PropertyValue;
+use Bee\Context\Config\BasicBeanDefinitionRegistry;
+use Bee\Context\Config\IBeanDefinition;
+use Bee\Context\Config\IBeanDefinitionRegistry;
+use Bee\Context\Config\IInstantiationAwareBeanPostProcessor;
+use Bee\Context\Config\IObjectFactory;
+use Bee\Context\Support\ContextUtils;
 
 /**
  * Enter description here...
@@ -25,17 +31,17 @@ use Bee\Beans\PropertyValue;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefinitionRegistry implements Bee_IContext, Bee_Context_Config_IContextAware {
+abstract class Bee_Context_Abstract extends BasicBeanDefinitionRegistry implements Bee_IContext, Bee_Context_Config_IContextAware {
 
-    /**
-     * @var Bee_IContext[] 
-     */
-    private static $registeredContexts = array();
+	/**
+	 * @var Bee_IContext[]
+	 */
+	private static $registeredContexts = array();
 
-    /**
-     * @var string
-     */
-    private $identifier;
+	/**
+	 * @var string
+	 */
+	private $identifier;
 
 	/**
 	 * Enter description here...
@@ -43,28 +49,28 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @var Bee_IContext
 	 */
 	private $parent;
-	
+
 	/**
 	 * Enter description here...
 	 *
 	 * @var array
 	 */
 	private $beansInCreation = array();
-	
+
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Context_Config_IScope[]
+	 * @var Bee\Context\Config\IScope[]
 	 */
 	private $scopes;
-	
+
 	/**
 	 * Enter description here...
 	 *
 	 * @var array
 	 */
 	private $dependentBeanMap = array();
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -72,44 +78,44 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 */
 	private $dependenciesForBeanMap = array();
 
-    /**
-     * @var array
-     */
-    private $factoryBeanObjectCache = array();
+	/**
+	 * @var array
+	 */
+	private $factoryBeanObjectCache = array();
 
 	/**
 	 * @var PropertyEditorRegistry
 	 */
 	private $propertyEditorRegistry;
 
-    /**
-     * @static
-     * @param string $identifier
-     * @return Bee_IContext
-     */
-    public static function getRegisteredContext($identifier) {
-        return self::$registeredContexts[$identifier];
-    }
+	/**
+	 * @static
+	 * @param string $identifier
+	 * @return Bee_IContext
+	 */
+	public static function getRegisteredContext($identifier) {
+		return self::$registeredContexts[$identifier];
+	}
 
 	/**
 	 * Enter description here...
 	 *
 	 */
-	public function __construct($identifier='', $callInitMethod=true) {
-        $this->identifier = $identifier;
+	public function __construct($identifier = '', $callInitMethod = true) {
+		$this->identifier = $identifier;
 		$this->propertyEditorRegistry = new PropertyEditorRegistry($this);
 		if ($callInitMethod) {
 			$this->init();
 		}
-        self::$registeredContexts[$identifier] = $this;
+		self::$registeredContexts[$identifier] = $this;
 	}
 
 	/**
 	 * @return string
 	 */
 	public function getIdentifier() {
-        return $this->identifier;
-    }
+		return $this->identifier;
+	}
 
 	/**
 	 *
@@ -133,11 +139,11 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * **** DON'T CALL THIS METHOD ****
 	 *
 	 * @param String $beanName
-	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition
+	 * @param IBeanDefinition $beanDefinition
 	 * @throws Exception
 	 * @return null|object
 	 */
-	public function _createBean($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
+	public function _createBean($beanName, IBeanDefinition $beanDefinition) {
 		$instance = null;
 		$this->beforeBeanCreation($beanName);
 		try {
@@ -160,11 +166,11 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	/**
 	 *
 	 * @param string $beanName
-	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition
+	 * @param IBeanDefinition $beanDefinition
 	 * @throws Bee_Context_BeanCreationException
 	 * @return object
 	 */
-	protected function createBean($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
+	protected function createBean($beanName, IBeanDefinition $beanDefinition) {
 
 		// @todo: code copied from java, but unused yet
 		// Make sure bean class is actually resolved at this point.
@@ -184,32 +190,31 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 			if ($bean != null) {
 				return $bean;
 			}
-		}
-		catch (Exception $ex) {
-            throw new Bee_Context_BeanCreationException($beanName, 'BeanPostProcessor before instantiation of bean failed - '.$ex->getMessage(), $ex);
+		} catch (Exception $ex) {
+			throw new Bee_Context_BeanCreationException($beanName, 'BeanPostProcessor before instantiation of bean failed - ' . $ex->getMessage(), $ex);
 		}
 		return $this->doCreateBean($beanName, $beanDefinition);
 	}
 
 	/**
 	 * @param $beanName
-	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition
+	 * @param IBeanDefinition $beanDefinition
 	 * @return mixed|null
 	 */
-	protected function resolveBeforeInstantiation($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
-        $bean = null;
+	protected function resolveBeforeInstantiation($beanName, IBeanDefinition $beanDefinition) {
+		$bean = null;
 //        if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
-            // Make sure bean class is actually resolved at this point.
-            if (!$beanDefinition->isSynthetic() && $this->hasInstantiationAwareBeanPostProcessors()) {
-                $bean = $this->applyBeanPostProcessorsBeforeInstantiation($beanDefinition->getBeanClassName(), $beanName);
-                if ($bean != null) {
-                    $bean = $this->applyBeanPostProcessorsAfterInitialization($bean, $beanName);
-                }
-            }
+		// Make sure bean class is actually resolved at this point.
+		if (!$beanDefinition->isSynthetic() && $this->hasInstantiationAwareBeanPostProcessors()) {
+			$bean = $this->applyBeanPostProcessorsBeforeInstantiation($beanDefinition->getBeanClassName(), $beanName);
+			if ($bean != null) {
+				$bean = $this->applyBeanPostProcessorsAfterInitialization($bean, $beanName);
+			}
+		}
 //            mbd.beforeInstantiationResolved = Boolean.valueOf(bean != null);
 //        }
-        return $bean;
-    }
+		return $bean;
+	}
 
 
 	/**
@@ -218,7 +223,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * <p>Differentiates between default bean instantiation, use of a
 	 * factory method, and autowiring a constructor.
 	 * @param string $beanName name of the bean
-	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition
+	 * @param IBeanDefinition $beanDefinition
 	 * @throws Bee_Context_BeanCreationException
 	 *
 	 * @return Object a new instance of the bean
@@ -226,13 +231,13 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @see #instantiateUsingFactoryMethod
 	 * @see #autowireConstructor
 	 */
-	protected function doCreateBean($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
+	protected function doCreateBean($beanName, IBeanDefinition $beanDefinition) {
 		$beanInstance = $this->createBeanInstance($beanName, $beanDefinition);
 		$instanceWrapper = new BeanWrapper($beanInstance);
-		
+
 		// Initialize the bean instance.
 		try {
-			
+
 			$this->applyPropertyValues($beanName, $beanDefinition, $instanceWrapper, $beanDefinition->getPropertyValues());
 			$this->invokeMethods($beanName, $beanInstance, $beanDefinition->getMethodInvocations());
 			$exposedObject = $this->initializeBean($beanName, $beanInstance, $beanDefinition);
@@ -240,7 +245,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 			if ($ex instanceof Bee_Context_BeanCreationException && $beanName === $ex->getBeanName()) {
 				throw $ex;
 			} else {
-				throw new Bee_Context_BeanCreationException($beanName, 'Initialization of bean failed - '.$ex->getMessage(), $ex);
+				throw new Bee_Context_BeanCreationException($beanName, 'Initialization of bean failed - ' . $ex->getMessage(), $ex);
 			}
 		}
 
@@ -259,7 +264,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * and from {@link #initializeBean} for existing bean instances.
 	 * @param string $beanName the bean name in the factory (for debugging purposes)
 	 * @param object $bean the new bean instance we may need to initialize
-	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition the bean definition that the bean was created with
+	 * @param IBeanDefinition $beanDefinition the bean definition that the bean was created with
 	 * (can also be <code>null</code>, if given an existing bean instance)
 	 * @throws Bee_Context_BeanCreationException
 	 * @return object the initialized bean instance (potentially wrapped)
@@ -268,7 +273,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @see Bee_Context_Config_IContextAware
 	 * @see #invokeInitMethods
 	 */
-	protected function initializeBean($beanName, $bean, Bee_Context_Config_IBeanDefinition $beanDefinition) {
+	protected function initializeBean($beanName, $bean, IBeanDefinition $beanDefinition) {
 		if ($bean instanceof Bee_Context_Config_IBeanNameAware) {
 			$bean->setBeanName($beanName);
 		}
@@ -289,7 +294,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		try {
 			$this->invokeInitMethods($beanName, $wrappedBean, $beanDefinition);
 		} catch (Exception $ex) {
-			throw new Bee_Context_BeanCreationException($beanName, 'Invocation of init method failed - '.$ex->getMessage(), $ex);
+			throw new Bee_Context_BeanCreationException($beanName, 'Invocation of init method failed - ' . $ex->getMessage(), $ex);
 		}
 
 		if (is_null($beanDefinition) || !$beanDefinition->isSynthetic()) {
@@ -305,19 +310,19 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @return mixed|null
 	 */
 	protected function applyBeanPostProcessorsBeforeInstantiation($beanClassName, $beanName) {
-        foreach($this->getBeanPostProcessorNames() as $beanProcessorName) {
-            if($beanName !== $beanProcessorName) {
-                $beanProcessor = $this->getBean($beanProcessorName, 'Bee_Context_Config_IBeanPostProcessor');
-                if ($beanProcessor instanceof Bee_Context_Config_IInstantiationAwareBeanPostProcessor) {
-                    $result = $beanProcessor->postProcessBeforeInstantiation($beanClassName, $beanName);
-                    if ($result != null) {
-                        return $result;
-                    }
-                }
-            }
-        }
-        return null;
-    }
+		foreach ($this->getBeanPostProcessorNames() as $beanProcessorName) {
+			if ($beanName !== $beanProcessorName) {
+				$beanProcessor = $this->getBean($beanProcessorName, 'Bee\Context\Config\IBeanPostProcessor');
+				if ($beanProcessor instanceof IInstantiationAwareBeanPostProcessor) {
+					$result = $beanProcessor->postProcessBeforeInstantiation($beanClassName, $beanName);
+					if ($result != null) {
+						return $result;
+					}
+				}
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * @param $existingBean
@@ -326,12 +331,12 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 */
 	public function applyBeanPostProcessorsBeforeInitialization($existingBean, $beanName) {
 		$result = $existingBean;
-        foreach($this->getBeanPostProcessorNames() as $beanProcessorName) {
-            if($beanName !== $beanProcessorName) {
-                $beanProcessor = $this->getBean($beanProcessorName, 'Bee_Context_Config_IBeanPostProcessor');
-                $result = $beanProcessor->postProcessBeforeInitialization($result, $beanName);
-            }
-        }
+		foreach ($this->getBeanPostProcessorNames() as $beanProcessorName) {
+			if ($beanName !== $beanProcessorName) {
+				$beanProcessor = $this->getBean($beanProcessorName, 'Bee\Context\Config\IBeanPostProcessor');
+				$result = $beanProcessor->postProcessBeforeInitialization($result, $beanName);
+			}
+		}
 		return $result;
 	}
 
@@ -342,15 +347,15 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 */
 	public function applyBeanPostProcessorsAfterInitialization($existingBean, $beanName) {
 		$result = $existingBean;
-        foreach($this->getBeanPostProcessorNames() as $beanProcessorName) {
-            if($beanName !== $beanProcessorName) {
-                $beanProcessor = $this->getBean($beanProcessorName, 'Bee_Context_Config_IBeanPostProcessor');
-                $result = $beanProcessor->postProcessAfterInitialization($result, $beanName);
-            }
-        }
+		foreach ($this->getBeanPostProcessorNames() as $beanProcessorName) {
+			if ($beanName !== $beanProcessorName) {
+				$beanProcessor = $this->getBean($beanProcessorName, 'Bee\Context\Config\IBeanPostProcessor');
+				$result = $beanProcessor->postProcessAfterInitialization($result, $beanName);
+			}
+		}
 		return $result;
 	}
-	
+
 	/**
 	 * Give a bean a chance to react now all its properties are set,
 	 * and a chance to know about its owning context (this object).
@@ -358,11 +363,11 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * a custom init method, and invoking the necessary callback(s) if it does.
 	 * @param string $beanName the bean name in the factory (for debugging purposes)
 	 * @param object $bean the new bean instance we may need to initialize
-	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition the bean definition that the bean was created with
+	 * @param IBeanDefinition $beanDefinition the bean definition that the bean was created with
 	 * (can also be <code>null</code>, if given an existing bean instance)
 	 * @see #invokeCustomInitMethod
 	 */
-	protected function invokeInitMethods($beanName, $bean, Bee_Context_Config_IBeanDefinition $beanDefinition) {
+	protected function invokeInitMethods($beanName, $bean, IBeanDefinition $beanDefinition) {
 
 		$isInitializingBean = ($bean instanceof Bee_Context_Config_IInitializingBean);
 		if ($isInitializingBean) {
@@ -372,7 +377,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 		$initMethodName = (!is_null($beanDefinition) ? $beanDefinition->getInitMethodName() : null);
 		if (!is_null($initMethodName) && !($isInitializingBean && 'afterPropertiesSet' === $initMethodName)) {
 			$initMethod = array($bean, $initMethodName);
-			if(is_callable($initMethod)) {
+			if (is_callable($initMethod)) {
 				call_user_func($initMethod);
 			}
 		}
@@ -382,18 +387,18 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * Create a new instance for the specified bean, using an appropriate instantiation strategy:
 	 * factory method or simple instantiation.
 	 * @param String $beanName the name of the bean
-	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition the bean definition for the bean
-	 * 
+	 * @param IBeanDefinition $beanDefinition the bean definition for the bean
+	 *
 	 * @return BeanWrapper for the new instance
 	 * @see #instantiateUsingFactoryMethod
 	 * @see #instantiateBean
 	 */
-	protected function createBeanInstance($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
+	protected function createBeanInstance($beanName, IBeanDefinition $beanDefinition) {
 
 		if (!is_null($beanDefinition->getFactoryMethodName())) {
 			return $this->instantiateUsingFactoryMethod($beanName, $beanDefinition);
 		}
-		
+
 		return $this->instantiateBean($beanName, $beanDefinition);
 	}
 
@@ -403,13 +408,13 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * on a factory object itself configured using Dependency Injection.
 	 *
 	 * @param String $beanName the name of the bean
-	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition the bean definition for the bean
+	 * @param IBeanDefinition $beanDefinition the bean definition for the bean
 	 * @throws Bee_Context_BeanDefinitionStoreException
 	 * @throws Bee_Context_BeanCreationException
 	 * @return BeanWrapper for the new instance
 	 * @see #getBean(String, Object[])
 	 */
-	protected function instantiateUsingFactoryMethod($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
+	protected function instantiateUsingFactoryMethod($beanName, IBeanDefinition $beanDefinition) {
 		$factoryMethodName = $beanDefinition->getFactoryMethodName();
 		$factoryBeanName = $beanDefinition->getFactoryBeanName();
 
@@ -429,9 +434,9 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 			// It's a static factory method on the bean class.
 			$factoryBeanInstanceOrClassName = $beanDefinition->getBeanClassName();
 		}
-		
-		$factory = array($factoryBeanInstanceOrClassName, $factoryMethodName); 
-		if(!is_callable($factory)) {
+
+		$factory = array($factoryBeanInstanceOrClassName, $factoryMethodName);
+		if (!is_callable($factory)) {
 			// @todo: a lot of debug information is lost here
 			throw new Bee_Context_BeanCreationException($beanName);
 		}
@@ -443,15 +448,15 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * Enter description here...
 	 *
 	 * @param String $beanName
-	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition
+	 * @param IBeanDefinition $beanDefinition
 	 * @return object
 	 */
-	protected function instantiateBean($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
+	protected function instantiateBean($beanName, IBeanDefinition $beanDefinition) {
 		$beanClassName = $beanDefinition->getBeanClassName();
 		$beanClass = new ReflectionClass($beanClassName);
-		
-		$args = $beanDefinition->getConstructorArgumentValues(); 
-		if(is_null($args)||count($args) == 0) {
+
+		$args = $beanDefinition->getConstructorArgumentValues();
+		if (is_null($args) || count($args) == 0) {
 			return $beanClass->newInstance();
 		}
 		return $beanClass->newInstanceArgs($this->createArgsArray($beanName, $beanDefinition));
@@ -466,7 +471,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 //		$typeConverter = null; // @todo: ???????????????????????????????????????????		
 //		$valueResolver = new Bee_Context_BeanDefinitionValueResolver($this, $beanName, $beanDefinition, $typeConverter);
 		$valueResolver = new Bee_Context_BeanDefinitionValueResolver($this, $beanName, $methodArguments);
-		
+
 		$args = array();
 		foreach ($methodArguments->getConstructorArgumentValues() as $propValue) {
 //			$value = $valueResolver->resolveValueIfNecessary('constructor/factory method argument', $propValue->getValue());
@@ -480,24 +485,24 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * Apply the given property values, resolving any runtime references
 	 * to other beans in this context.
 	 * @param String $beanName the bean name passed for better exception information
-	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition the bean definition
+	 * @param IBeanDefinition $beanDefinition the bean definition
 	 * @param BeanWrapper $beanWrapper the BeanWrapper wrapping the target object
 	 * @param PropertyValue[] $propertyValues the new property values
 	 * @throws Bee_Context_BeanCreationException
 	 */
-	protected function applyPropertyValues($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition, BeanWrapper $beanWrapper, array $propertyValues = null) {
+	protected function applyPropertyValues($beanName, IBeanDefinition $beanDefinition, BeanWrapper $beanWrapper, array $propertyValues = null) {
 		if (is_null($propertyValues) || count($propertyValues) === 0) {
 			return;
 		}
 
 		$valueResolver = new Bee_Context_BeanDefinitionValueResolver($this, $beanName, $beanDefinition);
-		
+
 		$deepCopy = array();
 		foreach ($propertyValues as $propValue) {
-			$propName = $propValue->getName(); 
+			$propName = $propValue->getName();
 			$deepCopy[$propName] = $valueResolver->resolveValueIfNecessary($propName, $propValue->getValue());
 		}
-		
+
 		// Set our (possibly massaged) deep copy.
 		try {
 			$beanWrapper->setPropertyValues($deepCopy);
@@ -513,10 +518,10 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @throws Bee_Context_InvalidPropertyException
 	 */
 	protected function invokeMethods($beanName, $beanInstance, array $methodInvocations = array()) {
-		foreach($methodInvocations as $methodInvocation) {
+		foreach ($methodInvocations as $methodInvocation) {
 			$method = array($beanInstance, $methodInvocation->getMethodName());
-			if(!is_callable($method)) {
-				 throw new Bee_Context_InvalidPropertyException($methodInvocation->getMethodName(), Bee_Utils_Types::getType($beanInstance), 'no such method found: '.$methodInvocation->getMethodName());
+			if (!is_callable($method)) {
+				throw new Bee_Context_InvalidPropertyException($methodInvocation->getMethodName(), Bee_Utils_Types::getType($beanInstance), 'no such method found: ' . $methodInvocation->getMethodName());
 			}
 			// todo: validate method signature??
 			call_user_func_array($method, $this->createArgsArray($beanName, $methodInvocation));
@@ -524,7 +529,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	}
 
 	abstract protected function loadBeanDefinitions();
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -533,10 +538,10 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	protected function registerScopes() {
 		$uniqueId = $this->getIdentifier();
 		$scopes = array(
-			Bee_Context_Config_IBeanDefinition::SCOPE_CACHE => new Bee_Context_Config_Scope_Cache($uniqueId),
-			Bee_Context_Config_IBeanDefinition::SCOPE_PROTOTYPE => new Bee_Context_Config_Scope_Prototype($uniqueId),
-			Bee_Context_Config_IBeanDefinition::SCOPE_REQUEST => new Bee_Context_Config_Scope_Request($uniqueId),
-			Bee_Context_Config_IBeanDefinition::SCOPE_SESSION => new Bee_Context_Config_Scope_Session($uniqueId)
+				IBeanDefinition::SCOPE_CACHE => new Bee_Context_Config_Scope_Cache($uniqueId),
+				IBeanDefinition::SCOPE_PROTOTYPE => new Bee_Context_Config_Scope_Prototype($uniqueId),
+				IBeanDefinition::SCOPE_REQUEST => new Bee_Context_Config_Scope_Request($uniqueId),
+				IBeanDefinition::SCOPE_SESSION => new Bee_Context_Config_Scope_Session($uniqueId)
 		);
 		$this->scopes = $scopes;
 	}
@@ -544,11 +549,11 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	/**
 	 * Callback before bean creation.
 	 * <p>The default implementation register the bean as currently in creation.
-	 * 
+	 *
 	 * @param String $beanName the name of the bean about to be created
 	 * @return void
 	 * @see #isPrototypeCurrentlyInCreation
- 	 */
+	 */
 	protected function beforeBeanCreation($beanName) {
 		$this->beansInCreation[$beanName] = TRUE;
 	}
@@ -556,7 +561,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	/**
 	 * Callback after bean creation.
 	 * <p>The default implementation marks the bean as not in creation anymore.
-	 * 
+	 *
 	 * @param String $beanName the name of the bean that has been created
 	 * @return void
 	 * @see #isPrototypeCurrentlyInCreation
@@ -583,16 +588,16 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 */
 	public function registerDependentBean($beanName, $dependentBeanName) {
 
-        if(!array_key_exists($beanName, $this->dependentBeanMap)) {
+		if (!array_key_exists($beanName, $this->dependentBeanMap)) {
 			$this->dependentBeanMap[$beanName] = array();
-		}		
-		$this->dependentBeanMap[$beanName][$dependentBeanName]= TRUE;
+		}
+		$this->dependentBeanMap[$beanName][$dependentBeanName] = TRUE;
 
-		if(!array_key_exists($dependentBeanName, $this->dependenciesForBeanMap)) {
+		if (!array_key_exists($dependentBeanName, $this->dependenciesForBeanMap)) {
 			$this->dependenciesForBeanMap[$dependentBeanName] = array();
-		}		
+		}
 		$this->dependenciesForBeanMap[$dependentBeanName][$beanName] = TRUE;
-		
+
 	}
 
 	/**
@@ -610,7 +615,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @return array the array of dependent bean names, or an empty array if none
 	 */
 	public function getDependentBeans($beanName) {
-		if(!is_array($this->dependentBeanMap[$beanName])) {
+		if (!is_array($this->dependentBeanMap[$beanName])) {
 			return array();
 		}
 		return array_keys($this->dependentBeanMap[$beanName]);
@@ -623,7 +628,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * or an empty array if none
 	 */
 	public function getDependenciesForBean($beanName) {
-		if(!is_array($this->dependenciesForBeanMap[$beanName])) {
+		if (!is_array($this->dependenciesForBeanMap[$beanName])) {
 			return array();
 		}
 		return array_keys($this->dependenciesForBeanMap[$beanName]);
@@ -647,51 +652,51 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @throws Bee_Context_BeanNotOfRequiredTypeException
 	 * @throws Exception
 	 */
-	public function getBean($name, $requiredType=null) {
+	public function getBean($name, $requiredType = null) {
 
 		$beanName = $this->transformedBeanName($name);
-		
+
 		// @todo: prototypes currently in creation: 
-		
-		if($this->isPrototypeCurrentlyInCreation($beanName)) {
+
+		if ($this->isPrototypeCurrentlyInCreation($beanName)) {
 			throw new Bee_Context_BeanCurrentlyInCreationException($beanName);
 		}
-		
-		if(!is_null($this->getParent()) && !$this->containsBeanDefinition($beanName)) {
+
+		if (!is_null($this->getParent()) && !$this->containsBeanDefinition($beanName)) {
 			return $this->getParent()->getBean($beanName, $requiredType);
 		}
-		
+
 		$localBeanDefinition = $this->getBeanDefinition($beanName);
-		
+
 		// OK, we have a bean definition. how do we create / retrieve an instance of it? 
 		// TODO: FactoryBean etc.
-        $dependsOn = $localBeanDefinition->getDependsOn();
+		$dependsOn = $localBeanDefinition->getDependsOn();
 
-        if(!is_null($dependsOn)) {
-            foreach ($dependsOn as $dep) {
-                $this->getBean($dep);
-                $this->registerDependentBean($dep, $beanName);
-            }
-        }
+		if (!is_null($dependsOn)) {
+			foreach ($dependsOn as $dep) {
+				$this->getBean($dep);
+				$this->registerDependentBean($dep, $beanName);
+			}
+		}
 
 		$scopeName = $localBeanDefinition->getScope();
 		$scope = $this->scopes[$scopeName];
-		if(is_null($scope)) {
-			throw new Exception("No scope registered for scope $scopeName"); 
+		if (is_null($scope)) {
+			throw new Exception("No scope registered for scope $scopeName");
 		}
-		
+
 		// @todo: catch IllegalStateException in case scope is not active (e.g. no session started...)
 		// not needed for session, request, prototype scopes but maybe for fancy new scope implementations...
 		$scopedInstance = $scope->get($beanName, new Bee_Context_Abstract_ObjectFactoryImpl($beanName, $localBeanDefinition, $this));
 
-        $bean = $this->getObjectForBeanInstance($scopedInstance, $name, $beanName, $localBeanDefinition);
+		$bean = $this->getObjectForBeanInstance($scopedInstance, $name, $beanName, $localBeanDefinition);
 
 		if (!is_null($requiredType) && !($bean instanceof $requiredType)) {
 			throw new Bee_Context_BeanNotOfRequiredTypeException($beanName, $requiredType, get_class($bean));
 		}
-		
+
 		return $bean;
-		
+
 	}
 
 	/**
@@ -700,74 +705,74 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @param mixed $beanInstance the shared bean instance
 	 * @param string $name name that may include factory dereference prefix
 	 * @param string $beanName the canonical bean name
-	 * @param Bee_Context_Config_IBeanDefinition $mbd the merged bean definition
+	 * @param IBeanDefinition $mbd the merged bean definition
 	 * @throws Bee_Context_BeanIsNotAFactoryException
 	 * @return object the object to expose for the bean
 	 */
-    protected function getObjectForBeanInstance(
-            $beanInstance, $name, $beanName, Bee_Context_Config_IBeanDefinition $mbd) {
+	protected function getObjectForBeanInstance(
+			$beanInstance, $name, $beanName, IBeanDefinition $mbd) {
 
-        // Don't let calling code try to dereference the factory if the bean isn't a factory.
-        if (Bee_Context_Support_ContextUtils::isFactoryDereference($name) && !($beanInstance instanceof Bee_Context_IFactoryBean)) {
-            throw new Bee_Context_BeanIsNotAFactoryException($name, get_class($beanInstance));
-        }
+		// Don't let calling code try to dereference the factory if the bean isn't a factory.
+		if (ContextUtils::isFactoryDereference($name) && !($beanInstance instanceof Bee_Context_IFactoryBean)) {
+			throw new Bee_Context_BeanIsNotAFactoryException($name, get_class($beanInstance));
+		}
 
-        // Now we have the bean instance, which may be a normal bean or a FactoryBean.
-        // If it's a FactoryBean, we use it to create a bean instance, unless the
-        // caller actually wants a reference to the factory.
-        if (!($beanInstance instanceof Bee_Context_IFactoryBean) || Bee_Context_Support_ContextUtils::isFactoryDereference($name)) {
-            return $beanInstance;
-        }
+		// Now we have the bean instance, which may be a normal bean or a FactoryBean.
+		// If it's a FactoryBean, we use it to create a bean instance, unless the
+		// caller actually wants a reference to the factory.
+		if (!($beanInstance instanceof Bee_Context_IFactoryBean) || ContextUtils::isFactoryDereference($name)) {
+			return $beanInstance;
+		}
 
-        $object = null;
-        if ($mbd == null) {
-            $object = $this->getCachedObjectForFactoryBean($beanName);
-        }
-        if ($object == null) {
-            // Return bean instance from factory.
-            // Caches object obtained from FactoryBean if it is a singleton.
-            if ($mbd == null && $this->containsBeanDefinition($beanName)) {
-                $mbd = $this->getBeanDefinition($beanName);
-            }
-            $synthetic = ($mbd != null && $mbd->isSynthetic());
-            $object = $this->getObjectFromFactoryBean($beanInstance, $beanName, !$synthetic);
-        }
-        return $object;
-    }
+		$object = null;
+		if ($mbd == null) {
+			$object = $this->getCachedObjectForFactoryBean($beanName);
+		}
+		if ($object == null) {
+			// Return bean instance from factory.
+			// Caches object obtained from FactoryBean if it is a singleton.
+			if ($mbd == null && $this->containsBeanDefinition($beanName)) {
+				$mbd = $this->getBeanDefinition($beanName);
+			}
+			$synthetic = ($mbd != null && $mbd->isSynthetic());
+			$object = $this->getObjectFromFactoryBean($beanInstance, $beanName, !$synthetic);
+		}
+		return $object;
+	}
 
-    /**
-     * Obtain an object to expose from the given FactoryBean, if available
-     * in cached form. Quick check for minimal synchronization.
-     * @param string $beanName the name of the bean
-     * @return mixed the object obtained from the FactoryBean,
-     * or <code>null</code> if not available
-     */
-    protected function getCachedObjectForFactoryBean($beanName) {
-        return $this->factoryBeanObjectCache[$beanName];
-    }
+	/**
+	 * Obtain an object to expose from the given FactoryBean, if available
+	 * in cached form. Quick check for minimal synchronization.
+	 * @param string $beanName the name of the bean
+	 * @return mixed the object obtained from the FactoryBean,
+	 * or <code>null</code> if not available
+	 */
+	protected function getCachedObjectForFactoryBean($beanName) {
+		return $this->factoryBeanObjectCache[$beanName];
+	}
 
-    /**
-     * Obtain an object to expose from the given FactoryBean.
-     * @param Bee_Context_IFactoryBean $factory the FactoryBean instance
-     * @param string $beanName the name of the bean
-     * @param boolean $shouldPostProcess whether the bean is subject for post-processing
-     * @return mixed the object obtained from the FactoryBean
-     * @throws Bee_Context_BeanCreationException if FactoryBean object creation failed
-     * @see org.springframework.beans.factory.FactoryBean#getObject()
-     */
-    protected function getObjectFromFactoryBean(Bee_Context_IFactoryBean $factory, $beanName, $shouldPostProcess) {
-        if ($factory->isSingleton() /*&& $this->containsSingleton(beanName)*/) {
-            if(array_key_exists($beanName, $this->factoryBeanObjectCache)) {
-                $object = $this->factoryBeanObjectCache[$beanName];
-            } else {
-                $object = $this->doGetObjectFromFactoryBean($factory, $beanName, $shouldPostProcess);
-                $this->factoryBeanObjectCache[$beanName] = $object;
-            }
-            return $object;
-        } else {
-            return $this->doGetObjectFromFactoryBean($factory, $beanName, $shouldPostProcess);
-        }
-    }
+	/**
+	 * Obtain an object to expose from the given FactoryBean.
+	 * @param Bee_Context_IFactoryBean $factory the FactoryBean instance
+	 * @param string $beanName the name of the bean
+	 * @param boolean $shouldPostProcess whether the bean is subject for post-processing
+	 * @return mixed the object obtained from the FactoryBean
+	 * @throws Bee_Context_BeanCreationException if FactoryBean object creation failed
+	 * @see org.springframework.beans.factory.FactoryBean#getObject()
+	 */
+	protected function getObjectFromFactoryBean(Bee_Context_IFactoryBean $factory, $beanName, $shouldPostProcess) {
+		if ($factory->isSingleton() /*&& $this->containsSingleton(beanName)*/) {
+			if (array_key_exists($beanName, $this->factoryBeanObjectCache)) {
+				$object = $this->factoryBeanObjectCache[$beanName];
+			} else {
+				$object = $this->doGetObjectFromFactoryBean($factory, $beanName, $shouldPostProcess);
+				$this->factoryBeanObjectCache[$beanName] = $object;
+			}
+			return $object;
+		} else {
+			return $this->doGetObjectFromFactoryBean($factory, $beanName, $shouldPostProcess);
+		}
+	}
 
 	/**
 	 * Obtain an object to expose from the given FactoryBean.
@@ -779,35 +784,32 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @return mixed the object obtained from the FactoryBean
 	 * @see org.springframework.beans.factory.FactoryBean#getObject()
 	 */
-    private function doGetObjectFromFactoryBean(Bee_Context_IFactoryBean $factory, $beanName, $shouldPostProcess) {
-        try {
-            $object = $factory->getObject();
-        }
-        catch (Bee_Context_FactoryBeanNotInitializedException $ex) {
-            throw new Bee_Context_BeanCurrentlyInCreationException($beanName, $ex);
-        }
-        catch (Exception $ex) {
-            throw new Bee_Context_BeanCreationException($beanName, "FactoryBean threw exception on object creation", $ex);
-        }
+	private function doGetObjectFromFactoryBean(Bee_Context_IFactoryBean $factory, $beanName, $shouldPostProcess) {
+		try {
+			$object = $factory->getObject();
+		} catch (Bee_Context_FactoryBeanNotInitializedException $ex) {
+			throw new Bee_Context_BeanCurrentlyInCreationException($beanName, $ex);
+		} catch (Exception $ex) {
+			throw new Bee_Context_BeanCreationException($beanName, "FactoryBean threw exception on object creation", $ex);
+		}
 
-        // Do not accept a null value for a FactoryBean that's not fully
-        // initialized yet: Many FactoryBeans just return null then.
+		// Do not accept a null value for a FactoryBean that's not fully
+		// initialized yet: Many FactoryBeans just return null then.
 //        if ($object == null && isSingletonCurrentlyInCreation(beanName)) {
 //            throw new Bee_Context_BeanCurrentlyInCreationException(
 //                    beanName, "FactoryBean which is currently in creation returned null from getObject");
 //        }
 
-        if ($object != null && $shouldPostProcess) {
-            try {
-                $object = $this->applyBeanPostProcessorsAfterInitialization($object, $beanName);
-            }
-            catch (Exception $ex) {
-                throw new Bee_Context_BeanCreationException($beanName, "Post-processing of the FactoryBean's object failed", $ex);
-            }
-        }
+		if ($object != null && $shouldPostProcess) {
+			try {
+				$object = $this->applyBeanPostProcessorsAfterInitialization($object, $beanName);
+			} catch (Exception $ex) {
+				throw new Bee_Context_BeanCreationException($beanName, "Post-processing of the FactoryBean's object failed", $ex);
+			}
+		}
 
-        return $object;
-    }
+		return $object;
+	}
 
 	/**
 	 * @param String $beanName
@@ -815,7 +817,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @return bool
 	 */
 	public function isTypeMatch($beanName, $type) {
-		if(!is_null($this->getParent()) && !$this->containsBeanDefinition($beanName)) {
+		if (!is_null($this->getParent()) && !$this->containsBeanDefinition($beanName)) {
 			return $this->getParent()->isTypeMatch($beanName, $type);
 		}
 		// @todo: TEST THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -827,7 +829,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @return String
 	 */
 	public function getType($beanName) {
-		if(!is_null($this->getParent()) && !$this->containsBeanDefinition($beanName)) {
+		if (!is_null($this->getParent()) && !$this->containsBeanDefinition($beanName)) {
 			return $this->getParent()->getType($beanName);
 		}
 		return $this->getBeanDefinition($beanName)->getBeanClassName();
@@ -838,16 +840,16 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @return array
 	 */
 	public function getBeanNamesForType($className) {
-        $allDefs = $this->getBeanDefinitions();
-        $matches = array();
-        foreach($allDefs as $name => $beanDefinition) {
-            if(Bee_Utils_Types::isAssignable($beanDefinition->getBeanClassName(), $className)) {
-                $matches[] = $name;
-            }
-        }
-        return $matches;
-    }
-	
+		$allDefs = $this->getBeanDefinitions();
+		$matches = array();
+		foreach ($allDefs as $name => $beanDefinition) {
+			if (Bee_Utils_Types::isAssignable($beanDefinition->getBeanClassName(), $className)) {
+				$matches[] = $name;
+			}
+		}
+		return $matches;
+	}
+
 	/**
 	 * Enter description here...
 	 *
@@ -856,8 +858,8 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	public function getParent() {
 		return $this->parent;
 	}
-	
-	
+
+
 	/**
 	 * Enter description here...
 	 *
@@ -867,7 +869,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	protected final function isPrototypeCurrentlyInCreation($beanName) {
 		return array_key_exists($beanName, $this->beansInCreation);
 	}
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -876,7 +878,7 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 */
 	public function setParent(Bee_IContext $parent) {
 		$this->parent = $parent;
-		if($parent instanceof Bee_Context_Config_IBeanDefinitionRegistry) {
+		if ($parent instanceof IBeanDefinitionRegistry) {
 			$this->setParentRegistry($parent);
 		}
 	}
@@ -885,16 +887,15 @@ abstract class Bee_Context_Abstract extends Bee_Context_Config_BasicBeanDefiniti
 	 * @return int
 	 */
 	public function getModificationTimestamp() {
-        return 0;
-    }
+		return 0;
+	}
 }
 
 
-
 /**
- * Workaround for an anonymous implementation of Bee_Context_Config_IObjectFactory.
+ * Workaround for an anonymous implementation of IObjectFactory.
  */
-final class Bee_Context_Abstract_ObjectFactoryImpl implements Bee_Context_Config_IObjectFactory {
+final class Bee_Context_Abstract_ObjectFactoryImpl implements IObjectFactory {
 
 	/**
 	 * Enter description here...
@@ -902,29 +903,29 @@ final class Bee_Context_Abstract_ObjectFactoryImpl implements Bee_Context_Config
 	 * @var string
 	 */
 	private $beanName;
-	
+
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Context_Config_IBeanDefinition
+	 * @var IBeanDefinition
 	 */
 	private $beanDefinition;
-	
+
 	/**
 	 * Enter description here...
 	 *
 	 * @var Bee_Context_Abstract
 	 */
 	private $context;
-	
+
 	/**
 	 * Enter description here...
 	 *
 	 * @param String $beanName
-	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition
+	 * @param IBeanDefinition $beanDefinition
 	 * @param Bee_Context_Abstract $context
 	 */
-	public function __construct($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition, Bee_Context_Abstract $context) {		
+	public function __construct($beanName, IBeanDefinition $beanDefinition, Bee_Context_Abstract $context) {
 		$this->beanName = $beanName;
 		$this->beanDefinition = $beanDefinition;
 		$this->context = $context;
@@ -941,6 +942,6 @@ final class Bee_Context_Abstract_ObjectFactoryImpl implements Bee_Context_Config
 	 * @return int
 	 */
 	function getModificationTimestamp() {
-        return $this->context->getModificationTimestamp();
-    }
+		return $this->context->getModificationTimestamp();
+	}
 }

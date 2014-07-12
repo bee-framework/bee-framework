@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Beans\MethodInvocation;
+use Bee\Context\Config\IBeanDefinition;
 
 /**
  * Enter description here...
@@ -25,17 +25,24 @@ use Bee\Beans\MethodInvocation;
 class Bee_Context_Config_BeanDefinition_Generic extends Bee_Context_Config_BeanDefinition_Abstract {
 	
 	private $parentName;
-	
-	public function __construct(Bee_Context_Config_IBeanDefinition $original = null) {
+
+	/**
+	 * @param IBeanDefinition $original
+	 */
+	public function __construct(IBeanDefinition $original = null) {
 		parent::__construct($original);
 	}
-	
-	
+
+	/**
+	 * @return String
+	 */
 	public function getParentName() {
 		return $this->parentName;
 	}
-	
-	
+
+	/**
+	 * @param String $parentName
+	 */
 	public function setParentName($parentName) {
 		$this->parentName = $parentName;
 	}

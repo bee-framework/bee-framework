@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\IInstantiationAwareBeanPostProcessor;
+use Bee\Context\Support\ContextUtils;
 
 /**
  * User: mp
@@ -21,7 +23,7 @@
  * Time: 9:18:23 AM
  */
 
-class Bee_AOP_Framework_AutoProxyCreator implements Bee_Context_Config_IInstantiationAwareBeanPostProcessor, Bee_Context_Config_IContextAware, Bee_Context_Config_IInitializingBean {
+class Bee_AOP_Framework_AutoProxyCreator implements IInstantiationAwareBeanPostProcessor, Bee_Context_Config_IContextAware, Bee_Context_Config_IInitializingBean {
 
     const DO_NOT_PROXY = '<<DO_NOT_PROXY>>';
 
@@ -63,10 +65,14 @@ class Bee_AOP_Framework_AutoProxyCreator implements Bee_Context_Config_IInstanti
 //            echo 'no advices for bean '.$beanName.'<hr/>';
 //        }
         return $bean;
-    }	
+    }
 
-
-    protected function getAdvicesAndAdvisorsForBean($beanClassName, $beanName) {
+	/**
+	 * @param $beanClassName
+	 * @param $beanName
+	 * @return string|the
+	 */
+	protected function getAdvicesAndAdvisorsForBean($beanClassName, $beanName) {
         $advisors = $this->findEligibleAdvisors($beanClassName, $beanName);
         if (count($advisors) == 0) {
             return self::DO_NOT_PROXY;
@@ -76,10 +82,9 @@ class Bee_AOP_Framework_AutoProxyCreator implements Bee_Context_Config_IInstanti
 
     /**
      * Find all eligible Advisors for auto-proxying this class.
-     * @param beanClass the clazz to find advisors for
-     * @param beanName the name of the currently proxied bean
-     * @return the empty List, not <code>null</code>,
-     * if there are no pointcuts or interceptors
+     * @param string $beanClassName the clazz to find advisors for
+     * @param string $beanName the name of the currently proxied bean
+     * @return the empty List, not <code>null</code> if there are no pointcuts or interceptors
      * @see #findCandidateAdvisors
      * @see #sortAdvisors
      * @see #extendAdvisors
@@ -95,10 +100,12 @@ class Bee_AOP_Framework_AutoProxyCreator implements Bee_Context_Config_IInstanti
         return $eligibleAdvisors;
     }
 
-    /**
-     * Find all candidate Advisors to use in auto-proxying.
-     * @return the List of candidate Advisors
-     */
+	/**
+	 * Find all candidate Advisors to use in auto-proxying.
+	 * @throws Bee_Context_BeanCreationException
+	 * @throws Exception
+	 * @return array the List of candidate Advisors
+	 */
     protected function findCandidateAdvisors() {
         // Determine list of advisor bean names, if not cached already.
         $advisorNames = null;
@@ -107,7 +114,7 @@ class Bee_AOP_Framework_AutoProxyCreator implements Bee_Context_Config_IInstanti
         if ($advisorNames == null) {
             // Do not initialize FactoryBeans here: We need to leave all regular beans
             // uninitialized to let the auto-proxy creator apply to them!
-            $advisorNames = Bee_Context_Support_ContextUtils::beanNamesForTypeIncludingAncestors($this->beeContext, 'Bee_AOP_IAdvisor');
+            $advisorNames = ContextUtils::beanNamesForTypeIncludingAncestors($this->beeContext, 'Bee_AOP_IAdvisor');
             $this->cachedAdvisorBeanNames = $advisorNames;
         }
 
@@ -141,11 +148,11 @@ class Bee_AOP_Framework_AutoProxyCreator implements Bee_Context_Config_IInstanti
         return $advisors;
     }
 
-    protected function isEligibleAdvisorBean($beanName) {
+	/**
+	 * @param $beanName
+	 * @return bool
+	 */
+	protected function isEligibleAdvisorBean($beanName) {
         return true;
     }
-
-
 }
-
-?>

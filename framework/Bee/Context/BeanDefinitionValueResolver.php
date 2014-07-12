@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
+use Bee\Context\Config\ArrayValue;
+use Bee\Context\Config\BeanDefinitionHolder;
+use Bee\Context\Config\IBeanDefinition;
+use Bee\Context\Config\RuntimeBeanNameReference;
+use Bee\Context\Config\RuntimeBeanReference;
 use Bee\Context\Config\TypedStringValue;
 
 /**
@@ -72,25 +76,25 @@ class Bee_Context_BeanDefinitionValueResolver {
 
 		// We must check each value to see whether it requires a runtime reference
 		// to another bean to be resolved.
-		if ($value instanceof Bee_Context_Config_RuntimeBeanReference) {
+		if ($value instanceof RuntimeBeanReference) {
 
 			return $this->resolveReference($argName, $value);
 
-		} else if ($value instanceof Bee_Context_Config_RuntimeBeanNameReference) {
+		} else if ($value instanceof RuntimeBeanNameReference) {
 
 			return $this->checkBeanNameReference($argName, $value);
 
-		} else if ($value instanceof Bee_Context_Config_BeanDefinitionHolder) {
+		} else if ($value instanceof BeanDefinitionHolder) {
 			
 			// Resolve BeanDefinitionHolder: contains BeanDefinition with name and aliases.
 			return $this->resolveInnerBean($argName, $value->getBeanName(), $value->getBeanDefinition());
 
-		} else if ($value instanceof Bee_Context_Config_IBeanDefinition) {
+		} else if ($value instanceof IBeanDefinition) {
 
 			// Resolve plain BeanDefinition, without contained name: use dummy name.
 			return $this->resolveInnerBean($argName, "(inner bean)", $value);
 
-		} else if ($value instanceof Bee_Context_Config_ArrayValue) {
+		} else if ($value instanceof ArrayValue) {
 
 			// May need to resolve contained runtime references.
 			return $this->resolveArrayValue($argName, $value);
@@ -112,11 +116,11 @@ class Bee_Context_BeanDefinitionValueResolver {
 
 	/**
 	 * @param $argName
-	 * @param Bee_Context_Config_RuntimeBeanNameReference $value
+	 * @param RuntimeBeanNameReference $value
 	 * @return null
 	 * @throws Bee_Context_BeanDefinitionStoreException
 	 */
-	private function checkBeanNameReference($argName, Bee_Context_Config_RuntimeBeanNameReference $value) {
+	private function checkBeanNameReference($argName, RuntimeBeanNameReference $value) {
         $ref = $this->findApplicableBeanName($value->getBeanNames(), $this->context);
         if (!$this->context->containsBean($ref)) {
             throw new Bee_Context_BeanDefinitionStoreException("Invalid bean name '$ref' in bean reference $argName");
@@ -127,7 +131,7 @@ class Bee_Context_BeanDefinitionValueResolver {
 	/**
 	 * Resolve a reference to another bean in the factory.
 	 */
-	private function resolveReference($argName, Bee_Context_Config_RuntimeBeanReference $ref) {
+	private function resolveReference($argName, RuntimeBeanReference $ref) {
 		try {
 			if ($ref->isToParent()) {
 
@@ -187,11 +191,11 @@ class Bee_Context_BeanDefinitionValueResolver {
 	 * Resolve an inner bean definition.
 	 * @param String $argName the name of the argument that the inner bean is defined for
 	 * @param String $innerBeanName the name of the inner bean
-	 * @param Bee_Context_Config_IBeanDefinition $innerBeanDefinition the bean definition for the inner bean
+	 * @param IBeanDefinition $innerBeanDefinition the bean definition for the inner bean
 	 * @throws Bee_Context_BeanCreationException
 	 * @return mixed the resolved inner bean instance
 	 */
-	private function resolveInnerBean($argName, $innerBeanName, Bee_Context_Config_IBeanDefinition $innerBeanDefinition) {
+	private function resolveInnerBean($argName, $innerBeanName, IBeanDefinition $innerBeanDefinition) {
 		try {
 			// Guarantee initialization of beans that the inner bean depends on.
 			$dependsOn = $innerBeanDefinition->getDependsOn();
@@ -214,10 +218,10 @@ class Bee_Context_BeanDefinitionValueResolver {
 
 	/**
 	 * @param $argName
-	 * @param Bee_Context_Config_ArrayValue $arr
+	 * @param ArrayValue $arr
 	 * @return array
 	 */
-	private function resolveArrayValue($argName, Bee_Context_Config_ArrayValue $arr) {
+	private function resolveArrayValue($argName, ArrayValue $arr) {
 		return array_map(array($this, '_resolveValueIfNecessary'), $arr->getValue());
 	}
 

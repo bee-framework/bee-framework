@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Util;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee_Context_Config_IInitializingBean;
+use Bee_Context_IFactoryBean;
+use Exception;
 
 /**
  * User: mp
@@ -21,7 +25,7 @@
  * Time: 03:16
  */
  
-abstract class Bee_Context_Util_AbstractFactoryBean implements Bee_Context_IFactoryBean, Bee_Context_Config_IInitializingBean {
+abstract class AbstractFactoryBean implements Bee_Context_IFactoryBean, Bee_Context_Config_IInitializingBean {
 
     /**
      * @var boolean
@@ -67,13 +71,16 @@ abstract class Bee_Context_Util_AbstractFactoryBean implements Bee_Context_IFact
      * the object returned by this factory.
      * <p>Invoked on initialization of this FactoryBean in case of
      * a singleton; else, on each {@link #getObject()} call.
-     * @return the object returned by this factory
+     * @return mixed the object returned by this factory
      * @throws Exception if an exception occured during object creation
      * @see #getObject()
      */
     protected abstract function &createInstance();
 
-    private function getEarlySingletonInstance() {
+	/**
+	 * @throws \Exception
+	 */
+	private function getEarlySingletonInstance() {
         throw new Exception('Circular references not yet supported');
     }
 }

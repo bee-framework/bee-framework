@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Support;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +17,10 @@
  */
 
 /**
- * User: mp
- * Date: Feb 18, 2010
- * Time: 6:51:43 AM
+ * Class ParseState
+ * @package Bee\Context\Support
  */
-
-class Bee_Context_Support_ParseState {
+class ParseState {
 
     /**
      * Internal {@link Stack} storage.

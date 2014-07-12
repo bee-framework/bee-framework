@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Context\Config;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -21,7 +22,7 @@
  * Time: 7:48:50 AM
  */
 
-interface Bee_Context_Config_ISmartInstantiationAwareBeanPostProcessor extends Bee_Context_Config_IInstantiationAwareBeanPostProcessor {
+interface ISmartInstantiationAwareBeanPostProcessor extends IInstantiationAwareBeanPostProcessor {
 
     /**
      * Predict the type of the bean to be eventually returned from this
@@ -29,7 +30,7 @@ interface Bee_Context_Config_ISmartInstantiationAwareBeanPostProcessor extends B
      * @param string $beanClassName the raw class of the bean
      * @param string $beanName the name of the bean
      * @return string the type of the bean, or <code>null</code> if not predictable
-     * @throws org.springframework.beans.BeansException in case of errors
+     * @throws \Bee_Context_BeansException in case of errors
      */
     function predictBeanType($beanClassName, $beanName);
 
@@ -51,8 +52,7 @@ interface Bee_Context_Config_ISmartInstantiationAwareBeanPostProcessor extends B
      * @param string $beanName the name of the bean
      * @return mixed the object to expose as bean reference
      * (typically with the passed-in bean instance as default)
-     * @throws org.springframework.beans.BeansException in case of errors
+     * @throws \Bee_Context_BeansException in case of errors
      */
     function getEarlyBeanReference($bean, $beanName);
 }
-?>

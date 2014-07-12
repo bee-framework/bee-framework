@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\BeanDefinitionHolder;
 
 /**
  * User: mp
@@ -23,7 +24,7 @@
 
 class Bee_AOP_Namespace_ScopedProxyBeanDefinitionDecorator implements Bee_Context_Xml_Namespace_IBeanDefinitionDecorator {
 
-    public function decorate(DOMNode $node, Bee_Context_Config_BeanDefinitionHolder $definition, Bee_Context_Xml_ParserContext $parserContext) {
+    public function decorate(DOMNode $node, BeanDefinitionHolder $definition, Bee_Context_Xml_ParserContext $parserContext) {
 
         // Register the original bean definition as it will be referenced by the scoped proxy and is relevant for tooling (validation, navigation).
         $targetBeanName = Bee_AOP_Scope_ScopedProxyUtils::getTargetBeanName($definition->getBeanName());

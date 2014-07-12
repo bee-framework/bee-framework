@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\IInstantiationAwareBeanPostProcessor;
 
 /**
  * User: mp
@@ -21,7 +22,7 @@
  * Time: 12:25:41 AM
  */
 
-class AbstractAutoProxyCreator implements Bee_Context_Config_IInstantiationAwareBeanPostProcessor, Bee_Utils_IOrdered {
+class AbstractAutoProxyCreator implements IInstantiationAwareBeanPostProcessor, Bee_Utils_IOrdered {
 
     /**
      * @var int
@@ -97,5 +98,3 @@ class AbstractAutoProxyCreator implements Bee_Context_Config_IInstantiationAware
 //    }
 
 }
-
-?>

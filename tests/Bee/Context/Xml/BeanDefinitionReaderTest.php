@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
+use Bee\Context\Config\ArrayValue;
+use Bee\Context\Config\BasicBeanDefinitionRegistry;
 use Bee\Context\Config\TypedStringValue;
 
 /**
@@ -26,7 +28,7 @@ use Bee\Context\Config\TypedStringValue;
 class Bee_Context_Xml_BeanDefinitionReaderTest extends PHPUnit_Framework_TestCase {
 
     /**
-     * @var Bee_Context_Config_BasicBeanDefinitionRegistry
+     * @var BasicBeanDefinitionRegistry
      */
     private static $registry;
 
@@ -36,7 +38,7 @@ class Bee_Context_Xml_BeanDefinitionReaderTest extends PHPUnit_Framework_TestCas
 	private $propertyEditorRegistry;
 
     public static function setUpBeforeClass() {
-        self::$registry = new Bee_Context_Config_BasicBeanDefinitionRegistry();
+        self::$registry = new BasicBeanDefinitionRegistry();
         $reader = new Bee_Context_Xml_BeanDefinitionReader(self::$registry);
         $reader->loadBeanDefinitions('Bee/Context/Xml/BeanDefinitionReaderTest-context.xml');
     }
@@ -63,9 +65,9 @@ class Bee_Context_Xml_BeanDefinitionReaderTest extends PHPUnit_Framework_TestCas
 
         $beanDefinition = self::$registry->getBeanDefinition('arrayFactory');
 
-        $this->assertInstanceOf('Bee_Context_Config_IBeanDefinition', $beanDefinition);
+        $this->assertInstanceOf('Bee\Context\Config\IBeanDefinition', $beanDefinition);
 
-        $this->assertEquals('Bee_Context_Util_ArrayFactoryBean', $beanDefinition->getBeanClassName());
+        $this->assertEquals('Bee\Context\Util\ArrayFactoryBean', $beanDefinition->getBeanClassName());
 
         $propValues = $beanDefinition->getPropertyValues();
 
@@ -91,18 +93,18 @@ class Bee_Context_Xml_BeanDefinitionReaderTest extends PHPUnit_Framework_TestCas
 
         $this->checkParentArrayContents($arrayValue);
 
-        $this->assertInstanceOf('Bee_Context_Config_BeanDefinitionHolder', $arrayValue[3]);
+        $this->assertInstanceOf('Bee\Context\Config\BeanDefinitionHolder', $arrayValue[3]);
     }
 
     /**
-     * @param Bee_Context_Config_ArrayValue $arrayValue
+     * @param ArrayValue $arrayValue
      * @return void
      */
-    private function checkParentArrayContents(Bee_Context_Config_ArrayValue $arrayValue) {
+    private function checkParentArrayContents(ArrayValue $arrayValue) {
         $this->assertTypedStringValue('Alpha', $arrayValue[0]);
         $this->assertTypedStringValue('Bravo', $arrayValue[1]);
         $this->assertTypedStringValue('Charlie', $arrayValue[2]);
-        $this->assertInstanceOf('Bee_Context_Config_RuntimeBeanReference', $arrayValue[4]);
+        $this->assertInstanceOf('Bee\Context\Config\RuntimeBeanReference', $arrayValue[4]);
     }
 
 	/**
@@ -119,13 +121,13 @@ class Bee_Context_Xml_BeanDefinitionReaderTest extends PHPUnit_Framework_TestCas
 		$arrayValue = $this->getSourceArrayValueForArrayFactory($beanName);
 		$this->assertArrayValueInstance($arrayValue, 7);
 		$this->checkParentArrayContents($arrayValue);
-		$this->assertInstanceOf('Bee_Context_Config_RuntimeBeanReference', $arrayValue['d']);
+		$this->assertInstanceOf('Bee\Context\Config\RuntimeBeanReference', $arrayValue['d']);
 	}
 
 	private function childArrayFactoryDefNotMerged($beanName) {
 		$arrayValue = $this->getSourceArrayValueForArrayFactory($beanName);
 		$this->assertArrayValueInstance($arrayValue, 2);
-		$this->assertInstanceOf('Bee_Context_Config_RuntimeBeanReference', $arrayValue['d']);
+		$this->assertInstanceOf('Bee\Context\Config\RuntimeBeanReference', $arrayValue['d']);
 	}
 
 	private function getSourceArrayValueForArrayFactory($beanName) {
@@ -146,7 +148,7 @@ class Bee_Context_Xml_BeanDefinitionReaderTest extends PHPUnit_Framework_TestCas
     }
 
     protected function assertArrayValueInstance($arrayValue, $expectedSize) {
-        $this->assertInstanceOf('Bee_Context_Config_ArrayValue', $arrayValue);
+        $this->assertInstanceOf('Bee\Context\Config\ArrayValue', $arrayValue);
         $this->assertEquals($expectedSize, count($arrayValue));
     }
 

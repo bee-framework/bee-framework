@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Context\Support;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -15,23 +16,25 @@
  * limitations under the License.
  */
 use Bee\Beans\PropertyValue;
+use Bee\Context\Config\RuntimeBeanReference;
+use Bee_Context_Config_BeanDefinition_Generic;
 
 /**
  * User: mp
  * Date: Feb 17, 2010
  * Time: 11:56:39 PM
  */
-class Bee_Context_Support_BeanDefinitionBuilder {
+class BeanDefinitionBuilder {
 
     /**
      * Create a new <code>BeanDefinitionBuilder</code> used to construct a {@link GenericBeanDefinition}.
      *
      * @static
      * @param string $beanClassName the class name of the bean that the definition is being created for
-     * @return Bee_Context_Support_BeanDefinitionBuilder
+     * @return BeanDefinitionBuilder
      */
     public static function genericBeanDefinition($beanClassName = null) {
-        $builder = new Bee_Context_Support_BeanDefinitionBuilder();
+        $builder = new BeanDefinitionBuilder();
         $builder->beanDefinition = new Bee_Context_Config_BeanDefinition_Generic();
         $builder->beanDefinition->setBeanClassName($beanClassName);
         return $builder;
@@ -43,10 +46,10 @@ class Bee_Context_Support_BeanDefinitionBuilder {
      * @static
      * @param string $beanClassName the class name for the bean that the definition is being created for
      * @param string $factoryMethodName the name of the method to use to construct the bean instance
-     * @return Bee_Context_Support_BeanDefinitionBuilder
+     * @return BeanDefinitionBuilder
      */
     public static function rootBeanDefinition($beanClassName, $factoryMethodName = null) {
-        $builder = new Bee_Context_Support_BeanDefinitionBuilder();
+        $builder = new BeanDefinitionBuilder();
         $builder->beanDefinition = new Bee_Context_Config_BeanDefinition_Generic();
         $builder->beanDefinition->setBeanClassName($beanClassName);
         $builder->beanDefinition->setFactoryMethodName($factoryMethodName);
@@ -57,10 +60,10 @@ class Bee_Context_Support_BeanDefinitionBuilder {
      * Create a new <code>BeanDefinitionBuilder</code> used to construct a {@link ChildBeanDefinition}.
      * @static
      * @param string $parentName the name of the parent bean
-     * @return Bee_Context_Support_BeanDefinitionBuilder
+     * @return BeanDefinitionBuilder
      */
     public static function childBeanDefinition($parentName) {
-        $builder = new Bee_Context_Support_BeanDefinitionBuilder();
+        $builder = new BeanDefinitionBuilder();
         $builder->beanDefinition = new Bee_Context_Config_BeanDefinition_Generic();
         $builder->beanDefinition->setParentName($parentName);
         return $builder;
@@ -68,7 +71,7 @@ class Bee_Context_Support_BeanDefinitionBuilder {
 
     /**
      * The <code>BeanDefinition</code> instance we are creating.
-     * @var Bee_Context_Config_BeanDefinition_Abstract
+     * @var \Bee_Context_Config_BeanDefinition_Abstract
      */
     private $beanDefinition;
 
@@ -81,7 +84,7 @@ class Bee_Context_Support_BeanDefinitionBuilder {
 
     /**
      * Return the current BeanDefinition object.
-     * @return Bee_Context_Config_BeanDefinition_Abstract
+     * @return \Bee_Context_Config_BeanDefinition_Abstract
      */
     public function getBeanDefinition() {
         return $this->beanDefinition;
@@ -90,7 +93,7 @@ class Bee_Context_Support_BeanDefinitionBuilder {
     /**
      * Set the name of the parent definition of this bean definition.
      * @param string $parentName
-     * @return Bee_Context_Support_BeanDefinitionBuilder
+     * @return BeanDefinitionBuilder
      */
     public function setParentName($parentName) {
         $this->beanDefinition->setParentName($parentName);
@@ -100,7 +103,7 @@ class Bee_Context_Support_BeanDefinitionBuilder {
     /**
      * Set the name of the factory method to use for this definition.
      * @param string $factoryMethod
-     * @return Bee_Context_Support_BeanDefinitionBuilder
+     * @return BeanDefinitionBuilder
      */
     public function setFactoryMethod($factoryMethod) {
         $this->beanDefinition->setFactoryMethodName($factoryMethod);
@@ -112,27 +115,27 @@ class Bee_Context_Support_BeanDefinitionBuilder {
      * and all additions are at the present point.
      *
      * @param mixed $value
-     * @return Bee_Context_Support_BeanDefinitionBuilder
+     * @return BeanDefinitionBuilder
      */
     public function addConstructorArgValue($value) {
         $this->beanDefinition->addConstructorArgumentValue(new PropertyValue($this->constructorArgIndex++, $value));
         return $this;
     }
 
-    /**
-     * Add a reference to a named bean as a constructor arg.
-     * @param array $beanName
-     * @return Bee_Context_Support_BeanDefinitionBuilder
-     */
+	/**
+	 * Add a reference to a named bean as a constructor arg.
+	 * @param array $beanNames
+	 * @return BeanDefinitionBuilder
+	 */
     public function addConstructorArgReference(array $beanNames) {
-        return $this->addConstructorArgValue(new Bee_Context_Config_RuntimeBeanReference($beanNames));
+        return $this->addConstructorArgValue(new RuntimeBeanReference($beanNames));
     }
 
     /**
      * Add the supplied property value under the given name.
      * @param string $name
      * @param mixed $value
-     * @return Bee_Context_Support_BeanDefinitionBuilder
+     * @return BeanDefinitionBuilder
      */
     public function addPropertyValue($name, $value) {
         $this->beanDefinition->addPropertyValue(new PropertyValue($name, $value));
@@ -143,16 +146,16 @@ class Bee_Context_Support_BeanDefinitionBuilder {
      * Add a reference to the specified bean name under the property specified.
      * @param string $name the name of the property to add the reference to
      * @param array $beanNames the name of the bean being referenced
-     * @return Bee_Context_Support_BeanDefinitionBuilder
+     * @return BeanDefinitionBuilder
      */
     public function addPropertyReference($name, array $beanNames) {
-        return $this->addPropertyValue($name, new Bee_Context_Config_RuntimeBeanReference($beanNames));
+        return $this->addPropertyValue($name, new RuntimeBeanReference($beanNames));
     }
 
     /**
      * Set the init method for this definition.
      * @param string $methodName
-     * @return Bee_Context_Support_BeanDefinitionBuilder
+     * @return BeanDefinitionBuilder
      */
     public function setInitMethodName($methodName) {
         $this->beanDefinition->setInitMethodName($methodName);
@@ -162,7 +165,7 @@ class Bee_Context_Support_BeanDefinitionBuilder {
     /**
      * Set the destroy method for this definition.
      * @param string $methodName
-     * @return Bee_Context_Support_BeanDefinitionBuilder
+     * @return BeanDefinitionBuilder
      */
     public function setDestroyMethodName($methodName) {
         $this->beanDefinition->setDestroyMethodName($methodName);
@@ -172,7 +175,7 @@ class Bee_Context_Support_BeanDefinitionBuilder {
     /**
      * Set the scope of this definition.
      * @param string $scope
-     * @return Bee_Context_Support_BeanDefinitionBuilder
+     * @return BeanDefinitionBuilder
      */
     public function setScope($scope) {
         $this->beanDefinition->setScope($scope);
@@ -182,7 +185,7 @@ class Bee_Context_Support_BeanDefinitionBuilder {
     /**
      * Set whether or not this definition is abstract.
      * @param boolean $flag
-     * @return Bee_Context_Support_BeanDefinitionBuilder
+     * @return BeanDefinitionBuilder
      */
     public function setAbstract($flag) {
         $this->beanDefinition->setAbstract($flag);
@@ -203,4 +206,3 @@ class Bee_Context_Support_BeanDefinitionBuilder {
         return $this;
     }
 }
-?>

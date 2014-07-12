@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\BeanDefinitionHolder;
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,8 +26,7 @@
 
 class Bee_Security_Namespace_InterceptMethodsBeanDefinitionDecorator implements Bee_Context_Xml_Namespace_IBeanDefinitionDecorator {
 
-    function decorate(DOMNode $node, Bee_Context_Config_BeanDefinitionHolder $definition, Bee_Context_Xml_ParserContext $parserContext) {
+    function decorate(DOMNode $node, BeanDefinitionHolder $definition, Bee_Context_Xml_ParserContext $parserContext) {
         // TODO: Implement decorate() method.
     }
 }
-?>

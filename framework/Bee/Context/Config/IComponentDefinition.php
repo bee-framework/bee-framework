@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Config;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +21,7 @@
  * Date: Feb 18, 2010
  * Time: 7:03:26 AM
  */
-
-interface Bee_Context_Config_IComponentDefinition {
+interface IComponentDefinition {
 
     /**
      * Get the user-visible name of this <code>ComponentDefinition</code>.
@@ -48,7 +48,7 @@ interface Bee_Context_Config_IComponentDefinition {
      * other {@link BeanDefinition BeanDefinitions} via {@link BeanReference references},
      * however these are <strong>not</strong> included as they may be not available immediately.
      * Important {@link BeanReference BeanReferences} are available from {@link #getBeanReferences()}.
-     * @return Bee_Context_Config_BeanDefinition_Abstract[] the array of BeanDefinitions, or an empty array if none
+     * @return IBeanReference[] the array of BeanDefinitions, or an empty array if none
      */
     function getBeanDefinitions();
 
@@ -57,7 +57,7 @@ interface Bee_Context_Config_IComponentDefinition {
      * inner beans within this component.
      * <p>Other inner beans may exist within the associated {@link BeanDefinition BeanDefinitions},
      * however these are not considered to be needed for validation or for user visualization.
-     * @return Bee_Context_Config_BeanDefinition_Abstract[] the array of BeanDefinitions, or an empty array if none
+     * @return IBeanReference[] the array of BeanDefinitions, or an empty array if none
      */
     function getInnerBeanDefinitions();
 
@@ -67,9 +67,7 @@ interface Bee_Context_Config_IComponentDefinition {
      * <p>Other {@link BeanReference BeanReferences} may exist within the associated
      * {@link BeanDefinition BeanDefinitions}, however these are not considered
      * to be needed for validation or for user visualization.
-     * @return Bee_Context_Config_IBeanReference[] the array of BeanReferences, or an empty array if none
+     * @return IBeanReference[] the array of BeanReferences, or an empty array if none
      */
     function getBeanReferences();
 }
-
-?>

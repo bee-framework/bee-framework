@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 use Bee\Beans\PropertyValue;
+use Bee\Context\Config\RuntimeBeanReference;
+use Bee\Context\Support\BeanDefinitionBuilder;
 
 /**
  * Created by IntelliJ IDEA.
@@ -74,7 +76,7 @@ class Bee_Security_Namespace_GlobalMethodSecurityBeanDefinitionParser implements
      */
     private function registerAnnotationBasedMethodDefinitionSources(DOMElement $element, Bee_Context_Xml_ParserContext $pc, array &$delegates) {
         if ($element->getAttribute(self::ATT_USE_SECURED) == 'enabled') {
-            $delegates[] = Bee_Context_Support_BeanDefinitionBuilder::rootBeanDefinition(self::SECURED_METHOD_DEFINITION_SOURCE_CLASS)->getBeanDefinition();
+            $delegates[] = BeanDefinitionBuilder::rootBeanDefinition(self::SECURED_METHOD_DEFINITION_SOURCE_CLASS)->getBeanDefinition();
         }
     }
 
@@ -91,9 +93,9 @@ class Bee_Security_Namespace_GlobalMethodSecurityBeanDefinitionParser implements
     private function registerMethodSecurityInterceptor(Bee_Context_Xml_ParserContext $parserContext, $accessManagerId, DOMElement $element) {
         $interceptor = new Bee_Context_Config_BeanDefinition_Generic();
         $interceptor->setBeanClassName('Bee_Security_Intercept_MethodSecurityInterceptor');
-        $interceptor->addPropertyValue(new PropertyValue('accessDecisionManager', new Bee_Context_Config_RuntimeBeanReference(array($accessManagerId))));
-        $interceptor->addPropertyValue(new PropertyValue('authenticationManager', new Bee_Context_Config_RuntimeBeanReference(array(Bee_Security_Config_IBeanIds::AUTHENTICATION_MANAGER))));
-        $interceptor->addPropertyValue(new PropertyValue('objectDefinitionSource', new Bee_Context_Config_RuntimeBeanReference(array(Bee_Security_Config_IBeanIds::DELEGATING_METHOD_DEFINITION_SOURCE))));
+        $interceptor->addPropertyValue(new PropertyValue('accessDecisionManager', new RuntimeBeanReference(array($accessManagerId))));
+        $interceptor->addPropertyValue(new PropertyValue('authenticationManager', new RuntimeBeanReference(array(Bee_Security_Config_IBeanIds::AUTHENTICATION_MANAGER))));
+        $interceptor->addPropertyValue(new PropertyValue('objectDefinitionSource', new RuntimeBeanReference(array(Bee_Security_Config_IBeanIds::DELEGATING_METHOD_DEFINITION_SOURCE))));
         $parserContext->getRegistry()->registerBeanDefinition(Bee_Security_Config_IBeanIds::METHOD_SECURITY_INTERCEPTOR, $interceptor);
 
 //        $parserContext->registerComponent(new BeanComponentDefinition($interceptor, Bee_Security_Config_IBeanIds::METHOD_SECURITY_INTERCEPTOR));
@@ -107,7 +109,7 @@ class Bee_Security_Namespace_GlobalMethodSecurityBeanDefinitionParser implements
         $advisor = new Bee_Context_Config_BeanDefinition_Generic();
         $advisor->setBeanClassName('Bee_Security_Intercept_MethodDefinitionSourceAdvisor');
         $advisor->addConstructorArgumentValue(new PropertyValue(0, Bee_Security_Config_IBeanIds::METHOD_SECURITY_INTERCEPTOR));
-        $advisor->addConstructorArgumentValue(new PropertyValue(1, new Bee_Context_Config_RuntimeBeanReference(array(Bee_Security_Config_IBeanIds::DELEGATING_METHOD_DEFINITION_SOURCE))));
+        $advisor->addConstructorArgumentValue(new PropertyValue(1, new RuntimeBeanReference(array(Bee_Security_Config_IBeanIds::DELEGATING_METHOD_DEFINITION_SOURCE))));
         $parserContext->getRegistry()->registerBeanDefinition(Bee_Security_Config_IBeanIds::METHOD_DEFINITION_SOURCE_ADVISOR, $advisor);
     }
 }

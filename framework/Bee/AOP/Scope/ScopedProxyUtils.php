@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 use Bee\Beans\PropertyValue;
+use Bee\Context\Config\BeanDefinitionHolder;
+use Bee\Context\Config\IBeanDefinitionRegistry;
 
 /**
  * User: mp
@@ -29,13 +31,12 @@ class Bee_AOP_Scope_ScopedProxyUtils {
     /**
      * Generates a scoped proxy for the supplied target bean, registering the target
      * bean with an internal name and setting 'targetBeanName' on the scoped proxy.
-     * @param definition the original bean definition
-     * @param registry the bean definition registry
-     * @param proxyTargetClass whether to create a target class proxy
-     * @return Bee_Context_Config_BeanDefinitionHolder the scoped proxy definition
+     * @param BeanDefinitionHolder $definition the original bean definition
+     * @param IBeanDefinitionRegistry $registry the bean definition registry
+     * @return BeanDefinitionHolder the scoped proxy definition
      */
-    public static function createScopedProxy(Bee_Context_Config_BeanDefinitionHolder $definition,
-            Bee_Context_Config_IBeanDefinitionRegistry $registry) {
+    public static function createScopedProxy(BeanDefinitionHolder $definition,
+											 IBeanDefinitionRegistry $registry) {
 
         $originalBeanName = $definition->getBeanName();
         $targetDefinition = $definition->getBeanDefinition();
@@ -58,17 +59,15 @@ class Bee_AOP_Scope_ScopedProxyUtils {
 
         // Return the scoped proxy definition as primary bean definition
         // (potentially an inner bean).
-        return new Bee_Context_Config_BeanDefinitionHolder($scopedProxyDefinition, $originalBeanName, $definition->getAliases());
+        return new BeanDefinitionHolder($scopedProxyDefinition, $originalBeanName, $definition->getAliases());
     }
 
     /**
      * Generates the bean name that is used within the scoped proxy to reference the target bean.
      * @param string $originalBeanName the original name of bean
-     * @return the generated bean to be used to reference the target bean
+     * @return string the generated bean to be used to reference the target bean
      */
     public static function getTargetBeanName($originalBeanName) {
         return self::TARGET_NAME_PREFIX . $originalBeanName;
     }
 }
-
-?>

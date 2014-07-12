@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Config;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee_Utils_Assert;
 
 /**
  * Enter description here...
@@ -21,13 +23,13 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_Config_BeanDefinitionHolder {
+class BeanDefinitionHolder {
 
 	
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Context_Config_IBeanDefinition
+	 * @var IBeanDefinition
 	 */
 	private $beanDefinition;
 
@@ -47,14 +49,15 @@ class Bee_Context_Config_BeanDefinitionHolder {
 	 */
 	private $aliases;
 
-	
+
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition
-	 * @param String $beanName
+	 * @param IBeanDefinition $beanDefinition
+	 * @param string $beanName
+	 * @param array $aliases
 	 */
-	public function __construct(Bee_Context_Config_IBeanDefinition $beanDefinition, $beanName, array $aliases = null) {
+	public function __construct(IBeanDefinition $beanDefinition, $beanName, array $aliases = null) {
 		Bee_Utils_Assert::notNull($beanDefinition, 'BeanDefinition must not be null');
 		Bee_Utils_Assert::hasText($beanName, 'Bean name must be present');
 		$this->beanDefinition = $beanDefinition;
@@ -67,7 +70,7 @@ class Bee_Context_Config_BeanDefinitionHolder {
 	/**
 	 * Enter description here...
 	 *
-	 * @return Bee_Context_Config_IBeanDefinition
+	 * @return IBeanDefinition
 	 */
 	public function getBeanDefinition() {
 		return $this->beanDefinition;
@@ -92,4 +95,3 @@ class Bee_Context_Config_BeanDefinitionHolder {
 		return $this->aliases;
 	}
 }
-?>

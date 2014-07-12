@@ -16,6 +16,7 @@
  */
 use Bee\Beans\PropertyEditor\BooleanPropertyEditor;
 use Bee\Beans\PropertyValue;
+use Bee\Context\Support\BeanDefinitionBuilder;
 
 /**
  * Created by IntelliJ IDEA.
@@ -55,7 +56,7 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends Bee_Contex
         return 'Bee_Transactions_Interceptor_TransactionInterceptor';
     }
 
-    protected function doParse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext, Bee_Context_Support_BeanDefinitionBuilder $builder) {
+    protected function doParse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext, BeanDefinitionBuilder $builder) {
         // Set the transaction manager property.
         $transactionManagerName = ($element->hasAttribute(self::TRANSACTION_MANAGER_ATTRIBUTE) ?
                 $element->getAttribute(self::TRANSACTION_MANAGER_ATTRIBUTE) : "transactionManager");
@@ -144,4 +145,3 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends Bee_Contex
         }
     }
 }
-?>

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,10 +38,8 @@ interface Bee_Context_Config_IContextAware {
 	 * <p>Invoked after the population of normal bean properties
 	 * but before an initialization callback such as
 	 * {@link InitializingBean#afterPropertiesSet()} or a custom init-method.
-	 * @param $context owning Context (never <code>null</code>).
+	 * @param Bee_IContext $context owning Context (never <code>null</code>).
 	 * The bean can immediately call methods on the context.
 	 */
 	public function setBeeContext(Bee_IContext $context);
-	
 }
-?>

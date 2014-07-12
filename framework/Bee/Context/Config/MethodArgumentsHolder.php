@@ -16,7 +16,7 @@ namespace Bee\Context\Config;
  * limitations under the License.
  */
 use Bee\Beans\PropertyValue;
-use Bee_Context_Support_BeanUtils;
+use Bee\Context\Support\BeanUtils;
 
 /**
  * User: mp
@@ -55,7 +55,7 @@ class MethodArgumentsHolder implements IMethodArguments {
 			trigger_error("Constructor argument index is not an integer or lower than 0 : $idx", E_USER_ERROR);
 		} else {
 			if(array_key_exists($idx, $this->constructorArgumentValues)) {
-				Bee_Context_Support_BeanUtils::mergePropertyValuesIfPossible($this->constructorArgumentValues[$idx], $arg);
+				BeanUtils::mergePropertyValuesIfPossible($this->constructorArgumentValues[$idx], $arg);
 			}
 			$this->constructorArgumentValues[$idx] = $arg;
 		}

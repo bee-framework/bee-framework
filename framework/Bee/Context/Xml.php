@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\BasicBeanDefinitionRegistry;
 
 /**
  * Enter description here...
@@ -99,7 +100,7 @@ class Bee_Context_Xml_CachableConfig implements Bee_Cache_ICachableResource {
 	}
 	
 	public function &createContent(&$expirationTimestamp = 0) {
-		$registry = new Bee_Context_Config_BasicBeanDefinitionRegistry(); 
+		$registry = new BasicBeanDefinitionRegistry();
 		$reader = new Bee_Context_Xml_BeanDefinitionReader($registry);
 		
 		foreach($this->configLocations as $location) {
