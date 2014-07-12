@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-    /**
+/**
  * Created by IntelliJ IDEA.
  * User: mp
  * Date: Feb 19, 2010
@@ -25,7 +25,7 @@
 // todo: work in progress...
 //class Bee_Security_Namespace_AbstractInterceptorDrivenBeanDefinitionDecorator implements Bee_Context_Xml_Namespace_IBeanDefinitionDecorator {
 //
-//    public final function decorate(DOMNode $node, Bee_Context_Config_BeanDefinitionHolder $definitionHolder, Bee_Context_Xml_ParserContext $parserContext) {
+//    public final function decorate(DOMNode $node, BeanDefinitionHolder $definitionHolder, Bee_Context_Xml_ParserContext $parserContext) {
 //        $registry = $parserContext->getRegistry();
 //
 //        // get the root bean name - will be the name of the generated proxy factory bean
@@ -37,7 +37,7 @@
 //
 //        // generate name and register the interceptor
 //        $interceptorName = $existingBeanName . '.' . $this->getInterceptorNameSuffix($interceptorDefinition);
-//        Bee_Context_Support_BeanDefinitionReaderUtils::registerBeanDefinition(new Bee_Context_Config_BeanDefinitionHolder($interceptorDefinition, $interceptorName), $registry);
+//        BeanDefinitionReaderUtils::registerBeanDefinition(new BeanDefinitionHolder($interceptorDefinition, $interceptorName), $registry);
 //
 //        $result = $definitionHolder;
 //

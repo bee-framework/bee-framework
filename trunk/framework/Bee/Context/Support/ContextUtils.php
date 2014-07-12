@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Support;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +16,16 @@
  * limitations under the License.
  */
 
-abstract class Bee_Context_Support_ContextUtils {
+use Bee_IContext;
+use Bee_Utils_Assert;
+use Bee_Utils_Strings;
+
+abstract class ContextUtils {
 	
     /**
      * Return whether the given name is a factory dereference
      * (beginning with the factory dereference prefix).
-     * @param name the name of the bean
+     * @param string $name the name of the bean
      * @return boolean whether the given name is a factory dereference
      * @see BeanFactory#FACTORY_BEAN_PREFIX
      */
@@ -54,4 +59,3 @@ abstract class Bee_Context_Support_ContextUtils {
         return $result;
     }
 }
-?>

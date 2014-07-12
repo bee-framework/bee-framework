@@ -14,6 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\BeanDefinitionHolder;
+use Bee\Context\Config\IBeanDefinitionRegistry;
+use Bee\Context\Support\BeanDefinitionReaderUtils;
 
 /**
  * User: mp
@@ -40,7 +43,7 @@ abstract class Bee_Context_Xml_Namespace_AbstractBeanDefinitionParser implements
                     $parserContext->getReaderContext()->error(
                             "Id is required for element '" . $element->localName . "' when used as a top-level tag", $element);
                 }
-                $holder = new Bee_Context_Config_BeanDefinitionHolder($definition, $id, $aliases);
+                $holder = new BeanDefinitionHolder($definition, $id, $aliases);
                 $this->registerBeanDefinition($holder, $parserContext->getRegistry());
 //                if ($this->shouldFireEvents()) {
 //                    $componentDefinition = new BeanComponentDefinition(holder);
@@ -66,18 +69,18 @@ abstract class Bee_Context_Xml_Namespace_AbstractBeanDefinitionParser implements
      * @param Bee_Context_Xml_ParserContext $parserContext the object encapsulating the current state of the parsing process;
      * provides access to a {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
      * @return string the resolved id
-     * @throws BeanDefinitionStoreException if no unique name could be generated
+     * @throws Bee_Context_BeanDefinitionStoreException if no unique name could be generated
      * for the given bean definition
      */
     protected function resolveId(DOMElement $element, Bee_Context_Config_BeanDefinition_Abstract $definition, Bee_Context_Xml_ParserContext $parserContext) {
 
         if ($this->shouldGenerateId()) {
-            return Bee_Context_Support_BeanDefinitionReaderUtils::generateBeanName($definition, $parserContext->getRegistry(), false);
+            return BeanDefinitionReaderUtils::generateBeanName($definition, $parserContext->getRegistry(), false);
         }
         else {
             $id = $element->getAttribute(self::ID_ATTRIBUTE);
             if (!Bee_Utils_Strings::hasText($id) && $this->shouldGenerateIdAsFallback()) {
-                $id = Bee_Context_Support_BeanDefinitionReaderUtils::generateBeanName($definition, $parserContext->getRegistry(), false);
+                $id = BeanDefinitionReaderUtils::generateBeanName($definition, $parserContext->getRegistry(), false);
             }
             return $id;
         }
@@ -93,14 +96,13 @@ abstract class Bee_Context_Xml_Namespace_AbstractBeanDefinitionParser implements
      * with the supplied {@link BeanDefinitionRegistry registry} only if the <code>isNested</code>
      * parameter is <code>false</code>, because one typically does not want inner beans
      * to be registered as top level beans.
-     * @param Bee_Context_Config_BeanDefinitionHolder $definition the bean definition to be registered
-     * @param Bee_Context_Config_IBeanDefinitionRegistry $registry the registry that the bean is to be registered with
+     * @param BeanDefinitionHolder $definition the bean definition to be registered
+     * @param IBeanDefinitionRegistry $registry the registry that the bean is to be registered with
      * @see BeanDefinitionReaderUtils#registerBeanDefinition(BeanDefinitionHolder, BeanDefinitionRegistry)
      */
-    protected function registerBeanDefinition(Bee_Context_Config_BeanDefinitionHolder $definition, Bee_Context_Config_IBeanDefinitionRegistry $registry) {
-        Bee_Context_Support_BeanDefinitionReaderUtils::registerBeanDefinition($definition, $registry);
+    protected function registerBeanDefinition(BeanDefinitionHolder $definition, IBeanDefinitionRegistry $registry) {
+		BeanDefinitionReaderUtils::registerBeanDefinition($definition, $registry);
     }
-
 
     /**
      * Central template method to actually parse the supplied {@link Element}
@@ -171,4 +173,3 @@ abstract class Bee_Context_Xml_Namespace_AbstractBeanDefinitionParser implements
 //    }
 
 }
-?>

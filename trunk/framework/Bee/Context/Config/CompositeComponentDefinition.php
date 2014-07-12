@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Config;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@
  * Time: 7:11:18 AM
  */
 
-class Bee_Context_Config_CompositeComponentDefinition extends Bee_Context_Config_AbstractComponentDefinition {
+class CompositeComponentDefinition extends AbstractComponentDefinition {
 
     private $name;
 
@@ -30,8 +31,7 @@ class Bee_Context_Config_CompositeComponentDefinition extends Bee_Context_Config
 
     /**
      * Create a new CompositeComponentDefinition.
-     * @param name the name of the composite component
-     * @param source the source element that defines the root of the composite component
+     * @param string $name the name of the composite component
      */
     public function __construct($name) {
         $this->name = $name;
@@ -44,18 +44,17 @@ class Bee_Context_Config_CompositeComponentDefinition extends Bee_Context_Config
 
     /**
      * Add the given component as nested element of this composite component.
-     * @param component the nested component to add
+     * @param IComponentDefinition $component the nested component to add
      */
-    public function addNestedComponent(Bee_Context_Config_IComponentDefinition $component) {
+    public function addNestedComponent(IComponentDefinition $component) {
         $this->nestedComponents[] = $component;
     }
 
     /**
      * Return the nested components that this composite component holds.
-     * @return Bee_Context_Config_IComponentDefinition[] the array of nested components, or an empty array if none
+     * @return IComponentDefinition[] the array of nested components, or an empty array if none
      */
     public function getNestedComponents() {
         return $this->nestedComponents;
     }
 }
-?>

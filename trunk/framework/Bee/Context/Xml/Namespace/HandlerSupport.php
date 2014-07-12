@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\BeanDefinitionHolder;
 
 /**
  * Support class for implementing custom {@link Bee_Context_Xml_Namespace_IHandler NamespaceHandlers}. Parsing and
@@ -63,7 +64,7 @@ abstract class Bee_Context_Xml_Namespace_HandlerSupport implements Bee_Context_X
 		return $parser;
 	}
 
-	public final function decorate(DOMNode $source, Bee_Context_Config_BeanDefinitionHolder $definition, Bee_Context_Xml_ParserContext $parserContext) {
+	public final function decorate(DOMNode $source, BeanDefinitionHolder $definition, Bee_Context_Xml_ParserContext $parserContext) {
 		return $this->findDecoratorForNode($source, $parserContext)->decorate($source, $definition, $parserContext);
 	}
 	

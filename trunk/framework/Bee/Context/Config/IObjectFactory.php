@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Context\Config;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -21,12 +22,12 @@
  * @author Michael Plomer <michael.plomer@iter8.de>
  * @author Benjamin Hartmann
  */
-interface Bee_Context_Config_IObjectFactory {
+interface IObjectFactory {
 
 	/**
 	 * Enter description here...
 	 *
-	 * @throws Bee_Context_BeansException
+	 * @throws \Bee_Context_BeansException
 	 * 
 	 * @return mixed
 	 */

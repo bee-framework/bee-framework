@@ -73,7 +73,7 @@ interface Bee_IContext {
     /**
      * @abstract
      * @param string $beanName
-     * @return void
+     * @return bool
      */
 	public function isBeanCurrentlyInCreation($beanName);
 
@@ -90,5 +90,9 @@ interface Bee_IContext {
      */
     public function getIdentifier();
 
-    public function getBeanNamesForType($className);
+	/**
+	 * @param $className
+	 * @return mixed
+	 */
+	public function getBeanNamesForType($className);
 }

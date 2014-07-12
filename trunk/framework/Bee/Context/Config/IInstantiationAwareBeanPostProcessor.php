@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Config;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,28 +21,26 @@
  * Date: Feb 17, 2010
  * Time: 6:14:37 PM
  */
+interface IInstantiationAwareBeanPostProcessor extends IBeanPostProcessor {
 
-interface Bee_Context_Config_IInstantiationAwareBeanPostProcessor extends Bee_Context_Config_IBeanPostProcessor {
-
-    /**
-     * Apply this BeanPostProcessor <i>before the target bean gets instantiated</i>.
-     * The returned bean object may be a proxy to use instead of the target bean,
-     * effectively suppressing default instantiation of the target bean.
-     * <p>If a non-null object is returned by this method, the bean creation process
-     * will be short-circuited. The only further processing applied is the
-     * {@link #postProcessAfterInitialization} callback from the configured
-     * {@link BeanPostProcessor BeanPostProcessors}.
-     * <p>This callback will only be applied to bean definitions with a bean class.
-     * In particular, it will not be applied to beans with a "factory-method".
-     * <p>Post-processors may implement the extended
-     * {@link SmartInstantiationAwareBeanPostProcessor} interface in order
-     * to predict the type of the bean object that they are going to return here.
-     * @param string $beanClass the class of the bean to be instantiated
-     * @param string $beanName the name of the bean
-     * @return mixed the bean object to expose instead of a default instance of the target bean,
-     * or <code>null</code> to proceed with default instantiation
-     * @throws org.springframework.beans.BeansException in case of errors
-     */
+	/**
+	 * Apply this BeanPostProcessor <i>before the target bean gets instantiated</i>.
+	 * The returned bean object may be a proxy to use instead of the target bean,
+	 * effectively suppressing default instantiation of the target bean.
+	 * <p>If a non-null object is returned by this method, the bean creation process
+	 * will be short-circuited. The only further processing applied is the
+	 * {@link #postProcessAfterInitialization} callback from the configured
+	 * {@link BeanPostProcessor BeanPostProcessors}.
+	 * <p>This callback will only be applied to bean definitions with a bean class.
+	 * In particular, it will not be applied to beans with a "factory-method".
+	 * <p>Post-processors may implement the extended
+	 * {@link SmartInstantiationAwareBeanPostProcessor} interface in order
+	 * to predict the type of the bean object that they are going to return here.
+	 * @param $className
+	 * @param string $beanName the name of the bean
+	 * @return mixed the bean object to expose instead of a default instance of the target bean,
+	 * or <code>null</code> to proceed with default instantiation
+	 */
     public function postProcessBeforeInstantiation($className, $beanName);
 
     /**
@@ -56,7 +55,7 @@ interface Bee_Context_Config_IInstantiationAwareBeanPostProcessor extends Bee_Co
      * if property population should be skipped. Normal implementations should return <code>true</code>.
      * Returning <code>false</code> will also prevent any subsequent InstantiationAwareBeanPostProcessor
      * instances being invoked on this bean instance.
-     * @throws org.springframework.beans.BeansException in case of errors
+     * @throws \Bee_Context_BeansException in case of errors
      */
     public function postProcessAfterInstantiation($bean, $beanName);
 
@@ -75,7 +74,7 @@ interface Bee_Context_Config_IInstantiationAwareBeanPostProcessor extends Bee_Co
      * @return the actual property values to apply to to the given bean
      * (can be the passed-in PropertyValues instance), or <code>null</code>
      * to skip property population
-     * @throws org.springframework.beans.BeansException in case of errors
+     * @throws \Bee_Context_BeansException in case of errors
      * @see org.springframework.beans.MutablePropertyValues
      *
      * @todo
@@ -85,4 +84,3 @@ interface Bee_Context_Config_IInstantiationAwareBeanPostProcessor extends Bee_Co
 //            throws BeansException;
 
 }
-?>

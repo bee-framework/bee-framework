@@ -56,17 +56,17 @@ class Bee_AOP_Namespace_ConfigBeanDefinitionParser /*implements Bee_Context_Xml_
 //    const ASPECT_INSTANCE_FACTORY_INDEX = 2;
 //
 //    /**
-//     * @var Bee_Context_Support_ParseState
+//     * @var ParseState
 //     */
 //    private $parseState = null;
 //
 //    public function __construct() {
-//        $this->parseState = new Bee_Context_Support_ParseState();
+//        $this->parseState = new ParseState();
 //    }
 //
 //    public function parse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext) {
 //        $compositeDef =
-//                new Bee_Context_Config_CompositeComponentDefinition($element->tagName);
+//                new CompositeComponentDefinition($element->tagName);
 //
 //        $parserContext->pushContainingComponent($compositeDef);
 //

@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Util;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +17,31 @@
  */
 
 /**
- * User: mp
- * Date: 01.07.11
- * Time: 04:48
+ * Class ArrayFactoryBean
+ * @package Bee\Context\Util
  */
- 
-class Bee_Context_Util_ArrayFactoryBean extends Bee_Context_Util_AbstractFactoryBean {
+class ArrayFactoryBean extends AbstractFactoryBean {
 
     private $sourceArray;
 
-    public function setSourceArray(array $sourceArray) {
+	/**
+	 * @param array $sourceArray
+	 */
+	public function setSourceArray(array $sourceArray) {
         $this->sourceArray = &$sourceArray;
     }
 
-    public function isSingleton() {
+	/**
+	 * @return bool
+	 */
+	public function isSingleton() {
         return true;
     }
 
-    protected function &createInstance() {
+	/**
+	 * @return mixed
+	 */
+	protected function &createInstance() {
         if($this->isSingleton()) {
             return $this->sourceArray;
         }
@@ -41,7 +49,10 @@ class Bee_Context_Util_ArrayFactoryBean extends Bee_Context_Util_AbstractFactory
         return $copy;
     }
 
-    function getObjectType() {
+	/**
+	 * @return null|string
+	 */
+	function getObjectType() {
         return null;
     }
 }

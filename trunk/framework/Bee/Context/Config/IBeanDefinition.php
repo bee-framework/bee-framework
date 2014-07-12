@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Context\Config;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -23,7 +24,7 @@ use Bee\Beans\PropertyValue;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-interface Bee_Context_Config_IBeanDefinition extends Bee\Context\Config\IMethodArguments {
+interface IBeanDefinition extends IMethodArguments {
 	
 	const SCOPE_CACHE = 'cache';
 	const SCOPE_SESSION = 'session';
@@ -131,7 +132,7 @@ interface Bee_Context_Config_IBeanDefinition extends Bee\Context\Config\IMethodA
 	 * for the corresponding property.
 	 *
 	 * @param PropertyValue $prop PropertyValue object to add
-	 * @return Bee_Context_Config_IBeanDefinition this object to allow creating objects, adding multiple
+	 * @return IBeanDefinition this object to allow creating objects, adding multiple
 	 * PropertyValues in a single statement
 	 */
 	public function addPropertyValue(PropertyValue $prop);
@@ -186,7 +187,7 @@ interface Bee_Context_Config_IBeanDefinition extends Bee\Context\Config\IMethodA
 	/**
 	 * Enter description here...
 	 *
-	 * @param booelan $enforceInitMethod
+	 * @param boolean $enforceInitMethod
 	 * @return void
 	 */
 	public function setEnforceInitMethod($enforceInitMethod);

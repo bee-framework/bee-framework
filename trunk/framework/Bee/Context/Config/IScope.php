@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Config;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,29 +22,25 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-interface Bee_Context_Config_IScope {
-	
+interface IScope {
+
 	/**
 	 * Enter description here...
 	 *
-	 * @param String $name
-	 * @param ObjectFactory $objectFactory
+	 * @param string $beanName
+	 * @param IObjectFactory $objectFactory
 	 * @return Object
 	 */
-	public function get($beanName, Bee_Context_Config_IObjectFactory $objectFactory);
-	
-	
-	
+	public function get($beanName, IObjectFactory $objectFactory);
+
 	/**
 	 * Enter description here...
 	 *
-	 * @param String $name
+	 * @param $beanName
 	 * @return Object
 	 */
 	public function remove($beanName);
-		
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -53,4 +50,3 @@ interface Bee_Context_Config_IScope {
 
 	//void registerDestructionCallback(String name, Runnable callback);
 }
-?>

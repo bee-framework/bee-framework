@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
+use Bee\Context\Config\ArrayValue;
 use Bee\Context\Config\TypedStringValue;
+use Bee\Context\Support\BeanDefinitionBuilder;
 
 /**
  * User: mp
@@ -80,26 +82,26 @@ class Bee_Context_AbstractTestStub extends Bee_Context_Abstract {
 	}
 
 	private function registerArrayFactoryParent() {
-		$builder = Bee_Context_Support_BeanDefinitionBuilder::genericBeanDefinition('Bee_Context_Util_ArrayFactoryBean');
+		$builder = BeanDefinitionBuilder::genericBeanDefinition('Bee\Context\Util\ArrayFactoryBean');
 		$propEditRegistry = new PropertyEditorRegistry();
 		$list = array(
 				'keyA' => new TypedStringValue('valueA', $propEditRegistry),
 				'keyB' => new TypedStringValue('valueB', $propEditRegistry),
 				'keyC' => new TypedStringValue('valueC', $propEditRegistry)
 		);
-		$builder->addPropertyValue('sourceArray', new Bee_Context_Config_ArrayValue($list, false));
+		$builder->addPropertyValue('sourceArray', new ArrayValue($list, false));
 		$this->registerBeanDefinition(Bee_Context_AbstractTest::BEAN_NAME_ARRAY_PARENT, $builder->getBeanDefinition());
 	}
 
 	private function createArrayFactoryChild($merge) {
-		$builder = Bee_Context_Support_BeanDefinitionBuilder::genericBeanDefinition('Bee_Context_Util_ArrayFactoryBean');
+		$builder = BeanDefinitionBuilder::genericBeanDefinition('Bee\Context\Util\ArrayFactoryBean');
 		$propEditRegistry = new PropertyEditorRegistry();
 		$list = array(
 				'keyB' => new TypedStringValue('valueB_Child', $propEditRegistry),
 				'keyD' => new TypedStringValue('valueD_Child', $propEditRegistry),
 		);
 		$builder->setParentName(Bee_Context_AbstractTest::BEAN_NAME_ARRAY_PARENT)
-				->addPropertyValue('sourceArray', new Bee_Context_Config_ArrayValue($list, $merge));
+				->addPropertyValue('sourceArray', new ArrayValue($list, $merge));
 
 		return $builder->getBeanDefinition();
 	}
