@@ -132,6 +132,8 @@ class DaoBase extends EntityManagerHolder {
 	 * @param callback $func
 	 * @throws Exception
 	 * @return mixed
+	 *
+	 * @deprecated use EntityManager::transactional() instead
 	 */
 	public function doInTransaction($func) {
 		$this->getLog()->info('Begin transaction.');

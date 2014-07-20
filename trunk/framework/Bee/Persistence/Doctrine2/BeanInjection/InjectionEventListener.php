@@ -2,7 +2,7 @@
 namespace Bee\Persistence\Doctrine2\BeanInjection;
 
 use Bee_IContext;
-use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
@@ -16,7 +16,7 @@ use ReflectionProperty;
  */
 class InjectionEventListener implements EventSubscriber, \Bee_Context_Config_IContextAware {
 	/**
-	 * @var AnnotationReader
+	 * @var Reader
 	 */
 	private $reader;
 
@@ -94,16 +94,16 @@ class InjectionEventListener implements EventSubscriber, \Bee_Context_Config_ICo
 	}
 
 	/**
-	 * @return AnnotationReader
+	 * @return Reader
 	 */
 	public function getReader() {
 		return $this->reader;
 	}
 
 	/**
-	 * @param AnnotationReader $reader
+	 * @param Reader $reader
 	 */
-	public function setReader(AnnotationReader $reader) {
+	public function setReader(Reader $reader) {
 		$this->reader = $reader;
 	}
 
