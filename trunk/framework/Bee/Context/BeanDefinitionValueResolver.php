@@ -153,7 +153,7 @@ class Bee_Context_BeanDefinitionValueResolver {
 
 		} catch (Bee_Context_BeansException $ex) {
 			// @todo: a lot of debug information is lost here
-			throw new Bee_Context_BeanCreationException($this->beanName, "error resolving reference for argument $argName", $ex);
+			throw new Bee_Context_BeanCreationException($this->beanName, "Error resolving reference for argument $argName", $ex);
 		}
 	}
 

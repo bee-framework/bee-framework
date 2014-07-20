@@ -49,5 +49,3 @@ class Bee_Context_BeanCreationException extends Bee_Context_BeansException {
 		return $this->name;
 	}
 }
-
-?>
