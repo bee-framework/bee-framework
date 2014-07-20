@@ -43,7 +43,7 @@ class InjectionEventListener implements EventSubscriber, \Bee_Context_Config_ICo
 
 		foreach($reflClass->getMethods(ReflectionProperty::IS_PUBLIC) as $method) {
 			if($method->getNumberOfRequiredParameters() == 1) {
-				foreach ($this->reader->getPropertyAnnotations($method) AS $annot) {
+				foreach ($this->reader->getMethodAnnotations($method) AS $annot) {
 					if ($annot instanceof Inject) {
 						$this->injectIntoSetter($entity, $method, $annot);
 					}
