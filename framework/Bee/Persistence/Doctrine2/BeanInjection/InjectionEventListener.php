@@ -15,6 +15,7 @@ use ReflectionProperty;
  * Class InjectionEventListener
  */
 class InjectionEventListener implements EventSubscriber, \Bee_Context_Config_IContextAware {
+
 	/**
 	 * @var Reader
 	 */
@@ -29,24 +30,21 @@ class InjectionEventListener implements EventSubscriber, \Bee_Context_Config_ICo
 	 * @param LifecycleEventArgs $eventArgs
 	 */
 	public function postLoad(LifecycleEventArgs $eventArgs) {
-
 		$entity = $eventArgs->getEntity();
 		$reflClass = new ReflectionClass($entity);
 
 		foreach($reflClass->getProperties() as $prop) {
-			foreach ($this->reader->getPropertyAnnotations($prop) AS $annot) {
-				if ($annot instanceof Inject) {
-					$this->injectIntoProperty($entity, $prop, $annot);
-				}
+			$annot = $this->reader->getPropertyAnnotation($prop, 'Bee\Persistence\Doctrine2\BeanInjection\Inject');
+			if ($annot instanceof Inject) {
+				$this->injectIntoProperty($entity, $prop, $annot);
 			}
 		}
 
 		foreach($reflClass->getMethods(ReflectionProperty::IS_PUBLIC) as $method) {
 			if($method->getNumberOfRequiredParameters() == 1) {
-				foreach ($this->reader->getMethodAnnotations($method) AS $annot) {
-					if ($annot instanceof Inject) {
-						$this->injectIntoSetter($entity, $method, $annot);
-					}
+				$annot = $this->reader->getMethodAnnotation($method, 'Bee\Persistence\Doctrine2\BeanInjection\Inject');
+				if ($annot instanceof Inject) {
+					$this->injectIntoSetter($entity, $method, $annot);
 				}
 			}
 		}
