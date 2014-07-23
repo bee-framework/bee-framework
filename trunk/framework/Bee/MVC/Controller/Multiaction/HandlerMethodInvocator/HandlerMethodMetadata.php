@@ -3,6 +3,7 @@
 namespace Bee\MVC\Controller\Multiaction\HandlerMethodInvocator;
 
 use Bee\Utils\ITypeDefinitions;
+use Bee_Utils_Types;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -104,12 +105,15 @@ class HandlerMethodMetadata {
 	 */
 	protected static function getDocBlockTypeHints(ReflectionMethod $method) {
 		$importMap = self::getImportMap($method->getDeclaringClass());
+		$namespace = $method->getDeclaringClass()->getNamespaceName();
 		$matches = array();
 		preg_match_all(self::DOCBLOCK_PARAM_TYPE_HINT_MATCH, $method->getDocComment(), $matches);
 		$types = $matches[1];
-		array_walk($types, function (&$value) use ($importMap) {
+		array_walk($types, function (&$value) use ($importMap, $namespace) {
 			if (array_key_exists($value, $importMap)) {
 				$value = $importMap[$value];
+			} else if(!Bee_Utils_Types::isPrimitive($value) && !class_exists($value) && !interface_exists($value)) {
+				$value = $namespace . '\\' . $value;
 			}
 		});
 		return array_combine($matches[2], $types);

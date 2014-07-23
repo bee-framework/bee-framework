@@ -1,7 +1,7 @@
 <?php
-
 namespace Bee\Persistence\Doctrine2\BeanInjection;
 
+use Doctrine\Common\Annotations\Annotation;
 
 /**
  * Class Inject

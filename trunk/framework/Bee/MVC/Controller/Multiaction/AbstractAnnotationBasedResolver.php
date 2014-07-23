@@ -102,13 +102,13 @@ abstract class AbstractAnnotationBasedResolver extends AbstractControllerHolder 
 		if (!$this->delegates) {
 
 			$delegateClassName = get_class($this->getController()->getDelegate());
-			if (Bee_Framework::getProductionMode()) {
-				try {
-					$this->delegates = Bee_Cache_Manager::retrieve(self::CACHE_KEY_PREFIX . $delegateClassName);
-				} catch (Exception $e) {
-					$this->getLog()->debug('No cached delegate resolvers for delegate "' . $delegateClassName . '" found, annotation parsing required');
-				}
-			}
+//			if (Bee_Framework::getProductionMode()) {
+//				try {
+//					$this->delegates = Bee_Cache_Manager::retrieve(self::CACHE_KEY_PREFIX . $delegateClassName);
+//				} catch (Exception $e) {
+//					$this->getLog()->debug('No cached delegate resolvers for delegate "' . $delegateClassName . '" found, annotation parsing required');
+//				}
+//			}
 
 			if (!$this->delegates) {
 				$classReflector = new ReflectionAnnotatedClass($delegateClassName);
@@ -141,9 +141,9 @@ abstract class AbstractAnnotationBasedResolver extends AbstractControllerHolder 
 				}
 			}
 
-			if (Bee_Framework::getProductionMode()) {
-				Bee_Cache_Manager::store(self::CACHE_KEY_PREFIX . $delegateClassName, $this->delegates);
-			}
+//			if (Bee_Framework::getProductionMode()) {
+//				Bee_Cache_Manager::store(self::CACHE_KEY_PREFIX . $delegateClassName, $this->delegates);
+//			}
 		}
 	}
 
