@@ -43,4 +43,16 @@ class EntityManagerHolder {
     public function setEntityManager(EntityManager $entityManager) {
         $this->entityManager = $entityManager;
     }
+
+	/**
+	 * Convenience wrapper around EntityManager::transactional()
+	 * @param callable $callback
+	 * @return mixed
+	 */
+	public function transactional(callable $callback) {
+		$that = $this;
+		return $this->getEntityManager()->transactional(function (EntityManager $em) use ($callback, $that) {
+			return $callback($that);
+		});
+	}
 }
