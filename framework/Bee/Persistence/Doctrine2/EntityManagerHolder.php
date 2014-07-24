@@ -46,10 +46,10 @@ class EntityManagerHolder {
 
 	/**
 	 * Convenience wrapper around EntityManager::transactional()
-	 * @param callable $callback
+	 * @param $callback
 	 * @return mixed
 	 */
-	public function transactional(callable $callback) {
+	public function transactional($callback) {
 		$that = $this;
 		return $this->getEntityManager()->transactional(function (EntityManager $em) use ($callback, $that) {
 			return $callback($that);
