@@ -133,7 +133,7 @@ class DaoBase extends EntityManagerHolder {
 	 * @throws Exception
 	 * @return mixed
 	 *
-	 * @deprecated use EntityManager::transactional() instead
+	 * @deprecated use EntityManagerHolder::transactional() instead
 	 */
 	public function doInTransaction($func) {
 		$this->getLog()->info('Begin transaction.');
