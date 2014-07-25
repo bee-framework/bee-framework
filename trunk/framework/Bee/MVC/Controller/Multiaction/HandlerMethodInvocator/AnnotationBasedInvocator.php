@@ -122,7 +122,7 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 	 * @return mixed
 	 */
 	protected function createDelegate(array $mapping) {
-		return new RegexMappingInvocationResolver($mapping);
+		return new RegexMappingInvocationResolver($mapping, $this->getPropertyEditorRegistry());
 	}
 
 	/**
@@ -130,5 +130,12 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 	 */
 	public function setBeeContext(Bee_IContext $context) {
 		$this->propertyEditorRegistry = new PropertyEditorRegistry($context);
+	}
+
+	/**
+	 * @return PropertyEditorRegistry
+	 */
+	public function getPropertyEditorRegistry() {
+		return $this->propertyEditorRegistry;
 	}
 }

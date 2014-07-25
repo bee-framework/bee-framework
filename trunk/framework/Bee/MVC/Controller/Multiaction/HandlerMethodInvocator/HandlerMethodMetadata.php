@@ -2,8 +2,8 @@
 
 namespace Bee\MVC\Controller\Multiaction\HandlerMethodInvocator;
 
+use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
 use Bee\Utils\ITypeDefinitions;
-use Bee_Utils_Types;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -42,10 +42,14 @@ class HandlerMethodMetadata {
 	 */
 	private $parameterPositions;
 
-	function __construct(ReflectionMethod $method) {
+	/**
+	 * @param ReflectionMethod $method
+	 * @param PropertyEditorRegistry $propertyEditorRegistry
+	 */
+	function __construct(ReflectionMethod $method, PropertyEditorRegistry $propertyEditorRegistry) {
 		$this->method = $method;
 
-		$typeNameMap = self::getDocBlockTypeHints($method);
+		$typeNameMap = self::getDocBlockTypeHints($method, $propertyEditorRegistry);
 		$this->typeMap = array();
 		$this->requestParamPos = array();
 		$this->parameterPositions = array();
@@ -101,20 +105,23 @@ class HandlerMethodMetadata {
 
 	/**
 	 * @param ReflectionMethod $method
+	 * @param PropertyEditorRegistry $propertyEditorRegistry
 	 * @return array
 	 */
-	protected static function getDocBlockTypeHints(ReflectionMethod $method) {
+	protected static function getDocBlockTypeHints(ReflectionMethod $method, PropertyEditorRegistry $propertyEditorRegistry) {
 		$importMap = self::getImportMap($method->getDeclaringClass());
 		$namespace = $method->getDeclaringClass()->getNamespaceName();
 		$matches = array();
 		preg_match_all(self::DOCBLOCK_PARAM_TYPE_HINT_MATCH, $method->getDocComment(), $matches);
 		$types = $matches[1];
-		array_walk($types, function (&$value) use ($importMap, $namespace) {
+		array_walk($types, function (&$value) use ($importMap, $namespace, $propertyEditorRegistry) {
 			if (array_key_exists($value, $importMap)) {
 				$value = $importMap[$value];
-			} else if(!Bee_Utils_Types::isPrimitive($value) && !class_exists($value) && !interface_exists($value)) {
+			} else if(!$propertyEditorRegistry->editorExists($value)) {
 				$value = $namespace . '\\' . $value;
 			}
+			// test if property editor exists
+			$propertyEditorRegistry->getEditor($value);
 		});
 		return array_combine($matches[2], $types);
 	}

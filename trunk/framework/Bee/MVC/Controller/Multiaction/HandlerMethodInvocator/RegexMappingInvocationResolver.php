@@ -15,6 +15,7 @@ namespace Bee\MVC\Controller\Multiaction\HandlerMethodInvocator;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
 use Bee\Utils\AntPathToRegexTransformer;
 use Bee_MVC_IHttpRequest;
 use Logger;
@@ -55,10 +56,11 @@ class RegexMappingInvocationResolver implements IInvocationResolver {
 
 	/**
 	 * @param array|ReflectionMethod[] $mapping
+	 * @param PropertyEditorRegistry $propertyEditorRegistry
 	 */
-	public function __construct(array $mapping) {
+	public function __construct(array $mapping, PropertyEditorRegistry $propertyEditorRegistry) {
 		foreach ($mapping as $antPathPattern => $method) {
-			$methodMeta = self::getCachedMethodMetadata($method);
+			$methodMeta = self::getCachedMethodMetadata($method, $propertyEditorRegistry);
 
 			$urlParameterPositions = array();
 			$regex = AntPathToRegexTransformer::getRegexForParametrizedPattern($antPathPattern, $methodMeta->getTypeMap(), $urlParameterPositions);
@@ -160,10 +162,10 @@ class RegexMappingInvocationResolver implements IInvocationResolver {
 		return null;
 	}
 
-	public static function getCachedMethodMetadata(ReflectionMethod $method) {
+	public static function getCachedMethodMetadata(ReflectionMethod $method, PropertyEditorRegistry $propertyEditorRegistry) {
 		$methodFullName = $method->getDeclaringClass()->getName() . '::' . $method->getName();
 		if (!array_key_exists($methodFullName, self::$methodMetadataMap)) {
-			self::$methodMetadataMap[$methodFullName] = new HandlerMethodMetadata($method);
+			self::$methodMetadataMap[$methodFullName] = new HandlerMethodMetadata($method, $propertyEditorRegistry);
 		}
 		return self::$methodMetadataMap[$methodFullName];
 	}

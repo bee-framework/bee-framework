@@ -134,5 +134,6 @@ PropertyEditorRegistry::registerEditor(ITypeDefinitions::IPv4, new GenericProper
 PropertyEditorRegistry::registerEditor(ITypeDefinitions::IPv6, new GenericPropertyEditor(FILTER_VALIDATE_IP, FILTER_FLAG_IPV6));
 PropertyEditorRegistry::registerEditor(ITypeDefinitions::UNIX_TIMESTAMP, new UnixTimestampPropertyEditor());
 PropertyEditorRegistry::registerEditor(ITypeDefinitions::STRING, new StringPropertyEditor());
+PropertyEditorRegistry::registerEditor(ITypeDefinitions::BASE64, new Base64StringPropertyEditor());
 
 PropertyEditorRegistry::registerEditor(ConstantPropertyEditor::TYPE_STRING, new ConstantPropertyEditor());
