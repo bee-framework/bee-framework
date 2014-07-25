@@ -43,6 +43,7 @@ interface ITypeDefinitions {
 	const IPv4 = 'ipv4';
 	const IPv6 = 'ipv6';
 	const REGEX = 'regex';
+	const BASE64 = 'base64';
 
 	const UNIX_TIMESTAMP = 'unix_timestamp';
 }
