@@ -121,7 +121,7 @@ class HandlerMethodMetadata {
 				$value = $namespace . '\\' . $value;
 			}
 			// test if property editor exists
-			$propertyEditorRegistry->getEditor($value);
+//			$propertyEditorRegistry->getEditor($value);
 		});
 		return array_combine($matches[2], $types);
 	}
