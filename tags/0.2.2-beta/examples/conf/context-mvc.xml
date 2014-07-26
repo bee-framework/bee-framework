@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.beeframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:utils="http://www.beeframework.org/schema/util"
+       xmlns:mvc="http://www.beeframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.beeframework.org/schema/beans http://www.beeframework.org/schema/beans/bee-beans-1.2.xsd
+       http://www.beeframework.org/schema/util http://www.beeframework.org/schema/utils/bee-utils-1.0.xsd
+       http://www.beeframework.org/schema/mvc http://www.beeframework.org/schema/utils/bee-mvc-1.0.xsd">
+
+    <!-- VIEW RESOLVER -->
+    <mvc:viewresolver contextLocation="conf/views.xml" />
+
+    <!-- HANDLER MAPPING -->
+    <bean id="handlerMapping" class="Bee_MVC_HandlerMapping_AntPath">
+        <!--<property name="defaultControllerBeanName" value="defaultController"/>-->
+        <property name="handlerMappings">
+            <array>
+                <assoc-item key="/**/testClassic/**" value="classicController" />
+                <assoc-item key="/**/testParam/**" value="paramController" />
+                <assoc-item key="/**/testParamSub/**" value="paramSubController" />
+            </array>
+        </property>
+    </bean>
+
+    <!-- METHOD NAME RESOLVER -->
+    <bean id="multiactionControllerTemplate" class="Bee\MVC\Controller\MultiActionController">
+        <property name="defaultMethodName" value="handleDefault"/>
+    </bean>
+
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- ++ DEFAULT +++++++++++++++++++++++++++++++++++ -->
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <bean id="classicController" parent="multiactionControllerTemplate">
+        <property name="methodNameResolver">
+            <bean class="Bee_MVC_Controller_Multiaction_MethodNameResolver_AnnotationBased" scope="prototype"/>
+        </property>
+        <property name="delegate">
+            <bean class="Test\Mvc\ClassicTestDelegate" />
+        </property>
+    </bean>
+
+    <bean id="paramController" parent="multiactionControllerTemplate">
+        <property name="methodInvocator">
+            <bean class="Bee\MVC\Controller\Multiaction\HandlerMethodInvocator\AnnotationBasedInvocator" scope="prototype"/>
+        </property>
+        <property name="delegate">
+            <bean class="Test\Mvc\ParamTestDelegate" />
+        </property>
+    </bean>
+
+    <bean id="paramSubController" parent="multiactionControllerTemplate">
+        <property name="methodInvocator">
+            <bean class="Bee\MVC\Controller\Multiaction\HandlerMethodInvocator\AnnotationBasedInvocator" scope="prototype"/>
+        </property>
+        <property name="delegate">
+            <bean class="Test\Mvc\SubTestDelegate" />
+        </property>
+    </bean>
+
+    <bean id="propertyEditor_Test_MiscClass" class="Test\MiscClassPropertyEditor" />
+</beans>
