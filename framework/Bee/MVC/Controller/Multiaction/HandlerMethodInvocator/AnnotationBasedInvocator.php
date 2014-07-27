@@ -64,7 +64,7 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 			}
 
 			if (!$this->defaultMethodInvocation) {
-				$methodMeta = RegexMappingInvocationResolver::getCachedMethodMetadata(new \ReflectionMethod($delegateClassName, $ctrl->getDefaultMethodName()));
+				$methodMeta = RegexMappingInvocationResolver::getCachedMethodMetadata(new \ReflectionMethod($delegateClassName, $ctrl->getDefaultMethodName()), $this->getPropertyEditorRegistry());
 				$this->defaultMethodInvocation = new MethodInvocation($methodMeta);
 			}
 
