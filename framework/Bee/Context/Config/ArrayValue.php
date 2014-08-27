@@ -1,7 +1,6 @@
 <?php
-namespace Bee\Context\Config;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +14,6 @@ namespace Bee\Context\Config;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use ArrayAccess;
-use ArrayIterator;
-use Countable;
-use IteratorAggregate;
-use Traversable;
 
 /**
  * User: mp
@@ -27,7 +21,7 @@ use Traversable;
  * Time: 21:44
  */
 
-class ArrayValue implements ArrayAccess, IteratorAggregate, Countable, IMergeable {
+class Bee_Context_Config_ArrayValue implements ArrayAccess, IteratorAggregate, Countable, Bee_Context_Config_IMergeable {
 
 	/**
 	 * @var array
@@ -39,22 +33,10 @@ class ArrayValue implements ArrayAccess, IteratorAggregate, Countable, IMergeabl
 	 */
 	private $mergeEnabled = false;
 
-	/**
-	 * @var bool
-	 */
 	private $associative = false;
 
-	/**
-	 * @var bool
-	 */
 	private $numericKeys = false;
 
-	/**
-	 * @param array $sourceArray
-	 * @param bool $mergeEnabled
-	 * @param bool $associative
-	 * @param bool $numericKeys
-	 */
 	public function __construct(array &$sourceArray, $mergeEnabled = false, $associative = false, $numericKeys = false) {
 		$this->sourceArray =& $sourceArray;
 		$this->mergeEnabled = $mergeEnabled;
@@ -85,42 +67,25 @@ class ArrayValue implements ArrayAccess, IteratorAggregate, Countable, IMergeabl
 		return array_key_exists($offset, $this->sourceArray);
 	}
 
-	/**
-	 * @param mixed $offset
-	 * @return mixed
-	 */
 	public function offsetGet($offset) {
 		return $this->sourceArray[$offset];
 	}
 
-	/**
-	 * @param mixed $offset
-	 * @param mixed $value
-	 */
 	public function offsetSet($offset, $value) {
 		$this->sourceArray[$offset] = $value;
 	}
 
-	/**
-	 * @param mixed $offset
-	 */
 	public function offsetUnset($offset) {
 		unset($this->sourceArray[$offset]);
 	}
 
-	/**
-	 * @return int
-	 */
 	public function count() {
 		return count($this->sourceArray);
 	}
 
-	/**
-	 * @param Traversable $parent
-	 */
 	function merge(Traversable $parent) {
 		$tmpArray = array();
-		$parentAssoc = $parent instanceof ArrayValue && $parent->associative;
+		$parentAssoc = $parent instanceof Bee_Context_Config_ArrayValue && $parent->associative;
 		if($parentAssoc && $this->associative && $parent->numericKeys && $this->numericKeys) {
 			$tmpArray = array_replace($parent->sourceArray, $this->sourceArray);
 			ksort($tmpArray);
@@ -143,9 +108,6 @@ class ArrayValue implements ArrayAccess, IteratorAggregate, Countable, IMergeabl
 		$this->sourceArray =& $tmpArray;
 	}
 
-	/**
-	 * @return ArrayIterator|Traversable
-	 */
 	public function getIterator() {
 		return new ArrayIterator($this->sourceArray);
 	}
@@ -156,4 +118,5 @@ class ArrayValue implements ArrayAccess, IteratorAggregate, Countable, IMergeabl
 	public function getValue() {
 		return $this->sourceArray;
 	}
+
 }

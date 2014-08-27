@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,11 +21,7 @@
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
 class Bee_Utils_Reflection {
-
-	/**
-	 * @param ReflectionMethod $method
-	 * @return bool
-	 */
+	
 	public static function isCallableRegularMethod(ReflectionMethod $method) {
 		return $method->isPublic() && !$method->isAbstract() && !$method->isConstructor();
 	}
@@ -46,17 +42,14 @@ class Bee_Utils_Reflection {
         return $method;
     }
 
-	/**
-	 * @param $typeName
-	 * @param bool $requiredTypeName
-	 * @return mixed
-	 */
-	public static function createInstance($typeName, $requiredTypeName = false) {
+    public static function createInstance($typeName, $requiredTypeName = false) {
 
         // todo: implement this in a more fancy way...
+
         Bee_Utils_Assert::hasText($typeName);
 
         $inst = new $typeName();
+
         if($requiredTypeName) {
             Bee_Utils_Assert::isInstanceOf($requiredTypeName, $inst);
         }
@@ -64,3 +57,4 @@ class Bee_Utils_Reflection {
         return $inst;
     }
 }
+?>

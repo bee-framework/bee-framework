@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\Controller\MultiActionController;
 
 /**
  * The multiaction controller handles requests by delegating to method calls on a delegate object. The methods to be used are
@@ -27,7 +26,7 @@ use Bee\MVC\Controller\MultiActionController;
  * 
  * @author Benjamin Hartmann
  */
-class Bee_MVC_Controller_MultiActionMultiDelegates extends MultiActionController {
+class Bee_MVC_Controller_MultiActionMultiDelegates extends Bee_MVC_Controller_MultiAction {
 
     /**
      * @var Bee_MVC_Controller_MultiActionMultiDelegates_IDelegateResolver
@@ -36,12 +35,11 @@ class Bee_MVC_Controller_MultiActionMultiDelegates extends MultiActionController
 
     // determine what delegate to select
 
-	/**
-	 * Enter description here...
-	 *
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_ModelAndView
-	 */
+    /**
+     * Enter description here...
+     *
+     * @return Bee_MVC_ModelAndView
+     */
     protected function handleRequestInternally(Bee_MVC_IHttpRequest $request) {
         $this->setDelegate($this->delegateResolver->resolveDelegate($request));
         return parent::handleRequestInternally($request);
@@ -72,8 +70,8 @@ class Bee_MVC_Controller_MultiActionMultiDelegates extends MultiActionController
      * @return void
      */
     protected function init() {
-		parent::init();
         Bee_Utils_Assert::notNull($this->delegateResolver, '\'methodNameResolver\' property is required in Bee_MVC_Controller_MultiAction');
+        Bee_Utils_Assert::notNull($this->getMethodNameResolver(), '\'methodNameResolver\' property is required in Bee_MVC_Controller_MultiAction');
     }
 
     /**
@@ -87,4 +85,7 @@ class Bee_MVC_Controller_MultiActionMultiDelegates extends MultiActionController
         }
         return parent::getDelegate();
     }
+
 }
+
+?>

@@ -1,7 +1,6 @@
 <?php
-namespace Bee\Context\Config;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +15,18 @@ namespace Bee\Context\Config;
  * limitations under the License.
  */
 
-use Bee\Context\Support\ContextUtils;
-use Bee_Context_BeanDefinitionStoreException;
-use Bee_Context_Config_BeanDefinition_Generic;
-use Bee_Context_NoSuchBeanDefinitionException;
-use Bee_Utils_Types;
-use Bee_Context_AliasRegistry;
-
-class BasicBeanDefinitionRegistry extends Bee_Context_AliasRegistry implements IBeanDefinitionRegistry {
+class Bee_Context_Config_BasicBeanDefinitionRegistry extends Bee_Context_AliasRegistry implements Bee_Context_Config_IBeanDefinitionRegistry {
 	
 	/**
 	 * Enter description here...
 	 *
-	 * @var IBeanDefinition[]
+	 * @var Bee_Context_Config_IBeanDefinition[]
 	 */
 	private $beanDefinitions = array();
 	
     /**
      * BeanPostProcessors to apply in createBean
-     * @var BasicBeanDefinitionRegistry[]
+     * @var Bee_Context_Config_IBeanPostProcessor[]
      */
 	private $beanPostProcessorMap = array();
 
@@ -50,7 +42,7 @@ class BasicBeanDefinitionRegistry extends Bee_Context_AliasRegistry implements I
     private $hasDestructionAwareBeanPostProcessors;
 
 	/**
-	 * @var IBeanDefinitionRegistry
+	 * @var Bee_Context_Config_IBeanDefinitionRegistry
 	 */
 	private $parentRegistry;
 
@@ -61,7 +53,7 @@ class BasicBeanDefinitionRegistry extends Bee_Context_AliasRegistry implements I
     /**
      * @throws Bee_Context_NoSuchBeanDefinitionException
      * @param  $beanName
-     * @return IBeanDefinition
+     * @return Bee_Context_Config_IBeanDefinition
      */
 	public function getBeanDefinition($beanName) {
 
@@ -93,7 +85,7 @@ class BasicBeanDefinitionRegistry extends Bee_Context_AliasRegistry implements I
 		return array_keys($this->beanDefinitions);
 	}
 	
-	public function registerBeanDefinition($beanName, IBeanDefinition $beanDefinition) {
+	public function registerBeanDefinition($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition) {
 		if (array_key_exists($beanName, $this->beanDefinitions)) {
 			throw new Bee_Context_BeanDefinitionStoreException('Bean name already in use.', $beanName);
 		}
@@ -101,12 +93,12 @@ class BasicBeanDefinitionRegistry extends Bee_Context_AliasRegistry implements I
 
         $beanName = $this->canonicalName($beanName);
         if(!array_key_exists($beanName, $this->beanPostProcessorMap)) {
-            if(Bee_Utils_Types::isAssignable($beanDefinition->getBeanClassName(), 'Bee\Context\Config\IBeanPostProcessor')) {
+            if(Bee_Utils_Types::isAssignable($beanDefinition->getBeanClassName(), 'Bee_Context_Config_IBeanPostProcessor')) {
                 $this->beanPostProcessorMap[$beanName] = true;
-                if (Bee_Utils_Types::isAssignable($beanDefinition->getBeanClassName(), 'Bee\Context\Config\IInstantiationAwareBeanPostProcessor')) {
+                if (Bee_Utils_Types::isAssignable($beanDefinition->getBeanClassName(), 'Bee_Context_Config_IInstantiationAwareBeanPostProcessor')) {
                     $this->hasInstantiationAwareBeanPostProcessors = true;
                 }
-                if (Bee_Utils_Types::isAssignable($beanDefinition->getBeanClassName(), 'Bee\Context\Config\IDestructionAwareBeanPostProcessor')) {
+                if (Bee_Utils_Types::isAssignable($beanDefinition->getBeanClassName(), 'Bee_Context_Config_IDestructionAwareBeanPostProcessor')) {
                     $this->hasDestructionAwareBeanPostProcessors = true;
                 }
             }
@@ -121,10 +113,10 @@ class BasicBeanDefinitionRegistry extends Bee_Context_AliasRegistry implements I
 	}
 
     /**
-     * @param BasicBeanDefinitionRegistry $registry
+     * @param Bee_Context_Config_BasicBeanDefinitionRegistry $registry
      * @return void
      */
-	protected function getDefinitionsFromRegistry(BasicBeanDefinitionRegistry $registry) {
+	protected function getDefinitionsFromRegistry(Bee_Context_Config_BasicBeanDefinitionRegistry $registry) {
 		$this->getAliasesFromRegistry($registry);
 		$this->beanDefinitions = $registry->beanDefinitions;
         $this->beanPostProcessorMap = array_fill_keys($registry->getBeanPostProcessorNames(), true);
@@ -162,7 +154,7 @@ class BasicBeanDefinitionRegistry extends Bee_Context_AliasRegistry implements I
     /**
      * Return the list of BeanPostProcessors that will get applied to beans created with this factory.
      *
-     * @return IBeanPostProcessor[]
+     * @return Bee_Context_Config_IBeanPostProcessor[]
      */
     public function getBeanPostProcessorNames() {
         return array_keys($this->beanPostProcessorMap);
@@ -191,26 +183,26 @@ class BasicBeanDefinitionRegistry extends Bee_Context_AliasRegistry implements I
 	 * @return String
 	 */
 	protected function transformedBeanName($beanName) {
-		return $this->canonicalName(ContextUtils::transformedBeanName($beanName));
+		return $this->canonicalName(Bee_Context_Support_ContextUtils::transformedBeanName($beanName));
 	}
 
     /**
      * @access protected
-     * @return IBeanDefinition[]
+     * @return Bee_Context_Config_IBeanDefinition[]
      */
     protected function getBeanDefinitions() {
         return $this->beanDefinitions;
     }
 
 	/**
-	 * @param IBeanDefinitionRegistry $parentRegistry
+	 * @param \Bee_Context_Config_IBeanDefinitionRegistry $parentRegistry
 	 */
-	public function setParentRegistry(IBeanDefinitionRegistry $parentRegistry) {
+	public function setParentRegistry(\Bee_Context_Config_IBeanDefinitionRegistry $parentRegistry) {
 		$this->parentRegistry = $parentRegistry;
 	}
 
 	/**
-	 * @return IBeanDefinitionRegistry
+	 * @return \Bee_Context_Config_IBeanDefinitionRegistry
 	 */
 	public function getParentRegistry() {
 		return $this->parentRegistry;

@@ -1,7 +1,6 @@
 <?php
-namespace Bee\Context\Config;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +14,16 @@ namespace Bee\Context\Config;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Traversable;
 
 /**
  * User: mp
  * Date: 03.07.11
  * Time: 22:12
  */
-interface IMergeable {
+ 
+interface Bee_Context_Config_IMergeable {
 
-	/**
-	 * @return mixed
-	 */
-	function getMergeEnabled();
+    function getMergeEnabled();
 
-	/**
-	 * @param Traversable $parent
-	 * @return mixed
-	 */
-	function merge(Traversable $parent);
+    function merge(Traversable $parent);
 }

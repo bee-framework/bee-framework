@@ -46,3 +46,4 @@ interface Bee_Context_Config_IBeanNameAware {
 	public function setBeanName($beanName);
 	
 }
+?>

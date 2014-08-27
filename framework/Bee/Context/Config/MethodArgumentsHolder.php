@@ -1,7 +1,7 @@
 <?php
 namespace Bee\Context\Config;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@ namespace Bee\Context\Config;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Beans\PropertyValue;
-use Bee\Context\Support\BeanUtils;
+use Bee_Beans_PropertyValue;
+use Bee_Context_Support_BeanUtils;
 
 /**
  * User: mp
@@ -29,7 +29,7 @@ class MethodArgumentsHolder implements IMethodArguments {
 	/**
 	 * Enter description here...
 	 *
-	 * @var PropertyValue[]
+	 * @var Bee_Beans_PropertyValue[]
 	 */
 	private $constructorArgumentValues = array();
 
@@ -37,7 +37,7 @@ class MethodArgumentsHolder implements IMethodArguments {
 	 * Return the constructor argument values for this bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
 	 *
-	 * @return PropertyValue[]
+	 * @return Bee_Beans_PropertyValue[]
 	 */
 	public function getConstructorArgumentValues() {
 		return $this->constructorArgumentValues;
@@ -46,16 +46,16 @@ class MethodArgumentsHolder implements IMethodArguments {
 	/**
 	 * Enter description here...
 	 *
-	 * @param PropertyValue $arg
+	 * @param Bee_Beans_PropertyValue $arg
 	 * @return void
 	 */
-	public function addConstructorArgumentValue(PropertyValue $arg) {
+	public function addConstructorArgumentValue(Bee_Beans_PropertyValue $arg) {
 		$idx = $arg->getName();
 		if(!is_int($idx) || $idx < 0) {
 			trigger_error("Constructor argument index is not an integer or lower than 0 : $idx", E_USER_ERROR);
 		} else {
 			if(array_key_exists($idx, $this->constructorArgumentValues)) {
-				BeanUtils::mergePropertyValuesIfPossible($this->constructorArgumentValues[$idx], $arg);
+				Bee_Context_Support_BeanUtils::mergePropertyValuesIfPossible($this->constructorArgumentValues[$idx], $arg);
 			}
 			$this->constructorArgumentValues[$idx] = $arg;
 		}

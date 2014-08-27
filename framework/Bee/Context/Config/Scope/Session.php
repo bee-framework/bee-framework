@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Context\Config\IObjectFactory;
-use Bee\Context\Config\IScope;
 
 /**
  * Enter description here...
@@ -23,28 +21,17 @@ use Bee\Context\Config\IScope;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_Config_Scope_Session implements IScope {
+class Bee_Context_Config_Scope_Session implements Bee_Context_Config_IScope {
 	
 	const SESSION_SCOPE_PREFIX = '__sessionScopeContent';
-
-	/**
-	 * @var
-	 */
+	
 	private $id;
 
-	/**
-	 * @param $id
-	 */
 	public function __construct($id) {
 		$this->id = $id;
 	}
 
-	/**
-	 * @param string $beanName
-	 * @param IObjectFactory $objectFactory
-	 * @return mixed|Object
-	 */
-	public function get($beanName, IObjectFactory $objectFactory) {
+	public function get($beanName, Bee_Context_Config_IObjectFactory $objectFactory) {
 		$beans =& $_SESSION[$this->id.self::SESSION_SCOPE_PREFIX];
 		$scopedObject =& $beans[$beanName];
 		if(is_null($scopedObject)) {
@@ -54,10 +41,6 @@ class Bee_Context_Config_Scope_Session implements IScope {
 		return $scopedObject;
 	}
 
-	/**
-	 * @param $beanName
-	 * @return Object
-	 */
 	public function remove($beanName) {
 		$beans =& $_SESSION[$this->id.self::SESSION_SCOPE_PREFIX];
 		$bean = $beans[$beanName];
@@ -65,10 +48,9 @@ class Bee_Context_Config_Scope_Session implements IScope {
 		return $bean;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getConversationId() {
 		return session_id();
 	}
 }
+
+?>

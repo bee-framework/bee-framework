@@ -1,7 +1,6 @@
 <?php
-namespace Bee\Beans\PropertyEditor;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +14,17 @@ namespace Bee\Beans\PropertyEditor;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Beans\IPropertyEditor;
 
 /**
- * Class Base64StringPropertyEditor
- * @package Bee\Beans\PropertyEditor
+ * User: mp
+ * Date: 14.11.12
+ * Time: 16:50
  */
-class Base64StringPropertyEditor implements IPropertyEditor {
+
+class Bee_Beans_PropertyEditor_UnixTimestamp implements Bee_Beans_IPropertyEditor {
+
+	const REGEX = '/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d)(?: (.+))?$/';
+	const FORMAT = 'Y-m-d H:i:s e';
 
 	/**
 	 * Enter description here...
@@ -30,7 +33,8 @@ class Base64StringPropertyEditor implements IPropertyEditor {
 	 * @return String
 	 */
 	public function toString($value) {
-		return base64_encode($value);
+		$dt = new DateTime("@$value");
+		return $dt->format(self::FORMAT);
 	}
 
 	/**
@@ -40,6 +44,21 @@ class Base64StringPropertyEditor implements IPropertyEditor {
 	 * @return mixed
 	 */
 	public function fromString($value) {
-		return base64_decode($value);
+		$matches = array();
+		$res = preg_match(self::REGEX, $value, $matches);
+
+		$datetime = null;
+		if($res) {
+			if(count($matches) == 3) {
+				$datetime = new DateTime($matches[1], new DateTimeZone($matches[2]));
+			} else {
+				$datetime = new DateTime($matches[1]);
+			}
+		}
+
+		if(!$datetime) {
+			throw new Exception(get_class($this). " could not convert value '$value' to a timestamp");
+		}
+		return intval($datetime->format('U'));
 	}
 }

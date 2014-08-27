@@ -1,7 +1,6 @@
 <?php
-namespace Bee\MVC\Controller\Multiaction;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +14,21 @@ namespace Bee\MVC\Controller\Multiaction;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\Controller\MultiActionController;
-use Bee_MVC_IHttpRequest;
 
 /**
- * Interface MethodInvocator
- * @package Bee\MVC\Controller\Multiaction
+ * Enter description here...
+ *
+ * @author Benjamin Hartmann
  */
-interface IHandlerMethodInvocator {
-
-	/**
-	 * @param MultiActionController $controller
-	 * @return mixed
-	 */
-	public function setController(MultiActionController $controller);
-
-	/**
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return \Bee_MVC_ModelAndView
-	 */
-	public function invokeHandlerMethod(Bee_MVC_IHttpRequest $request);
-} 
+class Bee_Beans_FromStringConverter implements Bee_Beans_ITypeConverter {
+	
+	public function convertIfNecessary($value, $requiredTypeName) {
+		if($requiredTypeName != Bee_Utils_ITypeDefinitions::STRING) {
+			$conv = Bee_Beans_PropertyEditor_Registry::getEditor($requiredTypeName);
+			$value = $conv->fromString($value); 
+		}
+		return $value;
+	}
+	
+}
+?>

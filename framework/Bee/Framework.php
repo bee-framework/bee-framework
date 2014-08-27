@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Utils\ITypeDefinitions;
 
-/**
- * Class Bee_Framework
- */
 class Bee_Framework {
 
     const WEAVING_PACKAGE_PREFIX = 'Bee_';
@@ -87,7 +83,7 @@ class Bee_Framework {
 
 		require_once dirname(__FILE__) . '/Cache/Manager.php';
 
-//		spl_autoload_register(array(__CLASS__, 'autoload'));
+		spl_autoload_register(array(__CLASS__, 'autoload'));
 
 		register_shutdown_function(array(__CLASS__, 'shutdown'));
 //		Bee_Cache_Manager::init();
@@ -121,7 +117,6 @@ class Bee_Framework {
      *
      * @param string $className
      * @return boolean
-	 * @deprecated
      */
     public static function autoload($className) {
 
@@ -359,5 +354,5 @@ Bee_Framework::init();
 
 //require_once dirname(__FILE__) . '/Utils/ITypeDefinitions.php';
 
-interface TYPES extends ITypeDefinitions {
+interface TYPES extends Bee_Utils_ITypeDefinitions {
 }

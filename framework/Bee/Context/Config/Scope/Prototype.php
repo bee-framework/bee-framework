@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Context\Config\IObjectFactory;
-use Bee\Context\Config\IScope;
 
 /**
  * Enter description here...
@@ -23,36 +21,31 @@ use Bee\Context\Config\IScope;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-final class Bee_Context_Config_Scope_Prototype implements IScope {
-
-	/**
-	 * @param $id
-	 */
+final class Bee_Context_Config_Scope_Prototype implements Bee_Context_Config_IScope {
+	
+	
 	public function __construct($id) {
 		// id is not needed and thus not set
 	}
-
-	/**
-	 * @param string $beanName
-	 * @param IObjectFactory $objectFactory
-	 * @return mixed|Object
-	 */
-	public function get($beanName, IObjectFactory $objectFactory) {
+	
+	
+	
+	public function get($beanName, Bee_Context_Config_IObjectFactory $objectFactory) {
 		return $objectFactory->getObject();
 	}
-
-	/**
-	 * @param $beanName
-	 * @return null|Object
-	 */
+	
+	
+	
 	public function remove($beanName) {
 		return null;
 	}
-
-	/**
-	 * @return null|String
-	 */
+		
+	
+	
 	public function getConversationId() {
 		return null;
 	}
+	
 }
+
+?>

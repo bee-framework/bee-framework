@@ -42,4 +42,6 @@ interface Bee_Context_Config_IInitializingBean {
 	 * as failure to set an essential property) or if initialization fails.
 	 */
 	public function afterPropertiesSet();
+	
 }
+?>

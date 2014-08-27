@@ -1,7 +1,7 @@
 <?php
 namespace Bee\Beans;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ namespace Bee\Beans;
 
 use Bee\Context\Config\IMethodArguments;
 use Bee\Context\Config\MethodArgumentsHolder;
+use Bee_Beans_PropertyValue;
 
 class MethodInvocation extends MethodArgumentsHolder implements IMethodArguments {
 

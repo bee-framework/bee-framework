@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Context\Config\IBeanPostProcessor;
 
 /**
  * User: mp
@@ -22,7 +21,7 @@ use Bee\Context\Config\IBeanPostProcessor;
  * Time: 10:29:38 PM
  */
 
-class Bee_Security_Config_MethodSecurityInterceptorPostProcessor implements IBeanPostProcessor, Bee_Context_Config_IContextAware {
+class Bee_Security_Config_MethodSecurityInterceptorPostProcessor implements Bee_Context_Config_IBeanPostProcessor, Bee_Context_Config_IContextAware {
 
     /**
      * @var Bee_IContext      

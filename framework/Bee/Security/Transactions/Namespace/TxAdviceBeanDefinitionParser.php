@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Beans\PropertyEditor\BooleanPropertyEditor;
-use Bee\Beans\PropertyValue;
-use Bee\Context\Support\BeanDefinitionBuilder;
 
 /**
  * Created by IntelliJ IDEA.
@@ -56,7 +53,7 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends Bee_Contex
         return 'Bee_Transactions_Interceptor_TransactionInterceptor';
     }
 
-    protected function doParse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext, BeanDefinitionBuilder $builder) {
+    protected function doParse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext, Bee_Context_Support_BeanDefinitionBuilder $builder) {
         // Set the transaction manager property.
         $transactionManagerName = ($element->hasAttribute(self::TRANSACTION_MANAGER_ATTRIBUTE) ?
                 $element->getAttribute(self::TRANSACTION_MANAGER_ATTRIBUTE) : "transactionManager");
@@ -90,7 +87,7 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends Bee_Contex
         foreach ($methods as $methodEle) {
 
             $name = $methodEle->getAttribute("name");
-//            $nameHolder = new TypedStringValue($name);
+            $nameHolder = new Bee_Context_Config_TypedStringValue($name);
 
             $attribute = new Bee_Transactions_Interceptor_RuleBasedTransactionAttribute();
             $propagation = $methodEle->getAttribute(self::PROPAGATION);
@@ -107,7 +104,7 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends Bee_Contex
                 $attribute->setTimeout($timeout);
             }
             if (Bee_Utils_Strings::hasText($readOnly)) {
-                $attribute->setReadOnly(BooleanPropertyEditor::valueOf($methodEle->getAttribute(self::READ_ONLY)));
+                $attribute->setReadOnly(Bee_Beans_PropertyEditor_Boolean::valueOf($methodEle->getAttribute(self::READ_ONLY)));
             }
 
             $rollbackRules = array();
@@ -121,13 +118,12 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends Bee_Contex
             }
             $attribute->setRollbackRules($rollbackRules);
 
-//            $transactionAttributeMap[$nameHolder] = $attribute;
-            $transactionAttributeMap[$name] = $attribute;
+            $transactionAttributeMap[$nameHolder] = $attribute;
         }
 
         $attributeSourceDefinition = new Bee_Context_Config_BeanDefinition_Generic();
         $attributeSourceDefinition->setBeanClassName('Bee_Transactions_NameMatchTransactionAttributeSource');
-        $attributeSourceDefinition->addPropertyValue(new PropertyValue(self::NAME_MAP, $transactionAttributeMap));
+        $attributeSourceDefinition->addPropertyValue(new Bee_Beans_PropertyValue(self::NAME_MAP, $transactionAttributeMap));
         return $attributeSourceDefinition;
     }
 
@@ -145,3 +141,4 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends Bee_Contex
         }
     }
 }
+?>

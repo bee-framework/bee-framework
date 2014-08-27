@@ -1,8 +1,6 @@
 <?php
-namespace Bee\Context\Config;
-
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,93 +14,51 @@ namespace Bee\Context\Config;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Beans\PropertyEditor\PropertyEditorNotFoundException;
-use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
-use Bee\Utils\ITypeDefinitions;
-use Logger;
 
 /**
  * Enter description here...
  *
- * @author Michael Plomer <michael.plomer@iter8.de>
  * @author Benjamin Hartmann
+ * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class TypedStringValue {
+class Bee_Context_Config_TypedStringValue {
 
 	/**
-	 * @var Logger logger is static (lightweight approach)
+	 * @var Bee_Beans_ITypeConverter
 	 */
-	protected static $log;
-
-	/**
-	 * @return Logger
-	 */
-	protected static function getLog() {
-		if (!self::$log) {
-			self::$log = Logger::getLogger(get_called_class());
-		}
-		return self::$log;
-	}
+	private static $converter;
 
 	/**
 	 * Enter description here...
 	 *
 	 * @var string
 	 */
-	private $stringValue;
-
-	/**
-	 * @var string
-	 */
-	private $targetTypeName;
-
-	/**
-	 * @var mixed
-	 */
-	private $convertedValue;
-
-	/**
-	 * @var bool
-	 */
-	private $converted = false;
-
+	private $value;
+	
 	/**
 	 * Enter description here...
 	 *
-	 * @param String $stringValue
-	 * @param PropertyEditorRegistry $registry
-	 * @param string $targetTypeName
+	 * @param String $value
+	 * @param String $targetTypeName
 	 */
-	public function __construct($stringValue, PropertyEditorRegistry $registry, $targetTypeName = ITypeDefinitions::STRING) {
-		$this->stringValue = $stringValue;
-		$this->targetTypeName = $targetTypeName;
-		try {
-			$this->convertValue($registry);
-		} catch (PropertyEditorNotFoundException $penfe) {
-			if (self::getLog()->isTraceEnabled()) {
-				self::getLog()->trace('Could not eagerly convert value "' . $this->stringValue . '" to required type "' . $this->targetTypeName . '" - resorting to lazy conversion. Conversion result will not be cached.', $penfe);
-			}
-		}
+	public function __construct($value, $targetTypeName = Bee_Utils_ITypeDefinitions::STRING) {
+		// todo MP: the whole TypedStringValue concept is probably superflouous. move type check upstream??
+		self::initConverterIfNecessary();
+		$this->value = self::$converter->convertIfNecessary($value, $targetTypeName);
 	}
-
+	
 	/**
 	 * Enter description here...
 	 *
-	 * @param \Bee\Beans\PropertyEditor\PropertyEditorRegistry $registry
 	 * @return String
 	 */
-	public function getValue(PropertyEditorRegistry $registry) {
-		if (!$this->converted) {
-			$this->convertValue($registry);
-		}
-		return $this->convertedValue;
+	public function getValue() {
+		return $this->value; 
 	}
 
-	/**
-	 *
-	 */
-	private function convertValue(PropertyEditorRegistry $registry) {
-		$this->convertedValue = $registry->getEditor($this->targetTypeName)->fromString($this->stringValue);
-		$this->converted = true;
+	private static function initConverterIfNecessary() {
+		if(!self::$converter) {
+			self::$converter = new Bee_Beans_FromStringConverter();
+		}
 	}
 }

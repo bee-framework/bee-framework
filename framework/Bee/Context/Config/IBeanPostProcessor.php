@@ -1,5 +1,4 @@
 <?php
-namespace Bee\Context\Config;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -16,7 +15,7 @@ namespace Bee\Context\Config;
  * limitations under the License.
  */
 
-interface IBeanPostProcessor {
+interface Bee_Context_Config_IBeanPostProcessor {
 
 	/**
 	 * Apply this BeanPostProcessor to the given new bean instance <i>before</i> any bean
@@ -28,7 +27,7 @@ interface IBeanPostProcessor {
 	 * @param String $beanName the name of the bean
 	 * @return mixed the bean instance to use, either the original or a wrapped one
 	 * 
-	 * @throws \Bee_Context_BeansException in case of errors
+	 * @throws Bee_Context_BeansException in case of errors
 	 */
 	function postProcessBeforeInitialization($bean, $beanName);
 
@@ -49,7 +48,8 @@ interface IBeanPostProcessor {
 	 * @param String $beanName the name of the bean
 	 * @return mixed the bean instance to use, either the original or a wrapped one
 	 * 
-	 * @throws \Bee_Context_BeansException in case of errors
+	 * @throws Bee_Context_BeansException in case of errors
 	 */
 	function postProcessAfterInitialization($bean, $beanName);	
 }
+?>

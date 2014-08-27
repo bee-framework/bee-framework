@@ -1,7 +1,6 @@
 <?php
-namespace Bee\MVC\HandlerMapping;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,29 +14,35 @@ namespace Bee\MVC\HandlerMapping;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_MVC_IHttpRequest;
-use Bee_Utils_Strings;
 
 /**
  * Enter description here...
  *
  * @author Benjamin Hartmann
- * @author Michael Plomer <michael.plomer@iter8.de>
- *
  */
-class SimpleBeanNameUrlHandlerMapping extends AbstractHandlerMapping {
+class Bee_Beans_PropertyEditor_String implements Bee_Beans_IPropertyEditor {
 	
-	protected function getControllerBeanName(Bee_MVC_IHttpRequest $request) {
-		$pathInfo = $request->getPathInfo();
-		
-		$parts = explode('/', $pathInfo);
-		
-		if(Bee_Utils_Strings::hasText($parts[1])) {
-			$controllerBeanName = '/'.$parts[1];
-		} else {
-			$controllerBeanName = $this->getDefaultControllerBeanName();
-		}
-		
-		return $controllerBeanName;
+	/**
+	 * Enter description here...
+	 *
+	 * @param int $value
+	 * @return String
+	 */
+	public function toString($value) {
+		assert(is_string($value));
+		return $value;
+	}
+	
+	
+	
+	/**
+	 * Enter description here...
+	 *
+	 * @param String $value
+	 * @return int
+	 */
+	public function fromString($value) {
+		assert(is_string($value));
+		return $value;
 	}
 }

@@ -26,7 +26,8 @@ interface Bee_Context_Xml_Namespace_IBeanDefinitionParser {
 	 *
 	 * @param DOMElement $element
 	 * @param Bee_Context_Xml_ParserContext $parserContext
-	 * @return Bee\Context\Config\IBeanDefinition
+	 * @return Bee_Context_Config_IBeanDefinition
 	 */
 	function parse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext);
 }
+?>

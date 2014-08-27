@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,10 @@ use Addendum\Annotation;
  * 
  * @author Michael Plomer <michael.plomer@iter8.de>
  * 
- * @Annotation
- * @Target("METHOD")
+ * @Target("method")
  */
 class Bee_MVC_Controller_Multiaction_RequestHandler extends Annotation {
 	public $httpMethod;
 	public $pathPattern;
-	public $ajax;
 }
+?>

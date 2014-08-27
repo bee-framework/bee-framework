@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\IFilter;
-use Bee\MVC\IFilterChain;
 
 /**
  * User: mp
@@ -23,17 +21,17 @@ use Bee\MVC\IFilterChain;
  * Time: 5:05:03 PM
  */
 
-class Bee_MVC_FilterChainProxy implements IFilter {
+class Bee_MVC_FilterChainProxy implements Bee_MVC_IFilter {
 
     /**
-     * @var IFilter[]
+     * @var Bee_MVC_IFilter[]
      */
     private $filters;
 
     /**
      * Gets the Filters
      *
-     * @return IFilter[] $filters
+     * @return Bee_MVC_IFilter[] $filters
      */
     public function getFilters() {
         return $this->filters;
@@ -42,14 +40,14 @@ class Bee_MVC_FilterChainProxy implements IFilter {
     /**
      * Sets the Filters
      *
-     * @param $filters IFilter[]
+     * @param $filters Bee_MVC_IFilter[]
      * @return void
      */
     public function setFilters($filters) {
         $this->filters = $filters;
     }
 
-    public function doFilter(Bee_MVC_IHttpRequest $request, IFilterChain $filterChain) {
+    public function doFilter(Bee_MVC_IHttpRequest $request, Bee_MVC_IFilterChain $filterChain) {
         if(!$this->filters || count($this->filters) == 0) {
             $filterChain->doFilter($request);
         } else {
@@ -60,15 +58,15 @@ class Bee_MVC_FilterChainProxy implements IFilter {
 
 }
 
-class Bee_MVC_VirtualFilterChain implements IFilterChain {
+class Bee_MVC_VirtualFilterChain implements Bee_MVC_IFilterChain {
 
     /**
-     * @var IFilterChain
+     * @var Bee_MVC_IFilterChain
      */
     private $origFilterChain;
 
     /**
-     * @var IFilter[]
+     * @var Bee_MVC_IFilter[]
      */
     private $filters;
 
@@ -77,15 +75,15 @@ class Bee_MVC_VirtualFilterChain implements IFilterChain {
      */
     private $currentPosition = 0;
 
-	/**
-	 * @param IFilterChain $origFilterChain
-	 * @param IFilter[] $filters
-	 */
-    public function __construct(IFilterChain $origFilterChain, array $filters) {
+    /**
+     * @param Bee_MVC_IFilterChain $origFilterChain
+     * @param Bee_MVC_IFilter[] $filters
+     * @return void
+     */
+    public function __construct(Bee_MVC_IFilterChain $origFilterChain, array $filters) {
         $this->origFilterChain = $origFilterChain;
         $this->filters = $filters;
     }
-
     public function doFilter(Bee_MVC_IHttpRequest $request) {
         if($this->currentPosition == sizeof($this->filters)) {
             $this->origFilterChain->doFilter($request);
@@ -95,4 +93,6 @@ class Bee_MVC_VirtualFilterChain implements IFilterChain {
             $nextFilter->doFilter($request, $this);
         }
     }
+
 }
+?>

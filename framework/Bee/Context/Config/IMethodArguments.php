@@ -1,7 +1,7 @@
 <?php
 namespace Bee\Context\Config;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@ namespace Bee\Context\Config;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Beans\PropertyValue;
+use Bee_Beans_PropertyValue;
 
 /**
  * User: mp
@@ -29,7 +29,7 @@ interface IMethodArguments {
 	 * Return the constructor argument values for this bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
 	 *
-	 * @return PropertyValue[]
+	 * @return Bee_Beans_PropertyValue[]
 	 */
 	public function getConstructorArgumentValues();
 
@@ -37,8 +37,8 @@ interface IMethodArguments {
 	/**
 	 * Enter description here...
 	 *
-	 * @param PropertyValue $arg
+	 * @param Bee_Beans_PropertyValue $arg
 	 * @return void
 	 */
-	public function addConstructorArgumentValue(PropertyValue $arg);
+	public function addConstructorArgumentValue(Bee_Beans_PropertyValue $arg);
 }

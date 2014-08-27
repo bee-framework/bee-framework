@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,7 @@
  * limitations under the License.
  */
 use Bee\Beans\MethodInvocation;
-use Bee\Beans\PropertyValue;
-use Bee\Context\Config\IBeanDefinition;
 use Bee\Context\Config\MethodArgumentsHolder;
-use Bee\Context\Support\BeanUtils;
 
 /**
  * Enter description here...
@@ -26,7 +23,7 @@ use Bee\Context\Support\BeanUtils;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-abstract class Bee_Context_Config_BeanDefinition_Abstract extends MethodArgumentsHolder implements IBeanDefinition {
+abstract class Bee_Context_Config_BeanDefinition_Abstract extends MethodArgumentsHolder implements Bee_Context_Config_IBeanDefinition {
 
 	/**
 	 * String representation of the scope that this bean should live in.
@@ -64,7 +61,7 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract extends MethodArgument
 	/**
 	 * Enter description here...
 	 *
-	 * @var PropertyValue[] array of PropertyValue instances
+	 * @var Bee_Beans_PropertyValue[] array of PropertyValue instances
 	 */
 	private $propertyValues = array();
 
@@ -124,11 +121,11 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract extends MethodArgument
 	private $synthetic = false;
 
     /**
-     * @var IBeanDefinition
+     * @var Bee_Context_Config_IBeanDefinition
      */
     private $originatingBeanDefinition;
 
-    public function __construct(IBeanDefinition $original = null) {
+    public function __construct(Bee_Context_Config_IBeanDefinition $original = null) {
 		if(!is_null($original)) {
 			$this->setParentName($original->getParentName());
 			$this->setBeanClassName($original->getBeanClassName());
@@ -214,13 +211,13 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract extends MethodArgument
 		}
 	}
 	
-	public function addPropertyValue(PropertyValue $prop) {
+	public function addPropertyValue(Bee_Beans_PropertyValue $prop) {
 		$name = $prop->getName();
 		if(!Bee_Utils_Strings::hasText($name)) {
 			trigger_error("Property must have a name set", E_USER_ERROR);
 		} else {
 			if(array_key_exists($name, $this->propertyValues)) {
-				BeanUtils::mergePropertyValuesIfPossible($this->propertyValues[$name], $prop);
+				Bee_Context_Support_BeanUtils::mergePropertyValuesIfPossible($this->propertyValues[$name], $prop);
 			}
 			$this->propertyValues[$name] = $prop;
 		}
@@ -354,7 +351,7 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract extends MethodArgument
     /**
      * Gets the OriginatingBeanDefinition
      *
-     * @return IBeanDefinition $originatingBeanDefinition
+     * @return Bee_Context_Config_IBeanDefinition $originatingBeanDefinition
      */
     public function getOriginatingBeanDefinition() {
         return $this->originatingBeanDefinition;
@@ -363,17 +360,14 @@ abstract class Bee_Context_Config_BeanDefinition_Abstract extends MethodArgument
     /**
      * Sets the OriginatingBeanDefinition
      *
-     * @param $originatingBeanDefinition IBeanDefinition
+     * @param $originatingBeanDefinition Bee_Context_Config_IBeanDefinition
      * @return void
      */
-    public function setOriginatingBeanDefinition(IBeanDefinition $originatingBeanDefinition) {
+    public function setOriginatingBeanDefinition(Bee_Context_Config_IBeanDefinition $originatingBeanDefinition) {
         $this->originatingBeanDefinition = $originatingBeanDefinition;
     }
 
-	/**
-	 * @param IBeanDefinition $other
-	 */
-	public function overrideFrom(IBeanDefinition $other) {
+	public function overrideFrom(Bee_Context_Config_IBeanDefinition $other) {
 		if (!is_null($other->getBeanClassName())) {
 			$this->setBeanClassName($other->getBeanClassName());
 		}

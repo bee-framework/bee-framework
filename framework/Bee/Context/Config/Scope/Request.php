@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Context\Config\IObjectFactory;
-use Bee\Context\Config\IScope;
 
 /**
  * Enter description here...
@@ -23,26 +21,15 @@ use Bee\Context\Config\IScope;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_Config_Scope_Request implements IScope {
-
-	/**
-	 * @var
-	 */
+class Bee_Context_Config_Scope_Request implements Bee_Context_Config_IScope {
+	
 	private $beans;
 
-	/**
-	 * @param $id
-	 */
 	public function __construct($id) {
 		// id is not needed and thus not set
 	}
 
-	/**
-	 * @param string $beanName
-	 * @param IObjectFactory $objectFactory
-	 * @return mixed|Object
-	 */
-	public function get($beanName, IObjectFactory $objectFactory) {
+	public function get($beanName, Bee_Context_Config_IObjectFactory $objectFactory) {
 		$scopedObject =& $this->beans[$beanName];
 		if(is_null($scopedObject)) {
 			$scopedObject = $objectFactory->getObject();
@@ -50,20 +37,13 @@ class Bee_Context_Config_Scope_Request implements IScope {
 		}
 		return $scopedObject;
 	}
-
-	/**
-	 * @param $beanName
-	 * @return Object
-	 */
+	
 	public function remove($beanName) {
 		$bean = $this->beans[$beanName];
 		unset($this->beans[$beanName]);
 		return $bean;
 	}
 
-	/**
-	 * @return null|String
-	 */
 	public function getConversationId() {
 		return null;
 	}
@@ -77,3 +57,5 @@ class Bee_Context_Config_Scope_Request implements IScope {
 		return Array();
 	}
 }
+
+?>

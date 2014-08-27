@@ -1,7 +1,6 @@
 <?php
-namespace Bee\MVC;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +14,6 @@ namespace Bee\MVC;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_MVC_IHttpRequest;
 
 /**
  * Enter description here...
@@ -25,13 +23,13 @@ use Bee_MVC_IHttpRequest;
  * @author Michael Plomer <michael.plomer@iter8.de>
  * @author Benjamin Hartmann
  */
-interface IController {
+interface Bee_MVC_IController {
 	/**
 	 * Enter description here...
 	 *
 	 * @todo: is it correct that this always returns a MAV?
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return \Bee_MVC_ModelAndView
+	 * @return Bee_MVC_ModelAndView 
 	 */
 	public function handleRequest(Bee_MVC_IHttpRequest $request);
 }
+?>

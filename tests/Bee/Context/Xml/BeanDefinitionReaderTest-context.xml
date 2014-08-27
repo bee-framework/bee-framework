@@ -6,13 +6,13 @@
        xsi:schemaLocation="http://www.beeframework.org/schema/beans http://www.beeframework.org/schema/beans/bee-beans-1.2.xsd
        http://www.beeframework.org/schema/util http://www.beeframework.org/schema/beans/bee-utils-1.0.xsd" default-merge="true">
 
-    <bean name="referencedBean,alias1,alias2" class="Bee\Context\Util\ArrayFactoryBean" />
+    <bean name="referencedBean,alias1,alias2" class="Bee_Context_Util_ArrayFactoryBean" />
 
     <util:array id="arrayFactory" scope="request">
         <value>Alpha</value>
         <value>Bravo</value>
         <value>Charlie</value>
-        <bean class="Bee\Context\Util\ArrayFactoryBean" />
+        <bean class="Bee_Context_Util_ArrayFactoryBean" />
         <ref bean="referencedBean" />
     </util:array>
 

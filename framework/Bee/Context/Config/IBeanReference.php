@@ -1,7 +1,6 @@
 <?php
-namespace Bee\Context\Config;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +21,7 @@ namespace Bee\Context\Config;
  * Time: 7:08:56 AM
  */
 
-interface IBeanReference {
+interface Bee_Context_Config_IBeanReference {
 
     /**
      * Return the target bean name that this reference points to (never <code>null</code>).
@@ -31,3 +30,5 @@ interface IBeanReference {
      */
     function getBeanNames();
 }
+
+?>

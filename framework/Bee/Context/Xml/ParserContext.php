@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Context\Config\CompositeComponentDefinition;
-use Bee\Context\Config\IBeanDefinition;
-use Bee\Context\Config\IComponentDefinition;
 
 /**
  * Enter description here...
@@ -44,7 +41,7 @@ class Bee_Context_Xml_ParserContext {
 	/**
 	 * Enter description here...
 	 *
-	 * @var IBeanDefinition
+	 * @var Bee_Context_Config_IBeanDefinition
 	 */
 	private $containingBeanDefinition;
 	
@@ -52,18 +49,14 @@ class Bee_Context_Xml_ParserContext {
 	/**
 	 * Enter description here...
 	 *
-	 * @var CompositeComponentDefinition[]
+	 * @var Bee_Context_Config_CompositeComponentDefinition[]
 	 */
 	private $containingComponents = array();
-
-	/**
-	 * @param Bee_Context_Xml_ReaderContext $readerContext
-	 * @param Bee_Context_Xml_ParserDelegate $delegate
-	 * @param IBeanDefinition $containingBeanDefinition
-	 */
+	
+	
 	public function __construct(
 		Bee_Context_Xml_ReaderContext $readerContext, Bee_Context_Xml_ParserDelegate $delegate,
-		IBeanDefinition $containingBeanDefinition = null) {
+		Bee_Context_Config_IBeanDefinition $containingBeanDefinition = null) {
 		
 		$this->readerContext = $readerContext;
 		$this->delegate = $delegate;
@@ -93,7 +86,7 @@ class Bee_Context_Xml_ParserContext {
 	/**
 	 * Enter description here...
 	 *
-	 * @return IBeanDefinition
+	 * @return Bee_Context_Config_IBeanDefinition
 	 */
 	public final function getContainingBeanDefinition() {
 		return $this->containingBeanDefinition;
@@ -102,7 +95,7 @@ class Bee_Context_Xml_ParserContext {
     /**
      * Enter description here...
      *
-     * @return Bee\Context\Config\IBeanDefinitionRegistry
+     * @return Bee_Context_Config_IBeanDefinitionRegistry
      */
     public final function getRegistry() {
         return $this->readerContext->getRegistry();
@@ -116,7 +109,7 @@ class Bee_Context_Xml_ParserContext {
     }
 
     /**
-     * @return CompositeComponentDefinition
+     * @return Bee_Context_Config_CompositeComponentDefinition
      */
     public function getContainingComponent() {
         $count = count($this->containingComponents);
@@ -124,15 +117,15 @@ class Bee_Context_Xml_ParserContext {
     }
 
     /**
-     * @param CompositeComponentDefinition $containingComponent
+     * @param Bee_Context_Config_CompositeComponentDefinition $containingComponent
      * @return void
      */
-    public function pushContainingComponent(CompositeComponentDefinition $containingComponent) {
+    public function pushContainingComponent(Bee_Context_Config_CompositeComponentDefinition $containingComponent) {
         array_push($this->containingComponents, $containingComponent);
     }
 
     /**
-     * @return CompositeComponentDefinition
+     * @return Bee_Context_Config_CompositeComponentDefinition
      */
     public function popContainingComponent() {
         return array_pop($this->containingComponents);
@@ -142,7 +135,7 @@ class Bee_Context_Xml_ParserContext {
         $this->registerComponent($this->popContainingComponent());
     }
 
-    public function registerComponent(IComponentDefinition $component) {
+    public function registerComponent(Bee_Context_Config_IComponentDefinition $component) {
         $containingComponent = $this->getContainingComponent();
         if ($containingComponent != null) {
             $containingComponent->addNestedComponent($component);
@@ -153,3 +146,4 @@ class Bee_Context_Xml_ParserContext {
         }
     }
 }
+?>

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,12 +60,7 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 	 * @var array
 	 */
 	private $headerNames;
-
-	/**
-	 * @var bool
-	 */
-	private $ajax;
-
+	
 	public function __construct(array $parameters = null, $pathInfo = null, $method = null, array $headers = null) {
 		if(is_null($headers)) {
 			$headers = Bee_Utils_Env::getRequestHeaders();
@@ -108,19 +103,17 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 	}
 
 	/**
-	 * Check whether the given parameter exists
+	 * Returns the PATH_INFO (i.e. any additional path trailing the actual PHP file)
 	 *
-	 * @param $name
-	 * @return bool
+	 * @return string
 	 */
 	public function hasParameter($name) {
         return array_key_exists($name, $this->parameters);
 	}
 
 	/**
-	 * Returns the value of the given parameter, or null if no parameter with that name exists
+	 * Returns the PATH_INFO (i.e. any additional path trailing the actual PHP file)
 	 *
-	 * @param string $name
 	 * @return string
 	 */
 	public function getParameter($name) {
@@ -129,14 +122,9 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 //			$val = $val[0];
 //		}
 //		return $val;
-        return $this->hasParameter($name) ? $this->parameters[$name] : null;
+        return array_key_exists($name, $this->parameters) ? $this->parameters[$name] : null;
 	}
 
-	/**
-	 * Set the value of the given parameter
-	 * @param $name
-	 * @param $value
-	 */
 	public function setParameter($name, $value) {
 		if(is_null($value)) {
 			unset($this->parameters[$name]);
@@ -169,11 +157,12 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 	}
 			
 	public function getHeader($name) {
-		$name = strtoupper($name);
-		return array_key_exists($name, $this->headers) ? $this->headers[$name] : false;
+		return $this->headers[strtoupper($name)];
 	}
 	
 	public function getHeaderNames() {
+		if(is_null($this->headerNames)) {
+		}
 		return $this->headerNames;
 	}
 	
@@ -200,18 +189,5 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 		}
 		return new Bee_MVC_HttpRequest($params, $pathInfo, $method, $headers);
 	}
-
-	/**
-	 * @param boolean $ajax
-	 */
-	public function setAjax($ajax) {
-		$this->ajax = $ajax;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public function getAjax() {
-		return $this->ajax;
-	}
 }
+?>

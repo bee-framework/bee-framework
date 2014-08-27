@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Context\Support\BeanUtils;
 
 /**
  * Enter description here...
@@ -37,7 +36,7 @@ class Bee_Context_Xml_HardcodedNamespaceHandlerResolver implements Bee_Context_X
 		if(is_null($handlerOrClassName) || $handlerOrClassName instanceof Bee_Context_Xml_Namespace_IHandler) {
 			return $handlerOrClassName;
 		} else {
-			$handler = BeanUtils::instantiateClass($handlerOrClassName);
+			$handler = Bee_Context_Support_BeanUtils::instantiateClass($handlerOrClassName);
 			if($handler instanceof Bee_Context_Xml_Namespace_IHandler) {
 				$handler->init();
 				self::$NAMESPACE_HANDLERS[$namespaceUri] = $handler;

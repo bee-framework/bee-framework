@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Context\Config\BeanDefinitionHolder;
 
 /**
  * Enter description here...
@@ -30,7 +29,7 @@ interface Bee_Context_Xml_Namespace_IHandler {
 	 *
 	 * @param DOMElement $element
 	 * @param Bee_Context_Xml_ParserContext $parserContext
-	 * @return Bee\Context\Config\IBeanDefinition
+	 * @return Bee_Context_Config_IBeanDefinition
 	 */
 	function parse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext);
 	
@@ -39,9 +38,10 @@ interface Bee_Context_Xml_Namespace_IHandler {
 	 * Enter description here...
 	 *
 	 * @param DOMNode $source
-	 * @param BeanDefinitionHolder $definition
+	 * @param Bee_Context_Config_BeanDefinitionHolder $definition
 	 * @param Bee_Context_Xml_ParserContext $parserContext
-	 * @return BeanDefinitionHolder
+	 * @return Bee_Context_Config_BeanDefinitionHolder
 	 */
-	function decorate(DOMNode $source, BeanDefinitionHolder $definition, Bee_Context_Xml_ParserContext $parserContext);
+	function decorate(DOMNode $source, Bee_Context_Config_BeanDefinitionHolder $definition, Bee_Context_Xml_ParserContext $parserContext);
 }
+?>

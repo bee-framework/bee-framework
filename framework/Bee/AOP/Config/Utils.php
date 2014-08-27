@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Context\Config\IBeanDefinitionRegistry;
 
 /**
  * User: mp
  * Date: Feb 19, 2010
  * Time: 5:41:23 PM
  */
+
 class Bee_AOP_Config_Utils {
 
     const AUTO_PROXY_CREATOR_BEAN_NAME = 'org.beeframework.aop.config.internalAutoProxyCreator';
 
     /**
      * @static
-     * @param IBeanDefinitionRegistry $registry
+     * @param Bee_Context_Config_IBeanDefinitionRegistry $registry
      * @return Bee_Context_Config_BeanDefinition_Generic
      */
-    public static function registerAutoProxyCreatorIfNecessary(IBeanDefinitionRegistry $registry) {
+    public static function registerAutoProxyCreatorIfNecessary(Bee_Context_Config_IBeanDefinitionRegistry $registry) {
         return self::registerOrEscalateApcAsRequired('Bee_AOP_Framework_AutoProxyCreator', $registry);
 //        return self::registerOrEscalateApcAsRequired('InfrastructureAdvisorAutoProxyCreator.class', $registry, $source);
     }
@@ -39,10 +39,10 @@ class Bee_AOP_Config_Utils {
      * @static
      * @access private static
      * @param  $className
-     * @param IBeanDefinitionRegistry $registry
+     * @param Bee_Context_Config_IBeanDefinitionRegistry $registry
      * @return Bee_Context_Config_BeanDefinition_Generic
      */
-    private static function registerOrEscalateApcAsRequired($className, IBeanDefinitionRegistry $registry) {
+    private static function registerOrEscalateApcAsRequired($className, Bee_Context_Config_IBeanDefinitionRegistry $registry) {
         if ($registry->containsBeanDefinition(self::AUTO_PROXY_CREATOR_BEAN_NAME)) {
             // todo
 //            $apcDefinition = $registry->getBeanDefinition(self::AUTO_PROXY_CREATOR_BEAN_NAME);
@@ -58,8 +58,10 @@ class Bee_AOP_Config_Utils {
 
         $beanDefinition = new Bee_Context_Config_BeanDefinition_Generic();
         $beanDefinition->setBeanClassName($className);
-//        $beanDefinition->addPropertyValue(new PropertyValue('order', Ordered.HIGHEST_PRECEDENCE)); // todo: implement bean ordering
+//        $beanDefinition->addPropertyValue(new Bee_Beans_PropertyValue('order', Ordered.HIGHEST_PRECEDENCE)); // todo: implement bean ordering
         $registry->registerBeanDefinition(self::AUTO_PROXY_CREATOR_BEAN_NAME, $beanDefinition);
         return $beanDefinition;
     }
 }
+
+?>

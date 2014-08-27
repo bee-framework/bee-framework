@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\DefaultRequestBuilder;
-use Bee\MVC\IFilterChain;
 
 /**
  * The dispatcher is the main entry point into an Bee MVC application. It acts as a front controller, i.e. it handles incoming
@@ -24,9 +22,9 @@ use Bee\MVC\IFilterChain;
  * The dispatcher uses for its configuration a bean container (the 'context'), which is an instance of <code>Bee_IContext</code>.
  * All collaborators required by the dispatcher are looked up from this context. The two collaborators required in any case are:
  * <ul>
- * <li><b>handlerMapping</b>: an instance of <code>Bee\MVC\IHandlerMapping</code> that is used to determine the name of the back
+ * <li><b>handlerMapping</b>: an instance of <code>Bee_MVC_IHandlerMapping</code> that is used to determine the name of the back
  * controller bean for the curret request.</li>
- * <li><b>viewResolver</b>: an instance of <code>IViewResolver</code> that is used to map view names returned by the back
+ * <li><b>viewResolver</b>: an instance of <code>Bee_MVC_IViewResolver</code> that is used to map view names returned by the back
  * controllers to actual view implementations.</li>
  * </ul>
  * <p/>
@@ -35,15 +33,13 @@ use Bee\MVC\IFilterChain;
  * For additional information on the concepts, please refer to the chapter on Web MVC in the Spring documentation.
  *
  * @see Bee_IContext
- * @see Bee\MVC\IHandlerMapping
- * @see IViewResolver
+ * @see Bee_MVC_IHandlerMapping
+ * @see Bee_MVC_IViewResolver
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  * @author Benjamin Hartmann
  */
-class Bee_MVC_Dispatcher implements IFilterChain {
-
-	const REQUEST_BUILDER_BEAN_NAME = 'requestBuilder';
+class Bee_MVC_Dispatcher implements Bee_MVC_IFilterChain {
 
 	const HANDLER_MAPPING_BEAN_NAME = 'handlerMapping';
 
@@ -87,15 +83,11 @@ class Bee_MVC_Dispatcher implements IFilterChain {
 	 */
 	private $context;
 
-	/**
-	 * @var \Bee\MVC\IRequestBuilder
-	 */
-	private $requestBuilder;
 
 	/**
 	 * The handler mapping used by this dispatcher
 	 *
-	 * @var \Bee\MVC\IHandlerMapping
+	 * @var Bee_MVC_IHandlerMapping
 	 */
 	private $handlerMapping;
 
@@ -103,20 +95,20 @@ class Bee_MVC_Dispatcher implements IFilterChain {
 	/**
 	 * The view resolver used by this dispatcher
 	 *
-	 * @var Bee\MVC\IViewResolver
+	 * @var Bee_MVC_IViewResolver
 	 */
 	private $viewResolver;
 
 	/**
 	 * Enter description here...
 	 *
-	 * @var \Bee\MVC\IFilter
+	 * @var Bee_MVC_IFilter
 	 */
 	private $filterChainProxy;
 
 	/**
 	 *
-	 * @var Bee\MVC\IHandlerExceptionResolver
+	 * @var Bee_MVC_IHandlerExceptionResolver
 	 */
 	private $handlerExceptionResolver;
 
@@ -188,6 +180,22 @@ class Bee_MVC_Dispatcher implements IFilterChain {
 	 * @return void
 	 */
 	protected function init() {
+		self::$currentRequest = $this->buildRequestObject();
+		$this->handlerMapping = $this->context->getBean(self::HANDLER_MAPPING_BEAN_NAME, 'Bee_MVC_IHandlerMapping');
+		$this->viewResolver = $this->context->getBean(self::VIEW_RESOLVER_BEAN_NAME, 'Bee_MVC_IViewResolver');
+
+		try {
+			$this->filterChainProxy = $this->context->getBean(self::FILTER_CHAIN_PROXY_NAME, 'Bee_MVC_IFilter');
+		} catch (Bee_Context_NoSuchBeanDefinitionException $ex) {
+			$this->getLog()->info('no filter chain proxy configured');
+		}
+
+		try {
+			$this->handlerExceptionResolver = $this->context->getBean(self::HANDLER_EXCEPTION_RESOLVER_NAME, 'Bee_MVC_IHandlerExceptionResolver');
+		} catch (Bee_Context_NoSuchBeanDefinitionException $ex) {
+			$this->getLog()->info('no exception resolver configured');
+		}
+
 		if ($this->context->containsBean(Bee_MVC_Session_DispatcherAdapter::SESSION_HANDLER_NAME)) {
 			$this->getLog()->info('custom session handler configured, setting it as PHP session_set_save_handler()');
 			$sessionAdapter = new Bee_MVC_Session_DispatcherAdapter($this->context);
@@ -199,30 +207,6 @@ class Bee_MVC_Dispatcher implements IFilterChain {
 				array(&$sessionAdapter, "destroy"),
 				array(&$sessionAdapter, "gc")
 			);
-		}
-
-		try {
-			$this->requestBuilder = $this->context->getBean(self::REQUEST_BUILDER_BEAN_NAME, '\Bee\MVC\IRequestBuilder');
-		} catch (Bee_Context_NoSuchBeanDefinitionException $ex) {
-			$this->getLog()->info('no RequestBuilder configured, using DefaultRequestBuilder');
-			$this->requestBuilder = new DefaultRequestBuilder();
-		}
-
-		self::$currentRequest = $this->requestBuilder->buildRequestObject();
-
-		$this->handlerMapping = $this->context->getBean(self::HANDLER_MAPPING_BEAN_NAME, 'Bee\MVC\IHandlerMapping');
-		$this->viewResolver = $this->context->getBean(self::VIEW_RESOLVER_BEAN_NAME, 'Bee\MVC\IViewResolver');
-
-		try {
-			$this->filterChainProxy = $this->context->getBean(self::FILTER_CHAIN_PROXY_NAME, 'Bee\MVC\IFilter');
-		} catch (Bee_Context_NoSuchBeanDefinitionException $ex) {
-			$this->getLog()->info('no filter chain proxy configured');
-		}
-
-		try {
-			$this->handlerExceptionResolver = $this->context->getBean(self::HANDLER_EXCEPTION_RESOLVER_NAME, 'Bee\MVC\IHandlerExceptionResolver');
-		} catch (Bee_Context_NoSuchBeanDefinitionException $ex) {
-			$this->getLog()->info('no exception resolver configured');
 		}
 	}
 
@@ -299,7 +283,7 @@ class Bee_MVC_Dispatcher implements IFilterChain {
 
 			if ($mav instanceof Bee_MVC_ModelAndView) {
 				$mav->addModelValue(Bee_MVC_Model::CURRENT_REQUEST_KEY, $request);
-				$this->resolveModelAndView($mav, $request);
+				$this->resolveModelAndView($mav);
 
 				if(!is_null($handlerException) && !count($interceptors)) {
 					// We were unable to resolve a handler and its interceptors due to an exception being thrown along
@@ -320,8 +304,8 @@ class Bee_MVC_Dispatcher implements IFilterChain {
 		}
 	}
 
-	public function resolveModelAndView(Bee_MVC_ModelAndView $mav, Bee_MVC_IHttpRequest $request) {
-		$resolvedView = $this->viewResolver->resolveViewName($mav->getViewName(), $request);
+	public function resolveModelAndView(Bee_MVC_ModelAndView $mav) {
+		$resolvedView = $this->viewResolver->resolveViewName($mav->getViewName());
 		$mav->setResolvedView($resolvedView);
 		if ($resolvedView instanceof Bee_MVC_View_Abstract) {
 			$statics = $resolvedView->getStaticAttributes();
@@ -331,17 +315,26 @@ class Bee_MVC_Dispatcher implements IFilterChain {
 			$model = array_merge($statics, $mav->getModel());
 			$mav->setModel($model);
 		}
-		$this->resolveModelInternals($mav->getModel(), $request);
+		$this->resolveModelInternals($mav->getModel());
 	}
 
-	private function resolveModelInternals(array $model, Bee_MVC_IHttpRequest $request) {
+	private function resolveModelInternals(array $model) {
 		foreach ($model as $modelElem) {
 			if ($modelElem instanceof Bee_MVC_ModelAndView) {
-				$this->resolveModelAndView($modelElem, $request);
+				$this->resolveModelAndView($modelElem);
 			} else if (is_array($modelElem)) {
-				$this->resolveModelInternals($modelElem, $request);
+				$this->resolveModelInternals($modelElem);
 			}
 		}
+	}
+
+	/**
+	 * Enter description here...
+	 *
+	 * @return Bee_MVC_HttpRequest
+	 */
+	private function buildRequestObject() {
+		return new Bee_MVC_HttpRequest();
 	}
 }
 

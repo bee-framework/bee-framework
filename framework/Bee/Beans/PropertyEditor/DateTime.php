@@ -1,7 +1,6 @@
 <?php
-namespace Bee\Beans\PropertyEditor;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,37 +14,35 @@ namespace Bee\Beans\PropertyEditor;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Beans\IPropertyEditor;
-use Bee_Utils_Strings;
-use Exception;
 
 /**
  * Enter description here...
  *
  * @author Benjamin Hartmann
  */
-class DateTimePropertyEditor implements IPropertyEditor {
+class Bee_Beans_PropertyEditor_DateTime implements Bee_Beans_IPropertyEditor {
 
 	/**
 	 * Converts a unix timestamp into datetime format:
-	 * Year-Month-Day Hours:Minutes:Seconds
+     * Year-Month-Day Hours:Minutes:Seconds
 	 *
 	 * @param int $value
-	 * @throws \Exception
-	 * @return string
+	 * @return String
 	 */
 	public function toString($value) {
         if (!is_int($value)) {
             throw new Exception('Unable to convert value into a String. Value is not a timestamp (integer) but "'.gettype($value).'" instead.');
         }
         return date('Y-m-d H:i:s', $value);
+
+//		Bee_Utils_Assert::isTrue(is_bool($value));
+//		return $value ? self::VALUE_TRUE : self::VALUE_FALSE;
 	}
 
 	/**
 	 * Converts String into a unix timestamp (int)
 	 *
-	 * @param string $value
-	 * @throws \Exception
+	 * @param String $value
 	 * @return int
 	 */
 	public function fromString($value) {
@@ -79,5 +76,14 @@ class DateTimePropertyEditor implements IPropertyEditor {
         }
 
         return strtotime($conversionStringDate.$conversionStringTime);
+
+
+
+//		Bee_Utils_Assert::isTrue(is_string($value));
+//		return strtolower($value) == self::VALUE_TRUE;
 	}
+
+    public static function valueOf($value) {
+        return Bee_Utils_Strings::hasText($value) && strtolower($value) != self::VALUE_FALSE;
+    }
 }
