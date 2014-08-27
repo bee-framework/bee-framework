@@ -28,7 +28,7 @@ class Bee_Security_Provider_Manager extends Bee_Security_AbstractAuthenticationM
     /**
      * Enter description here...
      *
-     * @var array
+     * @var Bee_Security_IAuthenticationProvider[]
      */
     private $providers = array();
 
@@ -129,4 +129,3 @@ class Bee_Security_Provider_Manager extends Bee_Security_AbstractAuthenticationM
     	$this->sessionController = $sessionController;
     }
 }
-?>
