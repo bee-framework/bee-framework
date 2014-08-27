@@ -81,10 +81,9 @@ abstract class Bee_Security_Provider_AbstractUserDetailsAuthentication implement
 	public final function authenticate(Bee_Security_IAuthentication $authentication) {
 		
 		Bee_Utils_Assert::isInstanceOf('Bee_Security_UsernamePasswordAuthenticationToken', $authentication, 'Only UsernamePasswordAuthenticationToken is supported');
-		/** @var Bee_Security_UsernamePasswordAuthenticationToken $authentication */
 
         // Determine username
-        $username = is_null($authentication->getPrincipal()) ? "NONE_PROVIDED" : $authentication->getPrincipal()->getName();
+        $username = is_null($authentication->getPrincipal()) ? "NONE_PROVIDED" : $authentication->getName();
 
         $cacheWasUsed = true;
         $user = null;
