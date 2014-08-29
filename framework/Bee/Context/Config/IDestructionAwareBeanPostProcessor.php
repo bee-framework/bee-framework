@@ -1,7 +1,6 @@
 <?php
-namespace Bee\Context\Config;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +20,8 @@ namespace Bee\Context\Config;
  * Date: Feb 17, 2010
  * Time: 6:14:37 PM
  */
-interface IDestructionAwareBeanPostProcessor extends IBeanPostProcessor {
+
+interface Bee_Context_Config_IDestructionAwareBeanPostProcessor extends Bee_Context_Config_IBeanPostProcessor {
 
     /**
      * Apply this BeanPostProcessor to the given bean instance before
@@ -31,10 +31,11 @@ interface IDestructionAwareBeanPostProcessor extends IBeanPostProcessor {
      * inner beans).
      * @param mixed $bean the bean instance to be destroyed
      * @param string $beanName the name of the bean
-     * @throws \Bee_Context_BeansException in case of errors
+     * @throws org.springframework.beans.BeansException in case of errors
      * @see org.springframework.beans.factory.DisposableBean
      * @see org.springframework.beans.factory.support.AbstractBeanDefinition#setDestroyMethodName
      */
     function postProcessBeforeDestruction($bean, $beanName);
 
 }
+?>

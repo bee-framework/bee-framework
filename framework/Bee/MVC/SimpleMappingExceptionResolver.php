@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,59 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\IController;
-use Bee\MVC\IHandlerExceptionResolver;
 
-class Bee_MVC_SimpleMappingExceptionResolver implements IHandlerExceptionResolver {
-
+class Bee_MVC_SimpleMappingExceptionResolver implements Bee_MVC_IHandlerExceptionResolver {
+	
 	const MODEL_HANDLER_EXCEPTION_KEY = 'handler_excpetion';
-
+	
 	/**
-	 * @var Logger
-	 */
-	protected $log;
-
-	/**
-	 * @return Logger
-	 */
-	protected function getLog() {
-		if (!$this->log) {
-			$this->log = Logger::getLogger(get_class($this));
-		}
-		return $this->log;
-	}
-
-	/**
-	 *
+	 * 
 	 * @var array
 	 */
 	private $exceptionMapping;
-
+	
 	/**
-	 *
+	 * 
 	 * @var String
 	 */
 	private $defaultErrorView;
-
+	
 	/**
-	 *
+	 * 
 	 * @return array
 	 */
 	public final function getExceptionMapping() {
 		return $this->exceptionMapping;
 	}
-
+	
 	/**
-	 *
+	 * 
 	 * @param array $exceptionMapping
 	 * @return void
 	 */
 	public final function setExceptionMapping(array $exceptionMapping) {
 		$this->exceptionMapping = $exceptionMapping;
 	}
-
+	
 	/**
-	 *
+	 * 
 	 * @return String
 	 */
 	public final function getDefaultErrorView() {
@@ -74,7 +57,7 @@ class Bee_MVC_SimpleMappingExceptionResolver implements IHandlerExceptionResolve
 	}
 
 	/**
-	 *
+	 * 
 	 * @param String $defaultErrorView
 	 * @return void
 	 */
@@ -82,40 +65,24 @@ class Bee_MVC_SimpleMappingExceptionResolver implements IHandlerExceptionResolve
 		$this->defaultErrorView = $defaultErrorView;
 	}
 
-	/**
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @param IController $handler
-	 * @param Exception $ex
-	 * @return Bee_MVC_ModelAndView|bool
-	 */
-	public function resolveException(Bee_MVC_IHttpRequest $request, IController $handler = null, Exception $ex) {
-		$this->getLog()->info('Trying to map exception', $ex);
-
+	public function resolveException(Bee_MVC_IHttpRequest $request, Bee_MVC_IController $handler = null, Exception $ex) {
+		$exceptionClass = get_class($ex);
 		$viewName = false;
-
-		// can the mapping be resolved directly?
-		if (is_array($this->exceptionMapping)) {
-			$exceptionClass = get_class($ex);
-			// can the mapping be resolved directly?
-			if (array_key_exists($exceptionClass, $this->exceptionMapping)) {
-				$viewName = $this->exceptionMapping[$exceptionClass];
-			} else {
-				// try to find a mapping for a superclass
-				foreach ($this->exceptionMapping as $parentClass => $mappedSolution) {
-					if (is_subclass_of($exceptionClass, $parentClass)) {
-						$viewName = $mappedSolution;
-						break;
-					}
-				}
-			}
+		if(is_array($this->exceptionMapping) && array_key_exists($exceptionClass, $this->exceptionMapping)) {
+			$viewName = $this->exceptionMapping[$exceptionClass];
 		}
-
-		if (!$viewName && Bee_Utils_Strings::hasText($this->defaultErrorView)) {
+		if(!$viewName && Bee_Utils_Strings::hasText($this->defaultErrorView)) {
 			$viewName = $this->defaultErrorView;
-			$this->getLog()->debug('Resolving to default error view');
 		}
-
-		$this->getLog()->debug('Resolved error view: ' . $viewName);
-		return $viewName ? new Bee_MVC_ModelAndView(array(self::MODEL_HANDLER_EXCEPTION_KEY => $ex), $viewName) : false;
+		
+		if($viewName) {
+			$model = array(
+				self::MODEL_HANDLER_EXCEPTION_KEY => $ex
+			);
+			return new Bee_MVC_ModelAndView($model, $viewName);
+		}
+		return false;
 	}
+	
 }
+?>

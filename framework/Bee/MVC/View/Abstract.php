@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\IView;
 
 /**
  * Enter description here...
@@ -22,7 +21,7 @@ use Bee\MVC\IView;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-abstract class Bee_MVC_View_Abstract implements IView {
+abstract class Bee_MVC_View_Abstract implements Bee_MVC_IView {
 	
 	private $statusCode = 200;
 

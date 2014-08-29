@@ -1,7 +1,6 @@
 <?php
-namespace Bee\Context\Config;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +15,6 @@ namespace Bee\Context\Config;
  * limitations under the License.
  */
 use Bee\Beans\MethodInvocation;
-use Bee\Beans\PropertyValue;
 
 /**
  * Enter description here...
@@ -24,7 +22,7 @@ use Bee\Beans\PropertyValue;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-interface IBeanDefinition extends IMethodArguments {
+interface Bee_Context_Config_IBeanDefinition extends Bee\Context\Config\IMethodArguments {
 	
 	const SCOPE_CACHE = 'cache';
 	const SCOPE_SESSION = 'session';
@@ -123,7 +121,7 @@ interface IBeanDefinition extends IMethodArguments {
 	 * Return the property values to be applied to a new instance of the bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
 	 *
-	 * @return PropertyValue[]
+	 * @return Bee_Beans_PropertyValue[]
 	 */
 	public function getPropertyValues();
 
@@ -131,11 +129,11 @@ interface IBeanDefinition extends IMethodArguments {
 	 * Add a PropertyValue object, replacing any existing one
 	 * for the corresponding property.
 	 *
-	 * @param PropertyValue $prop PropertyValue object to add
-	 * @return IBeanDefinition this object to allow creating objects, adding multiple
+	 * @param Bee_Beans_PropertyValue $prop PropertyValue object to add
+	 * @return Bee_Context_Config_IBeanDefinition this object to allow creating objects, adding multiple
 	 * PropertyValues in a single statement
 	 */
-	public function addPropertyValue(PropertyValue $prop);
+	public function addPropertyValue(Bee_Beans_PropertyValue $prop);
 
 	/**
 	 * @return MethodInvocation[]
@@ -187,7 +185,7 @@ interface IBeanDefinition extends IMethodArguments {
 	/**
 	 * Enter description here...
 	 *
-	 * @param boolean $enforceInitMethod
+	 * @param booelan $enforceInitMethod
 	 * @return void
 	 */
 	public function setEnforceInitMethod($enforceInitMethod);

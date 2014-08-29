@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Context\Config\IObjectFactory;
-use Bee\Context\Config\IScope;
 
 /**
  * Enter description here...
@@ -23,7 +21,7 @@ use Bee\Context\Config\IScope;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_Config_Scope_Cache implements IScope {
+class Bee_Context_Config_Scope_Cache implements Bee_Context_Config_IScope {
 	
 	private $id;
 
@@ -31,7 +29,7 @@ class Bee_Context_Config_Scope_Cache implements IScope {
 		$this->id = $id;
 	}
 
-	public function get($beanName, IObjectFactory $objectFactory) {
+	public function get($beanName, Bee_Context_Config_IObjectFactory $objectFactory) {
         return Bee_Cache_Manager::retrieveCachable(new Bee_Context_Config_Scope_Cache_CachableConfig($this->getCacheKey(), $objectFactory));
 	}
 
@@ -53,11 +51,11 @@ class Bee_Context_Config_Scope_Cache_CachableConfig implements Bee_Cache_ICachab
     private $key;
 
     /**
-     * @var IObjectFactory
+     * @var Bee_Context_Config_IObjectFactory 
      */
     private $objectFactory;
 
-    public function __construct($key, IObjectFactory $objectFactory) {
+    public function __construct($key, Bee_Context_Config_IObjectFactory $objectFactory) {
         $this->key = $key;
         $this->objectFactory = $objectFactory;
     }
@@ -75,3 +73,4 @@ class Bee_Context_Config_Scope_Cache_CachableConfig implements Bee_Cache_ICachab
     }
 
 }
+?>

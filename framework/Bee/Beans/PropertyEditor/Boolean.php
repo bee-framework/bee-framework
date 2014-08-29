@@ -1,7 +1,6 @@
 <?php
-namespace Bee\Beans\PropertyEditor;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,32 +14,41 @@ namespace Bee\Beans\PropertyEditor;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Beans\IPropertyEditor;
 
 /**
  * Enter description here...
  *
  * @author Benjamin Hartmann
  */
-class StringPropertyEditor implements IPropertyEditor {
-	
+class Bee_Beans_PropertyEditor_Boolean extends Bee_Beans_PropertyEditor_Abstract {
+
+	const VALUE_TRUE = 'true';
+	const VALUE_FALSE = 'false';
+
 	/**
-	 * Enter description here...
+	 * Return either "true" or "false"
 	 *
-	 * @param int $value
+	 * @param Boolean $value
 	 * @return String
 	 */
 	public function toString($value) {
-		return $value;
+		return parent::toString(!!$value);
 	}
 
 	/**
 	 * Enter description here...
 	 *
 	 * @param String $value
-	 * @return int
+	 * @return Boolean
 	 */
 	public function fromString($value) {
-		return $value;
+		if(is_bool($value)) {
+			return $value;
+		}
+		return $this->checkAndReturnIfNotNull(filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE), $value);
 	}
+
+    public static function valueOf($value) {
+        return Bee_Utils_Strings::hasText($value) && strtolower($value) != self::VALUE_FALSE;
+    }
 }

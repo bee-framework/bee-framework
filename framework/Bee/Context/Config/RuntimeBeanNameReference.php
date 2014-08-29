@@ -1,7 +1,6 @@
 <?php
-namespace Bee\Context\Config;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +21,7 @@ namespace Bee\Context\Config;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class RuntimeBeanNameReference implements IBeanReference {
+class Bee_Context_Config_RuntimeBeanNameReference implements Bee_Context_Config_IBeanReference {
 	
 	/**
 	 * Enter description here...
@@ -30,6 +29,7 @@ class RuntimeBeanNameReference implements IBeanReference {
 	 * @var array
 	 */
     private $beanNames;
+
 
     /**
 	 * Create a new RuntimeBeanReference to the given bean name,
@@ -41,6 +41,8 @@ class RuntimeBeanNameReference implements IBeanReference {
 		$this->beanNames = $beanNames;
 	}
 
+
+	
 	/**
 	 * Enter description here...
 	 *
@@ -50,3 +52,4 @@ class RuntimeBeanNameReference implements IBeanReference {
 		return $this->beanNames;
 	}
 }
+?>

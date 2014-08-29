@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Context\Config\IBeanDefinitionRegistry;
 
 /**
  * Enter description here...
@@ -26,7 +25,7 @@ class Bee_Context_Xml_BeanDefinitionReader {
 	/**
 	 * Enter description here...
 	 *
-	 * @var IBeanDefinitionRegistry
+	 * @var Bee_Context_Config_IBeanDefinitionRegistry
 	 */
 	private $registry;
 	
@@ -44,17 +43,15 @@ class Bee_Context_Xml_BeanDefinitionReader {
 	 */
 	private $resourcesBeingLoaded = array(); 
 
-	public function __construct(IBeanDefinitionRegistry $registry) {
+	public function __construct(Bee_Context_Config_IBeanDefinitionRegistry $registry) {
 		Bee_Utils_Assert::notNull($registry, 'Bean definition registry must not be NULL');
 		$this->registry = $registry;
 	}
-
+	
 	/**
 	 * Enter description here...
 	 *
 	 * @param String $location
-	 * @throws Bee_Context_BeansException
-	 * @throws Exception
 	 */
 	public function loadBeanDefinitions($location) {
 		Bee_Utils_Assert::hasText($location, 'You must specify a location from which to load bean definitions!');
@@ -75,18 +72,15 @@ class Bee_Context_Xml_BeanDefinitionReader {
 			throw $ex;
 		}
 	}
-
-	/**
-	 * @param DOMDocument $doc
-	 * @return int
-	 */
+	
 	public function registerBeanDefinitions(DOMDocument $doc) {
 		$documentReader = new Bee_Context_Xml_BeanDefinitionDocumentReader();
 		$countBefore = $this->getRegistry()->getBeanDefinitionCount();
 		$documentReader->registerBeanDefinitions($doc, $this->createReaderContext());
 		return $this->getRegistry()->getBeanDefinitionCount() - $countBefore;
 	}
-
+	
+	
 	/**
 	 * Enter description here...
 	 *
@@ -98,7 +92,8 @@ class Bee_Context_Xml_BeanDefinitionReader {
 		}
 		return new Bee_Context_Xml_ReaderContext($this->getRegistry(), $this->namespaceHandlerResolver);
 	}
-
+	
+	
 	/**
 	 * Enter description here...
 	 *
@@ -107,13 +102,16 @@ class Bee_Context_Xml_BeanDefinitionReader {
 	protected function createDefaultNamespaceHandlerResolver() {
 		return new Bee_Context_Xml_HardcodedNamespaceHandlerResolver();
 	}
-
+	
+	
+	
 	/**
 	 * Enter description here...
 	 *
-	 * @return IBeanDefinitionRegistry
+	 * @return Bee_Context_Config_IBeanDefinitionRegistry
 	 */
 	public function getRegistry() {
 		return $this->registry;
 	}
 }
+?>

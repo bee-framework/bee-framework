@@ -1,7 +1,7 @@
 <?php
 namespace Bee\Persistence\Doctrine2;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@ namespace Bee\Persistence\Doctrine2;
  * limitations under the License.
  */
 use \Doctrine\ORM\EntityManager;
-use Logger;
 
 /**
  * User: mp
@@ -25,21 +24,6 @@ use Logger;
  */
  
 class EntityManagerHolder {
-
-	/**
-	 * @var Logger
-	 */
-	protected $log;
-
-	/**
-	 * @return Logger
-	 */
-	public function getLog() {
-		if (!$this->log) {
-			$this->log = Logger::getLogger(get_class($this));
-		}
-		return $this->log;
-	}
 
 	/**
 	 * @var EntityManager
@@ -59,16 +43,4 @@ class EntityManagerHolder {
     public function setEntityManager(EntityManager $entityManager) {
         $this->entityManager = $entityManager;
     }
-
-	/**
-	 * Convenience wrapper around EntityManager::transactional()
-	 * @param $callback
-	 * @return mixed
-	 */
-	public function transactional($callback) {
-		$that = $this;
-		return $this->getEntityManager()->transactional(function (EntityManager $em) use ($callback, $that) {
-			return $callback($that);
-		});
-	}
 }

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
  * Time: 4:59:15 AM
  * To change this template use File | Settings | File Templates.
  */
+
 class Bee_Utils_Logger {
 
     private static $path = 'beelog';
@@ -159,3 +160,4 @@ class Bee_Utils_Logger {
  */
 class LOG extends Bee_Utils_Logger {
 }
+?>

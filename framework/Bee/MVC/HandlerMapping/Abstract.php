@@ -1,7 +1,6 @@
 <?php
-namespace Bee\MVC\HandlerMapping;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +14,6 @@ namespace Bee\MVC\HandlerMapping;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\IController;
-use Bee\MVC\IHandlerMapping;
-use Bee_Context_Config_IContextAware;
-use Bee_IContext;
-use Bee_MVC_HandlerExecutionChain;
-use Bee_MVC_IHttpRequest;
-use Exception;
 
 /**
  * Abstract base class for HandlerMappings
@@ -29,7 +21,7 @@ use Exception;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-abstract class AbstractHandlerMapping implements IHandlerMapping, Bee_Context_Config_IContextAware {
+abstract class Bee_MVC_HandlerMapping_Abstract implements Bee_MVC_IHandlerMapping, Bee_Context_Config_IContextAware {
 
 	/**
 	 * Enter description here...
@@ -48,13 +40,10 @@ abstract class AbstractHandlerMapping implements IHandlerMapping, Bee_Context_Co
 	/**
 	 * Enter description here...
 	 *
-	 * @var \Bee\MVC\IHandlerInterceptor[]
+	 * @var Bee_MVC_IHandlerInterceptor[]
 	 */
 	private $interceptors = array();
 
-	/**
-	 * @param Bee_IContext $context
-	 */
 	public function setBeeContext(Bee_IContext $context) {
 		$this->context = $context;
 	}
@@ -81,7 +70,7 @@ abstract class AbstractHandlerMapping implements IHandlerMapping, Bee_Context_Co
 	/**
 	 * Enter description here...
 	 *
-	 * @param \Bee\MVC\IHandlerInterceptor[] $interceptors
+	 * @param Bee_MVC_IHandlerInterceptor[] $interceptors
 	 */
 	public function setInterceptors(array $interceptors) {
 		$this->interceptors = $interceptors;
@@ -90,7 +79,7 @@ abstract class AbstractHandlerMapping implements IHandlerMapping, Bee_Context_Co
 	/**
 	 * Enter description here...
 	 *
-	 * @return \Bee\MVC\IHandlerInterceptor[]
+	 * @return Bee_MVC_IHandlerInterceptor[]
 	 */
 	public function getInterceptors() {
 		return $this->interceptors;
@@ -104,11 +93,11 @@ abstract class AbstractHandlerMapping implements IHandlerMapping, Bee_Context_Co
 	public function getHandler(Bee_MVC_IHttpRequest $request) {
 		$controllerBeanName = $this->getControllerBeanName($request);
 		$handlerBean = is_string($controllerBeanName) ?
-				$handlerBean = $this->context->getBean($controllerBeanName, 'Bee\MVC\IController') :
+				$handlerBean = $this->context->getBean($controllerBeanName, 'Bee_MVC_IController') :
 				$controllerBeanName;
 
-		if (!$handlerBean instanceof IController) {
-			throw new Exception('Error retrieving handler bean: must be a valid bean name or Bee\MVC\IController instance');
+		if (!$handlerBean instanceof Bee_MVC_IController) {
+			throw new Exception('Error retrieving handler bean: must be a valid bean name or Bee_MVC_IController instance');
 		}
 		
 		$hec = new Bee_MVC_HandlerExecutionChain($handlerBean);

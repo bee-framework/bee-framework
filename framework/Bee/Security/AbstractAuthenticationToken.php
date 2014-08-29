@@ -79,6 +79,4 @@ abstract class Bee_Security_AbstractAuthenticationToken implements Bee_Security_
 		}
 		return $principal;
 	}
-	
 }
-?>

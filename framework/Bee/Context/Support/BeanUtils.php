@@ -1,7 +1,6 @@
 <?php
-namespace Bee\Context\Support;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +14,9 @@ namespace Bee\Context\Support;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Beans\PropertyValue;
-use Bee\Context\Config\IMergeable;
-use ReflectionClass;
-use Traversable;
 
-/**
- * Class BeanUtils
- * @package Bee\Context\Support
- */
-abstract class BeanUtils {
-
-	/**
-	 * @param string $className
-	 * @param array $args
-	 * @return object
-	 */
+abstract class Bee_Context_Support_BeanUtils {
+	
 	public static function instantiateClass($className, array $args = null) {
 		$class = new ReflectionClass($className);
 		if(is_null($args)||count($args) == 0) {
@@ -39,13 +25,9 @@ abstract class BeanUtils {
 		return $class->newInstanceArgs($args);
 	}
 
-	/**
-	 * @param PropertyValue $parent
-	 * @param PropertyValue $child
-	 */
-	public static function mergePropertyValuesIfPossible (PropertyValue $parent, PropertyValue $child) {
+	public static function mergePropertyValuesIfPossible (Bee_Beans_PropertyValue $parent, Bee_Beans_PropertyValue $child) {
         $childValue = $child->getValue();
-		if($childValue instanceof IMergeable && $childValue->getMergeEnabled() && $parent->getValue() instanceof Traversable) {
+		if($childValue instanceof Bee_Context_Config_IMergeable && $childValue->getMergeEnabled() && $parent->getValue() instanceof Traversable) {
             $childValue->merge($parent->getValue());
 		}
 	}

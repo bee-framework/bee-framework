@@ -1,27 +1,10 @@
 <?php
+
 namespace Bee\Utils;
-/*
- * Copyright 2008-2014 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+
 use PDO;
 use Exception;
 
-/**
- * Class HashManager
- * @package Bee\Utils
- */
 class HashManager {
 
     /**
@@ -74,8 +57,8 @@ class HashManager {
             return $row['hash'];
 
         } catch (Exception $e) {
-            $hash = self::createHash();
-            if ($this->persistHash(self::createHash(), $id, $group)) {
+            $hash = $this->createHash();
+            if ($this->persistHash($this->createHash(), $id, $group)) {
                 return $hash;
             }
             return false;
@@ -110,10 +93,7 @@ class HashManager {
         }
     }
 
-	/**
-	 * @return mixed
-	 */
-	public static function createHash() {
+    private function createHash() {
         return preg_replace('/\./', 'b', uniqid('', true));
     }
 

@@ -23,10 +23,8 @@
     "require": {
         "php": ">=5.3",
         "niktux/addendum": "0.4.1",
-        "apache/log4php": "~2.3@stable"
-    },
-    "require-dev": {
-        "pear-pear.php.net/I18N_UnicodeNormalizer": "~1.0"
+        "apache/log4php": "~2.3@stable",
+        "pear-pear/I18N_UnicodeNormalizer": "*@stable"
     },
     "autoload": {
         "psr-0": {

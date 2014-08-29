@@ -1,7 +1,6 @@
 <?php
-namespace Bee\MVC\Controller\Multiaction;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,29 +14,19 @@ namespace Bee\MVC\Controller\Multiaction;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\Controller\MultiActionController;
-use Bee_MVC_IHttpRequest;
 
 /**
- * Base interface for method name resolvers. Used by the multiaction controller to determine the handler method for the
- * current request.
+ * Base interface for method name resolvers. Used by the multiaction controller to determine the handler method for the current request.
  *
- * @see Bee\MVC\Controller\MultiAction
+ * @see Bee_MVC_Controller_MultiAction
  * 
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-interface IMethodNameResolver {
+interface Bee_MVC_Controller_Multiaction_IMethodNameResolver {
+	
+	public function setController(Bee_MVC_Controller_MultiAction $controller);
 
-	/**
-	 * @param MultiActionController $controller
-	 * @return mixed
-	 */
-	public function setController(MultiActionController $controller);
-
-	/**
-	 * @param \Bee_MVC_IHttpRequest $request
-	 * @return string
-	 */
 	public function getHandlerMethodName(Bee_MVC_IHttpRequest $request);
 }
+?>

@@ -1,7 +1,6 @@
 <?php
-namespace Bee\Context\Config;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +21,7 @@ namespace Bee\Context\Config;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-interface IBeanDefinitionRegistry {
+interface Bee_Context_Config_IBeanDefinitionRegistry {
 	
 	/**
 	 * Enter description here...
@@ -35,10 +34,10 @@ interface IBeanDefinitionRegistry {
 	/**
 	 * Enter description here...
 	 * 
-	 * @throws \Bee_Context_NoSuchBeanDefinitionException
+	 * @throws Bee_Context_NoSuchBeanDefinitionException
 	 *
 	 * @param String $beanName
-	 * @return IBeanDefinition
+	 * @return Bee_Context_Config_IBeanDefinition
 	 */
 	public function getBeanDefinition($beanName);
 	
@@ -59,18 +58,18 @@ interface IBeanDefinitionRegistry {
 	/**
 	 * Enter description here...
 	 * 
-	 * @throws \Bee_Context_BeanDefinitionStoreException
+	 * @throws Bee_Context_BeanDefinitionStoreException
 	 *
 	 * @param String $beanName
-	 * @param IBeanDefinition $beanDefinition
+	 * @param Bee_Context_Config_IBeanDefinition $beanDefinition
 	 * @return void
 	 */
-	public function registerBeanDefinition($beanName, IBeanDefinition $beanDefinition);
+	public function registerBeanDefinition($beanName, Bee_Context_Config_IBeanDefinition $beanDefinition);
 	
 	/**
 	 * Enter description here...
 	 * 
-	 * @throws \Bee_Context_NoSuchBeanDefinitionException
+	 * @throws Bee_Context_NoSuchBeanDefinitionException
 	 *
 	 * @param String $beanName
 	 * @return void
@@ -89,10 +88,10 @@ interface IBeanDefinitionRegistry {
 	/**
 	 * Enter description here...
 	 *
-	 * @param IBeanPostProcessor $postProcessor
+	 * @param Bee_Context_Config_IBeanPostProcessor $postProcessor
 	 * @return void
 	 */
-//	public function addBeanPostProcessor(IBeanPostProcessor $postProcessor);
+//	public function addBeanPostProcessor(Bee_Context_Config_IBeanPostProcessor $postProcessor);
 	
 	/**
 	 * Enter description here...
@@ -108,3 +107,5 @@ interface IBeanDefinitionRegistry {
 	 */
 	public function getBeanPostProcessorNames();
 }
+
+?>

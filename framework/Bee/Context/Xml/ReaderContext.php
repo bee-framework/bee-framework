@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Context\Config\IBeanDefinitionRegistry;
 
 /**
  * Enter description here...
@@ -26,10 +25,12 @@ class Bee_Context_Xml_ReaderContext {
 	/**
 	 * Enter description here...
 	 *
-	 * @var IBeanDefinitionRegistry
+	 * @var Bee_Context_Config_IBeanDefinitionRegistry
 	 */
 	private $registry;
 
+	
+	
 	/**
 	 * Enter description here...
 	 *
@@ -43,7 +44,7 @@ class Bee_Context_Xml_ReaderContext {
 	private $log;
 	
 	public function __construct(
-			IBeanDefinitionRegistry $registry,
+			Bee_Context_Config_IBeanDefinitionRegistry $registry, 
 			Bee_Context_Xml_Namespace_IHandlerResolver $namespaceHandlerResolver) {
 		
         $this->log = Bee_Framework::getLoggerForClass(__CLASS__);
@@ -51,11 +52,13 @@ class Bee_Context_Xml_ReaderContext {
 		$this->registry = $registry;
 		$this->namespaceHandlerResolver = $namespaceHandlerResolver;
 	}
-
+	
+	
+	
 	/**
 	 * Enter description here...
 	 *
-	 * @return IBeanDefinitionRegistry
+	 * @return Bee_Context_Config_IBeanDefinitionRegistry
 	 */
 	public function getRegistry() {
 		return $this->registry;

@@ -22,7 +22,6 @@
  * Time: 9:10:57 PM
  * To change this template use File | Settings | File Templates.
  */
-
 class Bee_Security_Provider_AnonymousAuthentication implements Bee_Security_IAuthenticationProvider {
 
     private $key;
@@ -33,6 +32,7 @@ class Bee_Security_Provider_AnonymousAuthentication implements Bee_Security_IAut
         if (!$this->supports($authentication)) {
             return null;
         }
+		/** @var Bee_Security_AnonymousAuthenticationToken $authentication */
 
         if (hash('md5', $this->key) != $authentication->getKeyHash()) {
             throw new Bee_Security_Exception_BadCredentials('The presented AnonymousAuthenticationToken does not contain the expected key');
@@ -53,4 +53,3 @@ class Bee_Security_Provider_AnonymousAuthentication implements Bee_Security_IAut
         return Bee_Utils_Types::isAssignable($authenticationClass, 'Bee_Security_AnonymousAuthenticationToken');
     }
 }
-?>

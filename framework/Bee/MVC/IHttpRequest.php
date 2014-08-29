@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,14 +44,13 @@ interface Bee_MVC_IHttpRequest {
 	 * @return String
 	 */
 	public function getMethod();
-
-
-	/**
-	 * Enter description here...
-	 *
-	 * @param string $name
-	 * @return bool
-	 */
+	
+	
+    /**
+   	 * Enter description here...
+   	 *
+   	 * @return bool
+   	 */
    	public function hasParameter($name);
 
 	/**
@@ -100,10 +99,4 @@ interface Bee_MVC_IHttpRequest {
 //	public function getParamArray();
 	
 	public function addParameters(array $params);
-
-	/**
-	 * True if this is an AJAX request, false in case of a regular GET or POSTback.
-	 * @return bool
-	 */
-	public function getAjax();
 }

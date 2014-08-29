@@ -1,7 +1,6 @@
 <?php
-namespace Bee\Beans;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +14,13 @@ namespace Bee\Beans;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_Context_InvalidPropertyException;
-use Bee_Utils_Types;
 
 /**
  * Enter description here...
  *
  * @author Benjamin Hartmann
  */
-class BeanWrapper {
+class Bee_Beans_BeanWrapper {
 	
 	/**
 	 * The target object
@@ -54,13 +51,13 @@ class BeanWrapper {
 		return $method;
 	}
 	
-	public final function setPropertyValueWithPropertyValue(PropertyValue $propertyValue) {
+	public final function setPropertyValueWithPropertyValue(Bee_Beans_PropertyValue $propertyValue) {
 		$this->setPropertyValue($propertyValue->getName(), $propertyValue->getValue());
 	}
 
 	public final function setPropertyValues(array $propertyValues) {
 		foreach ($propertyValues as $name => $propertyValue) {
-			if (!is_string($propertyValue) && Bee_Utils_Types::isAssignable($propertyValue, 'Bee\Beans\PropertyValue')) {
+			if (!is_string($propertyValue) && Bee_Utils_Types::isAssignable($propertyValue, "Bee_Beans_PropertyValue")) {
 				$this->setPropertyValueWithPropertyValue($propertyValue);
 			} else {
 				$this->setPropertyValue($name, $propertyValue);

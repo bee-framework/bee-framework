@@ -1,7 +1,6 @@
 <?php
-namespace Bee\Context\Config;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +21,7 @@ namespace Bee\Context\Config;
  * Time: 7:11:18 AM
  */
 
-abstract class AbstractComponentDefinition implements IComponentDefinition {
+abstract class Bee_Context_Config_AbstractComponentDefinition implements Bee_Context_Config_IComponentDefinition {
 
     /**
      * Delegates to {@link #getName}.
@@ -59,3 +58,5 @@ abstract class AbstractComponentDefinition implements IComponentDefinition {
         return $this->getDescription();
     }
 }
+
+?>

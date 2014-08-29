@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\IController;
-use Bee\MVC\IHandlerInterceptor;
 
 /**
  * Enter description here...
@@ -28,40 +26,41 @@ final class Bee_MVC_HandlerExecutionChain {
 	/**
 	 * Enter description here...
 	 *
-	 * @var \Bee\MVC\IController
+	 * @var Bee_MVC_IController
 	 */
 	private $handler;
 
 	/**
 	 * Enter description here...
 	 *
-	 * @var IHandlerInterceptor[]
+	 * @var Bee_MVC_IHandlerInterceptor[]
 	 */
 	private $interceptors = array();
 
 	/**
 	 * Enter description here...
 	 *
-	 * @param IController $handler
+	 * @param Bee_MVC_IController $handler
+	 * @internal param \Bee_MVC_IController $controller
 	 */
-	public function __construct(IController $handler) {
+	public function __construct(Bee_MVC_IController $handler) {
 		$this->handler = $handler;
 	}
 
 	/**
 	 * Enter description here...
 	 *
-	 * @param IHandlerInterceptor $interceptor
+	 * @param Bee_MVC_IHandlerInterceptor $interceptor
 	 * @return void
 	 */
-	public function addInterceptor(IHandlerInterceptor $interceptor) {
+	public function addInterceptor(Bee_MVC_IHandlerInterceptor $interceptor) {
 		array_push($this->interceptors, $interceptor);
 	}
 
 	/**
 	 * Enter description here...
 	 *
-	 * @param IHandlerInterceptor[] $interceptors
+	 * @param Bee_MVC_IHandlerInterceptor[] $interceptors
 	 * @return void
 	 */
 	public function addInterceptors(array $interceptors) {
@@ -71,7 +70,7 @@ final class Bee_MVC_HandlerExecutionChain {
 	/**
 	 * Enter description here...
 	 *
-	 * @return IController
+	 * @return Bee_MVC_IController
 	 */
 	public function getHandler() {
 		return $this->handler;
@@ -80,7 +79,7 @@ final class Bee_MVC_HandlerExecutionChain {
 	/**
 	 * Enter description here...
 	 *
-	 * @return IHandlerInterceptor[]
+	 * @return Bee_MVC_IHandlerInterceptor[]
 	 */
 	public function getInterceptors() {
 		return $this->interceptors;

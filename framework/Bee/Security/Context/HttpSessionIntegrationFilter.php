@@ -15,10 +15,7 @@
  * limitations under the License.
  */
 
-use Bee\MVC\IFilter;
-use Bee\MVC\IFilterChain;
-
-class Bee_Security_Context_HttpSessionIntegrationFilter implements IFilter {
+class Bee_Security_Context_HttpSessionIntegrationFilter implements Bee_MVC_IFilter {
 	
 	const BEE_SECURITY_CONTEXT_KEY = 'BEE_SECURITY_CONTEXT';
 	
@@ -32,7 +29,7 @@ class Bee_Security_Context_HttpSessionIntegrationFilter implements IFilter {
 	/**
 	 * Enter description here...
 	 *
-	 * @var bool
+	 * @var booelan
 	 */
     private $allowSessionCreation = true;
     
@@ -49,7 +46,7 @@ class Bee_Security_Context_HttpSessionIntegrationFilter implements IFilter {
     public function __construct() {
     }
     
-	public function doFilter(Bee_MVC_IHttpRequest $request, IFilterChain $filterChain) {
+	public function doFilter(Bee_MVC_IHttpRequest $request, Bee_MVC_IFilterChain $filterChain) {
 		
 		// lazily start the session if we do have a SID
 //		if(session_id === '') {
@@ -70,4 +67,6 @@ class Bee_Security_Context_HttpSessionIntegrationFilter implements IFilter {
 
 		$_SESSION[self::BEE_SECURITY_CONTEXT_KEY] = Bee_Security_Context_Holder::getContext();		
 	}
+	
 }
+?>

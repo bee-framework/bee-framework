@@ -41,7 +41,7 @@ abstract class Bee_Security_Provider_AbstractUserDetailsAuthentication implement
 	 * @param Bee_Security_IUserDetails $userDetails
 	 * @param Bee_Security_UsernamePasswordAuthenticationToken $authentication
 	 * 
-	 * @throws Bee_Security_AuthenticationException
+	 * @throws Bee_Security_Exception_Authentication
 	 */
     protected abstract function additionalAuthenticationChecks(Bee_Security_IUserDetails $userDetails,
         Bee_Security_UsernamePasswordAuthenticationToken $authentication);
@@ -67,12 +67,17 @@ abstract class Bee_Security_Provider_AbstractUserDetailsAuthentication implement
 		}
 	}
 
-   	/**
-   	 * Enter description here...
-   	 *
-   	 * @param Bee_Security_IAuthentication $authentication
-   	 * @return Bee_Security_IAuthentication
-   	 */
+	/**
+	 * Enter description here...
+	 *
+	 * @param Bee_Security_IAuthentication $authentication
+	 * @throws Bee_Security_Exception_AccountStatus
+	 * @throws Bee_Security_Exception_Authentication
+	 * @throws Bee_Security_Exception_BadCredentials
+	 * @throws Bee_Security_Exception_UsernameNotFound
+	 * @throws Exception
+	 * @return Bee_Security_IAuthentication
+	 */
 	public final function authenticate(Bee_Security_IAuthentication $authentication) {
 		
 		Bee_Utils_Assert::isInstanceOf('Bee_Security_UsernamePasswordAuthenticationToken', $authentication, 'Only UsernamePasswordAuthenticationToken is supported');
@@ -109,7 +114,7 @@ abstract class Bee_Security_Provider_AbstractUserDetailsAuthentication implement
             if ($cacheWasUsed) {
                 // There was a problem, so try again after checking
                 // we're using latest data (ie not from the cache)
-                $cacheWasUsed = false;
+//                $cacheWasUsed = false;
                 $user = $this->retrieveUser($username, $authentication);
                 $this->additionalAuthenticationChecks($user, $authentication);
             } else {
@@ -138,12 +143,12 @@ abstract class Bee_Security_Provider_AbstractUserDetailsAuthentication implement
      *  <p>Subclasses will usually store the original credentials the user supplied (not salted or encoded
      * passwords) in the returned <code>Bee_Security_IAuthentication</code> object.</p>
      *
-     * @param principal that should be the principal in the returned object (defined by the {@link
+     * @param mixed $principal that should be the principal in the returned object (defined by the {@link
      *        #isForcePrincipalAsString()} method)
-     * @param authentication that was presented to the provider for validation
-     * @param user that was loaded by the implementation
+     * @param Bee_Security_IAuthentication $authentication that was presented to the provider for validation
+     * @param Bee_Security_IUserDetails $user that was loaded by the implementation
      *
-     * @return the successful authentication token
+     * @return Bee_Security_UsernamePasswordAuthenticationToken the successful authentication token
      */
     protected function createSuccessAuthentication($principal, Bee_Security_IAuthentication $authentication, Bee_Security_IUserDetails $user) {
         // Ensure we return the original credentials the user supplied,
@@ -231,6 +236,4 @@ abstract class Bee_Security_Provider_AbstractUserDetailsAuthentication implement
     public function setForcePrincipalAsString($forcePrincipalAsString) {
         $this->forcePrincipalAsString = $forcePrincipalAsString;
     }
-    
 }
-?>

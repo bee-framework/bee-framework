@@ -14,8 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\IFilter;
-use Bee\MVC\IFilterChain;
 
 /**
  * Created by IntelliJ IDEA.
@@ -25,7 +23,7 @@ use Bee\MVC\IFilterChain;
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Security_Anonymous_Filter implements IFilter {
+class Bee_Security_Anonymous_Filter implements Bee_MVC_IFilter {
 
     /**
      * @var string
@@ -69,7 +67,7 @@ class Bee_Security_Anonymous_Filter implements IFilter {
         return $auth;
     }
 
-    public function doFilter(Bee_MVC_IHttpRequest $request, IFilterChain $filterChain) {
+    public function doFilter(Bee_MVC_IHttpRequest $request, Bee_MVC_IFilterChain $filterChain) {
         $addedToken = false;
 
         if ($this->applyAnonymousForThisRequest($request)) {

@@ -20,42 +20,42 @@
  *
  */
 class Bee_Security_UsernamePasswordAuthenticationToken extends Bee_Security_AbstractAuthenticationToken {
-	
-    private $credentials;
-    private $principal;
-	
-    /**
-     * Enter description here...
-     *
-     * @param mixed $principal
-     * @param mixed $credentials
-     * @param Bee_Security_IGrantedAuthority[] $authorities
-     */
-    public function __construct($principal, $credentials, $authorities = null) {
-    	parent::__construct($authorities);
-    	$this->principal = $principal;
-    	$this->credentials = $credentials;
 
-    	parent::setAuthenticated(!is_null($authorities) ? true : false);
-    }
-    
+	private $credentials;
+
+	private $principal;
+
+	/**
+	 * Enter description here...
+	 *
+	 * @param mixed $principal
+	 * @param mixed $credentials
+	 * @param Bee_Security_IGrantedAuthority[] $authorities
+	 */
+	public function __construct($principal, $credentials, $authorities = null) {
+		parent::__construct($authorities);
+		$this->principal = $principal;
+		$this->credentials = $credentials;
+
+		parent::setAuthenticated(!is_null($authorities) ? true : false);
+	}
+
 	public function getPrincipal() {
 		return $this->principal;
 	}
-	
+
 	public function getCredentials() {
 		return $this->credentials;
 	}
-	
+
 	public function setAuthenticated($authenticated) {
-        if ($authenticated) {
-            throw new Exception("Cannot set this token to trusted - use constructor containing granted authority[]s instead");
-        }
-		parent::setAuthenticated(false);	
+		if ($authenticated) {
+			throw new Exception("Cannot set this token to trusted - use constructor containing granted authority[]s instead");
+		}
+		parent::setAuthenticated(false);
 	}
 
-    public function __toString() {
-        return 'Bee_Security_UsernamePasswordAuthenticationToken['.$this->principal.']';
-    }
+	public function __toString() {
+		return 'Bee_Security_UsernamePasswordAuthenticationToken[' . $this->principal . ']';
+	}
 }
-?>

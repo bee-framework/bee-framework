@@ -20,6 +20,10 @@ class Bee_Filesystem_MimeDetector {
 	
 	private static $types;
 	
+	private static function parseMimeTypeFile() {
+		
+	}
+	
 	/**
 	 * Enter description here...
 	 *
@@ -27,12 +31,6 @@ class Bee_Filesystem_MimeDetector {
 	 * @return String
 	 */
 	public static function detect($filename) {
-		// todo:
-//		$finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
-//		foreach (glob("*") as $filename) {
-//		    echo finfo_file($finfo, $filename) . "\n";
-//		}
-//		finfo_close($finfo);
 		if(is_null(self::$types)) {
 			self::$types = Bee_Cache_Manager::retrieveCachable(new Bee_Filesystem_MimedictionaryCacheable());
 		}
@@ -84,3 +82,4 @@ class Bee_Filesystem_MimedictionaryCacheable implements Bee_Cache_ICachableResou
 		return $result;
 	}
 }
+?>

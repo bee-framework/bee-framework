@@ -137,4 +137,3 @@ class Bee_Security_Provider_DaoAuthentication extends Bee_Security_Provider_Abst
         $this->userDetailsService = $userDetailsService;
     }
 }
-?>

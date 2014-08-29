@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Context\Support\BeanDefinitionReaderUtils;
 
 /**
  * Enter description here...
@@ -142,7 +141,7 @@ class Bee_Context_Xml_BeanDefinitionDocumentReader {
 			$bdHolder = $delegate->decorateBeanDefinitionIfRequired($ele, $bdHolder);
 			try {
 				// Register the final decorated instance.
-				BeanDefinitionReaderUtils::registerBeanDefinition($bdHolder, $this->getReaderContext()->getRegistry());
+				Bee_Context_Support_BeanDefinitionReaderUtils::registerBeanDefinition($bdHolder, $this->getReaderContext()->getRegistry());
 			} catch (Bee_Context_BeanDefinitionStoreException $ex) {
 				$beanName = $bdHolder->getBeanName(); 
 				$this->getReaderContext()->error("Failed to register bean definition with name '$beanName'", $ele, $ex);

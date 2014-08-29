@@ -1,7 +1,6 @@
 <?php
-namespace Bee\Context\Config;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,21 +21,23 @@ namespace Bee\Context\Config;
  * @author Michael Plomer <michael.plomer@iter8.de>
  * @author Benjamin Hartmann
  */
-interface IObjectFactory {
+interface Bee_Context_Config_IObjectFactory {
 
 	/**
 	 * Enter description here...
 	 *
-	 * @throws \Bee_Context_BeansException
+	 * @throws Bee_Context_BeansException
 	 * 
-	 * @return mixed
+	 * @return Object
 	 */
 	function getObject();
 
     /**
      * Return timestamp for the time the definition source of this object factory has been last modified
      * @abstract
-     * @return int
+     * @return long
      */
     function getModificationTimestamp();
 }
+
+?>

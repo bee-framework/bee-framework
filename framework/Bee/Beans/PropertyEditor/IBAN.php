@@ -1,7 +1,6 @@
 <?php
-namespace Bee\MVC\Request;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +14,28 @@ namespace Bee\MVC\Request;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_MVC_IHttpRequest;
 
 /**
- * Interface IAjaxDetectionStrategy
- * @package Bee\MVC\Request
+ * User: mp
+ * Date: 29.04.13
+ * Time: 22:08
  */
-interface IAjaxDetectionStrategy {
+ 
+class Bee_Beans_PropertyEditor_IBAN extends Bee_Beans_PropertyEditor_Abstract {
+
+	const IBAN_CHECK_REGEX = '/^([A-Z]{2}\d{2}) ?(\d{4} ?){1,15}$/';
+
+	public function __construct() {
+		throw new Exception("not implemented");
+	}
 
 	/**
-	 * Determine whether the given request represents an AJAX request or a regular GET / POSTback.
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return mixed
+	 * Enter description here...
+	 *
+	 * @param String $value
+	 * @return String
 	 */
-	public function isAjaxRequest(Bee_MVC_IHttpRequest $request);
-} 
+	public function fromString($value) {
+		throw new Exception("not implemented");
+	}
+}
