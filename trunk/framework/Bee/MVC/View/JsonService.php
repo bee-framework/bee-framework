@@ -33,5 +33,3 @@ class Bee_MVC_View_JsonService extends Bee_MVC_View_Abstract {
 		echo json_encode(Bee_MVC_Model::getModelValues());
 	}	
 }
-
-?>
