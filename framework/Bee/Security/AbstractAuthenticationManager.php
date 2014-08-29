@@ -20,14 +20,14 @@ abstract class Bee_Security_AbstractAuthenticationManager implements Bee_Securit
 	/**
 	 * Enter description here...
 	 *
-	 * @var booelan
+	 * @var boolean
 	 */
 	private $clearExtraInformation;
 
 	public final function authenticate(Bee_Security_IAuthentication $authentication) {
         try {
             return $this->doAuthentication($authentication);
-        } catch (Bee_Security_AuthenticationException $e) {
+        } catch (Bee_Security_Exception_Authentication $e) {
             $e->setAuthentication($authentication);
 
             if ($this->clearExtraInformation) {
@@ -43,7 +43,7 @@ abstract class Bee_Security_AbstractAuthenticationManager implements Bee_Securit
 	 *
 	 * @param Bee_Security_IAuthentication $authentication
 	 * 
-	 * @throws Bee_Security_AuthenticationException
+	 * @throws Bee_Security_Exception_Authentication
 	 */
     protected abstract function doAuthentication(Bee_Security_IAuthentication $authentication);
 	
@@ -61,4 +61,3 @@ abstract class Bee_Security_AbstractAuthenticationManager implements Bee_Securit
 	}
     
 }
-?>

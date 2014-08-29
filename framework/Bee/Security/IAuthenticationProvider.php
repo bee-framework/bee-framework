@@ -31,7 +31,7 @@ interface Bee_Security_IAuthenticationProvider {
      *         <code>Authentication</code> object. In such a case, the next <code>AuthenticationProvider</code> that
      *         supports the presented <code>Authentication</code> class will be tried.
      * 
-     * @throws Bee_Security_AuthenticationException if authentication fails.
+     * @throws Bee_Security_Exception_Authentication if authentication fails.
 	 */
     function authenticate(Bee_Security_IAuthentication $authentication);
 	
@@ -43,4 +43,3 @@ interface Bee_Security_IAuthenticationProvider {
      */
     function supports($authenticationClass);
 }
-?>

@@ -73,5 +73,9 @@ interface Bee_Security_IAuthentication {
 	 * @return void
 	 */
 	function setAuthenticated($authenticated);
+
+	/**
+	 * @return string
+	 */
+	function getName();
 }
-?>
