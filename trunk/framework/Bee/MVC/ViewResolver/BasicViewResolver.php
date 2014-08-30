@@ -86,7 +86,7 @@ class BasicViewResolver implements IViewResolver {
 		$modifiedViewName = $this->modifyViewName($viewName, $request);
 		if ($modifiedViewName != $viewName) {
 			try {
-				return $this->getViewForName($viewName);
+				return $this->getViewForName($modifiedViewName);
 			} catch (Bee_Context_BeansException $bex) {
 				if($this->getLog()->isDebugEnabled()) {
 					$this->getLog()->debug('Modified view name "' . $modifiedViewName . '" not found, trying base bean name "' . $viewName . '"', $bex);
