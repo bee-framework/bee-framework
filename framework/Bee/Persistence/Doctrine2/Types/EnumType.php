@@ -42,7 +42,7 @@ abstract class EnumType extends Type {
 		if (!$this->reflClass) self::init();
 		$values = array_map(function ($val) {
 			return "'" . $val . "'";
-		}, $this->reflClass->getMethod('getValues')->invoke(null));
+		}, call_user_func(array(static::getEnumClassName(), 'getValues')));
 		return "ENUM(" . implode(", ", $values) . ") COMMENT '(DC2Type:" . $this->getName() . ")'";
 	}
 
