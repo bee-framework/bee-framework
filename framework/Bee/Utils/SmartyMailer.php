@@ -30,13 +30,21 @@ class Bee_Utils_SmartyMailer extends PhpMailerWrapper {
 	 */
 	private $smarty;
 
-    /**
-     * @param $subjectTemplate
-     * @param $bodyTemplate
-     * @param array $model
-     * @param mixed $recipient Either string example@mail.com or array with keys "address" and optional "name"
-     * @param mixed $sender Either string example@mail.com or array with keys "address" and optional "name"
-     */
+	/**
+	 * @var string
+	 */
+	private $messageLogFile;
+
+	/**
+	 * @param $subjectTemplate
+	 * @param $bodyTemplate
+	 * @param array $model
+	 * @param mixed $recipient Either string example@mail.com or array with keys "address" and optional "name"
+	 * @param mixed $sender Either string example@mail.com or array with keys "address" and optional "name"
+	 * @throws Exception
+	 * @throws phpmailerException
+	 * @return bool
+	 */
     public function sendMail($subjectTemplate, $bodyTemplate, array $model, $recipient=null, $sender=null) {
         $phpMailer = $this->instantiatePhpMailer($subjectTemplate, $bodyTemplate, $model, $recipient, $sender);
 
@@ -44,6 +52,20 @@ class Bee_Utils_SmartyMailer extends PhpMailerWrapper {
             throw new Exception($phpMailer->ErrorInfo);
         }
         return true;
+	}
+
+	/**
+	 * @param $subjectTemplate
+	 * @param $bodyTemplate
+	 * @param array $model
+	 * @param null $recipient
+	 * @param null $sender
+	 */
+	public function logMail($subjectTemplate, $bodyTemplate, array $model, $recipient=null, $sender=null) {
+		$phpMailer = $this->instantiatePhpMailer($subjectTemplate, $bodyTemplate, $model, $recipient, $sender);
+		if($this->messageLogFile && $phpMailer->preSend()) {
+			file_put_contents($this->messageLogFile, $phpMailer->getMailMIME());
+		}
 	}
 
     /**
@@ -135,5 +157,19 @@ class Bee_Utils_SmartyMailer extends PhpMailerWrapper {
 	 */
 	public final function setSmarty(Smarty $smarty) {
 		$this->smarty = $smarty;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getMessageLogFile() {
+		return $this->messageLogFile;
+	}
+
+	/**
+	 * @param string $messageLogFile
+	 */
+	public function setMessageLogFile($messageLogFile) {
+		$this->messageLogFile = $messageLogFile;
 	}
 }
