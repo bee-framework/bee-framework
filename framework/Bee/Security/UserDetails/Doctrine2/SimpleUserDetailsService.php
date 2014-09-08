@@ -1,5 +1,22 @@
 <?php
 namespace Bee\Security\UserDetails\Doctrine2;
+/*
+ * Copyright 2008-2014 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+use Bee\Security\UserDetails\UserManagerBase;
 use Bee_Security_Exception_UsernameNotFound;
 use Bee_Security_IUserDetails;
 use Bee_Security_IUserDetailsService;
@@ -10,7 +27,7 @@ use Doctrine\ORM\NoResultException;
  * Class SimpleUserDetailsService
  * @package Bee\Security\UserDetails\Doctrine2
  */
-class SimpleUserDetailsService implements Bee_Security_IUserDetailsService {
+class SimpleUserDetailsService extends UserManagerBase implements Bee_Security_IUserDetailsService {
 
 	/**
 	 * @var EntityManager
@@ -100,5 +117,28 @@ class SimpleUserDetailsService implements Bee_Security_IUserDetailsService {
 	public function removeUser(UserBase $user) {
 		$this->getEntityManager()->remove($user);
 		$this->getEntityManager()->flush($user);
+	}
+
+	/**
+	 * @param array $frmdata
+	 * @param UserBase $user
+	 * @return UserBase
+	 */
+	public function setRoles(array $frmdata, UserBase $user) {
+		/** @var SimpleUser $user */
+		if ($frmdata['admin']) {
+			$user->addRole('ROLE_ADMINISTRATOR');
+		} else {
+			$user->removeRole('ROLE_ADMINISTRATOR');
+		}
+		$user->addRole('ROLE_USER');
+		return $user;
+	}
+
+	/**
+	 * @return UserBase
+	 */
+	public function createUserInstance() {
+		return new $this->userEntityName();
 	}
 }

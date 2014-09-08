@@ -202,4 +202,3 @@ class Bee_Security_Anonymous_Filter implements IFilter {
     }
 
 }
-?>

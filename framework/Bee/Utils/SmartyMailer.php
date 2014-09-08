@@ -64,7 +64,10 @@ class Bee_Utils_SmartyMailer extends PhpMailerWrapper {
 	public function logMail($subjectTemplate, $bodyTemplate, array $model, $recipient=null, $sender=null) {
 		$phpMailer = $this->instantiatePhpMailer($subjectTemplate, $bodyTemplate, $model, $recipient, $sender);
 		if($this->messageLogFile && $phpMailer->preSend()) {
-			file_put_contents($this->messageLogFile, $phpMailer->getMailMIME());
+			$message = $phpMailer->getMailMIME() . "\n\n";
+			$message .= $phpMailer->Subject . "\n\n";
+			$message .= $phpMailer->Body . "\n\n";
+			file_put_contents($this->messageLogFile, $message);
 		}
 	}
 

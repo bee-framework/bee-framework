@@ -25,18 +25,16 @@
  * </p>
  */
 interface Bee_Security_IUserDetailsService {
-	
+
 	/**
-     * Locates the user based on the username. In the actual implementation, the search may possibly be case
-     * insensitive, or case insensitive depending on how the implementaion instance is configured. In this case, the
-     * <code>Bee_Security_IUserDetails</code> object that comes back may have a username that is of a different case
-     * than what was actually requested.
-	 * 
+	 * Locates the user based on the username. In the actual implementation, the search may possibly be case
+	 * insensitive, or case insensitive depending on how the implementaion instance is configured. In this case, the
+	 * <code>Bee_Security_IUserDetails</code> object that comes back may have a username that is of a different case
+	 * than what was actually requested.
+	 *
+	 * @param $username
 	 * @return Bee_Security_IUserDetails a fully populated user record (never <code>null</code>)
-	 * 
-	 * @throws Bee_Security_Exception_UsernameNotFound
-	 * @throws Bee_Persistence_Exception_DataAccess
+	 *
 	 */
 	function loadUserByUsername($username);
 }
-?>
