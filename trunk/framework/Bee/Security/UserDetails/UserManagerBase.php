@@ -70,9 +70,13 @@ abstract class UserManagerBase {
 		return $this->saltSource;
 	}
 
-	public function createOrUpdateUser($frmdata) {
+	/**
+	 * @param array $frmdata
+	 * @return UserBase
+	 * @throws Exception
+	 */
+	public function createOrUpdateUser(array $frmdata) {
 		$user = is_numeric($frmdata['id']) ? $this->loadById($frmdata['id']) : $this->createUserInstance();
-		$model['user'] = $user;
 		$user->setUsername($frmdata['username']);
 		$user->setName($frmdata['fullname']);
 		if (Bee_Utils_Strings::hasText($frmdata['password'])) {
@@ -83,7 +87,7 @@ abstract class UserManagerBase {
 		}
 		$user->setDisabled(filter_var($frmdata['deactivated'], FILTER_VALIDATE_BOOLEAN));
 		$this->setRoles($frmdata, $user);
-		$this->addUser($user);
+		return $this->addUser($user);
 	}
 
 	/**
@@ -124,7 +128,7 @@ abstract class UserManagerBase {
 
 	/**
 	 * @param UserBase $user
-	 * @return void
+	 * @return UserBase
 	 */
 	abstract public function addUser(UserBase $user);
 
