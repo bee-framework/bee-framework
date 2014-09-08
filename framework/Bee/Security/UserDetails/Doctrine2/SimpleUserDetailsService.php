@@ -105,10 +105,12 @@ class SimpleUserDetailsService extends UserManagerBase implements Bee_Security_I
 
 	/**
 	 * @param UserBase $user
+	 * @return UserBase
 	 */
 	public function addUser(UserBase $user) {
 		$this->getEntityManager()->persist($user);
 		$this->getEntityManager()->flush($user);
+		return $user;
 	}
 
 	/**
