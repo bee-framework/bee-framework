@@ -41,7 +41,7 @@ abstract class EnumType extends Type {
 	}
 
 	public function convertToPHPValue($value, AbstractPlatform $platform) {
-		return call_user_func(array(static::getEnumClassName(), 'get'));
+		return call_user_func(array(static::getEnumClassName(), 'get'), $value);
 	}
 
 	public function convertToDatabaseValue($value, AbstractPlatform $platform) {
