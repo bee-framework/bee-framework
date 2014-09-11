@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Persistence;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -15,7 +16,11 @@
  * limitations under the License.
  */
 
-interface Bee_Persistence_IRestrictionHolder {
+/**
+ * Interface IRestrictionHolder
+ * @package Bee\Persistence
+ */
+interface IRestrictionHolder {
 
     /**
      * @return array
