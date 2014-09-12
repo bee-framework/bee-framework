@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+use Bee\Persistence\IOrderAndLimitHolder;
+use Bee\Persistence\IRestrictionHolder;
+
 class Bee_Persistence_Doctrine_DaoBase {
 	
 	/**
@@ -61,13 +64,13 @@ class Bee_Persistence_Doctrine_DaoBase {
     /**
      * @param Doctrine_Query $query
      * @param array $params
-     * @param Bee_Persistence_IRestrictionHolder $restrictionHolder
-     * @param Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder
+     * @param IRestrictionHolder $restrictionHolder
+     * @param IOrderAndLimitHolder $orderAndLimitHolder
      * @param array $defaultOrderMapping
      *
      * @return array
      */
-    public function executeListQuery(Doctrine_Query $query, array $params=array(), Bee_Persistence_IRestrictionHolder $restrictionHolder = null, Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping) {
+    public function executeListQuery(Doctrine_Query $query, array $params=array(), IRestrictionHolder $restrictionHolder = null, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping) {
         $this->applyFilterRestrictions($query, $params, $restrictionHolder);
         $this->applyOrderAndLimit($query, $params, $orderAndLimitHolder, $defaultOrderMapping);
         $result = $query->execute($params);
@@ -77,9 +80,9 @@ class Bee_Persistence_Doctrine_DaoBase {
     /**
      * @param Doctrine_Query $query
      * @param array $params
-     * @param Bee_Persistence_IRestrictionHolder $restrictionHolder
+     * @param IRestrictionHolder $restrictionHolder
      */
-    protected final function applyFilterRestrictions(Doctrine_Query &$query, array &$params, Bee_Persistence_IRestrictionHolder $restrictionHolder = null) {
+    protected final function applyFilterRestrictions(Doctrine_Query &$query, array &$params, IRestrictionHolder $restrictionHolder = null) {
         if (is_null($restrictionHolder)) {
             return;
         }
@@ -130,10 +133,10 @@ class Bee_Persistence_Doctrine_DaoBase {
 	/**
 	 * @param Doctrine_Query $query
 	 * @param array $params
-	 * @param Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder
+	 * @param IOrderAndLimitHolder $orderAndLimitHolder
 	 * @param array $defaultOrderMapping
 	 */
-    protected final function applyOrderAndLimit(Doctrine_Query &$query, array &$params, Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = array()) {
+    protected final function applyOrderAndLimit(Doctrine_Query &$query, array &$params, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = array()) {
         if (is_null($orderAndLimitHolder)) {
             $orderMapping = $defaultOrderMapping;
         } else {

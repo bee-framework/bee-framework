@@ -68,9 +68,10 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 				$this->defaultMethodInvocation = new MethodInvocation($methodMeta);
 			}
 
-			if (Bee_Framework::getProductionMode()) {
-				Bee_Cache_Manager::store($cacheKey, $this->defaultMethodInvocation);
-			}
+			// todo: fix production mode method caching
+//			if (Bee_Framework::getProductionMode()) {
+//				Bee_Cache_Manager::store($cacheKey, $this->defaultMethodInvocation);
+//			}
 		}
 		return $this->defaultMethodInvocation;
 	}

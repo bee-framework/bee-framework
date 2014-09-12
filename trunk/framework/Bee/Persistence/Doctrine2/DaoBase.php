@@ -15,8 +15,8 @@ namespace Bee\Persistence\Doctrine2;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_Persistence_IOrderAndLimitHolder;
-use Bee_Persistence_IRestrictionHolder;
+use Bee\Persistence\IOrderAndLimitHolder;
+use Bee\Persistence\IRestrictionHolder;
 use Bee_Utils_Strings;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
@@ -31,13 +31,13 @@ class DaoBase extends EntityManagerHolder {
 
 	/**
 	 * @param QueryBuilder $queryBuilder
-	 * @param Bee_Persistence_IRestrictionHolder $restrictionHolder
-	 * @param Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder
+	 * @param IRestrictionHolder $restrictionHolder
+	 * @param IOrderAndLimitHolder $orderAndLimitHolder
 	 * @param array $defaultOrderMapping
 	 * @param null $hydrationMode
 	 * @return array
 	 */
-    public function executeListQuery(QueryBuilder $queryBuilder, Bee_Persistence_IRestrictionHolder $restrictionHolder = null, Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping, $hydrationMode = null) {
+    public function executeListQuery(QueryBuilder $queryBuilder, IRestrictionHolder $restrictionHolder = null, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping, $hydrationMode = null) {
         $this->applyFilterRestrictions($queryBuilder, $restrictionHolder);
         $this->applyOrderAndLimit($queryBuilder, $orderAndLimitHolder, $defaultOrderMapping);
         return $this->getQueryFromBuilder($queryBuilder)->execute(null, $hydrationMode);
@@ -53,10 +53,10 @@ class DaoBase extends EntityManagerHolder {
 
 	/**
 	 * @param QueryBuilder $queryBuilder
-	 * @param Bee_Persistence_IRestrictionHolder $restrictionHolder
+	 * @param IRestrictionHolder $restrictionHolder
 	 * @internal param QueryBuilder $query
 	 */
-    protected final function applyFilterRestrictions(QueryBuilder &$queryBuilder, Bee_Persistence_IRestrictionHolder $restrictionHolder = null) {
+    protected final function applyFilterRestrictions(QueryBuilder &$queryBuilder, IRestrictionHolder $restrictionHolder = null) {
         if (is_null($restrictionHolder)) {
             return;
         }
@@ -94,10 +94,10 @@ class DaoBase extends EntityManagerHolder {
 
 	/**
 	 * @param QueryBuilder $queryBuilder
-	 * @param Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder
+	 * @param IOrderAndLimitHolder $orderAndLimitHolder
 	 * @param array $defaultOrderMapping
 	 */
-    protected final function applyOrderAndLimit(QueryBuilder &$queryBuilder, Bee_Persistence_IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = array()) {
+    protected final function applyOrderAndLimit(QueryBuilder &$queryBuilder, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = array()) {
         if (is_null($orderAndLimitHolder)) {
             $orderMapping = $defaultOrderMapping;
         } else {
