@@ -68,8 +68,9 @@ class DefaultNamespaceHandlerResolver implements IHandlerResolver {
 	 */
 	protected function initialize() {
 		if(!$this->initialized) {
-			if(file_exists('namespaces.ini')) {
-				foreach(parse_ini_file('namespaces.ini') as $namespaceUri => $handlerClassName) {
+			if(file_exists('namespaces.json')) {
+				$nsConf = json_decode(file_get_contents('namespaces.json'), true);
+				foreach($nsConf as $namespaceUri => $handlerClassName) {
 					self::registerHandler($namespaceUri, $handlerClassName);
 				}
 			}
