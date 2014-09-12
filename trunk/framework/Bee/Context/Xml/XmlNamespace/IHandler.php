@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Context\Xml\XmlNamespace;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -14,27 +15,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Context\Support\BeanDefinitionBuilder;
+use Bee\Context\Config\BeanDefinitionHolder;
+use Bee\Context\Config\IBeanDefinition;
 use Bee\Context\Xml\ParserContext;
-use Bee\Context\Xml\XmlNamespace\AbstractSingleBeanDefinitionParser;
+use DOMElement;
+use DOMNode;
 
 /**
- * User: mp
- * Date: 03.07.11
- * Time: 23:35
+ * Enter description here...
+ *
+ * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_Util_Namespace_ArrayFactoryDefinitionParser extends AbstractSingleBeanDefinitionParser {
-    protected function getBeanClassName(DOMElement $element) {
-        return 'Bee\Context\Util\ArrayFactoryBean';
-    }
+interface IHandler {
 
+	function init();
+	
 	/**
+	 * Enter description here...
+	 *
 	 * @param DOMElement $element
 	 * @param ParserContext $parserContext
-	 * @param BeanDefinitionBuilder $builder
+	 * @return IBeanDefinition
 	 */
-	protected function doParse(DOMElement $element, ParserContext $parserContext, BeanDefinitionBuilder $builder) {
-        $arrayValue = $parserContext->getDelegate()->parseArrayElement($element, $builder->getBeanDefinition());
-        $builder->addPropertyValue('sourceArray', $arrayValue);
-    }
+	function parse(DOMElement $element, ParserContext $parserContext);
+	
+	
+	/**
+	 * Enter description here...
+	 *
+	 * @param DOMNode $source
+	 * @param BeanDefinitionHolder $definition
+	 * @param ParserContext $parserContext
+	 * @return BeanDefinitionHolder
+	 */
+	function decorate(DOMNode $source, BeanDefinitionHolder $definition, ParserContext $parserContext);
 }

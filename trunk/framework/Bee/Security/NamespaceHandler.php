@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-class Bee_Security_NamespaceHandler extends Bee_Context_Xml_Namespace_HandlerSupport {
+use Bee\Context\Xml\XmlNamespace\HandlerSupport;
+
+class Bee_Security_NamespaceHandler extends HandlerSupport {
 	
 	public function init() {
 		$this->registerBeanDefinitionParser(Bee_Security_Elements::HTTP, new Bee_Security_HttpSecurityBeanDefinitionParser());
 	}
-	
 }
-?>

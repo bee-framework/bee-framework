@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Xml;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +16,21 @@
  * limitations under the License.
  */
 use Bee\Context\Support\BeanDefinitionReaderUtils;
+use Bee_Context_BeanDefinitionStoreException;
+use Bee_Utils_Dom;
+use Bee_Utils_Strings;
+use DOMDocument;
+use DOMElement;
+use Exception;
 
 /**
  * Enter description here...
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_Xml_BeanDefinitionDocumentReader {
+class BeanDefinitionDocumentReader {
 	
-	const BEAN_ELEMENT = Bee_Context_Xml_ParserDelegate::BEAN_ELEMENT;
+	const BEAN_ELEMENT = ParserDelegate::BEAN_ELEMENT;
 	
 	const IMPORT_ELEMENT = 'import';
 	
@@ -36,11 +43,11 @@ class Bee_Context_Xml_BeanDefinitionDocumentReader {
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Context_Xml_ReaderContext
+	 * @var ReaderContext
 	 */
 	private $readerContext;
 	
-	public function registerBeanDefinitions(DOMDocument $doc, Bee_Context_Xml_ReaderContext $readerContext) {
+	public function registerBeanDefinitions(DOMDocument $doc, ReaderContext $readerContext) {
 		$this->readerContext = $readerContext;
 
 		$root = $doc->documentElement;
@@ -53,19 +60,21 @@ class Bee_Context_Xml_BeanDefinitionDocumentReader {
 	/**
 	 * Enter description here...
 	 *
-	 * @return Bee_Context_Xml_ReaderContext
+	 * @return ReaderContext
 	 */
 	public function getReaderContext() {
 		return $this->readerContext;		
 	}
-	
+
 	/**
 	 * Enter description here...
 	 *
-	 * @return Bee_Context_Xml_ParserDelegate
+	 * @param DOMElement $root
+	 * @param ReaderContext $readerContext
+	 * @return ParserDelegate
 	 */
-	protected function createHelper(DOMElement $root, Bee_Context_Xml_ReaderContext $readerContext) {
-		$delegate = new Bee_Context_Xml_ParserDelegate($readerContext);
+	protected function createHelper(DOMElement $root, ReaderContext $readerContext) {
+		$delegate = new ParserDelegate($readerContext);
 		$delegate->initDefaults($root);
 		return $delegate;
 	}
@@ -73,9 +82,10 @@ class Bee_Context_Xml_BeanDefinitionDocumentReader {
 	/**
 	 * Parse the elements at the root level in the document:
 	 * "import", "alias", "bean".
-	 * @param root the DOM root element of the document
+	 * @param DOMElement $root
+	 * @param ParserDelegate $delegate
 	 */
-	protected function parseBeanDefinitions(DOMElement $root, Bee_Context_Xml_ParserDelegate $delegate) {
+	protected function parseBeanDefinitions(DOMElement $root, ParserDelegate $delegate) {
 		if ($delegate->isDefaultNamespace($root->namespaceURI)) {
 			$nl = $root->childNodes;
 			foreach($nl as $node) {
@@ -92,7 +102,7 @@ class Bee_Context_Xml_BeanDefinitionDocumentReader {
 		}
 	}
 	
-	private function parseDefaultElement(DOMElement $ele, Bee_Context_Xml_ParserDelegate $delegate) {
+	private function parseDefaultElement(DOMElement $ele, ParserDelegate $delegate) {
 		if (Bee_Utils_Dom::nodeNameEquals($ele, self::IMPORT_ELEMENT)) {
 			$this->importBeanDefinitionResource($ele);
 		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::ALIAS_ELEMENT)) {
@@ -124,6 +134,10 @@ class Bee_Context_Xml_BeanDefinitionDocumentReader {
 		}
 	}
 
+	/**
+	 * @param DOMElement $ele
+	 * @throws Exception
+	 */
 	protected function importBeanDefinitionResource(DOMElement $ele) {
 		throw new Exception('The beans:import tag is currently not supported by this parser!');
 	}
@@ -133,9 +147,9 @@ class Bee_Context_Xml_BeanDefinitionDocumentReader {
 	 * and registering it with the registry.
 	 *
 	 * @param DOMElement $ele
-	 * @param Bee_Context_Xml_ParserDelegate $delegate
+	 * @param ParserDelegate $delegate
 	 */
-	protected function processBeanDefinition(DOMElement $ele, Bee_Context_Xml_ParserDelegate $delegate) {
+	protected function processBeanDefinition(DOMElement $ele, ParserDelegate $delegate) {
 		$bdHolder = $delegate->parseBeanDefinitionElement($ele);
 
 		if (!is_null($bdHolder)) {
@@ -162,4 +176,3 @@ class Bee_Context_Xml_BeanDefinitionDocumentReader {
 		// empty by default	
 	}
 }
-?>

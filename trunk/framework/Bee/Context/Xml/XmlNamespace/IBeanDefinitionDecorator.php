@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Context\Xml\XmlNamespace;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -15,25 +16,27 @@
  * limitations under the License.
  */
 use Bee\Context\Config\BeanDefinitionHolder;
+use Bee\Context\Xml\ParserContext;
+use DOMNode;
 
 /**
  * Enter description here...
  *
  */
-interface Bee_Context_Xml_Namespace_IBeanDefinitionDecorator {
+interface IBeanDefinitionDecorator {
 
 	/**
 	 * Parse the specified {@link DOMNode} (either an element or an attribute) and decorate
 	 * the supplied {@link BeanDefinitionHolder}, returning the decorated definition.
 	 * <p>Implementations may choose to return a completely new definition, which will
 	 * replace the original definition.
-	 * <p>The supplied {@link Bee_Context_Xml_ParserContext} can be used to register any additional
+	 * <p>The supplied {@link ParserContext} can be used to register any additional
 	 * beans needed to support the main definition.
 	 *
 	 * @param DOMNode $node
 	 * @param BeanDefinitionHolder $definition
-	 * @param Bee_Context_Xml_ParserContext $parserContext
+	 * @param ParserContext $parserContext
 	 * @return BeanDefinitionHolder
 	 */
-	function decorate(DOMNode $node, BeanDefinitionHolder $definition, Bee_Context_Xml_ParserContext $parserContext);
+	function decorate(DOMNode $node, BeanDefinitionHolder $definition, ParserContext $parserContext);
 }

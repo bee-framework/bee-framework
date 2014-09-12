@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Xml\XmlNamespace\HandlerSupport;
 
 /**
  * User: mp
@@ -21,11 +22,9 @@
  * Time: 6:35:32 PM
  */
 
-class Bee_Context_Util_Namespace_Handler extends Bee_Context_Xml_Namespace_HandlerSupport {
+class Bee_Context_Util_Namespace_Handler extends HandlerSupport {
 
     public function init() {
         $this->registerBeanDefinitionParser("array", new Bee_Context_Util_Namespace_ArrayFactoryDefinitionParser());
     }
 }
-
-?>

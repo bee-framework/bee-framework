@@ -17,6 +17,8 @@
 use Bee\Beans\PropertyEditor\BooleanPropertyEditor;
 use Bee\Beans\PropertyValue;
 use Bee\Context\Support\BeanDefinitionBuilder;
+use Bee\Context\Xml\ParserContext;
+use Bee\Context\Xml\XmlNamespace\AbstractSingleBeanDefinitionParser;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,7 +28,7 @@ use Bee\Context\Support\BeanDefinitionBuilder;
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends Bee_Context_Xml_Namespace_AbstractSingleBeanDefinitionParser {
+class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
 
     const ATTRIBUTES = 'attributes';
 
@@ -56,7 +58,7 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends Bee_Contex
         return 'Bee_Transactions_Interceptor_TransactionInterceptor';
     }
 
-    protected function doParse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext, BeanDefinitionBuilder $builder) {
+    protected function doParse(DOMElement $element, ParserContext $parserContext, BeanDefinitionBuilder $builder) {
         // Set the transaction manager property.
         $transactionManagerName = ($element->hasAttribute(self::TRANSACTION_MANAGER_ATTRIBUTE) ?
                 $element->getAttribute(self::TRANSACTION_MANAGER_ATTRIBUTE) : "transactionManager");
@@ -83,7 +85,12 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends Bee_Contex
         }
     }
 
-    private function parseAttributeSource(DOMElement $attrEle, Bee_Context_Xml_ParserContext $parserContext) {
+	/**
+	 * @param DOMElement $attrEle
+	 * @param ParserContext $parserContext
+	 * @return Bee_Context_Config_BeanDefinition_Generic
+	 */
+	private function parseAttributeSource(DOMElement $attrEle, ParserContext $parserContext) {
         $methods = Bee_Utils_Dom::getChildElementsByTagName($attrEle, "method");
         $transactionAttributeMap = array();
 
@@ -131,6 +138,10 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends Bee_Contex
         return $attributeSourceDefinition;
     }
 
+	/**
+	 * @param array $rollbackRules
+	 * @param $rollbackForValue
+	 */
     private function addRollbackRuleAttributesTo(array &$rollbackRules, $rollbackForValue) {
         $exceptionTypeNames = Bee_Utils_Strings::tokenizeToArray($rollbackForValue, ',');
         foreach($exceptionTypeNames as $exceptionTypeName) {
@@ -138,6 +149,10 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends Bee_Contex
         }
     }
 
+	/**
+	 * @param array $rollbackRules
+	 * @param $noRollbackForValue
+	 */
     private function addNoRollbackRuleAttributesTo(array &$rollbackRules, $noRollbackForValue) {
         $exceptionTypeNames = Bee_Utils_Strings::tokenizeToArray($noRollbackForValue, ',');
         foreach($exceptionTypeNames as $exceptionTypeName) {

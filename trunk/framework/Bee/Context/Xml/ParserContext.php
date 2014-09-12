@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Context\Xml;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -16,19 +17,21 @@
  */
 use Bee\Context\Config\CompositeComponentDefinition;
 use Bee\Context\Config\IBeanDefinition;
+use Bee\Context\Config\IBeanDefinitionRegistry;
 use Bee\Context\Config\IComponentDefinition;
+use Exception;
 
 /**
  * Enter description here...
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_Xml_ParserContext {
+class ParserContext {
 	
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Context_Xml_ReaderContext
+	 * @var ReaderContext
 	 */
 	private $readerContext;
 	
@@ -36,7 +39,7 @@ class Bee_Context_Xml_ParserContext {
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Context_Xml_ParserDelegate
+	 * @var ParserDelegate
 	 */
 	private $delegate;
 	
@@ -57,12 +60,11 @@ class Bee_Context_Xml_ParserContext {
 	private $containingComponents = array();
 
 	/**
-	 * @param Bee_Context_Xml_ReaderContext $readerContext
-	 * @param Bee_Context_Xml_ParserDelegate $delegate
+	 * @param ReaderContext $readerContext
+	 * @param ParserDelegate $delegate
 	 * @param IBeanDefinition $containingBeanDefinition
 	 */
-	public function __construct(
-		Bee_Context_Xml_ReaderContext $readerContext, Bee_Context_Xml_ParserDelegate $delegate,
+	public function __construct(ReaderContext $readerContext, ParserDelegate $delegate,
 		IBeanDefinition $containingBeanDefinition = null) {
 		
 		$this->readerContext = $readerContext;
@@ -74,7 +76,7 @@ class Bee_Context_Xml_ParserContext {
 	/**
 	 * Enter description here...
 	 *
-	 * @return Bee_Context_Xml_ReaderContext
+	 * @return ReaderContext
 	 */
 	public final function getReaderContext() {
 		return $this->readerContext; 
@@ -84,7 +86,7 @@ class Bee_Context_Xml_ParserContext {
 	/**
 	 * Enter description here...
 	 *
-	 * @return Bee_Context_Xml_ParserDelegate
+	 * @return ParserDelegate
 	 */
 	public final function getDelegate() {
 		return $this->delegate;
@@ -102,7 +104,7 @@ class Bee_Context_Xml_ParserContext {
     /**
      * Enter description here...
      *
-     * @return Bee\Context\Config\IBeanDefinitionRegistry
+     * @return IBeanDefinitionRegistry
      */
     public final function getRegistry() {
         return $this->readerContext->getRegistry();

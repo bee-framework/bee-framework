@@ -15,6 +15,7 @@ namespace Bee\MVC\Controller\Multiaction\HandlerMethodInvocator;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
 use Bee\MVC\HttpRequestMock;
 use PHPUnit_Framework_TestCase;
 
@@ -27,6 +28,10 @@ class RegexMappingInvocationResolverTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * @test
 	 * @dataProvider matchDataProvider
+	 * @param RegexMappingInvocationResolver $resolver
+	 * @param $pathInfo
+	 * @param $expectedAntPath
+	 * @param array $expectedParams
 	 */
 	public function testMapping(RegexMappingInvocationResolver $resolver, $pathInfo, $expectedAntPath, $expectedParams = array()) {
 		$request = new HttpRequestMock($pathInfo);
@@ -188,7 +193,7 @@ class RegexMappingInvocationResolverTest extends PHPUnit_Framework_TestCase {
 
 		$testPatterns1['/complicated/more/**/compl*/{string2}/**'] = $method;
 
-		return new RegexMappingInvocationResolver($testPatterns1);
+		return new RegexMappingInvocationResolver($testPatterns1, new PropertyEditorRegistry());
 	}
 }
 

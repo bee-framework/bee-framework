@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Xml\ParserContext;
 
 /**
  * User: mp
@@ -23,10 +24,8 @@
 
 class Bee_AOP_Namespace_Utils {
 
-    public static function registerAutoProxyCreatorIfNecessary(Bee_Context_Xml_ParserContext $parserContext, DOMElement $sourceElement) {
+    public static function registerAutoProxyCreatorIfNecessary(ParserContext $parserContext, DOMElement $sourceElement) {
         $beanDefinition = Bee_AOP_Config_Utils::registerAutoProxyCreatorIfNecessary($parserContext->getRegistry());
 //        self::registerComponentIfNecessary($beanDefinition, $parserContext);
     }
 }
-
-?>

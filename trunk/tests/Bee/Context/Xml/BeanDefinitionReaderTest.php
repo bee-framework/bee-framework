@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Xml;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +19,7 @@ use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
 use Bee\Context\Config\ArrayValue;
 use Bee\Context\Config\BasicBeanDefinitionRegistry;
 use Bee\Context\Config\TypedStringValue;
+use PHPUnit_Framework_TestCase;
 
 /**
  * User: mp
@@ -25,7 +27,7 @@ use Bee\Context\Config\TypedStringValue;
  * Time: 19:18
  */
  
-class Bee_Context_Xml_BeanDefinitionReaderTest extends PHPUnit_Framework_TestCase {
+class BeanDefinitionReaderTest extends PHPUnit_Framework_TestCase {
 
     /**
      * @var BasicBeanDefinitionRegistry
@@ -39,7 +41,7 @@ class Bee_Context_Xml_BeanDefinitionReaderTest extends PHPUnit_Framework_TestCas
 
     public static function setUpBeforeClass() {
         self::$registry = new BasicBeanDefinitionRegistry();
-        $reader = new Bee_Context_Xml_BeanDefinitionReader(self::$registry);
+        $reader = new BeanDefinitionReader(self::$registry);
         $reader->loadBeanDefinitions('Bee/Context/Xml/BeanDefinitionReaderTest-context.xml');
     }
 

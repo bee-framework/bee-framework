@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 use Bee\Context\Config\BeanDefinitionHolder;
+use Bee\Context\Xml\ParserContext;
+use Bee\Context\Xml\XmlNamespace\IBeanDefinitionDecorator;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,9 +26,9 @@ use Bee\Context\Config\BeanDefinitionHolder;
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Security_Namespace_InterceptMethodsBeanDefinitionDecorator implements Bee_Context_Xml_Namespace_IBeanDefinitionDecorator {
+class Bee_Security_Namespace_InterceptMethodsBeanDefinitionDecorator implements IBeanDefinitionDecorator {
 
-    function decorate(DOMNode $node, BeanDefinitionHolder $definition, Bee_Context_Xml_ParserContext $parserContext) {
+    function decorate(DOMNode $node, BeanDefinitionHolder $definition, ParserContext $parserContext) {
         // TODO: Implement decorate() method.
     }
 }

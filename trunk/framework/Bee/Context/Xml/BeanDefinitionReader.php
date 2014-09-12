@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Xml;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +16,18 @@
  * limitations under the License.
  */
 use Bee\Context\Config\IBeanDefinitionRegistry;
+use Bee\Context\Xml\XmlNamespace\IHandlerResolver;
+use Bee_Context_BeansException;
+use Bee_Utils_Assert;
+use DOMDocument;
+use Exception;
 
 /**
  * Enter description here...
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_Xml_BeanDefinitionReader {
+class BeanDefinitionReader {
 
 	/**
 	 * Enter description here...
@@ -33,7 +39,7 @@ class Bee_Context_Xml_BeanDefinitionReader {
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Context_Xml_Namespace_IHandlerResolver
+	 * @var IHandlerResolver
 	 */
 	private $namespaceHandlerResolver;
 
@@ -81,7 +87,7 @@ class Bee_Context_Xml_BeanDefinitionReader {
 	 * @return int
 	 */
 	public function registerBeanDefinitions(DOMDocument $doc) {
-		$documentReader = new Bee_Context_Xml_BeanDefinitionDocumentReader();
+		$documentReader = new BeanDefinitionDocumentReader();
 		$countBefore = $this->getRegistry()->getBeanDefinitionCount();
 		$documentReader->registerBeanDefinitions($doc, $this->createReaderContext());
 		return $this->getRegistry()->getBeanDefinitionCount() - $countBefore;
@@ -90,22 +96,22 @@ class Bee_Context_Xml_BeanDefinitionReader {
 	/**
 	 * Enter description here...
 	 *
-	 * @return Bee_Context_Xml_ReaderContext
+	 * @return ReaderContext
 	 */
 	protected function createReaderContext() {
 		if(is_null($this->namespaceHandlerResolver)) {
 			$this->namespaceHandlerResolver = $this->createDefaultNamespaceHandlerResolver();
 		}
-		return new Bee_Context_Xml_ReaderContext($this->getRegistry(), $this->namespaceHandlerResolver);
+		return new ReaderContext($this->getRegistry(), $this->namespaceHandlerResolver);
 	}
 
 	/**
 	 * Enter description here...
 	 *
-	 * @return Bee_Context_Xml_Namespace_IHandlerResolver
+	 * @return IHandlerResolver
 	 */
 	protected function createDefaultNamespaceHandlerResolver() {
-		return new Bee_Context_Xml_HardcodedNamespaceHandlerResolver();
+		return new DefaultNamespaceHandlerResolver();
 	}
 
 	/**

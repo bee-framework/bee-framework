@@ -93,4 +93,3 @@ abstract class Bee_Cache_Provider_AbstractSerializing extends Bee_Cache_Provider
 		return false;
 	}
 }
-?>

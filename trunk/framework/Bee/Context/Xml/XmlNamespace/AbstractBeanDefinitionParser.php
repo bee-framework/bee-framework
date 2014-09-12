@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Xml\XmlNamespace;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +18,13 @@
 use Bee\Context\Config\BeanDefinitionHolder;
 use Bee\Context\Config\IBeanDefinitionRegistry;
 use Bee\Context\Support\BeanDefinitionReaderUtils;
+use Bee\Context\Xml\IConstants;
+use Bee\Context\Xml\ParserContext;
+use Bee\Context\Xml\Utils;
+use Bee_Context_BeanDefinitionStoreException;
+use Bee_Context_Config_BeanDefinition_Abstract;
+use Bee_Utils_Strings;
+use DOMElement;
 
 /**
  * User: mp
@@ -24,20 +32,20 @@ use Bee\Context\Support\BeanDefinitionReaderUtils;
  * Time: 11:36:56 PM
  */
 
-abstract class Bee_Context_Xml_Namespace_AbstractBeanDefinitionParser implements Bee_Context_Xml_Namespace_IBeanDefinitionParser, Bee_Context_Xml_IConstants {
+abstract class AbstractBeanDefinitionParser implements IBeanDefinitionParser, IConstants {
 
     /** Constant for the id attribute */
     const ID_ATTRIBUTE = 'id';
 
-    public final function parse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext) {
+    public final function parse(DOMElement $element, ParserContext $parserContext) {
         $definition = $this->parseInternal($element, $parserContext);
         if (!$parserContext->isNested()) {
             try {
-                $aliases = $this->shouldParseNameAliases() ? Bee_Context_Xml_Utils::parseNameAttribute($element) : null;
+                $aliases = $this->shouldParseNameAliases() ? Utils::parseNameAttribute($element) : null;
 
                 $id = $this->resolveId($element, $definition, $parserContext);
                 if (!Bee_Utils_Strings::hasText($id) && count($aliases) > 0) {
-                    $id = Bee_Context_Xml_Utils::getIdFromAliases($aliases, $parserContext->getReaderContext(), $element);
+                    $id = Utils::getIdFromAliases($aliases, $parserContext->getReaderContext(), $element);
                 }
                 if (!Bee_Utils_Strings::hasText($id)) {
                     $parserContext->getReaderContext()->error(
@@ -66,13 +74,13 @@ abstract class Bee_Context_Xml_Namespace_AbstractBeanDefinitionParser implements
      * {@link #shouldGenerateIdAsFallback() fallback} to a generated id.
      * @param DOMElement $element the element that the bean definition has been built from
      * @param Bee_Context_Config_BeanDefinition_Abstract $definition the bean definition to be registered
-     * @param Bee_Context_Xml_ParserContext $parserContext the object encapsulating the current state of the parsing process;
+     * @param ParserContext $parserContext the object encapsulating the current state of the parsing process;
      * provides access to a {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
      * @return string the resolved id
      * @throws Bee_Context_BeanDefinitionStoreException if no unique name could be generated
      * for the given bean definition
      */
-    protected function resolveId(DOMElement $element, Bee_Context_Config_BeanDefinition_Abstract $definition, Bee_Context_Xml_ParserContext $parserContext) {
+    protected function resolveId(DOMElement $element, Bee_Context_Config_BeanDefinition_Abstract $definition, ParserContext $parserContext) {
 
         if ($this->shouldGenerateId()) {
             return BeanDefinitionReaderUtils::generateBeanName($definition, $parserContext->getRegistry(), false);
@@ -108,13 +116,13 @@ abstract class Bee_Context_Xml_Namespace_AbstractBeanDefinitionParser implements
      * Central template method to actually parse the supplied {@link Element}
      * into one or more {@link BeanDefinition BeanDefinitions}.
      * @param DOMElement $element	the element that is to be parsed into one or more {@link BeanDefinition BeanDefinitions}
-     * @param Bee_Context_Xml_ParserContext $parserContext the object encapsulating the current state of the parsing process;
+     * @param ParserContext $parserContext the object encapsulating the current state of the parsing process;
      * provides access to a {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
      * @return Bee_Context_Config_BeanDefinition_Abstract the primary {@link BeanDefinition} resulting from the parsing of the supplied {@link Element}
      * @see #parse(org.w3c.dom.Element, ParserContext)
      * @see #postProcessComponentDefinition(org.springframework.beans.factory.parsing.BeanComponentDefinition)
      */
-    protected abstract function parseInternal(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext);
+    protected abstract function parseInternal(DOMElement $element, ParserContext $parserContext);
 
     /**
      * Should an ID be generated instead of read from the passed in {@link Element}?
@@ -167,7 +175,7 @@ abstract class Bee_Context_Xml_Namespace_AbstractBeanDefinitionParser implements
      * <p>Derived classes can override this method to supply any custom logic that
      * is to be executed after all the parsing is finished.
      * <p>The default implementation is a no-op.
-     * @param componentDefinition the {@link BeanComponentDefinition} that is to be processed
+     * @param mixed $componentDefinition the {@link BeanComponentDefinition} that is to be processed
      */
 //    protected function postProcessComponentDefinition(BeanComponentDefinition componentDefinition) {
 //    }

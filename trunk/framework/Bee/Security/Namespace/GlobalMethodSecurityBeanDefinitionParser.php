@@ -17,6 +17,8 @@
 use Bee\Beans\PropertyValue;
 use Bee\Context\Config\RuntimeBeanReference;
 use Bee\Context\Support\BeanDefinitionBuilder;
+use Bee\Context\Xml\ParserContext;
+use Bee\Context\Xml\XmlNamespace\IBeanDefinitionParser;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,14 +28,14 @@ use Bee\Context\Support\BeanDefinitionBuilder;
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Security_Namespace_GlobalMethodSecurityBeanDefinitionParser implements Bee_Context_Xml_Namespace_IBeanDefinitionParser {
+class Bee_Security_Namespace_GlobalMethodSecurityBeanDefinitionParser implements IBeanDefinitionParser {
 
     const SECURED_METHOD_DEFINITION_SOURCE_CLASS = 'Bee_Security_Annotations_SecuredMethodDefinitionSource';
 
     const ATT_USE_SECURED = 'secured-annotations';
     const ATT_ACCESS_MGR = "access-decision-manager-ref";
 
-    public function parse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext) {
+    public function parse(DOMElement $element, ParserContext $parserContext) {
 //        $source = $parserContext->extractSource(element);
 
         // The list of method metadata delegates
@@ -71,16 +73,25 @@ class Bee_Security_Namespace_GlobalMethodSecurityBeanDefinitionParser implements
         return null;
     }
 
-    /**
-     * Checks whether Secured annotations are enabled and adds the appropriate MethodDefinitionSource delegates if required.
-     */
-    private function registerAnnotationBasedMethodDefinitionSources(DOMElement $element, Bee_Context_Xml_ParserContext $pc, array &$delegates) {
+	/**
+	 * Checks whether Secured annotations are enabled and adds the appropriate MethodDefinitionSource delegates if required.
+	 * @param DOMElement $element
+	 * @param ParserContext $pc
+	 * @param array $delegates
+	 */
+    private function registerAnnotationBasedMethodDefinitionSources(DOMElement $element, ParserContext $pc, array &$delegates) {
         if ($element->getAttribute(self::ATT_USE_SECURED) == 'enabled') {
             $delegates[] = BeanDefinitionBuilder::rootBeanDefinition(self::SECURED_METHOD_DEFINITION_SOURCE_CLASS)->getBeanDefinition();
         }
     }
 
-    private function registerDelegatingMethodDefinitionSource(Bee_Context_Xml_ParserContext $parserContext, array &$delegates, DOMElement $element) {
+	/**
+	 * @param ParserContext $parserContext
+	 * @param array $delegates
+	 * @param DOMElement $element
+	 * @throws Bee_Context_BeanCreationException
+	 */
+	private function registerDelegatingMethodDefinitionSource(ParserContext $parserContext, array &$delegates, DOMElement $element) {
         if ($parserContext->getRegistry()->containsBeanDefinition(Bee_Security_Config_IBeanIds::DELEGATING_METHOD_DEFINITION_SOURCE)) {
             $parserContext->getReaderContext()->error("Duplicate <global-method-security> detected.", $element);
         }
@@ -90,7 +101,7 @@ class Bee_Security_Namespace_GlobalMethodSecurityBeanDefinitionParser implements
         $parserContext->getRegistry()->registerBeanDefinition(Bee_Security_Config_IBeanIds::DELEGATING_METHOD_DEFINITION_SOURCE, $delegatingMethodDefinitionSource);
     }
 
-    private function registerMethodSecurityInterceptor(Bee_Context_Xml_ParserContext $parserContext, $accessManagerId, DOMElement $element) {
+    private function registerMethodSecurityInterceptor(ParserContext $parserContext, $accessManagerId, DOMElement $element) {
         $interceptor = new Bee_Context_Config_BeanDefinition_Generic();
         $interceptor->setBeanClassName('Bee_Security_Intercept_MethodSecurityInterceptor');
         $interceptor->addPropertyValue(new PropertyValue('accessDecisionManager', new RuntimeBeanReference(array($accessManagerId))));
@@ -105,7 +116,7 @@ class Bee_Security_Namespace_GlobalMethodSecurityBeanDefinitionParser implements
         $parserContext->getRegistry()->registerBeanDefinition(Bee_Security_Config_IBeanIds::METHOD_SECURITY_INTERCEPTOR_POST_PROCESSOR, $interceptorPostProcessor);
     }
 
-    private function registerAdvisor(Bee_Context_Xml_ParserContext $parserContext) {
+    private function registerAdvisor(ParserContext $parserContext) {
         $advisor = new Bee_Context_Config_BeanDefinition_Generic();
         $advisor->setBeanClassName('Bee_Security_Intercept_MethodDefinitionSourceAdvisor');
         $advisor->addConstructorArgumentValue(new PropertyValue(0, Bee_Security_Config_IBeanIds::METHOD_SECURITY_INTERCEPTOR));

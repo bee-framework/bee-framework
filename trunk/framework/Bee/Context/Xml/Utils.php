@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Xml;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +16,15 @@
  * limitations under the License.
  */
 use Bee\Context\Config\IBeanDefinition;
+use Bee_Utils_Strings;
+use DOMElement;
 
 /**
  * User: mp
  * Date: 04.07.11
  * Time: 00:21
  */
-class Bee_Context_Xml_Utils implements Bee_Context_Xml_IConstants {
+class Utils implements IConstants {
 
     /**
      * @param DOMElement $ele
@@ -61,11 +64,11 @@ class Bee_Context_Xml_Utils implements Bee_Context_Xml_IConstants {
 
 	/**
 	 * @param array $aliases
-	 * @param Bee_Context_Xml_ReaderContext $readerContext
+	 * @param ReaderContext $readerContext
 	 * @param DOMElement $ele
 	 * @return mixed
 	 */
-	public static function getIdFromAliases(array &$aliases, Bee_Context_Xml_ReaderContext $readerContext, DOMElement $ele) {
+	public static function getIdFromAliases(array &$aliases, ReaderContext $readerContext, DOMElement $ele) {
         $beanName = array_shift($aliases);
         $readerContext->notice("No XML 'id' specified - using '$beanName' as bean name and [".implode(', ', $aliases)."] as aliases", $ele);
         return $beanName;
