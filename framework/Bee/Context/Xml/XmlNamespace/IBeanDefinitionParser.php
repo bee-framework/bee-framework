@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Xml\XmlNamespace;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\IBeanDefinition;
+use Bee\Context\Xml\ParserContext;
+use DOMElement;
 
 /**
  * Enter description here...
  *
  */
-interface Bee_Context_Xml_Namespace_IBeanDefinitionParser {
+interface IBeanDefinitionParser {
 	
 	/**
 	 * Enter description here...
 	 *
 	 * @param DOMElement $element
-	 * @param Bee_Context_Xml_ParserContext $parserContext
-	 * @return Bee\Context\Config\IBeanDefinition
+	 * @param ParserContext $parserContext
+	 * @return IBeanDefinition
 	 */
-	function parse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext);
+	function parse(DOMElement $element, ParserContext $parserContext);
 }

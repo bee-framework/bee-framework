@@ -1,11 +1,12 @@
 <?php
 namespace Bee\MVC\XmlNamespace;
+use Bee\Context\Xml\XmlNamespace\HandlerSupport;
 
 /**
  * Class Handler
  * @package Bee\MVC\XmlNamespace
  */
-class Handler extends \Bee_Context_Xml_Namespace_HandlerSupport {
+class Handler extends HandlerSupport {
 
 	function init() {
 		$this->registerBeanDefinitionParser('viewresolver', new ViewResolverBeanDefinitionCreator());

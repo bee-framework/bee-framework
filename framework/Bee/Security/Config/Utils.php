@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 use Bee\Context\Support\BeanDefinitionBuilder;
+use Bee\Context\Xml\ParserContext;
 
 /**
  * User: mp
@@ -24,7 +25,7 @@ use Bee\Context\Support\BeanDefinitionBuilder;
 
 class Bee_Security_Config_Utils {
 
-    public static function registerDefaultAccessManagerIfNecessary(Bee_Context_Xml_ParserContext $parserContext) {
+    public static function registerDefaultAccessManagerIfNecessary(ParserContext $parserContext) {
 
         if (!$parserContext->getRegistry()->containsBeanDefinition(Bee_Security_Config_IBeanIds::ACCESS_MANAGER)) {
 

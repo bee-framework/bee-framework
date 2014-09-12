@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Xml\XmlNamespace\HandlerSupport;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,7 +24,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Security_Namespace_Handler extends Bee_Context_Xml_Namespace_HandlerSupport {
+class Bee_Security_Namespace_Handler extends HandlerSupport {
 
     const INTERCEPT_METHODS = "intercept-methods";
     const GLOBAL_METHOD_SECURITY = 'global-method-security';

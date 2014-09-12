@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 use Bee\Context\Config\BeanDefinitionHolder;
+use Bee\Context\Xml\ParserContext;
+use Bee\Context\Xml\XmlNamespace\IBeanDefinitionDecorator;
 
 /**
  * User: mp
@@ -22,15 +24,13 @@ use Bee\Context\Config\BeanDefinitionHolder;
  * Time: 6:40:27 PM
  */
 
-class Bee_AOP_Namespace_ScopedProxyBeanDefinitionDecorator implements Bee_Context_Xml_Namespace_IBeanDefinitionDecorator {
+class Bee_AOP_Namespace_ScopedProxyBeanDefinitionDecorator implements IBeanDefinitionDecorator {
 
-    public function decorate(DOMNode $node, BeanDefinitionHolder $definition, Bee_Context_Xml_ParserContext $parserContext) {
+    public function decorate(DOMNode $node, BeanDefinitionHolder $definition, ParserContext $parserContext) {
 
         // Register the original bean definition as it will be referenced by the scoped proxy and is relevant for tooling (validation, navigation).
-        $targetBeanName = Bee_AOP_Scope_ScopedProxyUtils::getTargetBeanName($definition->getBeanName());
+//        $targetBeanName = Bee_AOP_Scope_ScopedProxyUtils::getTargetBeanName($definition->getBeanName());
 //        $parserContext->getReaderContext()->fireComponentRegistered(new BeanComponentDefinition(definition.getBeanDefinition(), targetBeanName));
         return Bee_AOP_Scope_ScopedProxyUtils::createScopedProxy($definition, $parserContext->getRegistry());
     }
 }
-
-?>

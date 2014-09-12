@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Xml\XmlNamespace\HandlerSupport;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,11 +24,10 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Transactions_Namespace_Handler extends Bee_Context_Xml_Namespace_HandlerSupport {
+class Bee_Transactions_Namespace_Handler extends HandlerSupport {
 
     public function init() {
         $this->registerBeanDefinitionParser('advice', new Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser());
 //        $this->registerBeanDefinitionParser('annotation-driven', new AnnotationDrivenBeanDefinitionParser());
     }
 }
-?>

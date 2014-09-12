@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Xml;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,37 +16,73 @@
  * limitations under the License.
  */
 use Bee\Context\Support\BeanUtils;
+use Bee\Context\Xml\XmlNamespace\IHandler;
+use Bee\Context\Xml\XmlNamespace\IHandlerResolver;
+use Exception;
 
 /**
  * Enter description here...
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_Xml_HardcodedNamespaceHandlerResolver implements Bee_Context_Xml_Namespace_IHandlerResolver {
+class DefaultNamespaceHandlerResolver implements IHandlerResolver {
 	
 	private static $NAMESPACE_HANDLERS = array(
 		'http://www.beeframework.org/schema/aop' => 'Bee_AOP_Namespace_Handler',
 		'http://www.beeframework.org/schema/security' => 'Bee_Security_Namespace_Handler',
 		'http://www.beeframework.org/schema/tx' => null,
 		'http://www.beeframework.org/schema/util' => 'Bee_Context_Util_Namespace_Handler',
-		'http://www.beeframework.org/schema/batch' => 'Bee\Tools\Batch\XmlNamespace\Handler',
+//		'http://www.beeframework.org/schema/batch' => 'Bee\Tools\Batch\XmlNamespace\Handler',
 		'http://www.beeframework.org/schema/mvc' => 'Bee\MVC\XmlNamespace\Handler'
 	);
-	
+
+	/**
+	 * @var bool
+	 */
+	private $initialized = false;
+
+	/**
+	 * @param String $namespaceUri
+	 * @return IHandler|void
+	 * @throws Exception
+	 */
 	public function resolve($namespaceUri) {
+		$this->initialize();
 		$handlerOrClassName = self::$NAMESPACE_HANDLERS[$namespaceUri];
-		if(is_null($handlerOrClassName) || $handlerOrClassName instanceof Bee_Context_Xml_Namespace_IHandler) {
+		if(is_null($handlerOrClassName) || $handlerOrClassName instanceof IHandler) {
 			return $handlerOrClassName;
 		} else {
 			$handler = BeanUtils::instantiateClass($handlerOrClassName);
-			if($handler instanceof Bee_Context_Xml_Namespace_IHandler) {
+			if($handler instanceof IHandler) {
 				$handler->init();
 				self::$NAMESPACE_HANDLERS[$namespaceUri] = $handler;
 				return $handler;
 			} else {
-				throw new Exception("Namespace handler configured for namespace $namespaceUri in not an implementation of Bee_Context_Namespace_IHandler");
+				throw new Exception("Namespace handler configured for namespace $namespaceUri in not an implementation of Bee\\Context\\Xml\\XmlNamespace\\IHandler");
 			}
 		}
-		throw new Exception("Could not resolve namespace handler for namespace $namespaceUri.");
+	}
+
+	/**
+	 *
+	 */
+	protected function initialize() {
+		if(!$this->initialized) {
+			if(file_exists('namespaces.ini')) {
+				foreach(parse_ini_file('namespaces.ini') as $namespaceUri => $handlerClassName) {
+					self::registerHandler($namespaceUri, $handlerClassName);
+				}
+			}
+			$this->initialized = true;
+		}
+	}
+
+	/**
+	 * @param $namespaceUri
+	 * @param $handlerClassName
+	 */
+	public static function registerHandler($namespaceUri, $handlerClassName) {
+		// todo: check class existence or not? fail-fast vs. performance trade-off
+		self::$NAMESPACE_HANDLERS[$namespaceUri] = $handlerClassName;
 	}
 }

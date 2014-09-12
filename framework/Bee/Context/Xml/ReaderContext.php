@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Xml;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +16,19 @@
  * limitations under the License.
  */
 use Bee\Context\Config\IBeanDefinitionRegistry;
+use Bee\Context\Xml\XmlNamespace\IHandlerResolver;
+use Bee_Context_BeanCreationException;
+use Bee_Framework;
+use DOMElement;
+use Exception;
+use Logger;
 
 /**
  * Enter description here...
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_Xml_ReaderContext {
+class ReaderContext {
 	
 	/**
 	 * Enter description here...
@@ -33,7 +40,7 @@ class Bee_Context_Xml_ReaderContext {
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Context_Xml_Namespace_IHandlerResolver
+	 * @var IHandlerResolver
 	 */
 	private $namespaceHandlerResolver;
 
@@ -44,7 +51,7 @@ class Bee_Context_Xml_ReaderContext {
 	
 	public function __construct(
 			IBeanDefinitionRegistry $registry,
-			Bee_Context_Xml_Namespace_IHandlerResolver $namespaceHandlerResolver) {
+			IHandlerResolver $namespaceHandlerResolver) {
 		
         $this->log = Bee_Framework::getLoggerForClass(__CLASS__);
 
@@ -64,7 +71,7 @@ class Bee_Context_Xml_ReaderContext {
 	/**
 	 * Enter description here...
 	 *
-	 * @return Bee_Context_Xml_Namespace_IHandlerResolver
+	 * @return IHandlerResolver
 	 */
 	public function getNamespaceHandlerResolver() {
 		return $this->namespaceHandlerResolver;

@@ -34,4 +34,3 @@ class Bee_Cache_Provider_Session extends Bee_Cache_Provider_AbstractSerializing 
         unset($_SESSION[self::SESSION_CACHE_KEY]);
    	}
 }
-?>

@@ -53,4 +53,3 @@ class Bee_Cache_Provider_XCache extends Bee_Cache_Provider_Base {
 		return $entry['name'];
 	}
 }
-?>

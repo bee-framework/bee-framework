@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Xml\XmlNamespace;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +17,10 @@
  */
 use Bee\Context\Config\IBeanDefinition;
 use Bee\Context\Support\BeanDefinitionBuilder;
+use Bee\Context\Xml\ParserContext;
+use Bee\Context\Xml\Utils;
+use Bee_Context_Config_BeanDefinition_Abstract;
+use DOMElement;
 
 /**
  * User: mp
@@ -23,20 +28,19 @@ use Bee\Context\Support\BeanDefinitionBuilder;
  * Time: 11:54:52 PM
  */
 
-abstract class Bee_Context_Xml_Namespace_AbstractSingleBeanDefinitionParser extends Bee_Context_Xml_Namespace_AbstractBeanDefinitionParser {
+abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDefinitionParser {
 
     /**
      * Creates a {@link BeanDefinitionBuilder} instance for the
      * {@link #getBeanClass bean Class} and passes it to the
      * {@link #doParse} strategy method.
      * @param DOMElement $element the element that is to be parsed into a single BeanDefinition
-     * @param Bee_Context_Xml_ParserContext $parserContext the object encapsulating the current state of the parsing process
+     * @param ParserContext $parserContext the object encapsulating the current state of the parsing process
      * @return Bee_Context_Config_BeanDefinition_Abstract the BeanDefinition resulting from the parsing of the supplied {@link Element}
-     * @throws IllegalStateException if the bean {@link Class} returned from
      * {@link #getBeanClass(org.w3c.dom.Element)} is <code>null</code>
      * @see #doParse
      */
-    protected final function parseInternal(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext) {
+    protected final function parseInternal(DOMElement $element, ParserContext $parserContext) {
         $builder = BeanDefinitionBuilder::genericBeanDefinition();
         $parentName = $this->getParentName($element);
         if ($parentName != null) {
@@ -49,7 +53,7 @@ abstract class Bee_Context_Xml_Namespace_AbstractSingleBeanDefinitionParser exte
 
         $this->parseDependsOn($element, $builder->getBeanDefinition());
 
-        Bee_Context_Xml_Utils::parseScopeAttribute($element, $builder->getBeanDefinition(), $parserContext->getContainingBeanDefinition());
+        Utils::parseScopeAttribute($element, $builder->getBeanDefinition(), $parserContext->getContainingBeanDefinition());
 
         $this->doParse($element, $parserContext, $builder);
         return $builder->getBeanDefinition();
@@ -64,7 +68,7 @@ abstract class Bee_Context_Xml_Namespace_AbstractSingleBeanDefinitionParser exte
      * or <code>null</code> if none
      */
     protected function getParentName(DOMElement $element) {
-        return Bee_Context_Xml_Utils::parseParentAttribute($element);
+        return Utils::parseParentAttribute($element);
     }
 
     /**
@@ -84,11 +88,11 @@ abstract class Bee_Context_Xml_Namespace_AbstractSingleBeanDefinitionParser exte
      * <p>The default implementation delegates to the <code>doParse</code>
      * version without ParserContext argument.
      * @param DOMElement $element the XML element being parsed
-     * @param Bee_Context_Xml_ParserContext $parserContext the object encapsulating the current state of the parsing process
+     * @param ParserContext $parserContext the object encapsulating the current state of the parsing process
      * @param BeanDefinitionBuilder $builder used to define the <code>BeanDefinition</code>
      * @see #doParse(Element, BeanDefinitionBuilder)
      */
-    protected function doParse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext, BeanDefinitionBuilder $builder) {
+    protected function doParse(DOMElement $element, ParserContext $parserContext, BeanDefinitionBuilder $builder) {
     }
 
 	/**
@@ -96,6 +100,6 @@ abstract class Bee_Context_Xml_Namespace_AbstractSingleBeanDefinitionParser exte
 	 * @param IBeanDefinition $bd
 	 */
 	protected function parseDependsOn(DOMElement $ele, IBeanDefinition $bd) {
-        Bee_Context_Xml_Utils::parseDependsOnAttribute($ele, $bd);
+        Utils::parseDependsOnAttribute($ele, $bd);
     }
 }

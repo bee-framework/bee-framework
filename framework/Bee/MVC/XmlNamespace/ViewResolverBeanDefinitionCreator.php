@@ -19,7 +19,8 @@ use Bee\Beans\PropertyValue;
 use Bee\Context\Config\BeanDefinitionHolder;
 use Bee\Context\Config\RuntimeBeanReference;
 use Bee\Context\Support\BeanDefinitionReaderUtils;
-use Bee_Context_Xml_ParserContext;
+use Bee\Context\Xml\ParserContext;
+use Bee\Context\Xml\XmlNamespace\IBeanDefinitionParser;
 use Bee_MVC_Dispatcher;
 use DOMElement;
 
@@ -27,7 +28,7 @@ use DOMElement;
  * Class ViewResolverBeanDefinitionCreator
  * @package Bee\MVC\XmlNamespace
  */
-class ViewResolverBeanDefinitionCreator implements \Bee_Context_Xml_Namespace_IBeanDefinitionParser {
+class ViewResolverBeanDefinitionCreator implements IBeanDefinitionParser {
 
 	const DEFAULT_VIEW_CONTEXT_BEAN_NAME = '__viewContext';
 
@@ -37,10 +38,10 @@ class ViewResolverBeanDefinitionCreator implements \Bee_Context_Xml_Namespace_IB
 	 * Enter description here...
 	 *
 	 * @param DOMElement $element
-	 * @param Bee_Context_Xml_ParserContext $parserContext
+	 * @param ParserContext $parserContext
 	 * @return \Bee\Context\Config\IBeanDefinition
 	 */
-	function parse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext) {
+	function parse(DOMElement $element, ParserContext $parserContext) {
 		$contextDefinition = BeanDefinitionReaderUtils::createBeanDefinition(null, 'Bee_Context_Xml');
 
 		$contextLoc = $element->hasAttribute(self::CONTEXT_LOCATION_PROPERTY_NAME) ? $element->getAttribute(self::CONTEXT_LOCATION_PROPERTY_NAME) : false;

@@ -73,4 +73,3 @@ interface Bee_Cache_IProvider {
 	 */
 	public function shutdown();
 }
-?>

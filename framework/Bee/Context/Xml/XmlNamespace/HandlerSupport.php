@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Xml\XmlNamespace;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +16,18 @@
  * limitations under the License.
  */
 use Bee\Context\Config\BeanDefinitionHolder;
+use Bee\Context\Config\IBeanDefinition;
+use Bee\Context\Xml\ParserContext;
+use DOMAttr;
+use DOMElement;
+use DOMNode;
 
 /**
- * Support class for implementing custom {@link Bee_Context_Xml_Namespace_IHandler NamespaceHandlers}. Parsing and
- * decorating of individual {@link DOMNode Nodes} is done via {@link Bee_Context_Xml_Namespace_IBeanDefinitionParser} and
- * {@link Bee_Context_Xml_Namespace_IBeanDefinitionDecorator} strategy interfaces respectively.
+ * Support class for implementing custom {@link IHandler NamespaceHandlers}. Parsing and
+ * decorating of individual {@link DOMNode Nodes} is done via {@link IBeanDefinitionParser} and
+ * {@link IBeanDefinitionDecorator} strategy interfaces respectively.
  */
-abstract class Bee_Context_Xml_Namespace_HandlerSupport implements Bee_Context_Xml_Namespace_IHandler {
+abstract class HandlerSupport implements IHandler {
 	
 	/**
 	 * Enter description here...
@@ -43,8 +49,13 @@ abstract class Bee_Context_Xml_Namespace_HandlerSupport implements Bee_Context_X
 	 * @var array
 	 */
 	private $attributeDecorators;
-	
-	public final function parse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext) {
+
+	/**
+	 * @param DOMElement $element
+	 * @param ParserContext $parserContext
+	 * @return IBeanDefinition
+	 */
+	public final function parse(DOMElement $element, ParserContext $parserContext) {
 		return $this->findParserForElement($element, $parserContext)->parse($element, $parserContext);
 	}
 	
@@ -53,10 +64,10 @@ abstract class Bee_Context_Xml_Namespace_HandlerSupport implements Bee_Context_X
 	 * the local name of the supplied DOMElement.
 	 *
 	 * @param DOMElement $element
-	 * @param Bee_Context_Xml_ParserContext $parserContext
-	 * @return Bee_Context_Xml_Namespace_IBeanDefinitionParser
+	 * @param ParserContext $parserContext
+	 * @return IBeanDefinitionParser
 	 */
-	private function findParserForElement(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext) {
+	private function findParserForElement(DOMElement $element, ParserContext $parserContext) {
 		$parser = $this->parsers[$element->localName];
 		if (is_null($parser)) {
 			$parserContext->getReaderContext()->error('Cannot locate BeanDefinitionParser for element [' . $element->localName . ']', $element);
@@ -64,7 +75,13 @@ abstract class Bee_Context_Xml_Namespace_HandlerSupport implements Bee_Context_X
 		return $parser;
 	}
 
-	public final function decorate(DOMNode $source, BeanDefinitionHolder $definition, Bee_Context_Xml_ParserContext $parserContext) {
+	/**
+	 * @param DOMNode $source
+	 * @param BeanDefinitionHolder $definition
+	 * @param ParserContext $parserContext
+	 * @return BeanDefinitionHolder
+	 */
+	public final function decorate(DOMNode $source, BeanDefinitionHolder $definition, ParserContext $parserContext) {
 		return $this->findDecoratorForNode($source, $parserContext)->decorate($source, $definition, $parserContext);
 	}
 	
@@ -72,10 +89,10 @@ abstract class Bee_Context_Xml_Namespace_HandlerSupport implements Bee_Context_X
 	 * Enter description here...
 	 *
 	 * @param DOMNode $node
-	 * @param Bee_Context_Xml_ParserContext $parserContext
-	 * @return Bee_Context_Xml_Namespace_IBeanDefinitionDecorator
+	 * @param ParserContext $parserContext
+	 * @return IBeanDefinitionDecorator
 	 */
-	private function findDecoratorForNode(DOMNode $node, Bee_Context_Xml_ParserContext $parserContext) {
+	private function findDecoratorForNode(DOMNode $node, ParserContext $parserContext) {
 		$decorator = null;
 		if ($node instanceof DOMElement) {
 			$decorator = $this->decorators[$node->localName];
@@ -90,13 +107,15 @@ abstract class Bee_Context_Xml_Namespace_HandlerSupport implements Bee_Context_X
 		}
 		return $decorator;
 	}
-	
+
 	/**
 	 * Subclasses can call this to register the supplied {@link BeanDefinitionParser} to
 	 * handle the specified element. The element name is the local (non-namespace qualified)
 	 * name.
+	 * @param $elementName
+	 * @param IBeanDefinitionParser $parser
 	 */
-	protected final function registerBeanDefinitionParser($elementName, Bee_Context_Xml_Namespace_IBeanDefinitionParser $parser) {
+	protected final function registerBeanDefinitionParser($elementName, IBeanDefinitionParser $parser) {
 		$this->parsers[$elementName] = $parser;
 	}
 
@@ -104,8 +123,10 @@ abstract class Bee_Context_Xml_Namespace_HandlerSupport implements Bee_Context_X
 	 * Subclasses can call this to register the supplied {@link BeanDefinitionDecorator} to
 	 * handle the specified element. The element name is the local (non-namespace qualified)
 	 * name.
+	 * @param $elementName
+	 * @param IBeanDefinitionDecorator $decorator
 	 */
-	protected final function registerBeanDefinitionDecorator($elementName, Bee_Context_Xml_Namespace_IBeanDefinitionDecorator $decorator) {
+	protected final function registerBeanDefinitionDecorator($elementName, IBeanDefinitionDecorator $decorator) {
 		$this->decorators[$elementName] = $decorator;
 	}
 
@@ -113,9 +134,10 @@ abstract class Bee_Context_Xml_Namespace_HandlerSupport implements Bee_Context_X
 	 * Subclasses can call this to register the supplied {@link BeanDefinitionDecorator} to
 	 * handle the specified attribute. The attribute name is the local (non-namespace qualified)
 	 * name.
+	 * @param $attributeName
+	 * @param IBeanDefinitionDecorator $decorator
 	 */
-	protected final function registerBeanDefinitionDecoratorForAttribute($attributeName, Bee_Context_Xml_Namespace_IBeanDefinitionDecorator $decorator) {
+	protected final function registerBeanDefinitionDecoratorForAttribute($attributeName, IBeanDefinitionDecorator $decorator) {
 		$this->attributeDecorators[$attributeName] = $decorator;
 	}
-	
 }

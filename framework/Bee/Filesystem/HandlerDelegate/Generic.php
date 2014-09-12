@@ -596,5 +596,3 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 
 	
 }
-
-?>

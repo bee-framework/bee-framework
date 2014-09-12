@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Context\Xml;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -14,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Beans\MethodInvocation;
 use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
 use Bee\Beans\PropertyValue;
 use Bee\Context\Config\ArrayValue;
@@ -24,6 +26,15 @@ use Bee\Context\Config\RuntimeBeanNameReference;
 use Bee\Context\Config\RuntimeBeanReference;
 use Bee\Context\Config\TypedStringValue;
 use Bee\Context\Support\BeanDefinitionReaderUtils;
+use Bee_Context_BeanCreationException;
+use Bee_Context_Config_BeanDefinition_Abstract;
+use Bee_Utils_Assert;
+use Bee_Utils_Collections;
+use Bee_Utils_Dom;
+use Bee_Utils_Strings;
+use DOMElement;
+use DOMNode;
+use Exception;
 
 /**
  * Enter description here...
@@ -32,7 +43,7 @@ use Bee\Context\Support\BeanDefinitionReaderUtils;
  * 
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
+class ParserDelegate implements IConstants {
 	
 	/**
 	 * The default namespace for bean definitions
@@ -97,14 +108,14 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Context_Xml_DocumentDefaultsDefinition
+	 * @var DocumentDefaultsDefinition
 	 */
 	private $defaults;
 	
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Context_Xml_ReaderContext
+	 * @var ReaderContext
 	 */
 	private $readerContext;
 	
@@ -130,9 +141,9 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_Context_Xml_ReaderContext $readerContext
+	 * @param ReaderContext $readerContext
 	 */
-	public function __construct(Bee_Context_Xml_ReaderContext $readerContext) {
+	public function __construct(ReaderContext $readerContext) {
 		Bee_Utils_Assert::notNull($readerContext, 'XmlReaderContext must not be null');
 		$this->readerContext = $readerContext;
 		$this->propertyEditorRegistry = new PropertyEditorRegistry();
@@ -142,7 +153,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	 * @param DOMElement $root
 	 */
 	public function initDefaults(DOMElement $root) {
-		$defaults = new Bee_Context_Xml_DocumentDefaultsDefinition();
+		$defaults = new DocumentDefaultsDefinition();
 		$defaults->setMerge(filter_var($root->getAttribute(self::DEFAULT_MERGE_ATTRIBUTE), FILTER_VALIDATE_BOOLEAN));
 		if($root->hasAttribute(self::DEFAULT_INIT_METHOD_ATTRIBUTE)) {
 			$defaults->setInitMethod($root->getAttribute(self::DEFAULT_INIT_METHOD_ATTRIBUTE));
@@ -168,12 +179,12 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	public function parseBeanDefinitionElement(DOMElement $ele, IBeanDefinition $containingBd = null) {
 		$id = $ele->getAttribute(self::ID_ATTRIBUTE);
 
-		$aliases = Bee_Context_Xml_Utils::parseNameAttribute($ele);
+		$aliases = Utils::parseNameAttribute($ele);
 
 		// find a bean id
 		$beanName = $id;
 		if (!Bee_Utils_Strings::hasText($beanName) && count($aliases) > 0) {
-			$beanName = Bee_Context_Xml_Utils::getIdFromAliases($aliases, $this->readerContext, $ele);
+			$beanName = Utils::getIdFromAliases($aliases, $this->readerContext, $ele);
 		}
 
 		if (is_null($containingBd)) {
@@ -237,20 +248,20 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 		if ($ele->hasAttribute(self::CLASS_ATTRIBUTE)) {
 			$className = trim($ele->getAttribute(self::CLASS_ATTRIBUTE));
 		}
-        $parent = Bee_Context_Xml_Utils::parseParentAttribute($ele);
+        $parent = Utils::parseParentAttribute($ele);
 
 		try {
 			array_push($this->parseState, $beanName);
 
 			$bd = BeanDefinitionReaderUtils::createBeanDefinition($parent, $className);
 
-            Bee_Context_Xml_Utils::parseScopeAttribute($ele, $bd, $containingBd);
+            Utils::parseScopeAttribute($ele, $bd, $containingBd);
 
 			if ($ele->hasAttribute(self::ABSTRACT_ATTRIBUTE)) {
 				$bd->setAbstract(filter_var($ele->getAttribute(self::ABSTRACT_ATTRIBUTE), FILTER_VALIDATE_BOOLEAN));
 			}
 
-            Bee_context_Xml_Utils::parseDependsOnAttribute($ele, $bd);
+            Utils::parseDependsOnAttribute($ele, $bd);
 
             if ($ele->hasAttribute(self::INIT_METHOD_ATTRIBUTE)) {
 				$initMethodName = $ele->getAttribute(self::INIT_METHOD_ATTRIBUTE);
@@ -364,11 +375,11 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	/**
 	 * Parse a constructor-arg element.
 	 * @param DOMElement $ele
-	 * @param \Bee\Context\Config\IMethodArguments $argsHolder
+	 * @param IMethodArguments $argsHolder
 	 * @param IBeanDefinition $bd
 	 * @throws Exception
 	 */
-	public function parseConstructorArgElement(DOMElement $ele, Bee\Context\Config\IMethodArguments $argsHolder, IBeanDefinition $bd) {
+	public function parseConstructorArgElement(DOMElement $ele, IMethodArguments $argsHolder, IBeanDefinition $bd) {
 		
 		$indexAttr = $ele->getAttribute(self::INDEX_ATTRIBUTE);
 
@@ -440,7 +451,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 		}
 		array_push($this->parseState, $methodName);
 		try {
-			$methodInvocation = new \Bee\Beans\MethodInvocation($methodName);
+			$methodInvocation = new MethodInvocation($methodName);
 			$this->parseConstructorArgElements($ele, $methodInvocation, $bd);
 			$bd->addMethodInvocation($methodInvocation);
 
@@ -455,6 +466,10 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 	/**
 	 * Get the value of a property element. May be a list etc.
 	 * Also used for constructor arguments, "propertyName" being null in this case.
+	 * @param DOMElement $ele
+	 * @param IBeanDefinition $bd
+	 * @param $propertyName
+	 * @return \Bee\Context\Config\ArrayValue|\Bee\Context\Config\BeanDefinitionHolder|\Bee\Context\Config\RuntimeBeanNameReference|\Bee\Context\Config\RuntimeBeanReference|\Bee\Context\Config\TypedStringValue|null
 	 */
 	public function parsePropertyValue(DOMElement $ele, IBeanDefinition $bd, $propertyName) {
 		$elementName = ($propertyName != null) ?
@@ -723,7 +738,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 			$this->readerContext->error("Unable to locate Spring NamespaceHandler for XML schema namespace [$namespaceUri]", $ele);
 			return null;
 		}
-		return $handler->parse($ele, new Bee_Context_Xml_ParserContext($this->readerContext, $this, $containingBd));
+		return $handler->parse($ele, new ParserContext($this->readerContext, $this, $containingBd));
 	}
 
 	/**
@@ -764,7 +779,7 @@ class Bee_Context_Xml_ParserDelegate implements Bee_Context_Xml_IConstants {
 		if (!$this->isDefaultNamespace($namespaceUri)) {
 			$handler = $this->readerContext->getNamespaceHandlerResolver()->resolve($namespaceUri);
 			if (!is_null($handler)) {
-				return $handler->decorate($node, $originalDefinition, new Bee_Context_Xml_ParserContext($this->readerContext, $this));
+				return $handler->decorate($node, $originalDefinition, new ParserContext($this->readerContext, $this));
 			} else if (Bee_Utils_Strings::startsWith($namespaceUri, 'http://www.beeframework.org/')) {
 				$this->readerContext->error("Unable to locate Bee NamespaceHandler for XML schema namespace [$namespaceUri]", $node);
 			} else {

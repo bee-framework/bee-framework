@@ -14,14 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Xml\ParserContext;
+use Bee\Context\Xml\XmlNamespace\IBeanDefinitionParser;
 
 /**
  * 
  */
-class Bee_Security_HttpSecurityBeanDefinitionParser implements Bee_Context_Xml_Namespace_IBeanDefinitionParser {
+class Bee_Security_HttpSecurityBeanDefinitionParser implements IBeanDefinitionParser {
 	
-	public function parse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext) {
+	public function parse(DOMElement $element, ParserContext $parserContext) {
 		trigger_error('Bee_Security_HttpSecurityBeanDefinitionParser.parse() : TO BE IMPLEMENTED', E_USER_ERROR);	
 	}
 }
-?>

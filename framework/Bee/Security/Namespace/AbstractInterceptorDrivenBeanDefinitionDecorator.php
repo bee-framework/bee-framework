@@ -23,9 +23,9 @@
  * To change this template use File | Settings | File Templates.
  */
 // todo: work in progress...
-//class Bee_Security_Namespace_AbstractInterceptorDrivenBeanDefinitionDecorator implements Bee_Context_Xml_Namespace_IBeanDefinitionDecorator {
+//class Bee_Security_Namespace_AbstractInterceptorDrivenBeanDefinitionDecorator implements IBeanDefinitionDecorator {
 //
-//    public final function decorate(DOMNode $node, BeanDefinitionHolder $definitionHolder, Bee_Context_Xml_ParserContext $parserContext) {
+//    public final function decorate(DOMNode $node, BeanDefinitionHolder $definitionHolder, ParserContext $parserContext) {
 //        $registry = $parserContext->getRegistry();
 //
 //        // get the root bean name - will be the name of the generated proxy factory bean

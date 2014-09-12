@@ -21,7 +21,7 @@
  * Time: 6:46:56 AM
  */
 
-class Bee_AOP_Namespace_ConfigBeanDefinitionParser /*implements Bee_Context_Xml_Namespace_IBeanDefinitionParser*/ {
+class Bee_AOP_Namespace_ConfigBeanDefinitionParser /*implements IBeanDefinitionParser*/ {
 
 //    const ASPECT = "aspect";
 //    const EXPRESSION = "expression";
@@ -64,7 +64,7 @@ class Bee_AOP_Namespace_ConfigBeanDefinitionParser /*implements Bee_Context_Xml_
 //        $this->parseState = new ParseState();
 //    }
 //
-//    public function parse(DOMElement $element, Bee_Context_Xml_ParserContext $parserContext) {
+//    public function parse(DOMElement $element, ParserContext $parserContext) {
 //        $compositeDef =
 //                new CompositeComponentDefinition($element->tagName);
 //
@@ -97,7 +97,7 @@ class Bee_AOP_Namespace_ConfigBeanDefinitionParser /*implements Bee_Context_Xml_
 //     * '<code>proxy-target-class</code>' attribute is set to '<code>true</code>'.
 //     * @see AopNamespaceUtils
 //     */
-//    private function configureAutoProxyCreator(Bee_Context_Xml_ParserContext $parserContext, DOMElement $element) {
+//    private function configureAutoProxyCreator(ParserContext $parserContext, DOMElement $element) {
 //        AopNamespaceUtils.registerAspectJAutoProxyCreatorIfNecessary(parserContext, element);
 //    }
 //
