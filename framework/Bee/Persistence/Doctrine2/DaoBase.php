@@ -113,7 +113,6 @@ class DaoBase extends EntityManagerHolder {
         }
 
         if ($orderAndLimitHolder->getPageSize() > 0) {
-            $queryBuilder->setMaxResults($orderAndLimitHolder->getPageSize());
 
             // TODO: build a performant count-query! This is simply bullshit!
             $pageCount = ceil(count($this->getQueryFromBuilder($queryBuilder)->execute()) / $orderAndLimitHolder->getPageSize());
