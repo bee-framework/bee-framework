@@ -20,6 +20,7 @@ use Bee\Persistence\IRestrictionHolder;
 use Bee_Utils_Strings;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Exception;
 
 /**
@@ -117,8 +118,10 @@ class DaoBase extends EntityManagerHolder {
 
         if ($orderAndLimitHolder->getPageSize() > 0) {
 
-            // TODO: build a performant count-query! This is simply bullshit!
-            $pageCount = ceil(count($this->getQueryFromBuilder($queryBuilder)->execute()) / $orderAndLimitHolder->getPageSize());
+//            $pageCount = ceil(count($this->getQueryFromBuilder($queryBuilder)->execute()) / $orderAndLimitHolder->getPageSize());
+            // TODO: optimize use of the Paginator concept. maybe reimplement it in a more specific way?
+			$paginator = new Paginator($queryBuilder, false);
+            $pageCount = ceil(count($paginator) / $orderAndLimitHolder->getPageSize());
             $orderAndLimitHolder->setPageCount($pageCount);
 
             if ($orderAndLimitHolder->getCurrentPage() > $pageCount) {
