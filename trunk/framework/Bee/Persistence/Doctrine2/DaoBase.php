@@ -37,7 +37,7 @@ class DaoBase extends EntityManagerHolder {
 	 * @param null $hydrationMode
 	 * @return array
 	 */
-    public function executeListQuery(QueryBuilder $queryBuilder, IRestrictionHolder $restrictionHolder = null, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping, $hydrationMode = null) {
+    public function executeListQuery(QueryBuilder $queryBuilder, IRestrictionHolder $restrictionHolder = null, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null, $hydrationMode = null) {
         $this->applyFilterRestrictions($queryBuilder, $restrictionHolder);
         $this->applyOrderAndLimit($queryBuilder, $orderAndLimitHolder, $defaultOrderMapping);
         return $this->getQueryFromBuilder($queryBuilder)->execute(null, $hydrationMode);
@@ -97,7 +97,10 @@ class DaoBase extends EntityManagerHolder {
 	 * @param IOrderAndLimitHolder $orderAndLimitHolder
 	 * @param array $defaultOrderMapping
 	 */
-    protected final function applyOrderAndLimit(QueryBuilder &$queryBuilder, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = array()) {
+    protected final function applyOrderAndLimit(QueryBuilder &$queryBuilder, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null) {
+		if(is_null($defaultOrderMapping)) {
+			$defaultOrderMapping = array();
+		}
         if (is_null($orderAndLimitHolder)) {
             $orderMapping = $defaultOrderMapping;
         } else {
