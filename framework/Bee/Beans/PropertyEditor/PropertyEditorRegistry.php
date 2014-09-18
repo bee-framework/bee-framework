@@ -135,5 +135,7 @@ PropertyEditorRegistry::registerEditor(ITypeDefinitions::IPv6, new GenericProper
 PropertyEditorRegistry::registerEditor(ITypeDefinitions::UNIX_TIMESTAMP, new UnixTimestampPropertyEditor());
 PropertyEditorRegistry::registerEditor(ITypeDefinitions::STRING, new StringPropertyEditor());
 PropertyEditorRegistry::registerEditor(ITypeDefinitions::BASE64, new Base64StringPropertyEditor());
+// todo: implement actual ArraPropertyEditor
+PropertyEditorRegistry::registerEditor(ITypeDefinitions::ARRAY_TYPE, new StringPropertyEditor());
 
 PropertyEditorRegistry::registerEditor(ConstantPropertyEditor::TYPE_STRING, new ConstantPropertyEditor());
