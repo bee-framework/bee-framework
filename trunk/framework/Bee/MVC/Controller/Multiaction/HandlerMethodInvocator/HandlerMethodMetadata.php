@@ -57,7 +57,7 @@ class HandlerMethodMetadata {
 		foreach ($method->getParameters() as $param) {
 			$typeName = array_key_exists($param->getName(), $typeNameMap) ?
 					$typeNameMap[$param->getName()] :
-					(!is_null($param->getClass()) ? $param->getClass()->getName() : ITypeDefinitions::STRING);
+					(!is_null($param->getClass()) ? $param->getClass()->getName() : ($param->isArray() ? ITypeDefinitions::ARRAY_TYPE : ITypeDefinitions::STRING));
 			if ($typeName == 'Bee_MVC_IHttpRequest') {
 				$this->requestParamPos[$param->getPosition()] = true;
 			}
