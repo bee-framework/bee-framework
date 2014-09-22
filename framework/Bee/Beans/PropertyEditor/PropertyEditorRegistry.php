@@ -139,3 +139,4 @@ PropertyEditorRegistry::registerEditor(ITypeDefinitions::BASE64, new Base64Strin
 PropertyEditorRegistry::registerEditor(ITypeDefinitions::ARRAY_TYPE, new StringPropertyEditor());
 
 PropertyEditorRegistry::registerEditor(ConstantPropertyEditor::TYPE_STRING, new ConstantPropertyEditor());
+PropertyEditorRegistry::registerEditor(UrlParamPropertyEditor::TYPE_STRING, new UrlParamPropertyEditor());
