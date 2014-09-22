@@ -213,12 +213,13 @@ class Bee_Utils_Strings {
      *
      * @return string
      */
-    public static function toAscii($string, $table=array(), $delimiter='-', $toLowercase=true) {
+    public static function toAscii($string, $table=array(), $delimiter='-', $toLowercase=true, $allowEmailChars=false) {
         if (count($table)>0) {
             $string = strtr($string, $table);
        	}
        	$ascii = iconv('UTF-8', 'ASCII//TRANSLIT', $string);
-        $ascii = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $ascii);
+        $emailChars = $allowEmailChars ? '@.' : '';
+        $ascii = preg_replace("/[^a-zA-Z0-9\/_|+ -".$emailChars."]/", '', $ascii);
         $ascii = trim($ascii, '-');
         $ascii = preg_replace("/[\/_|+ -]+/", $delimiter, $ascii);
        	return $toLowercase ? strtolower($ascii) : $ascii;
