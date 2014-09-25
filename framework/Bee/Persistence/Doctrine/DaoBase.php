@@ -144,7 +144,6 @@ class Bee_Persistence_Doctrine_DaoBase {
         }
 
         foreach ($orderMapping as $orderField => $orderDir) {
-//            $query->orderBy($orderField.' '.$orderDir);
             $query->addOrderBy($orderField . ' ' . $orderDir);
         }
 
@@ -154,13 +153,7 @@ class Bee_Persistence_Doctrine_DaoBase {
 
         if ($orderAndLimitHolder->getPageSize() > 0) {
             $query->limit($orderAndLimitHolder->getPageSize());
-
-            $pageCount = ceil($query->count($params) / $orderAndLimitHolder->getPageSize());
-            $orderAndLimitHolder->setPageCount($pageCount);
-
-            if ($orderAndLimitHolder->getCurrentPage() > $pageCount) {
-                $orderAndLimitHolder->setCurrentPage($pageCount);
-            }
+			$orderAndLimitHolder->setResultCount($query->count($params));
             $query->offset($orderAndLimitHolder->getCurrentPage() * $orderAndLimitHolder->getPageSize());
         }
     }
