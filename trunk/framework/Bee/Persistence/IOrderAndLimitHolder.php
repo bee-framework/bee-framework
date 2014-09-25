@@ -38,11 +38,6 @@ interface IOrderAndLimitHolder {
     public function getPageCount();
 
     /**
-     * @param $pageCount
-     */
-    public function setPageCount($pageCount);
-
-    /**
      * @return int
      */
     public function getCurrentPage();
@@ -52,4 +47,8 @@ interface IOrderAndLimitHolder {
      */
     public function setCurrentPage($currentPage);
 
+	/**
+	 * @param int $resultCount
+	 */
+	public function setResultCount($resultCount);
 }

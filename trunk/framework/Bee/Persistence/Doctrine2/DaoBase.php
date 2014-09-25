@@ -1,5 +1,6 @@
 <?php
 namespace Bee\Persistence\Doctrine2;
+
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -38,11 +39,11 @@ class DaoBase extends EntityManagerHolder {
 	 * @param null $hydrationMode
 	 * @return array
 	 */
-    public function executeListQuery(QueryBuilder $queryBuilder, IRestrictionHolder $restrictionHolder = null, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null, $hydrationMode = null) {
-        $this->applyFilterRestrictions($queryBuilder, $restrictionHolder);
-        $this->applyOrderAndLimit($queryBuilder, $orderAndLimitHolder, $defaultOrderMapping);
-        return $this->getQueryFromBuilder($queryBuilder)->execute(null, $hydrationMode);
-    }
+	public function executeListQuery(QueryBuilder $queryBuilder, IRestrictionHolder $restrictionHolder = null, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null, $hydrationMode = null) {
+		$this->applyFilterRestrictions($queryBuilder, $restrictionHolder);
+		$this->applyOrderAndLimit($queryBuilder, $orderAndLimitHolder, $defaultOrderMapping);
+		return $this->getQueryFromBuilder($queryBuilder)->execute(null, $hydrationMode);
+	}
 
 	/**
 	 * @param QueryBuilder $qb
@@ -57,80 +58,72 @@ class DaoBase extends EntityManagerHolder {
 	 * @param IRestrictionHolder $restrictionHolder
 	 * @internal param QueryBuilder $query
 	 */
-    protected final function applyFilterRestrictions(QueryBuilder &$queryBuilder, IRestrictionHolder $restrictionHolder = null) {
-        if (is_null($restrictionHolder)) {
-            return;
-        }
+	protected final function applyFilterRestrictions(QueryBuilder &$queryBuilder, IRestrictionHolder $restrictionHolder = null) {
+		if (is_null($restrictionHolder)) {
+			return;
+		}
 
-        if (!Bee_Utils_Strings::hasText($restrictionHolder->getFilterString())) {
-            return;
-        }
+		if (!Bee_Utils_Strings::hasText($restrictionHolder->getFilterString())) {
+			return;
+		}
 
-        $filterTokens = Bee_Utils_Strings::tokenizeToArray($restrictionHolder->getFilterString(), ' ');
-        foreach ($filterTokens as $no => $token) {
-            $andWhereString = '';
-            $params = array();
+		$filterTokens = Bee_Utils_Strings::tokenizeToArray($restrictionHolder->getFilterString(), ' ');
+		foreach ($filterTokens as $no => $token) {
+			$andWhereString = '';
+			$params = array();
 
-			$tokenName = 'filtertoken'.$no;
-			$params[$tokenName] = '%'.$token.'%';
+			$tokenName = 'filtertoken' . $no;
+			$params[$tokenName] = '%' . $token . '%';
 
-            foreach ($restrictionHolder->getFilterableFields() as $fieldName) {
-                // $fieldName MUST BE A DOCTRINE NAME
-                if (Bee_Utils_Strings::hasText($andWhereString)) {
-                    $andWhereString .= ' OR ';
-                }
+			foreach ($restrictionHolder->getFilterableFields() as $fieldName) {
+				// $fieldName MUST BE A DOCTRINE NAME
+				if (Bee_Utils_Strings::hasText($andWhereString)) {
+					$andWhereString .= ' OR ';
+				}
 
-                $andWhereString .= $fieldName.' LIKE :'.$tokenName;
-            }
+				$andWhereString .= $fieldName . ' LIKE :' . $tokenName;
+			}
 
-            if (Bee_Utils_Strings::hasText($andWhereString)) {
-                $queryBuilder->andWhere($andWhereString);
+			if (Bee_Utils_Strings::hasText($andWhereString)) {
+				$queryBuilder->andWhere($andWhereString);
 
-                foreach ($params as $key => $value) {
-                    $queryBuilder->setParameter($key, $value);
-                }
-            }
-        }
-    }
+				foreach ($params as $key => $value) {
+					$queryBuilder->setParameter($key, $value);
+				}
+			}
+		}
+	}
 
 	/**
 	 * @param QueryBuilder $queryBuilder
 	 * @param IOrderAndLimitHolder $orderAndLimitHolder
 	 * @param array $defaultOrderMapping
 	 */
-    protected final function applyOrderAndLimit(QueryBuilder &$queryBuilder, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null) {
-		if(is_null($defaultOrderMapping)) {
+	protected final function applyOrderAndLimit(QueryBuilder &$queryBuilder, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null) {
+		if (is_null($defaultOrderMapping)) {
 			$defaultOrderMapping = array();
 		}
-        if (is_null($orderAndLimitHolder)) {
-            $orderMapping = $defaultOrderMapping;
-        } else {
-            $orderMapping = count($orderAndLimitHolder->getOrderMapping()) > 0 ? $orderAndLimitHolder->getOrderMapping() : $defaultOrderMapping;
-        }
+		if (is_null($orderAndLimitHolder)) {
+			$orderMapping = $defaultOrderMapping;
+		} else {
+			$orderMapping = count($orderAndLimitHolder->getOrderMapping()) > 0 ? $orderAndLimitHolder->getOrderMapping() : $defaultOrderMapping;
+		}
 
-        foreach ($orderMapping as $orderField => $orderDir) {
-            $queryBuilder->addOrderBy($orderField, $orderDir);
-        }
+		foreach ($orderMapping as $orderField => $orderDir) {
+			$queryBuilder->addOrderBy($orderField, $orderDir);
+		}
 
-        if (is_null($orderAndLimitHolder)) {
-            return;
-        }
+		if (is_null($orderAndLimitHolder)) {
+			return;
+		}
 
-        if ($orderAndLimitHolder->getPageSize() > 0) {
-
-//            $pageCount = ceil(count($this->getQueryFromBuilder($queryBuilder)->execute()) / $orderAndLimitHolder->getPageSize());
-            // TODO: optimize use of the Paginator concept. maybe reimplement it in a more specific way?
+		if ($orderAndLimitHolder->getPageSize() > 0) {
 			$paginator = new Paginator($queryBuilder, false);
-            $pageCount = ceil(count($paginator) / $orderAndLimitHolder->getPageSize());
-            $orderAndLimitHolder->setPageCount($pageCount);
-
-            if ($orderAndLimitHolder->getCurrentPage() > $pageCount) {
-                $orderAndLimitHolder->setCurrentPage($pageCount);
-            }
-            $queryBuilder->setFirstResult($orderAndLimitHolder->getCurrentPage() * $orderAndLimitHolder->getPageSize());
-            $queryBuilder->setMaxResults($orderAndLimitHolder->getPageSize());
-        }
-    }
+			$orderAndLimitHolder->setResultCount(count($paginator));
+			$queryBuilder->setFirstResult($orderAndLimitHolder->getCurrentPage() * $orderAndLimitHolder->getPageSize());
+			$queryBuilder->setMaxResults($orderAndLimitHolder->getPageSize());
+		}
+	}
 
 	/**
 	 * @param callback $func
