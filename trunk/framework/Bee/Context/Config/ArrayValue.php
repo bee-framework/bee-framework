@@ -156,4 +156,11 @@ class ArrayValue implements ArrayAccess, IteratorAggregate, Countable, IMergeabl
 	public function getValue() {
 		return $this->sourceArray;
 	}
+
+	/*
+	 *
+	 */
+	public function setValue(array $value) {
+		$this->sourceArray = $value;
+	}
 }
