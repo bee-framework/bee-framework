@@ -2,7 +2,7 @@
 
 <beans xmlns="http://www.beeframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.beeframework.org/schema/beans http://www.beeframework.org/schema/beans/bee-beans-1.1.xsd">
+	xsi:schemaLocation="http://www.beeframework.org/schema/beans http://www.beeframework.org/schema/beans/bee-beans-1.2.xsd">
 
     <bean id="basicAuditLogger" class="Bee_Security_Acls_Impl_BasicAuditLogger" />
 
