@@ -754,7 +754,9 @@ class ParserDelegate implements IConstants {
 		$bd = !is_null($handler) ? $handler->parse($ele, new ParserContext($this->readerContext, $this, $containingBd)) : null;
 		if (!is_null($bd)) {
 			$beanName = BeanDefinitionReaderUtils::generateBeanName($bd, $this->readerContext->getRegistry(), true);
-			$this->readerContext->getRegistry()->registerBeanDefinition($beanName, $bd);
+			if(!$this->readerContext->getRegistry()->containsBeanDefinition($beanName)) {
+				$this->readerContext->getRegistry()->registerBeanDefinition($beanName, $bd);
+			}
 			$bd = $this->decorateBeanDefinitionIfRequired($ele, new BeanDefinitionHolder($bd, $beanName));
 		}
 		return $bd;
