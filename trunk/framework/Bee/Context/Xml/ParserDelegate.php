@@ -1,5 +1,6 @@
 <?php
 namespace Bee\Context\Xml;
+
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -40,11 +41,11 @@ use Exception;
  * Enter description here...
  *
  * @todo: What's with the various undefined $defaultTypeClassName vars littered throughout this class? Refer to Source (i.e. Spring) and fix...
- * 
+ *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
 class ParserDelegate implements IConstants {
-	
+
 	/**
 	 * The default namespace for bean definitions
 	 *
@@ -52,14 +53,14 @@ class ParserDelegate implements IConstants {
 	 */
 	const BEANS_NAMESPACE_URI = 'http://www.beeframework.org/schema/beans';
 
-    const DEFAULT_VALUE = 'default';
+	const DEFAULT_VALUE = 'default';
 
 	const BEAN_ELEMENT = 'bean';
-	
+
 	const ID_ATTRIBUTE = 'id';
-	
+
 	const CLASS_ATTRIBUTE = 'class';
-	
+
 	const ABSTRACT_ATTRIBUTE = 'abstract';
 
 	const INIT_METHOD_ATTRIBUTE = 'init-method';
@@ -69,7 +70,7 @@ class ParserDelegate implements IConstants {
 	const FACTORY_METHOD_ATTRIBUTE = 'factory-method';
 
 	const FACTORY_BEAN_ATTRIBUTE = 'factory-bean';
-	
+
 	const CONSTRUCTOR_ARG_ELEMENT = 'constructor-arg';
 
 	const INDEX_ATTRIBUTE = 'index';
@@ -93,39 +94,39 @@ class ParserDelegate implements IConstants {
 	const VALUE_ELEMENT = 'value';
 
 	const NULL_ELEMENT = 'null';
-	
+
 	const ARRAY_ELEMENT = 'array';
 
-    const MERGE_ATTRIBUTE = 'merge';
+	const MERGE_ATTRIBUTE = 'merge';
 
 	const DEFAULT_MERGE_ATTRIBUTE = 'default-merge';
 
 	const DEFAULT_INIT_METHOD_ATTRIBUTE = 'default-init-method';
 
 	const DEFAULT_DESTROY_METHOD_ATTRIBUTE = 'default-destroy-method';
-	
-	
+
+
 	/**
 	 * Enter description here...
 	 *
 	 * @var DocumentDefaultsDefinition
 	 */
 	private $defaults;
-	
+
 	/**
 	 * Enter description here...
 	 *
 	 * @var ReaderContext
 	 */
 	private $readerContext;
-	
+
 	/**
 	 * Enter description here...
 	 *
 	 * @var array
 	 */
 	private $usedNames = array();
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -155,13 +156,13 @@ class ParserDelegate implements IConstants {
 	public function initDefaults(DOMElement $root) {
 		$defaults = new DocumentDefaultsDefinition();
 		$defaults->setMerge(filter_var($root->getAttribute(self::DEFAULT_MERGE_ATTRIBUTE), FILTER_VALIDATE_BOOLEAN));
-		if($root->hasAttribute(self::DEFAULT_INIT_METHOD_ATTRIBUTE)) {
+		if ($root->hasAttribute(self::DEFAULT_INIT_METHOD_ATTRIBUTE)) {
 			$defaults->setInitMethod($root->getAttribute(self::DEFAULT_INIT_METHOD_ATTRIBUTE));
 		}
-		if($root->hasAttribute(self::DEFAULT_DESTROY_METHOD_ATTRIBUTE)) {
+		if ($root->hasAttribute(self::DEFAULT_DESTROY_METHOD_ATTRIBUTE)) {
 			$defaults->setDestroyMethod($root->getAttribute(self::DEFAULT_DESTROY_METHOD_ATTRIBUTE));
 		}
-		
+
 		// @todo: provide source info via BeanMetadataElement
 //		defaults.setSource(this.readerContext.extractSource(root));
 
@@ -190,7 +191,7 @@ class ParserDelegate implements IConstants {
 		if (is_null($containingBd)) {
 			$this->checkNameUniqueness($beanName, $aliases, $ele);
 		}
-		
+
 		$beanDefinition = $this->parseNamedBeanDefinitionElement($ele, $beanName, $containingBd);
 
 		if (!is_null($beanDefinition)) {
@@ -203,12 +204,12 @@ class ParserDelegate implements IConstants {
 					return null;
 				}
 			}
-			
+
 			return new BeanDefinitionHolder($beanDefinition, $beanName, $aliases);
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -217,7 +218,7 @@ class ParserDelegate implements IConstants {
 	 * @param DOMElement $beanElement
 	 */
 	private function checkNameUniqueness($beanName, array $aliases = null, DOMElement $beanElement) {
-        $aliases = !is_null($aliases) ? array_fill_keys($aliases, true) : array();
+		$aliases = !is_null($aliases) ? array_fill_keys($aliases, true) : array();
 
 		$foundName = null;
 
@@ -248,22 +249,22 @@ class ParserDelegate implements IConstants {
 		if ($ele->hasAttribute(self::CLASS_ATTRIBUTE)) {
 			$className = trim($ele->getAttribute(self::CLASS_ATTRIBUTE));
 		}
-        $parent = Utils::parseParentAttribute($ele);
+		$parent = Utils::parseParentAttribute($ele);
 
 		try {
 			array_push($this->parseState, $beanName);
 
 			$bd = BeanDefinitionReaderUtils::createBeanDefinition($parent, $className);
 
-            Utils::parseScopeAttribute($ele, $bd, $containingBd);
+			Utils::parseScopeAttribute($ele, $bd, $containingBd);
 
 			if ($ele->hasAttribute(self::ABSTRACT_ATTRIBUTE)) {
 				$bd->setAbstract(filter_var($ele->getAttribute(self::ABSTRACT_ATTRIBUTE), FILTER_VALIDATE_BOOLEAN));
 			}
 
-            Utils::parseDependsOnAttribute($ele, $bd);
+			Utils::parseDependsOnAttribute($ele, $bd);
 
-            if ($ele->hasAttribute(self::INIT_METHOD_ATTRIBUTE)) {
+			if ($ele->hasAttribute(self::INIT_METHOD_ATTRIBUTE)) {
 				$initMethodName = $ele->getAttribute(self::INIT_METHOD_ATTRIBUTE);
 				if (Bee_Utils_Strings::hasText($initMethodName)) {
 					$bd->setInitMethodName($initMethodName);
@@ -335,7 +336,7 @@ class ParserDelegate implements IConstants {
 	 */
 	public function parseConstructorArgElements(DOMElement $beanEle, IMethodArguments $argsHolder, IBeanDefinition $bd) {
 		$nl = $beanEle->childNodes;
-		foreach($nl as $node) {
+		foreach ($nl as $node) {
 			if ($node instanceof DOMElement && Bee_Utils_Dom::nodeNameEquals($node, self::CONSTRUCTOR_ARG_ELEMENT)) {
 				$this->parseConstructorArgElement($node, $argsHolder, $bd);
 			}
@@ -351,7 +352,7 @@ class ParserDelegate implements IConstants {
 	 */
 	public function parsePropertyElements(DOMElement $beanEle, IBeanDefinition $bd) {
 		$nl = $beanEle->childNodes;
-		foreach($nl as $node) {
+		foreach ($nl as $node) {
 			if ($node instanceof DOMElement && Bee_Utils_Dom::nodeNameEquals($node, self::PROPERTY_ELEMENT)) {
 				$this->parsePropertyElement($node, $bd);
 			}
@@ -365,7 +366,7 @@ class ParserDelegate implements IConstants {
 	 */
 	public function parseMethodInvocationElements(DOMElement $beanEle, IBeanDefinition $bd) {
 		$nl = $beanEle->childNodes;
-		foreach($nl as $node) {
+		foreach ($nl as $node) {
 			if ($node instanceof DOMElement && Bee_Utils_Dom::nodeNameEquals($node, self::METHOD_INVOCATION_ELEMENT)) {
 				$this->parseMethodInvocationElement($node, $bd);
 			}
@@ -380,12 +381,12 @@ class ParserDelegate implements IConstants {
 	 * @throws Exception
 	 */
 	public function parseConstructorArgElement(DOMElement $ele, IMethodArguments $argsHolder, IBeanDefinition $bd) {
-		
+
 		$indexAttr = $ele->getAttribute(self::INDEX_ATTRIBUTE);
 
 		if (Bee_Utils_Strings::hasLength($indexAttr) && is_numeric($indexAttr) && ($index = intval($indexAttr)) >= 0) {
 			$existingArgs = $argsHolder->getConstructorArgumentValues();
-			if(isset($existingArgs[$index])) {
+			if (isset($existingArgs[$index])) {
 				$this->readerContext->error("Multiple occurrences of value $index for attribute 'index' of tag 'constructor-arg'", $ele);
 			} else {
 				try {
@@ -473,7 +474,7 @@ class ParserDelegate implements IConstants {
 	 */
 	public function parsePropertyValue(DOMElement $ele, IBeanDefinition $bd, $propertyName) {
 		$elementName = ($propertyName != null) ?
-						"<property> element for property '$propertyName'" : "<constructor-arg> element";
+				"<property> element for property '$propertyName'" : "<constructor-arg> element";
 		return $this->parseComplexPropElement($ele, $bd, $elementName);
 	}
 
@@ -484,11 +485,11 @@ class ParserDelegate implements IConstants {
 	 * @return BeanDefinitionHolder|TypedStringValue|ArrayValue|RuntimeBeanNameReference|RuntimeBeanReference|null
 	 */
 	private function parseComplexPropElement(DOMElement $ele, IBeanDefinition $bd, $elementName) {
-		
+
 		// Should only have one child element: ref, value, list, etc.
 		$nl = $ele->childNodes;
 		$subElement = null;
-		foreach($nl as $candidateEle) {
+		foreach ($nl as $candidateEle) {
 			if ($candidateEle instanceof DOMElement) {
 				if (Bee_Utils_Dom::nodeNameEquals($candidateEle, self::DESCRIPTION_ELEMENT)) {
 					// Keep going: we don't use these values for now.
@@ -519,7 +520,7 @@ class ParserDelegate implements IConstants {
 //			ref.setSource(extractSource(ele));
 			return $ref;
 		} else if ($hasValueAttribute) {
-			
+
 			$valueHolder = $this->buildTypedStringValue($ele->getAttribute(self::VALUE_ATTRIBUTE), $ele->getAttribute(self::TYPE_ATTRIBUTE), $ele);
 			// @todo provide source info via BeanMetadataElement
 //			valueHolder.setSource(extractSource(ele));
@@ -585,7 +586,7 @@ class ParserDelegate implements IConstants {
 			return $ref;
 
 		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::IDREF_ELEMENT)) {
-			
+
 			// A generic reference to any name of any bean.
 			$refName = $ele->getAttribute(self::BEAN_REF_ATTRIBUTE);
 			if (!Bee_Utils_Strings::hasLength($refName)) {
@@ -606,15 +607,8 @@ class ParserDelegate implements IConstants {
 			return $ref;
 
 		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::VALUE_ELEMENT)) {
-
 			// It's a literal value.
-			$value = Bee_Utils_Dom::getTextValue($ele);
-
-			$typeName = $ele->getAttribute(self::TYPE_ATTRIBUTE);
-			if (!Bee_Utils_Strings::hasText($typeName)) {
-				$typeName = $defaultType;
-			}
-			return $this->buildTypedStringValue($value, $typeName, $ele);
+			return $this->parseValueElement($ele, $defaultType);
 
 		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::NULL_ELEMENT)) {
 
@@ -627,14 +621,30 @@ class ParserDelegate implements IConstants {
 
 			// @todo: determine sensible collection types for PHP and implement parsers accordingly...
 		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::ARRAY_ELEMENT)) {
-			
+
 			return $this->parseArrayElement($ele, $bd);
 
 		}
 		$this->readerContext->error("Unknown property sub-element: [$ele->nodeName]", $ele);
 		return null;
 	}
-	
+
+	/**
+	 * @param DOMElement $ele
+	 * @param string $defaultType
+	 * @return TypedStringValue
+	 */
+	public function parseValueElement(DOMElement $ele, $defaultType) {
+		// It's a literal value.
+		$value = Bee_Utils_Dom::getTextValue($ele);
+
+		$typeName = $ele->getAttribute(self::TYPE_ATTRIBUTE);
+		if (!Bee_Utils_Strings::hasText($typeName)) {
+			$typeName = $defaultType;
+		}
+		return $this->buildTypedStringValue($value, $typeName, $ele);
+	}
+
 	/**
 	 * Build a typed String value Object for the given raw value.
 	 * @see org.springframework.beans.factory.config.TypedStringValue
@@ -673,18 +683,18 @@ class ParserDelegate implements IConstants {
 
 		$nl = $collectionEle->childNodes;
 		$list = array();
-		foreach($nl as $ele) {
-			if($ele instanceof DOMElement) {
-                if (Bee_Utils_Dom::nodeNameEquals($ele, self::ASSOC_ITEM_ELEMENT)) {
+		foreach ($nl as $ele) {
+			if ($ele instanceof DOMElement) {
+				if (Bee_Utils_Dom::nodeNameEquals($ele, self::ASSOC_ITEM_ELEMENT)) {
 					$assoc = true;
 					list($key, $value) = $this->parseAssocItemElement($ele, $bd, $defaultType);
-                    $list[$numericKeys ? intval($key) : $key] = $value;
-                } else if($this->isDefaultNamespace($ele->namespaceURI)) {
+					$list[$numericKeys ? intval($key) : $key] = $value;
+				} else if ($this->isDefaultNamespace($ele->namespaceURI)) {
 					$numeric = true;
-                    array_push($list, $this->parsePropertySubElement($ele, $bd, $defaultType));
-                }
+					array_push($list, $this->parsePropertySubElement($ele, $bd, $defaultType));
+				}
 			}
-			if($assoc && $numeric) {
+			if ($assoc && $numeric) {
 				$this->readerContext->error('Must not combine \'assoc-item\' elements and other elements in the same \'array\' element!', $collectionEle);
 			}
 		}
@@ -696,14 +706,14 @@ class ParserDelegate implements IConstants {
 	 * @return bool|mixed
 	 */
 	public function parseMergeAttribute(DOMElement $collectionElement) {
-		if($collectionElement->hasAttribute(self::MERGE_ATTRIBUTE)) {
+		if ($collectionElement->hasAttribute(self::MERGE_ATTRIBUTE)) {
 			$value = $collectionElement->getAttribute(self::MERGE_ATTRIBUTE);
 			if (self::DEFAULT_VALUE !== $value) {
 				return filter_var($value, FILTER_VALIDATE_BOOLEAN);
 			}
 		}
 		return $this->defaults->getMerge();
-    }
+	}
 
 	/**
 	 * @param DOMElement $ele
@@ -732,7 +742,7 @@ class ParserDelegate implements IConstants {
 	public function parseCustomElement(DOMElement $ele, IBeanDefinition $containingBd = null) {
 		$handler = $this->findNamespaceHandler($ele);
 		$bd = !is_null($handler) ? $handler->parse($ele, new ParserContext($this->readerContext, $this, $containingBd)) : null;
-		if(!is_null($bd)) {
+		if (!is_null($bd)) {
 			$beanName = BeanDefinitionReaderUtils::generateBeanName($bd, $this->readerContext->getRegistry(), true);
 			$this->readerContext->getRegistry()->registerBeanDefinition($beanName, $bd);
 			$bd = $this->decorateBeanDefinitionIfRequired($ele, new BeanDefinitionHolder($bd, $beanName));
@@ -767,13 +777,13 @@ class ParserDelegate implements IConstants {
 
 		// Decorate based on custom attributes first.
 		$attributes = $ele->attributes;
-		foreach($attributes as $node) {
-			$finalDefinition = $this->decorateIfRequired($node, $finalDefinition);			
+		foreach ($attributes as $node) {
+			$finalDefinition = $this->decorateIfRequired($node, $finalDefinition);
 		}
 
 		// Decorate based on custom nested elements.
 		$children = $ele->childNodes;
-		foreach($children as $node) {
+		foreach ($children as $node) {
 			if ($node->nodeType == XML_ELEMENT_NODE) {
 				$finalDefinition = $this->decorateIfRequired($node, $finalDefinition);
 			}

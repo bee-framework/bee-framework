@@ -26,5 +26,6 @@ class Bee_Context_Util_Namespace_Handler extends HandlerSupport {
 
     public function init() {
         $this->registerBeanDefinitionParser("array", new Bee_Context_Util_Namespace_ArrayFactoryDefinitionParser());
+        $this->registerBeanDefinitionParser("value", new Bee_Context_Util_Namespace_ValueFactoryDefinitionParser());
     }
 }

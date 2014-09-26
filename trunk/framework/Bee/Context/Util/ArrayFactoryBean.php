@@ -22,6 +22,9 @@ namespace Bee\Context\Util;
  */
 class ArrayFactoryBean extends AbstractFactoryBean {
 
+	/**
+	 * @var array
+	 */
     private $sourceArray;
 
 	/**
