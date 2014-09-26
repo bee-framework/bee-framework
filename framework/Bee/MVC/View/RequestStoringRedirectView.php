@@ -48,6 +48,9 @@ class RequestStoringRedirectView extends \Bee_MVC_View_Redirect {
 		return $this->stores;
 	}
 
+	/**
+	 * @param array $model
+	 */
 	public function render(array $model = array()) {
 		$this->augmentModel($model);
 		$getParams = array_key_exists(self::MODEL_KEY_GET_PARAMS, $model) ? $model[self::MODEL_KEY_GET_PARAMS] : array();

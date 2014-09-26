@@ -134,21 +134,17 @@ class Bee_Context_BeanDefinitionValueResolver {
 	private function resolveReference($argName, RuntimeBeanReference $ref) {
 		try {
 			if ($ref->isToParent()) {
-
 				if (is_null($this->context->getParent())) {
 					// @todo: a lot of debug information is lost here
 					throw new Bee_Context_BeanCreationException($this->beanName);
 				}
 //				return $this->context->getParent()->getBean($ref->getBeanName());
 				return $this->getBeanFromContext($ref->getBeanNames(), $this->context->getParent());
-
 			} else {
-
 //				$bean = $this->context->getBean($ref->getBeanName());
 //				$this->context->registerDependentBean($ref->getBeanName(), $this->beanName);
 //                return $bean;
                 return $this->getBeanFromContext($ref->getBeanNames(), $this->context);
-
 			}
 
 		} catch (Bee_Context_BeansException $ex) {

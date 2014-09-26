@@ -1,5 +1,6 @@
 <?php
 namespace Bee\Context\Support;
+
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -81,22 +82,21 @@ class BeanDefinitionReaderUtils {
 		$id = $generatedBeanName;
 
 		// @todo: special name generation for inner beans (see below)
-		// Top-level bean: use plain class name.
-		// Increase counter until the id is unique.
-		$counter = -1;
-		while ($counter == -1 || $registry->containsBeanDefinition($id)) {
-			$counter++;
-			$id = $generatedBeanName . self::GENERATED_BEAN_NAME_SEPARATOR . $counter;
-		}
 
 		// @todo: this should be used for name generation of inner beans. right now we don't have a good identity function for PHP
 		// objects. (btw, is this necessary at all?)
-//		if ($isInnerBean) {
-		// Inner bean: generate identity hashcode suffix.
-//			$id = $generatedBeanName + self::GENERATED_BEAN_NAME_SEPARATOR + ObjectUtils.getIdentityHexString(definition);
-//		} else {
-		// shold wrap the above code here...
-//		}
+		if ($isInnerBean) {
+			// Inner bean: generate identity hashcode suffix.
+			$id = $generatedBeanName . self::GENERATED_BEAN_NAME_SEPARATOR . spl_object_hash($definition);
+		} else {
+			// Top-level bean: use plain class name.
+			// Increase counter until the id is unique.
+			$counter = -1;
+			while ($counter == -1 || $registry->containsBeanDefinition($id)) {
+				$counter++;
+				$id = $generatedBeanName . self::GENERATED_BEAN_NAME_SEPARATOR . $counter;
+			}
+		}
 		return $id;
 	}
 
