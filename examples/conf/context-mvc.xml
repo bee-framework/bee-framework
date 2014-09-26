@@ -4,7 +4,7 @@
        xmlns:utils="http://www.beeframework.org/schema/util"
        xmlns:mvc="http://www.beeframework.org/schema/mvc"
        xsi:schemaLocation="http://www.beeframework.org/schema/beans http://www.beeframework.org/schema/beans/bee-beans-1.2.xsd
-       http://www.beeframework.org/schema/util http://www.beeframework.org/schema/utils/bee-utils-1.0.xsd
+       http://www.beeframework.org/schema/util http://www.beeframework.org/schema/utils/bee-util-1.0.xsd
        http://www.beeframework.org/schema/mvc http://www.beeframework.org/schema/utils/bee-mvc-1.0.xsd">
 
     <!-- VIEW RESOLVER -->
