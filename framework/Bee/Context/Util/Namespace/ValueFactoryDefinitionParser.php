@@ -34,6 +34,6 @@ class Bee_Context_Util_Namespace_ValueFactoryDefinitionParser extends AbstractSi
 	 * @param BeanDefinitionBuilder $builder
 	 */
 	protected function doParse(DOMElement $element, ParserContext $parserContext, BeanDefinitionBuilder $builder) {
-        $builder->addPropertyValue('sourceValue', $parserContext->getDelegate()->parseValueElement($element, 'string'));
+        $builder->addPropertyValue('sourceValue', $parserContext->getDelegate()->parseTypedAttributeValueElement($element, 'string'));
     }
 }

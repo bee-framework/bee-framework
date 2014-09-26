@@ -482,9 +482,11 @@ class ParserDelegate implements IConstants {
 	 * @param DOMElement $ele
 	 * @param IBeanDefinition $bd
 	 * @param string $elementName
+	 * @param null $defaultType
+	 * @throws Bee_Context_BeanCreationException
 	 * @return BeanDefinitionHolder|TypedStringValue|ArrayValue|RuntimeBeanNameReference|RuntimeBeanReference|null
 	 */
-	private function parseComplexPropElement(DOMElement $ele, IBeanDefinition $bd, $elementName) {
+	private function parseComplexPropElement(DOMElement $ele, IBeanDefinition $bd, $elementName, $defaultType = null) {
 
 		// Should only have one child element: ref, value, list, etc.
 		$nl = $ele->childNodes;
@@ -520,8 +522,7 @@ class ParserDelegate implements IConstants {
 //			ref.setSource(extractSource(ele));
 			return $ref;
 		} else if ($hasValueAttribute) {
-
-			$valueHolder = $this->buildTypedStringValue($ele->getAttribute(self::VALUE_ATTRIBUTE), $ele->getAttribute(self::TYPE_ATTRIBUTE), $ele);
+			$valueHolder = $this->parseTypedAttributeValueElement($ele, $defaultType);
 			// @todo provide source info via BeanMetadataElement
 //			valueHolder.setSource(extractSource(ele));
 			return $valueHolder;
@@ -532,6 +533,15 @@ class ParserDelegate implements IConstants {
 			$this->readerContext->error("$elementName must specify a ref or value", $ele);
 			return null;
 		}
+	}
+
+	/**
+	 * @param DOMElement $ele
+	 * @param $defaultType
+	 * @return TypedStringValue
+	 */
+	public function parseTypedAttributeValueElement(DOMElement $ele, $defaultType) {
+		return $this->buildTypedStringValue($ele->getAttribute(self::VALUE_ATTRIBUTE), $ele, $defaultType);
 	}
 
 	/**
@@ -636,13 +646,7 @@ class ParserDelegate implements IConstants {
 	 */
 	public function parseValueElement(DOMElement $ele, $defaultType) {
 		// It's a literal value.
-		$value = Bee_Utils_Dom::getTextValue($ele);
-
-		$typeName = $ele->getAttribute(self::TYPE_ATTRIBUTE);
-		if (!Bee_Utils_Strings::hasText($typeName)) {
-			$typeName = $defaultType;
-		}
-		return $this->buildTypedStringValue($value, $typeName, $ele);
+		return $this->buildTypedStringValue(Bee_Utils_Dom::getTextValue($ele), $ele, $defaultType);
 	}
 
 	/**
@@ -650,16 +654,22 @@ class ParserDelegate implements IConstants {
 	 * @see org.springframework.beans.factory.config.TypedStringValue
 	 *
 	 * @param String $value
-	 * @param String $targetTypeName
 	 * @param DOMElement $ele
+	 * @param string|null $defaultType
 	 * @return TypedStringValue
 	 */
-	protected function buildTypedStringValue($value, $targetTypeName, DOMElement $ele) {
+	public function buildTypedStringValue($value, DOMElement $ele, $defaultType = null) {
+
+		$typeName = $ele->getAttribute(self::TYPE_ATTRIBUTE);
+		if (!Bee_Utils_Strings::hasText($typeName)) {
+			$typeName = $defaultType;
+		}
+
 		$typedValue = null;
-		if (!Bee_Utils_Strings::hasText($targetTypeName)) {
+		if (!Bee_Utils_Strings::hasText($typeName)) {
 			$typedValue = new TypedStringValue($value, $this->propertyEditorRegistry);
 		} else {
-			$typedValue = new TypedStringValue($value, $this->propertyEditorRegistry, $targetTypeName);
+			$typedValue = new TypedStringValue($value, $this->propertyEditorRegistry, $typeName);
 		}
 		// @todo provide source info via BeanMetadataElement
 //		$typedValue->setSource(extractSource(ele));
@@ -728,7 +738,7 @@ class ParserDelegate implements IConstants {
 		if (!Bee_Utils_Strings::hasText($key)) {
 			$this->readerContext->error("Tag 'assoc-item' must have a 'key' attribute", $ele);
 		}
-		$val = $this->parseComplexPropElement($ele, $bd, "<assoc-item> for key $key");
+		$val = $this->parseComplexPropElement($ele, $bd, "<assoc-item> for key $key", $defaultTypeClassName);
 		return array($key, $val);
 	}
 
