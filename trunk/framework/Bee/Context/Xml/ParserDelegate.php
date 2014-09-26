@@ -545,12 +545,10 @@ class ParserDelegate implements IConstants {
 	public function parsePropertySubElement(DOMElement $ele, IBeanDefinition $bd, $defaultType = null) {
 
 		if (!$this->isDefaultNamespace($ele->namespaceURI)) {
-
 			// todo MP: why is this missing? prevents XMLs with e.g. nested <util:array/> elements from being parsed
 //			return $this->parseNestedCustomElement($ele, $bd);
-//			return $this->parseCustomElement($ele, $bd);
-			throw new Bee_Context_BeanCreationException($bd->getBeanClassName(), 'Namespaced nested elements are currently not supported');
-
+//			return $this->decorateWithCustomElement($ele, $bd);
+//			throw new Bee_Context_BeanCreationException($bd->getBeanClassName(), 'Namespaced nested elements are currently not supported');
 		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::BEAN_ELEMENT)) {
 
 			$bdHolder = $this->parseBeanDefinitionElement($ele, $bd);
@@ -681,7 +679,7 @@ class ParserDelegate implements IConstants {
 					$assoc = true;
 					list($key, $value) = $this->parseAssocItemElement($ele, $bd, $defaultType);
                     $list[$numericKeys ? intval($key) : $key] = $value;
-                } else {
+                } else if($this->isDefaultNamespace($ele->namespaceURI)) {
 					$numeric = true;
                     array_push($list, $this->parsePropertySubElement($ele, $bd, $defaultType));
                 }
@@ -732,13 +730,29 @@ class ParserDelegate implements IConstants {
 	 * @return IBeanDefinition
 	 */
 	public function parseCustomElement(DOMElement $ele, IBeanDefinition $containingBd = null) {
+		$handler = $this->findNamespaceHandler($ele);
+		$bd = !is_null($handler) ? $handler->parse($ele, new ParserContext($this->readerContext, $this, $containingBd)) : null;
+		if(!is_null($bd)) {
+			$beanName = BeanDefinitionReaderUtils::generateBeanName($bd, $this->readerContext->getRegistry(), true);
+			$this->readerContext->getRegistry()->registerBeanDefinition($beanName, $bd);
+			$bd = $this->decorateBeanDefinitionIfRequired($ele, new BeanDefinitionHolder($bd, $beanName));
+		}
+		return $bd;
+	}
+
+	/**
+	 * @param DOMElement $ele
+	 * @return XmlNamespace\IHandler|null
+	 * @throws Bee_Context_BeanCreationException
+	 */
+	protected function findNamespaceHandler(DOMElement $ele) {
 		$namespaceUri = $ele->namespaceURI;
 		$handler = $this->readerContext->getNamespaceHandlerResolver()->resolve($namespaceUri);
 		if (is_null($handler)) {
 			$this->readerContext->error("Unable to locate Spring NamespaceHandler for XML schema namespace [$namespaceUri]", $ele);
 			return null;
 		}
-		return $handler->parse($ele, new ParserContext($this->readerContext, $this, $containingBd));
+		return $handler;
 	}
 
 	/**

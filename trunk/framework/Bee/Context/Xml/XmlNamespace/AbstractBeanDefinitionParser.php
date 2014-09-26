@@ -58,8 +58,7 @@ abstract class AbstractBeanDefinitionParser implements IBeanDefinitionParser, IC
 //                    postProcessComponentDefinition(componentDefinition);
 //                    parserContext.registerComponent(componentDefinition);
 //                }
-            }
-            catch (Bee_Context_BeanDefinitionStoreException $ex) {
+            } catch (Bee_Context_BeanDefinitionStoreException $ex) {
                 $parserContext->getReaderContext()->error($ex->getMessage(), $element);
                 return null;
             }
