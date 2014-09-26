@@ -44,4 +44,6 @@
         <assoc-item key="a" value="Zulu" />
     </util:array>
 
+    <util:value type="int" id="tt" value="15">
+    </util:value>
 </beans>
