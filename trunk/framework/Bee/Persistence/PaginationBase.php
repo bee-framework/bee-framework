@@ -47,6 +47,13 @@ abstract class PaginationBase implements IOrderAndLimitHolder {
 	}
 
 	/**
+	 * @param int $pageSize
+	 */
+	public function setPageSize($pageSize) {
+		$this->pageSize = $pageSize;
+	}
+
+	/**
 	 * @return int
 	 */
 	public function getPageCount() {
