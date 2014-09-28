@@ -71,7 +71,6 @@ abstract class PaginationBase implements IOrderAndLimitHolder {
 	 * @param $currentPage
 	 */
 	public function setCurrentPage($currentPage) {
-		$currentPage = $currentPage > $this->getPageCount() - 1 ? $this->getPageCount() - 1 : $currentPage;
 		$currentPage = $currentPage < 0 ? 0 : $currentPage;
 		$this->currentPage = $currentPage;
 	}

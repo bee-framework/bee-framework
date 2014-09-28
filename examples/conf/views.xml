@@ -3,4 +3,5 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.beeframework.org/schema/beans http://www.beeframework.org/schema/beans/bee-beans-1.2.xsd">
 
+       <bean id="testview" class="Bee_MVC_View_JsonService" />
 </beans>

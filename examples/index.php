@@ -11,4 +11,4 @@ Logger::configure('conf/log4php.xml');
 Bee_Cache_Manager::init();
 
 //Bee_Framework::setProductionMode(true);
-Bee_Framework::dispatchRequestUsingXmlContext(__DIR__.'/conf/context-mvc.xml');
+Bee_Framework::dispatchRequestUsingXmlContext(__DIR__.'/conf/context-newinterceptors.xml');

@@ -21,10 +21,11 @@ class ParamTestDelegate {
 	 * @param MC $testParam
 	 * @param boolean $getParam
 	 * @return bool
+	 * @Bee_MVC_Controller_Multiaction_RequestHandler(httpMethod = "GET", pathPattern = "/**\/testClassic/**")
 	 * @Bee_MVC_Controller_Multiaction_RequestHandler(pathPattern = "/**\/ghi/*\/{0}/{2}/const/{boolParam}", httpMethod="GET")
 	 * @Bee_MVC_Controller_Multiaction_RequestHandler(pathPattern = "/**\/{0}/{2}/{boolParam}", httpMethod="POST")
 	 */
-	public function handleTestParams($paramA, Bee_MVC_IHttpRequest $request, MC $paramB, $boolParam = false, $testParam = null, $getParam = false) {
+	public function handleTestParams($paramA = null, Bee_MVC_IHttpRequest $request, MC $paramB, $boolParam = false, $testParam = null, $getParam = false) {
 		echo '<hr/>'. get_class($this) .'::'. __FUNCTION__ .'<hr/>';
 //		var_dump($paramA);
 //		var_dump($paramB);
@@ -64,6 +65,9 @@ class ParamTestDelegate {
 	/**
 	 *
 	 * @Bee_MVC_Controller_Multiaction_RequestHandler(pathPattern = "/**\/testParam/{paramA}/")
+	 * @param MC $paramB
+	 * @param Bee_MVC_IHttpRequest $request
+	 * @return bool
 	 */
 	public function handleTestParams2(MC $paramB, Bee_MVC_IHttpRequest $request) {
 		echo '<hr/>'. get_class($this) .'::'. __FUNCTION__ .'<hr/>';
@@ -75,7 +79,7 @@ class ParamTestDelegate {
 	/**
 	 * @param int $getParam
 	 * @return Bee_MVC_ModelAndView
-	 * @Bee_MVC_Controller_Multiaction_RequestHandler(pathPattern = "/**")
+	 * @Bee_MVC_Controller_Multiaction_RequestHandler(pathPattern = "/**", httpMethod="GET")
 	 */
 	public function handleDefault($getParam = 1000) {
 		echo '<hr/>'. get_class($this) .'::'. __FUNCTION__ .'<hr/>';
