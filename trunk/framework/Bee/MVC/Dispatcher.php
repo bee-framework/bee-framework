@@ -262,25 +262,31 @@ class Bee_MVC_Dispatcher implements IFilterChain {
 			$mav = null;
 			$interceptors = array();
 			$handlerException = null;
+			$interceptorIndex = -1;
 			try {
-
 				$mappedHandler = $this->handlerMapping->getHandler($request);
 				$interceptors = $mappedHandler->getInterceptors();
 				$handler = $mappedHandler->getHandler();
 
-//				$interceptorIndex = -1;
-
+				$mav = null;
 				for ($i = 0; $i < count($interceptors); $i++) {
 					$interceptor = $interceptors[$i];
-					if (!$interceptor->preHandle($request, $handler)) {
+					$interceptorResult = $interceptor->preHandle($request, $handler);
+					if (!$interceptorResult) {
 						//				$this->triggerAfterCompletion($handler, $interceptorIndex, $request, null);
 						return;
 					}
-//					$interceptorIndex = $i;
+					$interceptorIndex = $i;
+					if($interceptorResult instanceof Bee_MVC_ModelAndView) {
+						$mav = $interceptorResult;
+						break;
+					}
 				}
 
 				// @todo: introduce HandlerAdapter
-				$mav = $handler->handleRequest($request);
+				if(is_null($mav)) {
+					$mav = $handler->handleRequest($request);
+				}
 
 			} catch (Exception $e) {
 				$this->getLog()->warn('handler or interceptor exception caught, trying to resolve appropriate error view', $e);
@@ -308,7 +314,7 @@ class Bee_MVC_Dispatcher implements IFilterChain {
 					$interceptors = $this->handlerMapping->getInterceptors();
 				}
 				// Apply postHandle methods of registered interceptors.
-				for ($i = count($interceptors) - 1; $i >= 0; $i--) {
+				for ($i = $interceptorIndex; $i >= 0; $i--) {
 					$interceptor = $interceptors[$i];
 					$interceptor->postHandle($request, $handler, $mav);
 				}
