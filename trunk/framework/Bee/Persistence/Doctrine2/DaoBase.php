@@ -155,6 +155,7 @@ class DaoBase extends EntityManagerHolder {
 			$q->setFirstResult($orderAndLimitHolder->getCurrentPage() * $orderAndLimitHolder->getPageSize());
 			$q->setMaxResults($orderAndLimitHolder->getPageSize());
 			$paginator = new Paginator($q, $this->useWhereInPagination());
+			$paginator->setUseOutputWalkers(false);
 			$orderAndLimitHolder->setResultCount(count($paginator));
 			return $paginator;
 		} else {
