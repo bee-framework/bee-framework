@@ -41,8 +41,12 @@ class DaoBase extends EntityManagerHolder {
 	 */
 	public function executeListQuery(QueryBuilder $queryBuilder, IRestrictionHolder $restrictionHolder = null, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null, $hydrationMode = null) {
 		$this->applyFilterRestrictions($queryBuilder, $restrictionHolder);
-		$this->applyOrderAndLimit($queryBuilder, $orderAndLimitHolder, $defaultOrderMapping);
-		return $this->getQueryFromBuilder($queryBuilder)->execute(null, $hydrationMode);
+		$this->applyOrderMapping($queryBuilder, $orderAndLimitHolder, $defaultOrderMapping);
+		$q = $this->getQueryFromBuilder($queryBuilder);
+		if(!is_null($hydrationMode)) {
+			$q->setHydrationMode($hydrationMode);
+		}
+		return $this->getPaginatedOrderedResultFromQuery($q, $orderAndLimitHolder);
 	}
 
 	/**
@@ -99,7 +103,7 @@ class DaoBase extends EntityManagerHolder {
 	 * @param IOrderAndLimitHolder $orderAndLimitHolder
 	 * @param array $defaultOrderMapping
 	 */
-	protected final function applyOrderAndLimit(QueryBuilder &$queryBuilder, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null) {
+	protected final function applyOrderMapping(QueryBuilder &$queryBuilder, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null) {
 		if (is_null($defaultOrderMapping)) {
 			$defaultOrderMapping = array();
 		}
@@ -111,17 +115,6 @@ class DaoBase extends EntityManagerHolder {
 
 		foreach ($orderMapping as $orderField => $orderDir) {
 			$queryBuilder->addOrderBy($orderField, $orderDir);
-		}
-
-		if (is_null($orderAndLimitHolder)) {
-			return;
-		}
-
-		if ($orderAndLimitHolder->getPageSize() > 0) {
-			$paginator = new Paginator($queryBuilder, false);
-			$orderAndLimitHolder->setResultCount(count($paginator));
-			$queryBuilder->setFirstResult($orderAndLimitHolder->getCurrentPage() * $orderAndLimitHolder->getPageSize());
-			$queryBuilder->setMaxResults($orderAndLimitHolder->getPageSize());
 		}
 	}
 
@@ -150,5 +143,29 @@ class DaoBase extends EntityManagerHolder {
 			$this->getEntityManager()->rollBack();
 			throw $e;
 		}
+	}
+
+	/**
+	 * @param Query $q
+	 * @param IOrderAndLimitHolder $orderAndLimitHolder
+	 * @return array|Paginator
+	 */
+	protected function getPaginatedOrderedResultFromQuery(Query $q, IOrderAndLimitHolder $orderAndLimitHolder) {
+		if (!is_null($orderAndLimitHolder) && $orderAndLimitHolder->getPageSize() > 0) {
+			$q->setFirstResult($orderAndLimitHolder->getCurrentPage() * $orderAndLimitHolder->getPageSize());
+			$q->setMaxResults($orderAndLimitHolder->getPageSize());
+			$paginator = new Paginator($q, $this->useWhereInPagination());
+			$orderAndLimitHolder->setResultCount(count($paginator));
+			return $paginator;
+		} else {
+			return $q->getResult($q->getHydrationMode());
+		}
+	}
+
+	/**
+	 * @return bool
+	 */
+	protected function useWhereInPagination() {
+		return true;
 	}
 }
