@@ -150,7 +150,7 @@ class DaoBase extends EntityManagerHolder {
 	 * @param IOrderAndLimitHolder $orderAndLimitHolder
 	 * @return array|Paginator
 	 */
-	protected function getPaginatedOrderedResultFromQuery(Query $q, IOrderAndLimitHolder $orderAndLimitHolder) {
+	protected function getPaginatedOrderedResultFromQuery(Query $q, IOrderAndLimitHolder $orderAndLimitHolder = null) {
 		if (!is_null($orderAndLimitHolder) && $orderAndLimitHolder->getPageSize() > 0) {
 			$q->setFirstResult($orderAndLimitHolder->getCurrentPage() * $orderAndLimitHolder->getPageSize());
 			$q->setMaxResults($orderAndLimitHolder->getPageSize());
