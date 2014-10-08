@@ -19,6 +19,7 @@ use Bee\MVC\Controller\Multiaction\IHandlerMethodInvocator;
 use Bee\MVC\Controller\Multiaction\IMethodNameResolver;
 use Bee\MVC\Controller\Multiaction\NoHandlerMethodFoundException;
 use Bee_MVC_IHttpRequest;
+use Bee_MVC_ModelAndView;
 use Bee_Utils_Assert;
 use Bee_Utils_Reflection;
 use Bee_Utils_Strings;
@@ -67,10 +68,10 @@ class MultiActionController extends AbstractController {
 	private $methodNameResolver;
 
 	protected function init() {
-		Bee_Utils_Assert::notNull($this->delegate, '\'delegate\' property is required in Bee_MVC_Controller_MultiAction');
+		Bee_Utils_Assert::notNull($this->delegate, '\'delegate\' property is required in ' . __CLASS__);
 		Bee_Utils_Assert::isTrue(
 			!is_null($this->methodInvocator) || !is_null($this->methodNameResolver),
-				'either \'methodInvocator\' or \'methodNameResolver\' property required in Bee_MVC_Controller_MultiAction'
+				'either \'methodInvocator\' or \'methodNameResolver\' property required in '  . __CLASS__
 		);
 	}
 
@@ -79,7 +80,7 @@ class MultiActionController extends AbstractController {
 	 *
 	 * @param Bee_MVC_IHttpRequest $request
 	 * @throws Exception
-	 * @return \Bee_MVC_ModelAndView
+	 * @return Bee_MVC_ModelAndView
 	 */
 	protected function handleRequestInternally(Bee_MVC_IHttpRequest $request) {
 		if(!is_null($this->methodInvocator)) {

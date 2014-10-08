@@ -73,7 +73,7 @@ class Bee_MVC_Controller_MultiActionMultiDelegates extends MultiActionController
      */
     protected function init() {
 		parent::init();
-        Bee_Utils_Assert::notNull($this->delegateResolver, '\'methodNameResolver\' property is required in Bee_MVC_Controller_MultiAction');
+        Bee_Utils_Assert::notNull($this->delegateResolver, '\'methodNameResolver\' property is required in ' . __CLASS__);
     }
 
     /**

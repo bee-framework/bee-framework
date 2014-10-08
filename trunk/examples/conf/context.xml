@@ -23,7 +23,7 @@
     <!-- METHOD NAME RESOLVER -->
     <bean id="methodNameResolver" class="Bee_MVC_Controller_Multiaction_MethodNameResolver_AnnotationBased" scope="prototype"/>
 
-    <bean id="multiactionControllerTemplate" class="Bee_MVC_Controller_MultiAction">
+    <bean id="multiactionControllerTemplate" class="Bee\MVC\Controller\MultiActionController">
         <property name="methodNameResolver" ref="methodNameResolver"/>
     </bean>
 
