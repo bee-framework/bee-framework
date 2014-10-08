@@ -31,7 +31,7 @@ use Exception;
 class XmlContext extends AbstractContext {
 
     /**
-     * @var Bee_Context_Xml_CachableConfig
+     * @var XmlContext_CachableConfig
      */
     private $configCacheable;
 
@@ -44,7 +44,7 @@ class XmlContext extends AbstractContext {
 	 */
 	public function __construct($locations='', $callInitMethod=true) {
 		parent::__construct($locations, false);
-        $this->configCacheable = new Bee_Context_Xml_CachableConfig(explode(",", $locations));
+        $this->configCacheable = new XmlContext_CachableConfig(explode(",", $locations));
 		if ($callInitMethod) {
 			$this->init();
 		}
@@ -60,7 +60,7 @@ class XmlContext extends AbstractContext {
     }
 }
 
-class Bee_Context_Xml_CachableConfig implements ICachableResource {
+class XmlContext_CachableConfig implements ICachableResource {
 	
 	/**
 	 * Enter description here...

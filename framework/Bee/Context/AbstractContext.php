@@ -700,7 +700,7 @@ abstract class AbstractContext extends BasicBeanDefinitionRegistry implements IC
 
 		// @todo: catch IllegalStateException in case scope is not active (e.g. no session started...)
 		// not needed for session, request, prototype scopes but maybe for fancy new scope implementations...
-		$scopedInstance = $scope->get($beanName, new Bee_Context_Abstract_ObjectFactoryImpl($beanName, $localBeanDefinition, $this));
+		$scopedInstance = $scope->get($beanName, new AbstractContext_ObjectFactoryImpl($beanName, $localBeanDefinition, $this));
 
 		$bean = $this->getObjectForBeanInstance($scopedInstance, $name, $beanName, $localBeanDefinition);
 
@@ -908,7 +908,7 @@ abstract class AbstractContext extends BasicBeanDefinitionRegistry implements IC
 /**
  * Workaround for an anonymous implementation of IObjectFactory.
  */
-final class Bee_Context_Abstract_ObjectFactoryImpl implements IObjectFactory {
+final class AbstractContext_ObjectFactoryImpl implements IObjectFactory {
 
 	/**
 	 * Enter description here...
