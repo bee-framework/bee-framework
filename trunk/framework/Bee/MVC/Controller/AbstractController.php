@@ -16,7 +16,8 @@ namespace Bee\MVC\Controller;
  * limitations under the License.
  */
 use Bee\MVC\IController;
-use Bee_MVC_IHttpRequest;
+use Bee\MVC\IHttpRequest;
+use Bee\MVC\ModelAndView;
 
 /**
  * Class AbstractController
@@ -27,10 +28,10 @@ abstract class AbstractController implements IController {
 	 * Enter description here...
 	 *
 	 * @todo: is it correct that this always returns a MAV?
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return \Bee_MVC_ModelAndView
+	 * @param IHttpRequest $request
+	 * @return ModelAndView
 	 */
-	public final function handleRequest(Bee_MVC_IHttpRequest $request) {
+	public final function handleRequest(IHttpRequest $request) {
 		$this->init();
 		return $this->handleRequestInternally($request);
 	}
@@ -46,8 +47,8 @@ abstract class AbstractController implements IController {
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return \Bee_MVC_ModelAndView
+	 * @param IHttpRequest $request
+	 * @return ModelAndView
 	 */
-	protected abstract function handleRequestInternally(Bee_MVC_IHttpRequest $request);
+	protected abstract function handleRequestInternally(IHttpRequest $request);
 }

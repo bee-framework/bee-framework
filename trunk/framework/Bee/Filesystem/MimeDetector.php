@@ -14,7 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+use Bee\Cache\ICachableResource;
+use Bee\Cache\Manager;
+use Bee\Utils\Strings;
 
 class Bee_Filesystem_MimeDetector {
 	
@@ -34,7 +36,7 @@ class Bee_Filesystem_MimeDetector {
 //		}
 //		finfo_close($finfo);
 		if(is_null(self::$types)) {
-			self::$types = Bee_Cache_Manager::retrieveCachable(new Bee_Filesystem_MimedictionaryCacheable());
+			self::$types = Manager::retrieveCachable(new Bee_Filesystem_MimedictionaryCacheable());
 		}
 		
 		$extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
@@ -51,27 +53,40 @@ class Bee_Filesystem_MimeDetector {
 	}
 }
 
-class Bee_Filesystem_MimedictionaryCacheable implements Bee_Cache_ICachableResource {
+/**
+ * Class Bee_Filesystem_MimedictionaryCacheable
+ */
+class Bee_Filesystem_MimedictionaryCacheable implements ICachableResource {
 	
 	const MIME_DICTIONARY_FILE = 'mime.types';
-	
+
+	/**
+	 * @return string
+	 */
 	public function getKey() {
 		return '__Bee_Filesystem_MimeDetector_dictionary';
 	}
-	
+
+	/**
+	 * @return int
+	 */
 	public function getModificationTimestamp() {
 		return filemtime(dirname(__FILE__) . DIRECTORY_SEPARATOR . self::MIME_DICTIONARY_FILE);
 	}
-	
+
+	/**
+	 * @param int $expirationTimestamp
+	 * @return array|mixed
+	 */
 	public function &createContent(&$expirationTimestamp = 0) {
 		$result = array();
 
 		$dict = file_get_contents(dirname(__FILE__) . DIRECTORY_SEPARATOR . self::MIME_DICTIONARY_FILE);		
-		$dict = Bee_Utils_Strings::tokenizeToArray($dict, "\n\r");
+		$dict = Strings::tokenizeToArray($dict, "\n\r");
 		
 		foreach($dict as $line) {
-			if(Bee_Utils_Strings::hasText($line) && !Bee_Utils_Strings::startsWith($line, '#')) {
-				$line = Bee_Utils_Strings::tokenizeToArray($line, " \t");
+			if(Strings::hasText($line) && !Strings::startsWith($line, '#')) {
+				$line = Strings::tokenizeToArray($line, " \t");
 				$count = count($line);
 				if($count > 1) {
 					for($i = 1; $i < $count; $i++) {

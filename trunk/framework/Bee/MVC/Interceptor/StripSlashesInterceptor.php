@@ -15,11 +15,12 @@ namespace Bee\MVC\Interceptor;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\HttpRequest;
 use Bee\MVC\IController;
 use Bee\MVC\IHandlerInterceptor;
-use Bee_MVC_IHttpRequest;
-use Bee_MVC_ModelAndView;
-use Bee_Utils_Assert;
+use Bee\MVC\IHttpRequest;
+use Bee\MVC\ModelAndView;
+use Bee\Utils\Assert;
 use Exception;
 
 /**
@@ -29,15 +30,24 @@ use Exception;
  * @author Benjamin Hartmann
  */
 class StripSlashesInterceptor implements IHandlerInterceptor {
-	
-	public function preHandle(Bee_MVC_IHttpRequest $request, IController $handler) {
-		Bee_Utils_Assert::isInstanceOf('Bee_MVC_HttpRequest', $request);
-		/** @var \Bee_MVC_HttpRequest $request */
+
+	/**
+	 * @param IHttpRequest $request
+	 * @param IController $handler
+	 * @return bool
+	 */
+	public function preHandle(IHttpRequest $request, IController $handler) {
+		Assert::isInstanceOf('Bee\MVC\HttpRequest', $request);
+		/** @var HttpRequest $request */
 		$params = array_map(array($this, 'arrayMapCallback'), $request->getParamArray());
 		$request->addParameters($params);
 		return true;
 	}
-	
+
+	/**
+	 * @param $param
+	 * @return array|string
+	 */
 	private function arrayMapCallback($param) {
 		if(is_string($param)) {
 			$param = stripslashes($param);
@@ -46,12 +56,22 @@ class StripSlashesInterceptor implements IHandlerInterceptor {
 		}
 		return $param;
 	}
-	
-	public function postHandle(Bee_MVC_IHttpRequest $request, IController $handler = null, Bee_MVC_ModelAndView $mav) {
+
+	/**
+	 * @param IHttpRequest $request
+	 * @param IController $handler
+	 * @param ModelAndView $mav
+	 */
+	public function postHandle(IHttpRequest $request, IController $handler = null, ModelAndView $mav) {
 		
 	}
 
-	public function afterCompletion(Bee_MVC_IHttpRequest $request, IController $handler = null, Exception $ex) {
+	/**
+	 * @param IHttpRequest $request
+	 * @param IController $handler
+	 * @param Exception $ex
+	 */
+	public function afterCompletion(IHttpRequest $request, IController $handler = null, Exception $ex) {
 		
 	}
 }

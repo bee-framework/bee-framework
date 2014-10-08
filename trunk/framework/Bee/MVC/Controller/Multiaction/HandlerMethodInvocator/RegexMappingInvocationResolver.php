@@ -17,8 +17,8 @@ namespace Bee\MVC\Controller\Multiaction\HandlerMethodInvocator;
  * limitations under the License.
  */
 use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
+use Bee\MVC\IHttpRequest;
 use Bee\Utils\AntPathToRegexTransformer;
-use Bee_MVC_IHttpRequest;
 use Logger;
 use ReflectionMethod;
 
@@ -78,10 +78,10 @@ class RegexMappingInvocationResolver implements IInvocationResolver {
 	}
 
 	/**
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @return MethodInvocation
 	 */
-	public function getInvocationDefinition(Bee_MVC_IHttpRequest $request) {
+	public function getInvocationDefinition(IHttpRequest $request) {
 		$pathInfo = $request->getPathInfo();
 		/** @var MethodInvocation[] $matchingPatterns */
 		$matchingPatterns = array();

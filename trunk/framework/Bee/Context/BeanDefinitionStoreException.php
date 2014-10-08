@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,28 +22,30 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_BeanDefinitionStoreException extends Bee_Context_BeansException {
-	
+class BeanDefinitionStoreException extends BeansException {
+
+	/**
+	 *
+	 */
 	const EXCEPTION_MESSAGE = 'Bean definition for bean with name %s could not be stored: %s';
-	
+
+	/**
+	 * @var String
+	 */
 	private $name;
-	
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
 	 * @param String $message
 	 * @param String $name
-	 * @return void
+	 * @return BeanDefinitionStoreException
 	 */
 	public function __construct($message, $name = null) {
 		parent::__construct(is_null($name) ? $message : sprintf(self::EXCEPTION_MESSAGE, $name, $message));
 		$this->name = $name;
 	}
-	
 
-		
 	/**
 	 * Enter description here...
 	 *
@@ -52,5 +55,3 @@ class Bee_Context_BeanDefinitionStoreException extends Bee_Context_BeansExceptio
 		return $this->name;
 	}
 }
-
-?>

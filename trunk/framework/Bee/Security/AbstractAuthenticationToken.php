@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+use Bee\Utils\Assert;
+use Bee\Utils\Types;
+
 abstract class Bee_Security_AbstractAuthenticationToken implements Bee_Security_IAuthentication {
 	
 	/**
@@ -41,7 +44,7 @@ abstract class Bee_Security_AbstractAuthenticationToken implements Bee_Security_
 	public function __construct(array $authorities = null) {
 		if(!is_null($authorities)) {
 			foreach($authorities as $authority) {
-				Bee_Utils_Assert::notNull($authority, 'List of granted authorities passed to Bee_Security_AbstractAuthenticationToken must not contain null values!');
+				Assert::notNull($authority, 'List of granted authorities passed to Bee_Security_AbstractAuthenticationToken must not contain null values!');
 			}
 		}
 		$this->authorities = $authorities;
@@ -71,7 +74,7 @@ abstract class Bee_Security_AbstractAuthenticationToken implements Bee_Security_
 	public function getName() {
 		$principal = $this->getPrincipal();
 		if(is_object($principal)) {
-			if(Bee_Utils_Types::isAssignable($principal, 'Bee_Security_IUserDetails')) {
+			if(Types::isAssignable($principal, 'Bee_Security_IUserDetails')) {
 				return $principal->getUsername();
 			} else {
 				return $principal->__toString(); 

@@ -15,12 +15,11 @@ namespace Bee\MVC;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_MVC_IHttpRequest;
 
 /**
  * Enter description here...
  *
- * @see Bee_MVC_Dispatcher
+ * @see Bee\MVC\Dispatcher
  * 
  * @author Michael Plomer <michael.plomer@iter8.de>
  * @author Benjamin Hartmann
@@ -30,8 +29,8 @@ interface IController {
 	 * Enter description here...
 	 *
 	 * @todo: is it correct that this always returns a MAV?
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return \Bee_MVC_ModelAndView
+	 * @param IHttpRequest $request
+	 * @return ModelAndView
 	 */
-	public function handleRequest(Bee_MVC_IHttpRequest $request);
+	public function handleRequest(IHttpRequest $request);
 }

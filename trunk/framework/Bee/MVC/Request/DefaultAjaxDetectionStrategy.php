@@ -15,8 +15,7 @@ namespace Bee\MVC\Request;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_MVC_IHttpRequest;
-
+use Bee\MVC\IHttpRequest;
 
 /**
  * Class DefaultAjaxDetectionStrategy
@@ -26,10 +25,10 @@ class DefaultAjaxDetectionStrategy implements IAjaxDetectionStrategy {
 
 	/**
 	 * Determine whether the given request represents an AJAX request or a regular GET / POSTback.
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @return mixed
 	 */
-	public function isAjaxRequest(Bee_MVC_IHttpRequest $request) {
+	public function isAjaxRequest(IHttpRequest $request) {
 		return $request->getHeader('X-Requested-With') == 'XMLHttpRequest';
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,146 +14,145 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * Enter description here...
- *
- * @author Benjamin Hartmann
- * @author Michael Plomer <michael.plomer@iter8.de>
- */
-class Bee_Utils_Assert {
-	
-	/**
-	 * Assert a boolean expression, throwing <code>IllegalArgumentException</code>
-	 * if the test result is <code>false</code>.
-	 * <pre class="code">Assert.isTrue(i &gt; 0, "The value must be greater than zero");</pre>
-	 * @param boolean $expression a boolean expression
-	 * @param string $message the exception message to use if the assertion fails
-	 * @throws InvalidArgumentException if expression is <code>false</code>
-	 */
-	public static function isTrue($expression, $message="[Assertion failed] - this expression must be true") {
-		if (!$expression) {
-			throw new InvalidArgumentException($message);
-		}
-	}
-
-	
-	
-	/**
-	 * Assert that an object is <code>null</code> .
-	 * <pre class="code">Assert.isNull(value, "The value must be null");</pre>
-	 * @param object the object to check
-	 * @param message the exception message to use if the assertion fails
-	 * @throws InvalidArgumentException if the object is not <code>null</code>
-	 */
-	public static function isNull($object, $message="[Assertion failed] - the object argument must be null") {
-		if (!is_null($object)) {
-			throw new InvalidArgumentException($message);
-		}
-	}
-
-
-		
-	/**
-	 * Assert that an object is not <code>null</code> .
-	 * <pre class="code">Assert.notNull(clazz, "The class must not be null");</pre>
-	 * @param mixed $object the object to check
-	 * @param string $message the exception message to use if the assertion fails
-	 * @throws InvalidArgumentException if the object is <code>null</code>
-	 */
-	public static function notNull($object, $message="[Assertion failed] - this argument is required; it must not be null") {
-		if (is_null($object)) {
-			throw new InvalidArgumentException($message);
-		}
-	}
-
-
-	
-	/**
-	 * Assert that the given String is not empty; that is,
-	 * it must not be <code>null</code> and not the empty String.
-	 * <pre class="code">Assert.hasLength(name, "Name must not be empty");</pre>
-	 * @param text the String to check
-	 * @param message the exception message to use if the assertion fails
-	 * @see StringUtils#hasLength
-	 */
-	public static function hasLength($text, $message="[Assertion failed] - this String argument must have length; it must not be null or empty") {
-		if (!Bee_Utils_Strings::hasLength($text)) {
-			throw new InvalidArgumentException($message);
-		}
-	}
-
+namespace Bee\Utils {
+	use InvalidArgumentException;
 
 	/**
-	 * Assert that the given String has valid text content; that is, it must not
-	 * be <code>null</code> and must contain at least one non-whitespace character.
-	 * <pre class="code">Assert.hasText(name, "'name' must not be empty");</pre>
-	 * @param string $text the String to check
-	 * @param string $message the exception message to use if the assertion fails
-	 * @throws InvalidArgumentException
-	 * @see StringUtils#hasText
+	 * Enter description here...
+	 *
+	 * @author Benjamin Hartmann
+	 * @author Michael Plomer <michael.plomer@iter8.de>
 	 */
-	public static function hasText($text, $message="[Assertion failed] - this String argument must have text; it must not be null, empty, or blank") {
-		if (!Bee_Utils_Strings::hasText($text)) {
-			throw new InvalidArgumentException($message);
+	class Assert {
+
+		/**
+		 * Assert a boolean expression, throwing <code>IllegalArgumentException</code>
+		 * if the test result is <code>false</code>.
+		 * <pre class="code">Assert.isTrue(i &gt; 0, "The value must be greater than zero");</pre>
+		 * @param boolean $expression a boolean expression
+		 * @param string $message the exception message to use if the assertion fails
+		 * @throws InvalidArgumentException if expression is <code>false</code>
+		 */
+		public static function isTrue($expression, $message = "[Assertion failed] - this expression must be true") {
+			if (!$expression) {
+				throw new InvalidArgumentException($message);
+			}
 		}
-	}
 
-	
-	public static function isInstanceOf($typeName, $obj, $message = null) {
-		self::hasText($typeName, "Type name to check against must not be null");
-		if (!Bee_Utils_Types::isAssignable($obj, $typeName)) {
-			throw new InvalidArgumentException(is_null($message) ? "[Assertion failed] object must be of type $typeName, but is of type " . Bee_Utils_Types::getType($obj) : $message);
+
+		/**
+		 * Assert that an object is <code>null</code> .
+		 * <pre class="code">Assert.isNull(value, "The value must be null");</pre>
+		 * @param mixed $object the object to check
+		 * @param string $message the exception message to use if the assertion fails
+		 * @throws InvalidArgumentException if the object is not <code>null</code>
+		 */
+		public static function isNull($object, $message = "[Assertion failed] - the object argument must be null") {
+			if (!is_null($object)) {
+				throw new InvalidArgumentException($message);
+			}
 		}
-	}
-	
-	public static function notEmpty(array $arr, $message = '[Assertion failed] - array must not be empty') {
-        self::isTrue(count($arr) > 0, $message);
-    }
-	
-	public static function isEmpty(array $arr, $message = '[Assertion failed] - array must be empty') {
-        self::isTrue(count($arr) === 0, $message);
-    }
 
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		/**
+		 * Assert that an object is not <code>null</code> .
+		 * <pre class="code">Assert.notNull(clazz, "The class must not be null");</pre>
+		 * @param mixed $object the object to check
+		 * @param string $message the exception message to use if the assertion fails
+		 * @throws InvalidArgumentException if the object is <code>null</code>
+		 */
+		public static function notNull($object, $message = "[Assertion failed] - this argument is required; it must not be null") {
+			if (is_null($object)) {
+				throw new InvalidArgumentException($message);
+			}
+		}
+
+
+		/**
+		 * Assert that the given String is not empty; that is,
+		 * it must not be <code>null</code> and not the empty String.
+		 * <pre class="code">Assert.hasLength(name, "Name must not be empty");</pre>
+		 * @param string $text the String to check
+		 * @param string $message the exception message to use if the assertion fails
+		 * @see StringUtils#hasLength
+		 */
+		public static function hasLength($text, $message = "[Assertion failed] - this String argument must have length; it must not be null or empty") {
+			if (!Strings::hasLength($text)) {
+				throw new InvalidArgumentException($message);
+			}
+		}
+
+
+		/**
+		 * Assert that the given String has valid text content; that is, it must not
+		 * be <code>null</code> and must contain at least one non-whitespace character.
+		 * <pre class="code">Assert.hasText(name, "'name' must not be empty");</pre>
+		 * @param string $text the String to check
+		 * @param string $message the exception message to use if the assertion fails
+		 * @throws InvalidArgumentException
+		 * @see StringUtils#hasText
+		 */
+		public static function hasText($text, $message = "[Assertion failed] - this String argument must have text; it must not be null, empty, or blank") {
+			if (!Strings::hasText($text)) {
+				throw new InvalidArgumentException($message);
+			}
+		}
+
+
+		public static function isInstanceOf($typeName, $obj, $message = null) {
+			self::hasText($typeName, "Type name to check against must not be null");
+			if (!Types::isAssignable($obj, $typeName)) {
+				throw new InvalidArgumentException(is_null($message) ? "[Assertion failed] object must be of type $typeName, but is of type " . Types::getType($obj) : $message);
+			}
+		}
+
+		public static function notEmpty(array $arr, $message = '[Assertion failed] - array must not be empty') {
+			self::isTrue(count($arr) > 0, $message);
+		}
+
+		public static function isEmpty(array $arr, $message = '[Assertion failed] - array must be empty') {
+			self::isTrue(count($arr) === 0, $message);
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //	/**
 //	 * Assert that the given text does not contain the given substring.
 //	 * <pre class="code">Assert.doesNotContain(name, "rod");</pre>
@@ -362,5 +361,17 @@ class Bee_Utils_Assert {
 //	public static void state(boolean expression) {
 //		state(expression, "[Assertion failed] - this state invariant must be true");
 //	}
+	}
 }
-?>
+
+namespace {
+	use Bee\Utils\Assert;
+
+	/**
+	 * Class Bee_Utils_Assert
+	 * @deprecated
+	 */
+	class Bee_Utils_Assert extends Assert {
+
+	}
+}

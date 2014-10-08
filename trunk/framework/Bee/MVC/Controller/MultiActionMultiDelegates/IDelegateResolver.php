@@ -14,24 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\IHttpRequest;
 
 /**
  * The multiaction controller handles requests by delegating to method calls on a delegate object. The methods to be used are
  * determined by the method name resolver.
  * 
- * A handler method must take at least one argument, type-hinted to Bee_MVC_IHttpRequest, and return a Bee_MVC_ModelAndView.
- * 
- * @see Bee_MVC_IHttpRequest
- * @see Bee_MVC_ModelAndView
+ * A handler method must take at least one argument, type-hinted to Bee\MVC\IHttpRequest, and return a Bee\MVC\ModelAndView.
+ * todo: update phpdoc
+ *
+ * @see IHttpRequest
+ * @see ModelAndView
  * 
  * @author Benjamin Hartmann
  */
 interface Bee_MVC_Controller_MultiActionMultiDelegates_IDelegateResolver {
 
-    public function resolveDelegate(Bee_MVC_IHttpRequest $request);
+	/**
+	 * @param IHttpRequest $request
+	 * @return mixed
+	 */
+    public function resolveDelegate(IHttpRequest $request);
 
+	/**
+	 * @return mixed
+	 */
     public function getDefaultDelegate();
 
 }
-
-?>

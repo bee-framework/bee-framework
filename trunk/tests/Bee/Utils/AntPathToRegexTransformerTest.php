@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Utils;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -14,9 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Utils\AntPathDataProvider;
-use Bee\Utils\AntPathToRegexTransformer;
-use Bee\Utils\ITypeDefinitions;
 
 /**
  * Class AntPathToRegexTransformerTest

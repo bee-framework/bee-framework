@@ -15,14 +15,17 @@ namespace Bee\MVC;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_MVC_IHttpRequest;
 
+/**
+ * Interface IFilter
+ * @package Bee\MVC
+ */
 interface IFilter {
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @param IFilterChain $filterChain
 	 */
-    public function doFilter(Bee_MVC_IHttpRequest $request, IFilterChain $filterChain);
+    public function doFilter(IHttpRequest $request, IFilterChain $filterChain);
 }

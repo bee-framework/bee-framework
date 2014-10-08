@@ -15,14 +15,12 @@ namespace Bee\MVC;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_MVC_IHttpRequest;
-use Bee_MVC_ModelAndView;
 use Exception;
 
 /**
  * Enter description here...
  *
- * @see Bee_MVC_Dispatcher
+ * @see Bee\MVC\Dispatcher
  * 
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
@@ -32,33 +30,33 @@ interface IHandlerInterceptor {
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @param IController $handler
 	 * @return boolean <code>true</code> if the execution chain should proceed with the
 	 * next interceptor or the handler itself. Else, Dispatcher assumes
 	 * that this interceptor has already dealt with the response itself.
 	 */
-	public function preHandle(Bee_MVC_IHttpRequest $request, IController $handler);
+	public function preHandle(IHttpRequest $request, IController $handler);
 
 
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @param IController $handler
-	 * @param Bee_MVC_ModelAndView $mav
+	 * @param ModelAndView $mav
 	 * @return void
 	 */
-	public function postHandle(Bee_MVC_IHttpRequest $request, IController $handler = null, Bee_MVC_ModelAndView $mav);
+	public function postHandle(IHttpRequest $request, IController $handler = null, ModelAndView $mav);
 
 	
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @param IController $handler
 	 * @param Exception $ex
 	 * @return void
 	 */
-	public function afterCompletion(Bee_MVC_IHttpRequest $request, IController $handler = null, Exception $ex);
+	public function afterCompletion(IHttpRequest $request, IController $handler = null, Exception $ex);
 }

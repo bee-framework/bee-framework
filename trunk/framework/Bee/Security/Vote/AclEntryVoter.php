@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Framework;
+use Bee\Utils\Strings;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,6 +26,21 @@
  */
 
 class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter {
+
+	/**
+	 * @var Logger
+	 */
+	protected static $log;
+
+	/**
+	 * @return Logger
+	 */
+	protected static function getLog() {
+		if (!self::$log) {
+			self::$log = Framework::getLoggerForClass(__CLASS__);
+		}
+		return self::$log;
+	}
 
     /**
      * @var Bee_Security_Acls_IAclService
@@ -127,15 +144,15 @@ class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter
 
             // If domain object is null, vote to abstain
             if ($domainObject == null) {
-                if (Bee_Utils_Logger::isDebugEnabled()) {
-                    Bee_Utils_Logger::debug('Voting to abstain - domainObject is null');
+                if (self::getLog()->isDebugEnabled()) {
+                    self::getLog()->debug('Voting to abstain - domainObject is null');
                 }
 
                 return self::ACCESS_ABSTAIN;
             }
 
             // Evaluate if we are required to use an inner domain object
-            if (Bee_Utils_Strings::hasText($this->internalMethod)) {
+            if (Strings::hasText($this->internalMethod)) {
                 if(!method_exists($domainObject, $this->internalMethod)) {
                     throw new Bee_Security_Exception_Generic('Object of class ' .
                             get_class($domainObject) . ' does not provide requested method ' .
@@ -157,8 +174,8 @@ class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter
                 // Lookup only ACLs for SIDs we're interested in
                 $acl = $this->aclService->readAclForOidAndSids($objectIdentity, $sids);
             } catch (Bee_Security_Acls_Exception_NotFound $nfe) {
-                if (Bee_Utils_Logger::isDebugEnabled()) {
-                    Bee_Utils_Logger::debug('Voting to deny access - no ACLs apply for this principal');
+                if (self::getLog()->isDebugEnabled()) {
+                    self::getLog()->debug('Voting to deny access - no ACLs apply for this principal');
                 }
 
                 return self::ACCESS_DENIED;
@@ -166,21 +183,21 @@ class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter
 
             try {
                 if ($acl->isGranted($this->requirePermission, $sids, false)) {
-                    if (Bee_Utils_Logger::isDebugEnabled()) {
-                        Bee_Utils_Logger::debug('Voting to grant access');
+                    if (self::getLog()->isDebugEnabled()) {
+                        self::getLog()->debug('Voting to grant access');
                     }
 
                     return self::ACCESS_GRANTED;
                 } else {
-                    if (Bee_Utils_Logger::isDebugEnabled()) {
-                        Bee_Utils_Logger::debug('Voting to deny access - ACLs returned, but insufficient permissions for this principal');
+                    if (self::getLog()->isDebugEnabled()) {
+                        self::getLog()->debug('Voting to deny access - ACLs returned, but insufficient permissions for this principal');
                     }
 
                     return self::ACCESS_DENIED;
                 }
             } catch (Bee_Security_Acls_Exception_NotFound $nfe) {
-                if (Bee_Utils_Logger::isDebugEnabled()) {
-                    Bee_Utils_Logger::debug('Voting to deny access - no ACLs apply for this principal');
+                if (self::getLog()->isDebugEnabled()) {
+                    self::getLog()->debug('Voting to deny access - no ACLs apply for this principal');
                 }
 
                 return self::ACCESS_DENIED;
@@ -192,4 +209,3 @@ class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter
 
     }
 }
-?>

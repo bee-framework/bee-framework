@@ -15,8 +15,8 @@ namespace Bee\Context\Util;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_Context_Config_IInitializingBean;
-use Bee_Context_IFactoryBean;
+use Bee\Context\Config\IInitializingBean;
+use Bee\Context\IFactoryBean;
 use Exception;
 
 /**
@@ -25,7 +25,7 @@ use Exception;
  * Time: 03:16
  */
  
-abstract class AbstractFactoryBean implements Bee_Context_IFactoryBean, Bee_Context_Config_IInitializingBean {
+abstract class AbstractFactoryBean implements IFactoryBean, IInitializingBean {
 
     /**
      * @var boolean

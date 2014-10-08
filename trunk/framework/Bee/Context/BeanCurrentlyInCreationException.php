@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Exception;
 
 /**
  * Enter description here...
@@ -21,17 +23,18 @@
  * @author Michael Plomer <michael.plomer@iter8.de>
  * @author Benjamin Hartmann
  */
-class Bee_Context_BeanCurrentlyInCreationException extends Bee_Context_BeansException {
+class BeanCurrentlyInCreationException extends BeansException {
 	
 	const EXCEPTION_MESSAGE = 'Bean with name %s is currently being created.';
 	
 	private $name;
-	
+
 	/**
 	 * Enter description here...
 	 *
 	 * @param String $name
-	 * @return void
+	 * @param Exception $cause
+	 * @return BeanCurrentlyInCreationException
 	 */
 	public function __construct($name, Exception $cause = null) {
         parent::__construct(sprintf(self::EXCEPTION_MESSAGE, $name), $cause);
@@ -47,5 +50,3 @@ class Bee_Context_BeanCurrentlyInCreationException extends Bee_Context_BeansExce
 		return $this->name;
 	}
 }
-
-?>

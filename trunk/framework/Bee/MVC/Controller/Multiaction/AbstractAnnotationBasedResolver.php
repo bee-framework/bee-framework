@@ -1,6 +1,5 @@
 <?php
 namespace Bee\MVC\Controller\Multiaction;
-
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -18,19 +17,16 @@ namespace Bee\MVC\Controller\Multiaction;
  */
 use Addendum\ReflectionAnnotatedClass;
 use Addendum\ReflectionAnnotatedMethod;
-use Bee_Cache_Manager;
-use Bee_Framework;
-use Bee_MVC_IHttpRequest;
-use Bee_Utils_Reflection;
-use Bee_Utils_Strings;
-use Exception;
+use Bee\MVC\IHttpRequest;
+use Bee\Utils\Reflection;
+use Bee\Utils\Strings;
 use ReflectionMethod;
 
 /**
  * Class AbstractAnnotationBasedResolver
  * @package Bee\MVC\Controller\Multiaction
  */
-abstract class AbstractAnnotationBasedResolver extends AbstractControllerHolder {
+abstract class AbstractAnnotationBasedResolver extends AbstractDelegatingHandlerHolder {
 
 	const DEFAULT_HTTP_METHOD_KEY = 'DEFAULT';
 	const AJAX_TYPE_TRUE_KEY = '_TRUE';
@@ -45,10 +41,15 @@ abstract class AbstractAnnotationBasedResolver extends AbstractControllerHolder 
 	private $delegates;
 
 	/**
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @var string
+	 */
+	private $requiredMethodPrefix;
+
+	/**
+	 * @param IHttpRequest $request
 	 * @return mixed
 	 */
-	protected function resolveMethodForRequest(Bee_MVC_IHttpRequest $request) {
+	protected function resolveMethodForRequest(IHttpRequest $request) {
 		$this->init();
 		$httpMethod = $this->getMethodNameKey($request->getMethod());
 		$ajaxKeyPart = $this->getAjaxTypeKey($request->getAjax());
@@ -74,10 +75,10 @@ abstract class AbstractAnnotationBasedResolver extends AbstractControllerHolder 
 
 	/**
 	 * @param $delegate
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @return mixed
 	 */
-	abstract protected function obtainMethodFromDelegate($delegate, Bee_MVC_IHttpRequest $request);
+	abstract protected function obtainMethodFromDelegate($delegate, IHttpRequest $request);
 
 	/**
 	 * @param $pathPattern
@@ -96,15 +97,23 @@ abstract class AbstractAnnotationBasedResolver extends AbstractControllerHolder 
 	abstract protected function createDelegate(array $mapping);
 
 	/**
+	 * @param ReflectionAnnotatedMethod $method
+	 * @return bool
+	 */
+	protected function isAcceptableMethod(ReflectionAnnotatedMethod $method) {
+		return $this->requiredMethodPrefix ? substr($method->getShortName(), 0, strlen($this->requiredMethodPrefix)) == $this->requiredMethodPrefix : true;
+	}
+
+	/**
 	 *
 	 */
 	protected function init() {
 		if (!$this->delegates) {
 
-			$delegateClassName = get_class($this->getController()->getDelegate());
-//			if (Bee_Framework::getProductionMode()) {
+			$delegateClassName = get_class($this->getDelegatingHandler()->getDelegate());
+//			if (Framework::getProductionMode()) {
 //				try {
-//					$this->delegates = Bee_Cache_Manager::retrieve(self::CACHE_KEY_PREFIX . $delegateClassName);
+//					$this->delegates = Manager::retrieve(self::CACHE_KEY_PREFIX . $delegateClassName);
 //				} catch (Exception $e) {
 //					$this->getLog()->debug('No cached delegate resolvers for delegate "' . $delegateClassName . '" found, annotation parsing required');
 //				}
@@ -118,7 +127,7 @@ abstract class AbstractAnnotationBasedResolver extends AbstractControllerHolder 
 				$mappings = array();
 				foreach (array_reverse($methods) as $method) {
 					/** @var ReflectionAnnotatedMethod $method */
-					if (Bee_Utils_Reflection::isCallableRegularMethod($method)) {
+					if (Reflection::isCallableRegularMethod($method)) {
 
 						// is possible handler method, check for annotations
 						/** @var \Bee_MVC_Controller_Multiaction_RequestHandler[] $annotations */
@@ -141,8 +150,8 @@ abstract class AbstractAnnotationBasedResolver extends AbstractControllerHolder 
 				}
 			}
 
-//			if (Bee_Framework::getProductionMode()) {
-//				Bee_Cache_Manager::store(self::CACHE_KEY_PREFIX . $delegateClassName, $this->delegates);
+//			if (Framework::getProductionMode()) {
+//				Manager::store(self::CACHE_KEY_PREFIX . $delegateClassName, $this->delegates);
 //			}
 		}
 	}
@@ -152,7 +161,7 @@ abstract class AbstractAnnotationBasedResolver extends AbstractControllerHolder 
 	 * @return string
 	 */
 	protected function getMethodNameKey($methodName) {
-		return Bee_Utils_Strings::hasText($methodName) ? strtoupper($methodName) : self::DEFAULT_HTTP_METHOD_KEY;
+		return Strings::hasText($methodName) ? strtoupper($methodName) : self::DEFAULT_HTTP_METHOD_KEY;
 	}
 
 	/**
@@ -164,5 +173,19 @@ abstract class AbstractAnnotationBasedResolver extends AbstractControllerHolder 
 			return self::AJAX_TYPE_ANY_KEY;
 		}
 		return $ajax ? self::AJAX_TYPE_TRUE_KEY : self::AJAX_TYPE_FALSE_KEY;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRequiredMethodPrefix() {
+		return $this->requiredMethodPrefix;
+	}
+
+	/**
+	 * @param string $requiredMethodPrefix
+	 */
+	public function setRequiredMethodPrefix($requiredMethodPrefix) {
+		$this->requiredMethodPrefix = $requiredMethodPrefix;
 	}
 }

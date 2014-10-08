@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Cache\Provider;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Cache\IProvider;
+use PHPUnit_Framework_TestCase;
 
 /**
  * User: mp
@@ -71,7 +74,7 @@ class Bee_Cache_Provider_AbstractSerializingTest extends PHPUnit_Framework_TestC
 
 
     /**
-     * @var Bee_Cache_IProvider
+     * @var IProvider
      */
     private $provider;
 
@@ -138,7 +141,7 @@ class Bee_Cache_Provider_AbstractSerializingTest extends PHPUnit_Framework_TestC
 }
 
 
-class Bee_Cache_Provider_AbstractSerializingMock extends Bee_Cache_Provider_AbstractSerializing {
+class AbstractSerializingMock extends AbstractSerializingProvider {
 
     private $cacheArray = array();
 
@@ -153,5 +156,4 @@ class Bee_Cache_Provider_AbstractSerializingMock extends Bee_Cache_Provider_Abst
     protected function storeCacheArray(&$array) {
         $this->cacheArray = $array;
     }
-
 }

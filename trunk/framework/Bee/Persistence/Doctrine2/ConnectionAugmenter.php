@@ -15,6 +15,7 @@ namespace Bee\Persistence\Doctrine2;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Strings;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\DBAL\Event\ConnectionEventArgs;
 use Doctrine\DBAL\Events;
@@ -56,7 +57,7 @@ class ConnectionAugmenter  implements EventSubscriber {
 
 	public function postConnect(ConnectionEventArgs $eventArgs) {
 		$eventArgs->getConnection()->beginTransaction();
-		if(\Bee_Utils_Strings::hasText($this->getPostConnectScript())) {
+		if(Strings::hasText($this->getPostConnectScript())) {
 			$eventArgs->getConnection()->exec($this->getPostConnectScript());
 		}
 		$eventArgs->getConnection()->commit();

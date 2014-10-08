@@ -14,7 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Assert;
 use Bee\Utils\ITypeDefinitions;
+use Bee\Utils\Strings;
 
 /**
  * User: mp
@@ -89,7 +91,7 @@ abstract class Bee_Security_AfterInvocation_AbstractAclProvider implements Bee_S
      * @return void
      */
     public function setProcessDomainObjectClass($processDomainObjectClass) {
-        Bee_Utils_Assert::hasText($processDomainObjectClass, 'processDomainObjectClass cannot be empty');
+		Assert::hasText($processDomainObjectClass, 'processDomainObjectClass cannot be empty');
         $this->processDomainObjectClass = $processDomainObjectClass;
     }
 
@@ -129,7 +131,7 @@ abstract class Bee_Security_AfterInvocation_AbstractAclProvider implements Bee_S
 
     protected function getDomainObject($domainObject) {
         // Evaluate if we are required to use an inner domain object
-        if (Bee_Utils_Strings::hasText($this->internalMethod)) {
+        if (Strings::hasText($this->internalMethod)) {
             if(!method_exists($domainObject, $this->internalMethod)) {
                 throw new Bee_Security_Exception_Generic('Object of class ' .
                         get_class($domainObject) . ' does not provide requested method ' .

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\IInitializingBean;
+use Bee\Utils\Assert;
+use Bee\Utils\Collections;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,7 +26,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Security_Intercept_DelegatingMethodDefinitionSource implements Bee_Security_Intercept_IMethodDefinitionSource, Bee_Context_Config_IInitializingBean {
+class Bee_Security_Intercept_DelegatingMethodDefinitionSource implements Bee_Security_Intercept_IMethodDefinitionSource, IInitializingBean {
 
     /**
      * @var Bee_Security_Intercept_IMethodDefinitionSource[]
@@ -31,7 +34,7 @@ class Bee_Security_Intercept_DelegatingMethodDefinitionSource implements Bee_Sec
     private $methodDefinitionSources;
 
     public function afterPropertiesSet() {
-        Bee_Utils_Assert::isTrue(!Bee_Utils_Collections::isEmpty($this->methodDefinitionSources), "A list of MethodDefinitionSources is required");
+		Assert::isTrue(!Collections::isEmpty($this->methodDefinitionSources), "A list of MethodDefinitionSources is required");
     }
 
     public function getAttributesForMethod(ReflectionMethod $method, $targetClassOrClassName) {
@@ -81,8 +84,7 @@ class Bee_Security_Intercept_DelegatingMethodDefinitionSource implements Bee_Sec
      * @return void
      */
     public function setMethodDefinitionSources(array $methodDefinitionSources) {
-        Bee_Utils_Assert::isTrue(!Bee_Utils_Collections::isEmpty($this->methodDefinitionSources), "A list of MethodDefinitionSources is required");
+		Assert::isTrue(!Collections::isEmpty($this->methodDefinitionSources), "A list of MethodDefinitionSources is required");
         $this->methodDefinitionSources = $methodDefinitionSources;
     }
 }
-?>

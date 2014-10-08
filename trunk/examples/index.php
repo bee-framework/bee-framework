@@ -8,7 +8,7 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 Logger::configure('conf/log4php.xml');
 
-Bee_Cache_Manager::init();
+Bee\Cache\Manager::init();
 
-//Bee_Framework::setProductionMode(true);
-Bee_Framework::dispatchRequestUsingXmlContext(__DIR__.'/conf/context-newinterceptors.xml');
+//Bee\Framework::setProductionMode(true);
+Bee\Framework::dispatchRequestUsingXmlContext(__DIR__.'/conf/context-newinterceptors.xml');

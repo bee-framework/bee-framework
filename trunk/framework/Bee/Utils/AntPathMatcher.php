@@ -15,7 +15,6 @@ namespace Bee\Utils;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_Utils_Strings;
 
 /**
  * Enter description here...
@@ -66,12 +65,12 @@ class AntPathMatcher implements IPathMatcher {
 	 */
 	protected function doMatch($pattern, $path, $fullMatch) {
 		
-		if (Bee_Utils_Strings::startsWith($path, $this->pathSeparator) !== Bee_Utils_Strings::startsWith($pattern, $this->pathSeparator)) {
+		if (Strings::startsWith($path, $this->pathSeparator) !== Strings::startsWith($pattern, $this->pathSeparator)) {
 			return false;
 		}
 
-		$pattDirs = Bee_Utils_Strings::tokenizeToArray($pattern, $this->pathSeparator);
-		$pathDirs = Bee_Utils_Strings::tokenizeToArray($path, $this->pathSeparator);
+		$pattDirs = Strings::tokenizeToArray($pattern, $this->pathSeparator);
+		$pathDirs = Strings::tokenizeToArray($path, $this->pathSeparator);
 		
 		$pattIdxStart = 0;
 		$pattIdxEnd = count($pattDirs) - 1;
@@ -94,14 +93,14 @@ class AntPathMatcher implements IPathMatcher {
 		if ($pathIdxStart > $pathIdxEnd) {
 			// Path is exhausted, only match if rest of pattern is * or **'s
 			if ($pattIdxStart > $pattIdxEnd) {
-				return (Bee_Utils_Strings::endsWith($pattern, $this->pathSeparator) ?
-						Bee_Utils_Strings::endsWith($path, $this->pathSeparator) : !Bee_Utils_Strings::endsWith($path, $this->pathSeparator));
+				return (Strings::endsWith($pattern, $this->pathSeparator) ?
+						Strings::endsWith($path, $this->pathSeparator) : !Strings::endsWith($path, $this->pathSeparator));
 			}
 			if (!$fullMatch) {
 				return true;
 			}
 			if ($pattIdxStart === $pattIdxEnd && $pattDirs[$pattIdxStart]=== '*' &&
-					Bee_Utils_Strings::endsWith($path, $this->pathSeparator)) {
+					Strings::endsWith($path, $this->pathSeparator)) {
 				return true;
 			}
 			for ($i = $pattIdxStart; $i <= $pattIdxEnd; $i++) {
@@ -352,8 +351,8 @@ class AntPathMatcher implements IPathMatcher {
 	 * and '<code>path</code>', but does <strong>not</strong> enforce this.
 	 */
 	public function extractPathWithinPattern($pattern, $path) {
-		$patternParts = Bee_Utils_Strings::tokenizeToArray($pattern, $this->pathSeparator);
-		$pathParts = Bee_Utils_Strings::tokenizeToArray($path, $this->pathSeparator);
+		$patternParts = Strings::tokenizeToArray($pattern, $this->pathSeparator);
+		$pathParts = Strings::tokenizeToArray($path, $this->pathSeparator);
 		
 		$patternPartLength = count($patternParts);
 		$pathPartsLength = count($pathParts);
@@ -366,7 +365,7 @@ class AntPathMatcher implements IPathMatcher {
 			$patternPart = $patternParts[$i];
 
 			if ((strpos($patternPart, '*') > -1 || strpos($patternPart, '?') > -1) && $pathPartsLength >= $i + 1) {
-				if ($puts > 0 || ($i === 0 && !Bee_Utils_Strings::startsWith($pattern, $this->pathSeparator))) {
+				if ($puts > 0 || ($i === 0 && !Strings::startsWith($pattern, $this->pathSeparator))) {
 					$buffer .= $this->pathSeparator;
 				}
 				$buffer .= $pathParts[$i];
@@ -383,31 +382,5 @@ class AntPathMatcher implements IPathMatcher {
 		}
 
 		return $buffer;
-	}
-
-	/**
-	 * @param string $path
-	 * @param array $array
-	 * @param mixed $defaultValue
-	 * @return mixed
-	 */
-	public static function getElementByMatchingArrayKey($path, array $array = null, $defaultValue = null) {
-		$result = $defaultValue;
-		if(is_array($array)) {
-			if (array_key_exists($path, $array)) {
-				// shortcut for direct path matches
-				$result = $array[$path];
-			} else {
-				$matcher = new AntPathMatcher();
-				foreach($array as $mapping => $element) {
-					if($matcher->match($mapping, $path)) {
-	//				if(($matcher->isPattern($mapping) && $matcher->match($mapping, $pathInfo)) || Bee_Utils_Strings::startsWith($pathInfo, $mapping)) {
-						$result = $element;
-						break;
-					}
-				}
-			}
-		}
-		return $result;
 	}
 }

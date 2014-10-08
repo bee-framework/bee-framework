@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Utils;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -22,7 +23,7 @@
  * Time: 10:38:44 PM
  * To change this template use File | Settings | File Templates.
  */
-interface Bee_Utils_IOrdered {
+interface IOrdered {
 
     /**
      * Useful constant for the highest precedence value.
@@ -50,7 +51,7 @@ interface Bee_Utils_IOrdered {
      * purposes. Application-specified values should always be 0 or
      * greater, with only framework components (internal or third-party)
      * supposed to use lower values.
-     * @return the order value
+     * @return int the order value
      * @see #LOWEST_PRECEDENCE
      */
     public function getOrder();

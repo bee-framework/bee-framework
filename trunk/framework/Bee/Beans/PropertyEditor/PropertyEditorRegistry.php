@@ -16,11 +16,11 @@ namespace Bee\Beans\PropertyEditor;
  * limitations under the License.
  */
 use Bee\Beans\IPropertyEditor;
+use Bee\Context\BeanNotOfRequiredTypeException;
+use Bee\Context\Config\IContextAware;
+use Bee\Context\NoSuchBeanDefinitionException;
+use Bee\IContext;
 use Bee\Utils\ITypeDefinitions;
-use Bee_Context_BeanNotOfRequiredTypeException;
-use Bee_Context_Config_IContextAware;
-use Bee_Context_NoSuchBeanDefinitionException;
-use Bee_IContext;
 use Exception;
 
 /**
@@ -30,12 +30,12 @@ use Exception;
  * @author Benjamin Hartmann
  * @author Michael Plomer (michael.plomer@iter8.de)
  */
-class PropertyEditorRegistry implements Bee_Context_Config_IContextAware {
+class PropertyEditorRegistry implements IContextAware {
 
 	const PROPERTY_EDITOR_BEAN_NAME_PREFIX = 'propertyEditor_';
 
 	/**
-	 * @var Bee_IContext
+	 * @var IContext
 	 */
 	private $context;
 
@@ -45,9 +45,9 @@ class PropertyEditorRegistry implements Bee_Context_Config_IContextAware {
 	private static $staticallyRegisteredConverters = array();
 
 	/**
-	 * @param Bee_IContext $context
+	 * @param IContext $context
 	 */
-	function __construct(Bee_IContext $context = null) {
+	function __construct(IContext $context = null) {
 		$this->context = $context;
 	}
 
@@ -93,10 +93,10 @@ class PropertyEditorRegistry implements Bee_Context_Config_IContextAware {
 	 * <p>Invoked after the population of normal bean properties
 	 * but before an initialization callback such as
 	 * {@link InitializingBean#afterPropertiesSet()} or a custom init-method.
-	 * @param Bee_IContext $context owning context (never <code>null</code>).
+	 * @param IContext $context owning context (never <code>null</code>).
 	 * The bean can immediately call methods on the context.
 	 */
-	public function setBeeContext(Bee_IContext $context) {
+	public function setBeeContext(IContext $context) {
 		$this->context = $context;
 	}
 
@@ -113,9 +113,9 @@ class PropertyEditorRegistry implements Bee_Context_Config_IContextAware {
 		try {
 			$idSafeTypeName = preg_replace('#\\\\#', '_', $type);
 			return $this->context->getBean(self::PROPERTY_EDITOR_BEAN_NAME_PREFIX . $idSafeTypeName, 'Bee\Beans\IPropertyEditor');
-		} catch(Bee_Context_NoSuchBeanDefinitionException $e) {
+		} catch(NoSuchBeanDefinitionException $e) {
 			$failureReason = $e;
-		} catch(Bee_Context_BeanNotOfRequiredTypeException $e) {
+		} catch(BeanNotOfRequiredTypeException $e) {
 			$failureReason = $e;
 		}
 		throw new PropertyEditorNotFoundException('The type "' . $type . '" has no registered type editors', 0, $failureReason);

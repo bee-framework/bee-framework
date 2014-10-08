@@ -1,6 +1,7 @@
 <?php
+namespace Bee\MVC\Session;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,10 @@
  * limitations under the License.
  */
 
-class Bee_MVC_Session_PDOHandler implements Bee_MVC_Session_IHandler {
+use Exception;
+use PDO;
+
+class PDOHandler implements IHandler {
 	
 	const DEFAUlT_SESSION_TABLE_NAME = 'BEE_SESSIONS';
 
@@ -114,4 +118,3 @@ class Bee_MVC_Session_PDOHandler implements Bee_MVC_Session_IHandler {
 		return true;
 	}
 }
-?>

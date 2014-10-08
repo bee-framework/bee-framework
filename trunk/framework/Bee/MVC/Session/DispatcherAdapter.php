@@ -1,6 +1,7 @@
 <?php
+namespace Bee\MVC\Session;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,25 +16,31 @@
  * limitations under the License.
  */
 
-class Bee_MVC_Session_DispatcherAdapter {
+use Bee\IContext;
+use Exception;
+
+class DispatcherAdapter {
 	
 	const SESSION_HANDLER_NAME = '__sessionHandler';
 
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_IContext
+	 * @var IContext
 	 */
 	private $context;
 	
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_MVC_Session_IHandler
+	 * @var IHandler
 	 */
 	private $handler;
-	
-	public function __construct(Bee_IContext $context) {
+
+	/**
+	 * @param IContext $context
+	 */
+	public function __construct(IContext $context) {
 		$this->context = $context;
 	}
 	
@@ -90,8 +97,7 @@ class Bee_MVC_Session_DispatcherAdapter {
 	
 	private function fetchHandler() {
 		if(is_null($this->handler)) {
-			$this->handler = $this->context->getBean(self::SESSION_HANDLER_NAME, 'Bee_MVC_Session_IHandler');
+			$this->handler = $this->context->getBean(self::SESSION_HANDLER_NAME, 'Bee\MVC\Session\IHandler');
 		}		
 	}
 }
-?>

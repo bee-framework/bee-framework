@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Cache\IProvider;
 
 /**
  * User: mp
@@ -71,12 +72,12 @@ class Bee_Cache_Provider_FileTest extends PHPUnit_Framework_TestCase {
 
 
     /**
-     * @var Bee_Cache_IProvider
+     * @var IProvider
      */
     private $provider;
 
     protected function setUp() {
-//        $provider = new Bee_Utils_Strings()
+//        $provider = new Strings()
     }
 
     protected function tearDown() {

@@ -14,8 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\BeanCreationException;
+use Bee\Context\Config\IContextAware;
+use Bee\Context\Config\IInitializingBean;
 use Bee\Context\Config\IInstantiationAwareBeanPostProcessor;
 use Bee\Context\Support\ContextUtils;
+use Bee\IContext;
 
 /**
  * User: mp
@@ -23,7 +27,7 @@ use Bee\Context\Support\ContextUtils;
  * Time: 9:18:23 AM
  */
 
-class Bee_AOP_Framework_AutoProxyCreator implements IInstantiationAwareBeanPostProcessor, Bee_Context_Config_IContextAware, Bee_Context_Config_IInitializingBean {
+class Bee_AOP_Framework_AutoProxyCreator implements IInstantiationAwareBeanPostProcessor, IContextAware, IInitializingBean {
 
     const DO_NOT_PROXY = '<<DO_NOT_PROXY>>';
 
@@ -33,11 +37,11 @@ class Bee_AOP_Framework_AutoProxyCreator implements IInstantiationAwareBeanPostP
     private $cachedAdvisorBeanNames;
 
     /**
-     * @var Bee_IContext
+     * @var IContext
      */
     private $beeContext;
 
-    public function setBeeContext(Bee_IContext $context) {
+    public function setBeeContext(IContext $context) {
         $this->beeContext = $context;
     }
 
@@ -102,7 +106,7 @@ class Bee_AOP_Framework_AutoProxyCreator implements IInstantiationAwareBeanPostP
 
 	/**
 	 * Find all candidate Advisors to use in auto-proxying.
-	 * @throws Bee_Context_BeanCreationException
+	 * @throws BeanCreationException
 	 * @throws Exception
 	 * @return array the List of candidate Advisors
 	 */
@@ -128,7 +132,7 @@ class Bee_AOP_Framework_AutoProxyCreator implements IInstantiationAwareBeanPostP
                 try {
                     $advisors[] = $this->beeContext->getBean($name, 'Bee_AOP_IAdvisor');
                 }
-                catch (Bee_Context_BeanCreationException $ex) {
+                catch (BeanCreationException $ex) {
 //                    $rootCause = $ex->getMostSpecificCause();
 //                    if (rootCause instanceof BeanCurrentlyInCreationException) {
 //                        BeanCreationException bce = (BeanCreationException) rootCause;

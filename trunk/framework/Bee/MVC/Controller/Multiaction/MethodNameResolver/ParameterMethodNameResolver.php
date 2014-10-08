@@ -15,9 +15,9 @@ namespace Bee\MVC\Controller\Multiaction\MethodNameResolver;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\Controller\Multiaction\AbstractControllerHolder;
+use Bee\MVC\Controller\Multiaction\AbstractDelegatingHandlerHolder;
 use Bee\MVC\Controller\Multiaction\IMethodNameResolver;
-use Bee_MVC_IHttpRequest;
+use Bee\MVC\IHttpRequest;
 
 /**
  * Method name resolver implementation that uses the value of a request parameter ('action' by default) as the name of the handler method.
@@ -28,7 +28,7 @@ use Bee_MVC_IHttpRequest;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class ParameterMethodNameResolver extends AbstractControllerHolder implements IMethodNameResolver {
+class ParameterMethodNameResolver extends AbstractDelegatingHandlerHolder implements IMethodNameResolver {
 
 	const DEFAULT_PARAM_NAME = 'action';
 
@@ -56,10 +56,10 @@ class ParameterMethodNameResolver extends AbstractControllerHolder implements IM
 	}
 
 	/**
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @return mixed|String
 	 */
-	public function getHandlerMethodName(Bee_MVC_IHttpRequest $request) {
+	public function getHandlerMethodName(IHttpRequest $request) {
 		return $request->getParameter($this->getParamName());
 	}
 }

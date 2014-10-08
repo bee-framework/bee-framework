@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Framework;
+use Bee\Utils\Assert;
 
 /**
  * User: mp
@@ -57,7 +59,7 @@ class Bee_Persistence_Pdo_Template {
 	 */
 	public static function getLog() {
 		if(!self::$log) {
-			self::$log = Bee_Framework::getLoggerForClass(__CLASS__);
+			self::$log = Framework::getLoggerForClass(__CLASS__);
 		}
 		return self::$log;
 	}
@@ -104,7 +106,7 @@ class Bee_Persistence_Pdo_Template {
     public function query(Bee_Persistence_Pdo_IStatementCreator $psc, Bee_Persistence_Pdo_IStatementSetter $pss,
                           Bee_Persistence_Pdo_IResultSetExtractor $rse) {
 
-        Bee_Utils_Assert::notNull($rse, 'ResultSetExtractor must not be null');
+		Assert::notNull($rse, 'ResultSetExtractor must not be null');
 		self::getLog()->debug('Executing prepared SQL query');
 
         return $this->execute($psc, new Bee_Persistence_Pdo_Template_QueryCallback($pss, $rse));
@@ -138,8 +140,8 @@ class Bee_Persistence_Pdo_Template {
 
     public function execute(Bee_Persistence_Pdo_IStatementCreator $psc, Bee_Persistence_Pdo_IStatementCallback $action) {
 
-        Bee_Utils_Assert::notNull($psc, 'PreparedStatementCreator must not be null');
-        Bee_Utils_Assert::notNull($action, 'Callback object must not be null');
+        Assert::notNull($psc, 'PreparedStatementCreator must not be null');
+        Assert::notNull($action, 'Callback object must not be null');
 
         if (self::getLog()->isDebugEnabled()) {
             $sql = self::getSql($psc);
@@ -223,7 +225,7 @@ class Bee_Persistence_Pdo_Template_UpdateCallback implements Bee_Persistence_Pdo
 
 	public static function getLog() {
 		if(!self::$log) {
-			self::$log = Bee_Framework::getLoggerForClass(__CLASS__);
+			self::$log = Framework::getLoggerForClass(__CLASS__);
 		}
 		return self::$log;
 	}

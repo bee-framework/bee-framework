@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Exceptions;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,31 +15,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Exception;
 
 /**
  * Enter description here...
  *
  * @author Benjamin Hartmann
  */
-class Bee_Exceptions_TypeMismatch extends Bee_Exceptions_Base {
+class TypeMismatchException extends Exception {
 	
 	const EXCEPTION_MESSAGE = 'Type mismatch! Expected type %s (actual is %s).';
 	
 	private $requiredType;
 	private $actualType;
-	
-	
-	
+
+
 	/**
 	 * Enter description here...
 	 *
-	 * @param String $name
 	 * @param String $requiredType
 	 * @param String $actualType
-	 * @return void
+	 * @param Exception $cause
+	 * @return TypeMismatchException
 	 */
 	public function __construct($requiredType, $actualType=null, Exception $cause = null) {
-		parent::__construct(sprintf(self::EXCEPTION_MESSAGE, $requiredType, $actualType), $cause);
+		parent::__construct(sprintf(self::EXCEPTION_MESSAGE, $requiredType, $actualType), 0, $cause);
 		$this->requiredType = $requiredType;
 		$this->actualType = $actualType;
 	}
@@ -61,4 +62,3 @@ class Bee_Exceptions_TypeMismatch extends Bee_Exceptions_Base {
 		return $this->actualType;
 	}
 }
-?>

@@ -15,10 +15,10 @@ namespace Bee\MVC\Controller\Multiaction\MethodNameResolver;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\Controller\Multiaction\AbstractControllerHolder;
+use Bee\MVC\Controller\Multiaction\AbstractDelegatingHandlerHolder;
 use Bee\MVC\Controller\Multiaction\IMethodNameResolver;
+use Bee\MVC\IHttpRequest;
 use Bee\Utils\AntPathMatcher;
-use Bee_MVC_IHttpRequest;
 
 /**
  * A method name resolver that uses a mapping from ant-style path definitions to handler method names. The path definitions are parsed
@@ -31,7 +31,7 @@ use Bee_MVC_IHttpRequest;
  * 
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class AntPathMethodNameResolver extends AbstractControllerHolder implements IMethodNameResolver {
+class AntPathMethodNameResolver extends AbstractDelegatingHandlerHolder implements IMethodNameResolver {
 
 	/**
 	 * Enter description here...
@@ -56,9 +56,13 @@ class AntPathMethodNameResolver extends AbstractControllerHolder implements IMet
 	 */
 	public function getMethodMappings() {
 		return $this->methodMappings;
-	}	
+	}
 
-	public function getHandlerMethodName(Bee_MVC_IHttpRequest $request) {
+	/**
+	 * @param IHttpRequest $request
+	 * @return null|string
+	 */
+	public function getHandlerMethodName(IHttpRequest $request) {
 		$matcher = new AntPathMatcher();
 		$pathInfo = $request->getPathInfo();
 

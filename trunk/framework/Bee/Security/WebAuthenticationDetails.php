@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\IHttpRequest;
 
 /**
  * Created by IntelliJ IDEA.
@@ -32,9 +33,9 @@ class Bee_Security_WebAuthenticationDetails implements Bee_Security_Concurrent_I
      * Records the remote address and will also set the session Id if a session
      * already exists (it won't create one).
      *
-     * @param request that the authentication request was received from
+     * @param IHttpRequest $request that the authentication request was received from
      */
-    public function __construct(Bee_MVC_IHttpRequest $request) {
+    public function __construct(IHttpRequest $request) {
         $this->remoteAddress = $_SERVER['REMOTE_ADDR'];
 
         $this->sessionId = session_id();
@@ -47,9 +48,9 @@ class Bee_Security_WebAuthenticationDetails implements Bee_Security_Concurrent_I
     /**
      * Provided so that subclasses can populate additional information.
      *
-     * @param request that the authentication request was received from
+     * @param IHttpRequest $request that the authentication request was received from
      */
-    protected function doPopulateAdditionalInformation(Bee_MVC_IHttpRequest $request) {}
+    protected function doPopulateAdditionalInformation(IHttpRequest $request) {}
 
     public function equals($obj) {
         if ($obj instanceof Bee_Security_WebAuthenticationDetails) {
@@ -71,7 +72,7 @@ class Bee_Security_WebAuthenticationDetails implements Bee_Security_Concurrent_I
     /**
      * Indicates the TCP/IP address the authentication request was received from.
      *
-     * @return the address
+     * @return string the address
      */
     public function getRemoteAddress() {
         return $this->remoteAddress;
@@ -80,7 +81,7 @@ class Bee_Security_WebAuthenticationDetails implements Bee_Security_Concurrent_I
     /**
      * Indicates the <code>HttpSession</code> id the authentication request was received from.
      *
-     * @return the session ID
+     * @return string the session ID
      */
     public function getSessionId() {
         return $this->sessionId;
@@ -89,6 +90,4 @@ class Bee_Security_WebAuthenticationDetails implements Bee_Security_Concurrent_I
     public function __toString() {
         return 'Bee_Security_WebAuthenticationDetails[RemoteIpAddress='.$this->getRemoteAddress().';SessionId='.$this->getSessionId().']';
     }
-
 }
-?>

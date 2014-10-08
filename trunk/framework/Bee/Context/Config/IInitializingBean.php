@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Config;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +25,13 @@
  * init-method, for example in an XML bean definition.
  * For a list of all bean lifecycle methods, see the BeanFactory javadocs.
  *
- * @see Bee_Context_Config_IBeanNameAware
- * @see Bee_Context_Config_IContextAware
+ * @see \Bee\Context\Config\IBeanNameAware
+ * @see \Bee\Context\Config\IContextAware
  * 
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-interface Bee_Context_Config_IInitializingBean {
+interface IInitializingBean {
 	
 	/**
 	 * Invoked by a Context after it has set all bean properties supplied
@@ -38,7 +39,7 @@ interface Bee_Context_Config_IInitializingBean {
 	 * <p>This method allows the bean instance to perform initialization only
 	 * possible when all bean properties have been set and to throw an
 	 * exception in the event of misconfiguration.
-	 * @throws Exception in the event of misconfiguration (such
+	 * @throws \Exception in the event of misconfiguration (such
 	 * as failure to set an essential property) or if initialization fails.
 	 */
 	public function afterPropertiesSet();

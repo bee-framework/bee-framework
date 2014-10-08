@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Utils;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +21,7 @@
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Utils_Collections {
+class Collections {
 	
 	public static function findFirstKeyMatch(array $source, array $candidates) {
 		if(self::isEmpty($source) || self::isEmpty($candidates)) {
@@ -38,4 +39,3 @@ class Bee_Utils_Collections {
 		return (is_null($collection) || count($collection) === 0);
 	}
 }
-?>

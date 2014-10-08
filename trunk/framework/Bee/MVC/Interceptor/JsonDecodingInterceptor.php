@@ -15,12 +15,12 @@ namespace Bee\MVC\Interceptor;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\HttpRequest;
 use Bee\MVC\IController;
 use Bee\MVC\IHandlerInterceptor;
-use Bee_MVC_HttpRequest;
-use Bee_MVC_IHttpRequest;
-use Bee_MVC_ModelAndView;
-use Bee_Utils_Strings;
+use Bee\MVC\IHttpRequest;
+use Bee\MVC\ModelAndView;
+use Bee\Utils\Strings;
 use Exception;
 
 /**
@@ -36,15 +36,15 @@ class JsonDecodingInterceptor implements IHandlerInterceptor {
 	private $jsonParamName = self::DEFAULT_JSON_PARAM_NAME;
 
 	/**
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @param IController $handler
 	 * @return bool
 	 */
-	public function preHandle(Bee_MVC_IHttpRequest $request, IController $handler) {
-		if($request instanceof Bee_MVC_HttpRequest) {
+	public function preHandle(IHttpRequest $request, IController $handler) {
+		if($request instanceof HttpRequest) {
 			$jsonParam = $request->getParameter($this->jsonParamName);
 //			if(array_key_exists($this->jsonParamName, $_REQUEST)) {
-			if(Bee_Utils_Strings::hasText($jsonParam)) {
+			if(Strings::hasText($jsonParam)) {
 				$decoded = json_decode($jsonParam, true);
 				$request->setParameter($this->jsonParamName, null);
 				$request->addParameters($decoded);
@@ -58,20 +58,20 @@ class JsonDecodingInterceptor implements IHandlerInterceptor {
 	}
 
 	/**
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @param IController $handler
-	 * @param Bee_MVC_ModelAndView $mav
+	 * @param ModelAndView $mav
 	 */
-	public function postHandle(Bee_MVC_IHttpRequest $request, IController $handler = null, Bee_MVC_ModelAndView $mav) {
+	public function postHandle(IHttpRequest $request, IController $handler = null, ModelAndView $mav) {
 		
 	}
 
 	/**
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @param IController $handler
 	 * @param Exception $ex
 	 */
-	public function afterCompletion(Bee_MVC_IHttpRequest $request, IController $handler = null, Exception $ex) {
+	public function afterCompletion(IHttpRequest $request, IController $handler = null, Exception $ex) {
 		
 	}
 }

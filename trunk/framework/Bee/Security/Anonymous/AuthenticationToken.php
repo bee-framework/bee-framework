@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Strings;
 
 /**
  * Created by IntelliJ IDEA.
@@ -49,7 +50,7 @@ class Bee_Security_Anonymous_AuthenticationToken extends Bee_Security_AbstractAu
     public function __construct($key, $principal, $authorities = null) {
         parent::__construct($authorities);
 
-        if (!Bee_Utils_Strings::hasText($key) || !Bee_Utils_Strings::hasText($key) || !is_array($authorities)
+        if (!Strings::hasText($key) || !Strings::hasText($key) || !is_array($authorities)
                 || count($authorities) == 0) {
             throw new InvalidArgumentException('Cannot pass null or empty values to constructor');
         }

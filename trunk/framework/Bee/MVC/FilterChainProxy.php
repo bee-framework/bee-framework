@@ -1,4 +1,5 @@
 <?php
+namespace Bee\MVC;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -14,16 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\IFilter;
-use Bee\MVC\IFilterChain;
 
 /**
- * User: mp
- * Date: Dec 18, 2009
- * Time: 5:05:03 PM
+ * Class FilterChainProxy
+ * @package Bee\MVC
  */
-
-class Bee_MVC_FilterChainProxy implements IFilter {
+class FilterChainProxy implements IFilter {
 
     /**
      * @var IFilter[]
@@ -49,18 +46,18 @@ class Bee_MVC_FilterChainProxy implements IFilter {
         $this->filters = $filters;
     }
 
-    public function doFilter(Bee_MVC_IHttpRequest $request, IFilterChain $filterChain) {
+    public function doFilter(IHttpRequest $request, IFilterChain $filterChain) {
         if(!$this->filters || count($this->filters) == 0) {
             $filterChain->doFilter($request);
         } else {
-            $vfc = new Bee_MVC_VirtualFilterChain($filterChain, $this->filters);
+            $vfc = new VirtualFilterChain($filterChain, $this->filters);
             $vfc->doFilter($request);
         }
     }
 
 }
 
-class Bee_MVC_VirtualFilterChain implements IFilterChain {
+class VirtualFilterChain implements IFilterChain {
 
     /**
      * @var IFilterChain
@@ -86,7 +83,7 @@ class Bee_MVC_VirtualFilterChain implements IFilterChain {
         $this->filters = $filters;
     }
 
-    public function doFilter(Bee_MVC_IHttpRequest $request) {
+    public function doFilter(IHttpRequest $request) {
         if($this->currentPosition == sizeof($this->filters)) {
             $this->origFilterChain->doFilter($request);
         } else {

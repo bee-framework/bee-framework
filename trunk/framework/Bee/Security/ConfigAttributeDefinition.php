@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Assert;
 
 /**
  *
@@ -38,7 +39,7 @@ class Bee_Security_ConfigAttributeDefinition {
 					if(is_string($attr)) {
 						$newList[] = new Bee_Security_ConfigAttribute($attr); 
 					} else {
-						Bee_Utils_Assert::isInstanceOf('Bee_Security_IConfigAttribute', $attr, 'List entries must be of type ConfigAttribute');
+						Assert::isInstanceOf('Bee_Security_IConfigAttribute', $attr, 'List entries must be of type ConfigAttribute');
 						$newList[] = $attr;
 					}
 				}
@@ -56,4 +57,3 @@ class Bee_Security_ConfigAttributeDefinition {
 		return $this->configAttributes;
 	}
 }
-?>

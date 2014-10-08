@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Context\Config;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -14,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\IContext;
 
 /**
  * Interface to be implemented by beans that wish to be aware of their
@@ -31,15 +33,15 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-interface Bee_Context_Config_IContextAware {
+interface IContextAware {
 	
 	/**
 	 * Callback that supplies the owning context to a bean instance.
 	 * <p>Invoked after the population of normal bean properties
 	 * but before an initialization callback such as
 	 * {@link InitializingBean#afterPropertiesSet()} or a custom init-method.
-	 * @param Bee_IContext $context owning Context (never <code>null</code>).
+	 * @param IContext $context owning Context (never <code>null</code>).
 	 * The bean can immediately call methods on the context.
 	 */
-	public function setBeeContext(Bee_IContext $context);
+	public function setBeeContext(IContext $context);
 }

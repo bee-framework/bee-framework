@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 use Bee\Context\Config\IInstantiationAwareBeanPostProcessor;
+use Bee\Utils\IOrdered;
 
 /**
  * User: mp
@@ -22,7 +23,7 @@ use Bee\Context\Config\IInstantiationAwareBeanPostProcessor;
  * Time: 12:25:41 AM
  */
 
-class AbstractAutoProxyCreator implements IInstantiationAwareBeanPostProcessor, Bee_Utils_IOrdered {
+class AbstractAutoProxyCreator implements IInstantiationAwareBeanPostProcessor, IOrdered {
 
     /**
      * @var int

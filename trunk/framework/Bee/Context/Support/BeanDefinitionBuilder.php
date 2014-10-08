@@ -16,8 +16,9 @@ namespace Bee\Context\Support;
  * limitations under the License.
  */
 use Bee\Beans\PropertyValue;
+use Bee\Context\Config\BeanDefinition\AbstractBeanDefinition;
+use Bee\Context\Config\BeanDefinition\GenericBeanDefinition;
 use Bee\Context\Config\RuntimeBeanReference;
-use Bee_Context_Config_BeanDefinition_Generic;
 
 /**
  * User: mp
@@ -35,7 +36,7 @@ class BeanDefinitionBuilder {
      */
     public static function genericBeanDefinition($beanClassName = null) {
         $builder = new BeanDefinitionBuilder();
-        $builder->beanDefinition = new Bee_Context_Config_BeanDefinition_Generic();
+        $builder->beanDefinition = new GenericBeanDefinition();
         $builder->beanDefinition->setBeanClassName($beanClassName);
         return $builder;
     }
@@ -50,7 +51,7 @@ class BeanDefinitionBuilder {
      */
     public static function rootBeanDefinition($beanClassName, $factoryMethodName = null) {
         $builder = new BeanDefinitionBuilder();
-        $builder->beanDefinition = new Bee_Context_Config_BeanDefinition_Generic();
+        $builder->beanDefinition = new GenericBeanDefinition();
         $builder->beanDefinition->setBeanClassName($beanClassName);
         $builder->beanDefinition->setFactoryMethodName($factoryMethodName);
         return $builder;
@@ -64,14 +65,14 @@ class BeanDefinitionBuilder {
      */
     public static function childBeanDefinition($parentName) {
         $builder = new BeanDefinitionBuilder();
-        $builder->beanDefinition = new Bee_Context_Config_BeanDefinition_Generic();
+        $builder->beanDefinition = new GenericBeanDefinition();
         $builder->beanDefinition->setParentName($parentName);
         return $builder;
     }
 
     /**
      * The <code>BeanDefinition</code> instance we are creating.
-     * @var \Bee_Context_Config_BeanDefinition_Abstract
+     * @var AbstractBeanDefinition
      */
     private $beanDefinition;
 
@@ -84,7 +85,7 @@ class BeanDefinitionBuilder {
 
     /**
      * Return the current BeanDefinition object.
-     * @return \Bee_Context_Config_BeanDefinition_Abstract
+     * @return AbstractBeanDefinition
      */
     public function getBeanDefinition() {
         return $this->beanDefinition;

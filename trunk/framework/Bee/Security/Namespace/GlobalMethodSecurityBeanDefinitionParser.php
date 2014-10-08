@@ -15,10 +15,13 @@
  * limitations under the License.
  */
 use Bee\Beans\PropertyValue;
+use Bee\Context\BeanCreationException;
+use Bee\Context\Config\BeanDefinition\GenericBeanDefinition;
 use Bee\Context\Config\RuntimeBeanReference;
 use Bee\Context\Support\BeanDefinitionBuilder;
 use Bee\Context\Xml\ParserContext;
 use Bee\Context\Xml\XmlNamespace\IBeanDefinitionParser;
+use Bee\Utils\Strings;
 
 /**
  * Created by IntelliJ IDEA.
@@ -59,7 +62,7 @@ class Bee_Security_Namespace_GlobalMethodSecurityBeanDefinitionParser implements
         // Register the applicable AccessDecisionManager, handling the special JSR 250 voter if being used
         $accessManagerId = $element->getAttribute(self::ATT_ACCESS_MGR);
 
-        if (!Bee_Utils_Strings::hasText($accessManagerId)) {
+        if (!Strings::hasText($accessManagerId)) {
             Bee_Security_Config_Utils::registerDefaultAccessManagerIfNecessary($parserContext);
             $accessManagerId = Bee_Security_Config_IBeanIds::ACCESS_MANAGER;
         }
@@ -89,20 +92,20 @@ class Bee_Security_Namespace_GlobalMethodSecurityBeanDefinitionParser implements
 	 * @param ParserContext $parserContext
 	 * @param array $delegates
 	 * @param DOMElement $element
-	 * @throws Bee_Context_BeanCreationException
+	 * @throws BeanCreationException
 	 */
 	private function registerDelegatingMethodDefinitionSource(ParserContext $parserContext, array &$delegates, DOMElement $element) {
         if ($parserContext->getRegistry()->containsBeanDefinition(Bee_Security_Config_IBeanIds::DELEGATING_METHOD_DEFINITION_SOURCE)) {
             $parserContext->getReaderContext()->error("Duplicate <global-method-security> detected.", $element);
         }
-        $delegatingMethodDefinitionSource = new Bee_Context_Config_BeanDefinition_Generic();
+        $delegatingMethodDefinitionSource = new GenericBeanDefinition();
         $delegatingMethodDefinitionSource->setBeanClassName('Bee_Security_Intercept_DelegatingMethodDefinitionSource');
         $delegatingMethodDefinitionSource->addPropertyValue(new PropertyValue('methodDefinitionSources', $delegates));
         $parserContext->getRegistry()->registerBeanDefinition(Bee_Security_Config_IBeanIds::DELEGATING_METHOD_DEFINITION_SOURCE, $delegatingMethodDefinitionSource);
     }
 
     private function registerMethodSecurityInterceptor(ParserContext $parserContext, $accessManagerId, DOMElement $element) {
-        $interceptor = new Bee_Context_Config_BeanDefinition_Generic();
+        $interceptor = new GenericBeanDefinition();
         $interceptor->setBeanClassName('Bee_Security_Intercept_MethodSecurityInterceptor');
         $interceptor->addPropertyValue(new PropertyValue('accessDecisionManager', new RuntimeBeanReference(array($accessManagerId))));
         $interceptor->addPropertyValue(new PropertyValue('authenticationManager', new RuntimeBeanReference(array(Bee_Security_Config_IBeanIds::AUTHENTICATION_MANAGER))));
@@ -111,13 +114,13 @@ class Bee_Security_Namespace_GlobalMethodSecurityBeanDefinitionParser implements
 
 //        $parserContext->registerComponent(new BeanComponentDefinition($interceptor, Bee_Security_Config_IBeanIds::METHOD_SECURITY_INTERCEPTOR));
 
-        $interceptorPostProcessor = new Bee_Context_Config_BeanDefinition_Generic();
+        $interceptorPostProcessor = new GenericBeanDefinition();
         $interceptorPostProcessor->setBeanClassName('Bee_Security_Config_MethodSecurityInterceptorPostProcessor');
         $parserContext->getRegistry()->registerBeanDefinition(Bee_Security_Config_IBeanIds::METHOD_SECURITY_INTERCEPTOR_POST_PROCESSOR, $interceptorPostProcessor);
     }
 
     private function registerAdvisor(ParserContext $parserContext) {
-        $advisor = new Bee_Context_Config_BeanDefinition_Generic();
+        $advisor = new GenericBeanDefinition();
         $advisor->setBeanClassName('Bee_Security_Intercept_MethodDefinitionSourceAdvisor');
         $advisor->addConstructorArgumentValue(new PropertyValue(0, Bee_Security_Config_IBeanIds::METHOD_SECURITY_INTERCEPTOR));
         $advisor->addConstructorArgumentValue(new PropertyValue(1, new RuntimeBeanReference(array(Bee_Security_Config_IBeanIds::DELEGATING_METHOD_DEFINITION_SOURCE))));

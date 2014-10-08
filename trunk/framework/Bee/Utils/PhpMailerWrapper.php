@@ -15,7 +15,6 @@ namespace Bee\Utils;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_Utils_Strings;
 use Exception;
 use PHPMailer;
 
@@ -308,12 +307,12 @@ class PhpMailerWrapper {
 				$phpMailer->Host = $this->getSmtpHost();
 				$phpMailer->Port = intval($this->getSmtpPort());
 
-				if (Bee_Utils_Strings::hasText($this->getSmtpUsername())) {
+				if (Strings::hasText($this->getSmtpUsername())) {
 					$phpMailer->SMTPAuth = true;
 					$phpMailer->Username = $this->getSmtpUsername();
 					$phpMailer->Password = $this->getSmtpPassword();
 
-					if (Bee_Utils_Strings::hasText($this->getSmtpSecurity())) {
+					if (Strings::hasText($this->getSmtpSecurity())) {
 						$phpMailer->SMTPSecure = $this->getSmtpSecurity();
 					}
 				} else {

@@ -1,6 +1,5 @@
 <?php
 namespace Bee\MVC\Controller\Multiaction\HandlerMethodInvocator;
-
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -17,22 +16,26 @@ namespace Bee\MVC\Controller\Multiaction\HandlerMethodInvocator;
  * limitations under the License.
  */
 use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
+use Bee\Context\Config\IContextAware;
+use Bee\IContext;
 use Bee\MVC\Controller\Multiaction\AbstractAnnotationBasedResolver;
 use Bee\MVC\Controller\Multiaction\IHandlerMethodInvocator;
-use Bee_Cache_Manager;
-use Bee_Context_Config_IContextAware;
-use Bee_Framework;
-use Bee_IContext;
-use Bee_MVC_IHttpRequest;
-use Exception;
+use Bee\MVC\IController;
+use Bee\MVC\IHttpRequest;
+use Bee\MVC\ModelAndView;
 
 /**
  * Class AnnotationBasedInvocator
  * @package Bee\MVC\Controller\Multiaction\HandlerMethodInvocator
  */
-class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implements IHandlerMethodInvocator, Bee_Context_Config_IContextAware {
+class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implements IHandlerMethodInvocator, IContextAware {
 
 	const DEFAULT_METHOD_CACHE_KEY_PREFIX = 'BeeDefaultHandlerMethodCache_';
+
+	/**
+	 * @var string
+	 */
+	private $defaultMethodName;
 
 	/**
 	 * @var PropertyEditorRegistry
@@ -48,39 +51,40 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 	 * @return array
 	 */
 	protected function getDefaultMethodInvocation() {
-		if (!is_array($this->defaultMethodInvocation)) {
+		if (!$this->defaultMethodInvocation instanceof MethodInvocation) {
 			// todo: fetch default invocation from cache or rebuild
 
-			$ctrl = $this->getController();
+			$ctrl = $this->getDelegatingHandler();
 			$delegateClassName = get_class($ctrl->getDelegate());
+			$defaultMethodName = $this->getDefaultMethodName() ?: $ctrl->getDefaultMethodName();
 
-			$cacheKey = self::DEFAULT_METHOD_CACHE_KEY_PREFIX . $delegateClassName.'::'.$ctrl->getDefaultMethodName();
-			if (Bee_Framework::getProductionMode()) {
-				try {
-					$this->defaultMethodInvocation = Bee_Cache_Manager::retrieve($cacheKey);
-				} catch (Exception $e) {
-					$this->getLog()->debug('No cached default method invocation for "' . $delegateClassName . '::'. $ctrl->getDefaultMethodName() .'" found, annotation parsing required');
-				}
-			}
+//			$cacheKey = self::DEFAULT_METHOD_CACHE_KEY_PREFIX . $delegateClassName.'::'.$defaultMethodName;
+//			if (Framework::getProductionMode()) {
+//				try {
+//					$this->defaultMethodInvocation = Manager::retrieve($cacheKey);
+//				} catch (Exception $e) {
+//					$this->getLog()->debug('No cached default method invocation for "' . $delegateClassName . '::'. $defaultMethodName .'" found, annotation parsing required');
+//				}
+//			}
 
 			if (!$this->defaultMethodInvocation) {
-				$methodMeta = RegexMappingInvocationResolver::getCachedMethodMetadata(new \ReflectionMethod($delegateClassName, $ctrl->getDefaultMethodName()), $this->getPropertyEditorRegistry());
-				$this->defaultMethodInvocation = new MethodInvocation($methodMeta);
+				$this->defaultMethodInvocation = new MethodInvocation(RegexMappingInvocationResolver::getCachedMethodMetadata(new \ReflectionMethod($delegateClassName, $defaultMethodName), $this->getPropertyEditorRegistry()));
 			}
 
 			// todo: fix production mode method caching
-//			if (Bee_Framework::getProductionMode()) {
-//				Bee_Cache_Manager::store($cacheKey, $this->defaultMethodInvocation);
+//			if (Framework::getProductionMode()) {
+//				Manager::store($cacheKey, $this->defaultMethodInvocation);
 //			}
 		}
 		return $this->defaultMethodInvocation;
 	}
 
 	/**
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return \Bee_MVC_ModelAndView
+	 * @param IHttpRequest $request
+	 * @param array $fixedParams
+	 * @return ModelAndView
 	 */
-	public function invokeHandlerMethod(Bee_MVC_IHttpRequest $request) {
+	public function invokeHandlerMethod(IHttpRequest $request, array $fixedParams = array()) {
 		/** @var MethodInvocation $resolvedMethod */
 		$resolvedMethod = $this->resolveMethodForRequest($request);
 
@@ -88,14 +92,17 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 			$resolvedMethod = $this->getDefaultMethodInvocation();
 		}
 
+		// todo:
 		$methodMeta = $resolvedMethod->getMethodMeta();
 		$method = $methodMeta->getMethod();
 		$args = array();
 		foreach ($method->getParameters() as $parameter) {
 			$pos = $parameter->getPosition();
 			$type = $methodMeta->getTypeMapping($pos);
-			if ($type == 'Bee_MVC_IHttpRequest') {
+			if ($type == 'Bee\MVC\IHttpRequest') {
 				$args[$pos] = $request;
+			} else if (array_key_exists($type, $fixedParams)) {
+				$args[$pos] = $fixedParams[$type];
 			} else {
 				$propEditor = $this->propertyEditorRegistry->getEditor($type);
 				$posMap = $resolvedMethod->getUrlParameterPositions();
@@ -108,15 +115,15 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 				}
 			}
 		}
-		return $method->invokeArgs($this->getController()->getDelegate(), $args);
+		return $method->invokeArgs($this->getDelegatingHandler()->getDelegate(), $args);
 	}
 
 	/**
 	 * @param IInvocationResolver $delegate
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @return mixed
 	 */
-	protected function obtainMethodFromDelegate($delegate, Bee_MVC_IHttpRequest $request) {
+	protected function obtainMethodFromDelegate($delegate, IHttpRequest $request) {
 		return $delegate->getInvocationDefinition($request);
 	}
 
@@ -129,9 +136,9 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 	}
 
 	/**
-	 * @param Bee_IContext $context
+	 * @param IContext $context
 	 */
-	public function setBeeContext(Bee_IContext $context) {
+	public function setBeeContext(IContext $context) {
 		$this->propertyEditorRegistry = new PropertyEditorRegistry($context);
 	}
 
@@ -140,5 +147,19 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 	 */
 	public function getPropertyEditorRegistry() {
 		return $this->propertyEditorRegistry;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getDefaultMethodName() {
+		return $this->defaultMethodName;
+	}
+
+	/**
+	 * @param string $defaultMethodName
+	 */
+	public function setDefaultMethodName($defaultMethodName) {
+		$this->defaultMethodName = $defaultMethodName;
 	}
 }

@@ -15,7 +15,7 @@ namespace Bee\MVC\Controller\Multiaction\HandlerMethodInvocator;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_MVC_IHttpRequest;
+use Bee\MVC\IHttpRequest;
 
 /**
  * Interface IInvocationResolver
@@ -23,8 +23,8 @@ use Bee_MVC_IHttpRequest;
  */
 interface IInvocationResolver {
 	/**
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @return MethodInvocation
 	 */
-	public function getInvocationDefinition(Bee_MVC_IHttpRequest $request);
+	public function getInvocationDefinition(IHttpRequest $request);
 } 

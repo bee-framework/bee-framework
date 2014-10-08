@@ -15,9 +15,9 @@ namespace Bee\MVC\Redirect;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_MVC_IHttpRequest;
-use Bee_Utils_Env;
-
+use Bee\MVC\HttpRequest;
+use Bee\MVC\IHttpRequest;
+use Bee\Utils\Env;
 
 /**
  * Class RedirectRequestStorage
@@ -59,18 +59,18 @@ class RedirectRequestStorage extends AbstractRedirectStorage {
 		$this->postParams = $_POST;
 		$this->requestParams = $_REQUEST;
 		$this->serverVars = $_SERVER;
-		$this->headers = Bee_Utils_Env::getRequestHeaders();
+		$this->headers = Env::getRequestHeaders();
 	}
 
 	/**
 	 * @param RedirectedRequestBuilder $requestBuilder
-	 * @return \Bee_MVC_IHttpRequest
+	 * @return IHttpRequest
 	 */
 	public function restoreRequestObject(RedirectedRequestBuilder $requestBuilder) {
 		$_GET = $this->getParams;
 		$_POST = $this->postParams;
 		$_REQUEST = $this->requestParams;
 		$_SERVER = $this->serverVars;
-		return $requestBuilder->massageConstructedRequest(new \Bee_MVC_HttpRequest(null, null, null, $this->headers));
+		return $requestBuilder->massageConstructedRequest(new HttpRequest(null, null, null, $this->headers));
 	}
 }

@@ -15,8 +15,8 @@ namespace Bee\Beans;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_Context_InvalidPropertyException;
-use Bee_Utils_Types;
+use Bee\Context\InvalidPropertyException;
+use Bee\Utils\Types;
 
 /**
  * Enter description here...
@@ -49,7 +49,7 @@ class BeanWrapper {
 		$methodName = $prefix.ucfirst($propertyName);
 		$method = array($this->object, $methodName);
 		if(!is_callable($method)) {
-			 throw new Bee_Context_InvalidPropertyException($propertyName, Bee_Utils_Types::getType($this->object), 'no such method found: '.$methodName);
+			 throw new InvalidPropertyException($propertyName, Types::getType($this->object), 'no such method found: '.$methodName);
 		}
 		return $method;
 	}
@@ -60,7 +60,7 @@ class BeanWrapper {
 
 	public final function setPropertyValues(array $propertyValues) {
 		foreach ($propertyValues as $name => $propertyValue) {
-			if (!is_string($propertyValue) && Bee_Utils_Types::isAssignable($propertyValue, 'Bee\Beans\PropertyValue')) {
+			if (!is_string($propertyValue) && Types::isAssignable($propertyValue, 'Bee\Beans\PropertyValue')) {
 				$this->setPropertyValueWithPropertyValue($propertyValue);
 			} else {
 				$this->setPropertyValue($name, $propertyValue);

@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,23 +22,32 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_BeanNotOfRequiredTypeException extends Bee_Context_BeansException {
+class BeanNotOfRequiredTypeException extends BeansException {
 	
 	const EXCEPTION_MESSAGE = 'Bean with name %s has type %s (should be %s).';
-	
+
+	/**
+	 * @var string
+	 */
 	private $name;
+
+	/**
+	 * @var string
+	 */
 	private $requiredType;
+
+	/**
+	 * @var string
+	 */
 	private $actualType;
-	
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
 	 * @param String $name
 	 * @param String $requiredType
 	 * @param String $actualType
-	 * @return void
+	 * @return BeanNotOfRequiredTypeException
 	 */
 	public function __construct($name, $requiredType, $actualType=null) {
 		parent::__construct(sprintf(self::EXCEPTION_MESSAGE, $name, $actualType, $requiredType));
@@ -45,9 +55,7 @@ class Bee_Context_BeanNotOfRequiredTypeException extends Bee_Context_BeansExcept
 		$this->requiredType = $requiredType;
 		$this->actualType = $actualType;
 	}
-	
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -57,8 +65,6 @@ class Bee_Context_BeanNotOfRequiredTypeException extends Bee_Context_BeansExcept
 		return $this->name;
 	}
 
-	
-	
 	/**
 	 * Enter description here...
 	 *
@@ -68,8 +74,6 @@ class Bee_Context_BeanNotOfRequiredTypeException extends Bee_Context_BeansExcept
 		return $this->requiredType;
 	}
 
-	
-	
 	/**
 	 * Enter description here...
 	 *
@@ -79,5 +83,3 @@ class Bee_Context_BeanNotOfRequiredTypeException extends Bee_Context_BeansExcept
 		return $this->actualType;
 	}
 }
-
-?>

@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Utils;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -14,13 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use DOMCharacterData;
+use DOMComment;
+use DOMElement;
+use DOMEntityReference;
+use DOMNode;
 
 /**
  * Enter description here...
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Utils_Dom {
+class Dom {
 	
     /**
      * Retrieve all child elements of the given DOM element that match any of
@@ -74,8 +80,8 @@ class Bee_Utils_Dom {
 	 * @return boolean
 	 */
 	public static function nodeNameEquals(DOMNode $node, $desiredName) {
-		Bee_Utils_Assert::notNull($node, 'Node must not be null');
-		Bee_Utils_Assert::hasText($desiredName, 'Desired name must be set');
+		Assert::notNull($node, 'Node must not be null');
+		Assert::hasText($desiredName, 'Desired name must be set');
 		return self::nodeNameMatch($node, $desiredName);
 	}
 	
@@ -96,7 +102,7 @@ class Bee_Utils_Dom {
 	 * @return String
 	 */
 	public static function getTextValue(DOMElement $valueEle) {
-		Bee_Utils_Assert::notNull($valueEle, 'Element must not be null');
+		Assert::notNull($valueEle, 'Element must not be null');
 		$value = '';
 		$nl = $valueEle->childNodes;
 		foreach($nl as $node) {

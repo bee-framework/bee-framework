@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\AbstractContext;
+use Bee\Context\Config\IContextAware;
+use Bee\Context\IFactoryBean;
+use Bee\IContext;
+use Bee\Utils\Assert;
+use Bee\Utils\Types;
 
 /**
  *
@@ -24,7 +30,7 @@
  * Time: 7:18:00 PM
  */
 
-class Bee_AOP_Scope_ScopedProxyFactoryBean implements Bee_Context_IFactoryBean, Bee_Context_Config_IContextAware {
+class Bee_AOP_Scope_ScopedProxyFactoryBean implements IFactoryBean, IContextAware {
 
     /**
      * The name of the target bean
@@ -33,7 +39,7 @@ class Bee_AOP_Scope_ScopedProxyFactoryBean implements Bee_Context_IFactoryBean, 
     private $targetBeanName;
 
     /**
-     * @var Bee_Context_Abstract
+     * @var AbstractContext
      */
     private $beeContext;
 
@@ -47,8 +53,11 @@ class Bee_AOP_Scope_ScopedProxyFactoryBean implements Bee_Context_IFactoryBean, 
         $this->targetBeanName = $targetBeanName;
     }
 
-    function setBeeContext(Bee_IContext $context) {
-		Bee_Utils_Assert::isInstanceOf('Bee_Context_Abstract', $context);
+	/**
+	 * @param IContext $context
+	 */
+    function setBeeContext(IContext $context) {
+		Assert::isInstanceOf('Bee\Context\AbstractContext', $context);
         $this->beeContext = $context;
     }
 
@@ -72,7 +81,7 @@ class Bee_AOP_Scope_ScopedProxyFactoryBean implements Bee_Context_IFactoryBean, 
 
     function getObjectType() {
         if($this->proxy != null) {
-            return Bee_Utils_Types::getType($this->proxy);
+            return Types::getType($this->proxy);
         }
 		// todo: handle factories properly
 		$targetBeanDefinition = $this->beeContext->getBeanDefinition($this->targetBeanName);
@@ -83,5 +92,3 @@ class Bee_AOP_Scope_ScopedProxyFactoryBean implements Bee_Context_IFactoryBean, 
         return true; 
     }
 }
-
-?>

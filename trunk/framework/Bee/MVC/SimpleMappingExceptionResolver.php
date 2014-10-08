@@ -1,4 +1,5 @@
 <?php
+namespace Bee\MVC;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -14,10 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\IController;
-use Bee\MVC\IHandlerExceptionResolver;
+use Bee\Utils\Strings;
+use Exception;
+use Logger;
 
-class Bee_MVC_SimpleMappingExceptionResolver implements IHandlerExceptionResolver {
+class SimpleMappingExceptionResolver implements IHandlerExceptionResolver {
 
 	const MODEL_HANDLER_EXCEPTION_KEY = 'handler_excpetion';
 
@@ -83,12 +85,12 @@ class Bee_MVC_SimpleMappingExceptionResolver implements IHandlerExceptionResolve
 	}
 
 	/**
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @param IController $handler
 	 * @param Exception $ex
-	 * @return Bee_MVC_ModelAndView|bool
+	 * @return ModelAndView|bool
 	 */
-	public function resolveException(Bee_MVC_IHttpRequest $request, IController $handler = null, Exception $ex) {
+	public function resolveException(IHttpRequest $request, IController $handler = null, Exception $ex) {
 		$this->getLog()->info('Trying to map exception', $ex);
 
 		$viewName = false;
@@ -110,12 +112,12 @@ class Bee_MVC_SimpleMappingExceptionResolver implements IHandlerExceptionResolve
 			}
 		}
 
-		if (!$viewName && Bee_Utils_Strings::hasText($this->defaultErrorView)) {
+		if (!$viewName && Strings::hasText($this->defaultErrorView)) {
 			$viewName = $this->defaultErrorView;
 			$this->getLog()->debug('Resolving to default error view');
 		}
 
 		$this->getLog()->debug('Resolved error view: ' . $viewName);
-		return $viewName ? new Bee_MVC_ModelAndView(array(self::MODEL_HANDLER_EXCEPTION_KEY => $ex), $viewName) : false;
+		return $viewName ? new ModelAndView(array(self::MODEL_HANDLER_EXCEPTION_KEY => $ex), $viewName) : false;
 	}
 }

@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Exception;
 
 /**
  * Interface to be implemented by objects used within a {@link BeanFactory}
@@ -45,7 +47,7 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-interface Bee_Context_IFactoryBean {
+interface IFactoryBean {
 	
     /**
      * Return an instance (possibly shared or independent) of the object
@@ -59,10 +61,10 @@ interface Bee_Context_IFactoryBean {
      * objects. The factory will consider this as normal value to be used; it
      * will not throw a FactoryBeanNotInitializedException in this case anymore.
      * FactoryBean implementations are encouraged to throw
-     * Bee_Context_FactoryBeanNotInitializedException themselves now, as appropriate.
-     * @return an instance of the bean (can be <code>null</code>)
+     * Bee\Context\FactoryBeanNotInitializedException themselves now, as appropriate.
+     * @return mixed an instance of the bean (can be <code>null</code>)
      * @throws Exception in case of creation errors
-     * @see Bee_Context_FactoryBeanNotInitializedException
+     * @see FactoryBeanNotInitializedException
      */
     function getObject();
 
@@ -113,4 +115,3 @@ interface Bee_Context_IFactoryBean {
     function isSingleton();
 
 }
-?>

@@ -16,14 +16,14 @@ namespace Bee\Context\Config;
  * limitations under the License.
  */
 
+use Bee\Context\AliasRegistry;
+use Bee\Context\BeanDefinitionStoreException;
+use Bee\Context\Config\BeanDefinition\GenericBeanDefinition;
+use Bee\Context\NoSuchBeanDefinitionException;
 use Bee\Context\Support\ContextUtils;
-use Bee_Context_BeanDefinitionStoreException;
-use Bee_Context_Config_BeanDefinition_Generic;
-use Bee_Context_NoSuchBeanDefinitionException;
-use Bee_Utils_Types;
-use Bee_Context_AliasRegistry;
+use Bee\Utils\Types;
 
-class BasicBeanDefinitionRegistry extends Bee_Context_AliasRegistry implements IBeanDefinitionRegistry {
+class BasicBeanDefinitionRegistry extends AliasRegistry implements IBeanDefinitionRegistry {
 	
 	/**
 	 * Enter description here...
@@ -54,12 +54,16 @@ class BasicBeanDefinitionRegistry extends Bee_Context_AliasRegistry implements I
 	 */
 	private $parentRegistry;
 
+	/**
+	 * @param String $beanName
+	 * @return bool
+	 */
 	public function containsBeanDefinition($beanName) {
 		return array_key_exists($beanName, $this->beanDefinitions);
 	}
 
     /**
-     * @throws Bee_Context_NoSuchBeanDefinitionException
+     * @throws NoSuchBeanDefinitionException
      * @param  $beanName
      * @return IBeanDefinition
      */
@@ -71,7 +75,7 @@ class BasicBeanDefinitionRegistry extends Bee_Context_AliasRegistry implements I
             if(!is_null($parentName)) {
                 $parentName = $this->transformedBeanName($parentName);
                 $parentBd = $this->getBeanDefinition($parentName);
-                $newBd = new Bee_Context_Config_BeanDefinition_Generic($parentBd);
+                $newBd = new GenericBeanDefinition($parentBd);
                 $newBd->overrideFrom($bd);
                 $newBd->setParentName(null);
                 $bd = $newBd;
@@ -82,31 +86,42 @@ class BasicBeanDefinitionRegistry extends Bee_Context_AliasRegistry implements I
 		if(!is_null($this->parentRegistry)) {
 			return $this->parentRegistry->getBeanDefinition($beanName);
 		}
-		throw new Bee_Context_NoSuchBeanDefinitionException($beanName);
+		throw new NoSuchBeanDefinitionException($beanName);
 	}
-	
+
+	/**
+	 * @return int
+	 */
 	public function getBeanDefinitionCount() {
 		return count($this->beanDefinitions);
 	}
-	
+
+	/**
+	 * @return array|\string[]
+	 */
 	public function getBeanDefinitionNames() {
 		return array_keys($this->beanDefinitions);
 	}
-	
+
+	/**
+	 * @param String $beanName
+	 * @param IBeanDefinition $beanDefinition
+	 * @throws BeanDefinitionStoreException
+	 */
 	public function registerBeanDefinition($beanName, IBeanDefinition $beanDefinition) {
 		if (array_key_exists($beanName, $this->beanDefinitions)) {
-			throw new Bee_Context_BeanDefinitionStoreException('Bean name already in use.', $beanName);
+			throw new BeanDefinitionStoreException('Bean name already in use.', $beanName);
 		}
 		$this->beanDefinitions[$beanName] = $beanDefinition;
 
         $beanName = $this->canonicalName($beanName);
         if(!array_key_exists($beanName, $this->beanPostProcessorMap)) {
-            if(Bee_Utils_Types::isAssignable($beanDefinition->getBeanClassName(), 'Bee\Context\Config\IBeanPostProcessor')) {
+            if(Types::isAssignable($beanDefinition->getBeanClassName(), 'Bee\Context\Config\IBeanPostProcessor')) {
                 $this->beanPostProcessorMap[$beanName] = true;
-                if (Bee_Utils_Types::isAssignable($beanDefinition->getBeanClassName(), 'Bee\Context\Config\IInstantiationAwareBeanPostProcessor')) {
+                if (Types::isAssignable($beanDefinition->getBeanClassName(), 'Bee\Context\Config\IInstantiationAwareBeanPostProcessor')) {
                     $this->hasInstantiationAwareBeanPostProcessors = true;
                 }
-                if (Bee_Utils_Types::isAssignable($beanDefinition->getBeanClassName(), 'Bee\Context\Config\IDestructionAwareBeanPostProcessor')) {
+                if (Types::isAssignable($beanDefinition->getBeanClassName(), 'Bee\Context\Config\IDestructionAwareBeanPostProcessor')) {
                     $this->hasDestructionAwareBeanPostProcessors = true;
                 }
             }
@@ -115,7 +130,7 @@ class BasicBeanDefinitionRegistry extends Bee_Context_AliasRegistry implements I
 	
 	public function removeBeanDefinition($beanName) {
 		if (!array_key_exists($beanName, $this->beanDefinitions)) {
-			throw new Bee_Context_NoSuchBeanDefinitionException($beanName);
+			throw new NoSuchBeanDefinitionException($beanName);
 		}
 		unset($this->beanDefinitions[$beanName]);
 	}
@@ -146,7 +161,7 @@ class BasicBeanDefinitionRegistry extends Bee_Context_AliasRegistry implements I
 //		if(!is_null($parentName)) {
 //			$parentName = $this->transformedBeanName($parentName);
 //			$parentBd = $this->mergeBeanDefinition($parentName);
-//			$newBd = new Bee_Context_Config_BeanDefinition_Generic($parentBd);
+//			$newBd = new GenericBeanDefinition($parentBd);
 //			$newBd->overrideFrom($bd);
 //			$newBd->setParentName(null);
 //			$bd = $newBd;

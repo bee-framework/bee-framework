@@ -15,6 +15,7 @@ namespace Bee\Persistence\Doctrine2;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Framework;
 use Doctrine\DBAL\Logging\SQLLogger;
 
 /**
@@ -64,7 +65,7 @@ class Log4PHPLogger implements SQLLogger {
 	 */
 	protected static function getLog() {
 		if (!self::$log) {
-			self::$log = \Bee_Framework::getLoggerForClass(__CLASS__);
+			self::$log = Framework::getLoggerForClass(__CLASS__);
 		}
 		return self::$log;
 	}

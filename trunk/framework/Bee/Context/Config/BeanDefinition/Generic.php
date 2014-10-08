@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Context\Config\BeanDefinition;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -22,7 +23,7 @@ use Bee\Context\Config\IBeanDefinition;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_Config_BeanDefinition_Generic extends Bee_Context_Config_BeanDefinition_Abstract {
+class GenericBeanDefinition extends AbstractBeanDefinition {
 	
 	private $parentName;
 

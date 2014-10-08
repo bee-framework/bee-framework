@@ -21,6 +21,8 @@
  * Time: 16:17
  */
 
+use Bee\Framework;
+
 require_once 'Source/Block.php';
 
 class Bee_Weaving_Enhancer {
@@ -89,7 +91,7 @@ class Bee_Weaving_Enhancer {
         $classNameToCreate = $this->className;
 		$templateClassName = $classNameToCreate;
 
-//        if(class_exists($classNameToCreate, false) /* && !Bee_Utils_Types::implementsInterface($classNameToCreate, '')  || interface_exists($classNameToCreate, false)*/) {
+//        if(class_exists($classNameToCreate, false) /* && !Types::implementsInterface($classNameToCreate, '')  || interface_exists($classNameToCreate, false)*/) {
 //            // must create subclass
 //			$classNameToCreate .= self::ENHANCED_SUFFIX;
 //        }
@@ -98,15 +100,15 @@ class Bee_Weaving_Enhancer {
 			return $classNameToCreate;
 		}
 
-		if(!Bee_Framework::getEnhancedClassesStore()->hasStoredClass($classNameToCreate)) {
+		if(!Framework::getEnhancedClassesStore()->hasStoredClass($classNameToCreate)) {
 			$incPaths = explode(PATH_SEPARATOR, get_include_path());
 
-			foreach(Bee_Framework::getClassFileLocations($templateClassName) as $loc) {
+			foreach(Framework::getClassFileLocations($templateClassName) as $loc) {
 				foreach($incPaths as $incPath) {
 					$classFile = $incPath . DIRECTORY_SEPARATOR . $loc;
 					if(file_exists($classFile)) {
 						$this->enhanceClass(file_get_contents($classFile));
-						Bee_Framework::getEnhancedClassesStore()->storeClass($classNameToCreate, $this->toSourceCode());
+						Framework::getEnhancedClassesStore()->storeClass($classNameToCreate, $this->toSourceCode());
 //						file_put_contents($enhancedClassLocation, $this->toSourceCode());
 						break 2;
 					}
@@ -114,7 +116,7 @@ class Bee_Weaving_Enhancer {
 			}
 		}
 
-		if (Bee_Framework::getEnhancedClassesStore()->loadClass($classNameToCreate)) {
+		if (Framework::getEnhancedClassesStore()->loadClass($classNameToCreate)) {
 			return $classNameToCreate;
 		}
         return false;
@@ -272,7 +274,7 @@ class Bee_Weaving_Enhancer {
      * @return mixed
      */
 //    protected function getEnhancedSource() {
-//        return Bee_Cache_Manager::retrieveCachable(new Bee_Weaving_Enhancer_Cacheable($this));
+//        return Manager::retrieveCachable(new Bee_Weaving_Enhancer_Cacheable($this));
 //    }
 
     private function checkBlockBegins() {
@@ -351,7 +353,7 @@ class Bee_Weaving_Enhancer {
 /**
  * todo: use this in a sensible way...
  */
-//class Bee_Weaving_Enhancer_Cacheable implements Bee_Cache_ICachableResource {
+//class Bee_Weaving_Enhancer_Cacheable implements ICachableResource {
 //
 //    /**
 //     * @var Bee_Weaving_Enhancer

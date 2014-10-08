@@ -15,17 +15,20 @@ namespace Bee\MVC;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_MVC_IHttpRequest;
 use Exception;
 
+/**
+ * Interface IHandlerExceptionResolver
+ * @package Bee\MVC
+ */
 interface IHandlerExceptionResolver {
 
 	/**
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @param IController $handler
 	 * @param Exception $ex
-	 * @return \Bee_MVC_ModelAndView
+	 * @return ModelAndView
 	 */
-	public function resolveException(Bee_MVC_IHttpRequest $request, IController $handler = null, Exception $ex);
+	public function resolveException(IHttpRequest $request, IController $handler = null, Exception $ex);
 }

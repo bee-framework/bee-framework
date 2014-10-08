@@ -1,4 +1,5 @@
 <?php
+namespace Bee;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -14,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\BeanNotOfRequiredTypeException;
+use Bee\Context\BeansException;
+use Bee\Context\NoSuchBeanDefinitionException;
 
 /**
  * Enter description here...
@@ -21,7 +25,7 @@
  * @author Michael Plomer <michael.plomer@iter8.de>
  * @author Benjamin Hartmann
  */
-interface Bee_IContext {
+interface IContext {
 	
 	const FACTORY_BEAN_PREFIX = '&';
 	
@@ -37,9 +41,9 @@ interface Bee_IContext {
 	/**
 	 * Enter description here...
 	 *
-	 * @throws Bee_Context_NoSuchBeanDefinitionException
-	 * @throws Bee_Context_BeanNotOfRequiredTypeException
-	 * @throws Bee_Context_BeansException
+	 * @throws NoSuchBeanDefinitionException
+	 * @throws BeanNotOfRequiredTypeException
+	 * @throws BeansException
 	 * 
 	 * @param String $beanName
 	 * @param String $requiredType
@@ -51,7 +55,7 @@ interface Bee_IContext {
 	/**
 	 * Enter description here...
 	 *
-	 * @throws Bee_Context_NoSuchBeanDefinitionException
+	 * @throws NoSuchBeanDefinitionException
 	 * 
 	 * @param String $beanName
 	 * @param String $type
@@ -63,7 +67,7 @@ interface Bee_IContext {
 	/**
 	 * Enter description here...
 	 *
-	 * @throws Bee_Context_NoSuchBeanDefinitionException
+	 * @throws NoSuchBeanDefinitionException
 	 * 
 	 * @param String $beanName
 	 * @return String
@@ -80,7 +84,7 @@ interface Bee_IContext {
 	/**
 	 * Enter description here...
 	 *
-	 * @return Bee_IContext
+	 * @return IContext
 	 */
 	public function getParent();
 

@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Cache\Manager;
 
 /**
  * Cached representation of a file system node (cf. {@link Bee_Filesystem_INode}). Uses a {@link Bee_Filesystem_CachedNode_Cachable}
@@ -131,8 +132,8 @@ class Bee_Filesystem_CachedNode extends Bee_Filesystem_AbstractNode {
 	
 	protected final function afterDelete() {
 		clearstatcache(); // this might be necessary if the file system cache is accessed before the move operation
-		Bee_Cache_Manager::evict(Bee_Filesystem_CachedNode_Cachable::createKey($this->getRealPath()));
-//		$provider = Bee_Cache_Manager::getProvider();
+		Manager::evict(Bee_Filesystem_CachedNode_Cachable::createKey($this->getRealPath()));
+//		$provider = Manager::getProvider();
 //		if(!is_null($provider)) {				
 //			$provider->evict(Bee_Filesystem_CachedNode_Cachable::createKey($this->getRealPath()));
 //			trigger_error("EVICTING ". Bee_Filesystem_CachedNode_Cachable::createKey($this->getRealPath()), E_USER_NOTICE);
@@ -143,8 +144,8 @@ class Bee_Filesystem_CachedNode extends Bee_Filesystem_AbstractNode {
 	protected final function refresh() {
 		clearstatcache();
 //		trigger_error("REFRESHING ". $this->getRealPath(), E_USER_NOTICE);
-		Bee_Cache_Manager::evict(Bee_Filesystem_CachedNode_Cachable::createKey($this->getRealPath()));
-//		$provider = Bee_Cache_Manager::getProvider();
+		Manager::evict(Bee_Filesystem_CachedNode_Cachable::createKey($this->getRealPath()));
+//		$provider = Manager::getProvider();
 //		if(!is_null($provider)) {				
 //			$provider->evict(Bee_Filesystem_CachedNode_Cachable::createKey($this->getRealPath()));
 //		}
@@ -153,7 +154,7 @@ class Bee_Filesystem_CachedNode extends Bee_Filesystem_AbstractNode {
 	}
 	
 	private function loadNodeInfo($directlyFromCache = false) {
-		$provider = Bee_Cache_Manager::getProvider();
+		$provider = Manager::getProvider();
 		$cachable = new Bee_Filesystem_CachedNode_Cachable($this->getRealPath());
 		if(is_null($provider)) {
 			$this->nodeInfo =& $cachable->createContent();
@@ -164,11 +165,10 @@ class Bee_Filesystem_CachedNode extends Bee_Filesystem_AbstractNode {
 				$this->unchanged = true;
 			}
 			if(!$this->nodeInfo) {
-				$cacheInfo = Bee_Cache_Manager::retrieveCachable($cachable, true);
-				$this->nodeInfo =& $cacheInfo[Bee_Cache_Manager::INFO_DATA_KEY];
-				$this->unchanged = $cacheInfo[Bee_Cache_Manager::INFO_CACHE_HIT_KEY];	
+				$cacheInfo = Manager::retrieveCachable($cachable, true);
+				$this->nodeInfo =& $cacheInfo[Manager::INFO_DATA_KEY];
+				$this->unchanged = $cacheInfo[Manager::INFO_CACHE_HIT_KEY];
 			}			
 		}
 	}
 }
-?>

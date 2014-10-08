@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Utils;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,37 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Utils\AntPathDataProvider;
-use Bee\Utils\AntPathMatcher;
 
 /**
  * User: mp
  * Date: 02.07.11
  * Time: 15:00
  */
-class Bee_Utils_AntPathMatcherTest extends AntPathDataProvider {
-
-    /**
-     * @var AntPathMatcher
-     */
-    private $pathMatcher;
+class AntPathMatcherTest extends AntPathMatcherTestBase {
 
     protected function setUp() {
         $this->pathMatcher = new AntPathMatcher();
     }
 
-    /**
-     * @test
-     * @dataProvider matchDataProvider
-     */
-    public function match($pattern, $path, $result) {
-        $this->assertEquals($result, $this->pathMatcher->match($pattern, $path));
-    }
-
-    /**
-     * @test
-     * @dataProvider withMatchStartDataProvider
-     */
+	/**
+	 * @test
+	 * @dataProvider withMatchStartDataProvider
+	 * @param $pattern
+	 * @param $path
+	 * @param $result
+	 */
     public function withMatchStart($pattern, $path, $result) {
         $this->assertEquals($result, $this->pathMatcher->matchStart($pattern, $path));
     }
@@ -58,10 +47,13 @@ class Bee_Utils_AntPathMatcherTest extends AntPathDataProvider {
         $this->assertEquals($result, $this->pathMatcher->match($pattern, $path));
     }
 
-    /**
-     * @test
-     * @dataProvider extractPathWithinPatternDataProvider
-     */
+	/**
+	 * @test
+	 * @dataProvider extractPathWithinPatternDataProvider
+	 * @param $pattern
+	 * @param $path
+	 * @param $result
+	 */
     public function extractPathWithinPattern($pattern, $path, $result) {
         $this->assertEquals($result, $this->pathMatcher->extractPathWithinPattern($pattern, $path));
     }

@@ -21,7 +21,7 @@ use Bee\Context\Config\RuntimeBeanReference;
 use Bee\Context\Support\BeanDefinitionReaderUtils;
 use Bee\Context\Xml\ParserContext;
 use Bee\Context\Xml\XmlNamespace\IBeanDefinitionParser;
-use Bee_MVC_Dispatcher;
+use Bee\MVC\Dispatcher;
 use DOMElement;
 
 /**
@@ -42,7 +42,7 @@ class ViewResolverBeanDefinitionCreator implements IBeanDefinitionParser {
 	 * @return \Bee\Context\Config\IBeanDefinition
 	 */
 	function parse(DOMElement $element, ParserContext $parserContext) {
-		$contextDefinition = BeanDefinitionReaderUtils::createBeanDefinition(null, 'Bee_Context_Xml');
+		$contextDefinition = BeanDefinitionReaderUtils::createBeanDefinition(null, 'Bee\Context\XmlContext');
 
 		$contextLoc = $element->hasAttribute(self::CONTEXT_LOCATION_PROPERTY_NAME) ? $element->getAttribute(self::CONTEXT_LOCATION_PROPERTY_NAME) : false;
 		if(!$contextLoc) {
@@ -57,7 +57,7 @@ class ViewResolverBeanDefinitionCreator implements IBeanDefinitionParser {
 
 		$resolverDefinition = BeanDefinitionReaderUtils::createBeanDefinition(null, 'Bee\MVC\ViewResolver\BasicViewResolver');
 		$resolverDefinition->addPropertyValue(new PropertyValue('context', new RuntimeBeanReference(array(self::DEFAULT_VIEW_CONTEXT_BEAN_NAME))));
-		$resolverDefHolder = new BeanDefinitionHolder($resolverDefinition, Bee_MVC_Dispatcher::VIEW_RESOLVER_BEAN_NAME);
+		$resolverDefHolder = new BeanDefinitionHolder($resolverDefinition, Dispatcher::VIEW_RESOLVER_BEAN_NAME);
 		BeanDefinitionReaderUtils::registerBeanDefinition($resolverDefHolder, $parserContext->getRegistry());
 	}
 }

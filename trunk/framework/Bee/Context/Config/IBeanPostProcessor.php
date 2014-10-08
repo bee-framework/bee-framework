@@ -1,7 +1,7 @@
 <?php
 namespace Bee\Context\Config;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@ namespace Bee\Context\Config;
  * limitations under the License.
  */
 
+use Bee\Context\BeansException;
+
 interface IBeanPostProcessor {
 
 	/**
@@ -28,7 +30,7 @@ interface IBeanPostProcessor {
 	 * @param String $beanName the name of the bean
 	 * @return mixed the bean instance to use, either the original or a wrapped one
 	 * 
-	 * @throws \Bee_Context_BeansException in case of errors
+	 * @throws BeansException in case of errors
 	 */
 	function postProcessBeforeInitialization($bean, $beanName);
 
@@ -49,7 +51,7 @@ interface IBeanPostProcessor {
 	 * @param String $beanName the name of the bean
 	 * @return mixed the bean instance to use, either the original or a wrapped one
 	 * 
-	 * @throws \Bee_Context_BeansException in case of errors
+	 * @throws BeansException in case of errors
 	 */
 	function postProcessAfterInitialization($bean, $beanName);	
 }

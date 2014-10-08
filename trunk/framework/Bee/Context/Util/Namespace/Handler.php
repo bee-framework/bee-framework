@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Util\XmlNamespace;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +18,13 @@
 use Bee\Context\Xml\XmlNamespace\HandlerSupport;
 
 /**
- * User: mp
- * Date: Feb 17, 2010
- * Time: 6:35:32 PM
+ * Class Handler
+ * @package Bee\Context\Util\XmlNamespace
  */
-
-class Bee_Context_Util_Namespace_Handler extends HandlerSupport {
+class Handler extends HandlerSupport {
 
     public function init() {
-        $this->registerBeanDefinitionParser("array", new Bee_Context_Util_Namespace_ArrayFactoryDefinitionParser());
-        $this->registerBeanDefinitionParser("value", new Bee_Context_Util_Namespace_ValueFactoryDefinitionParser());
+        $this->registerBeanDefinitionParser("array", new ArrayFactoryDefinitionParser());
+        $this->registerBeanDefinitionParser("value", new ValueFactoryDefinitionParser());
     }
 }

@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\BeanDefinition\GenericBeanDefinition;
 use Bee\Context\Support\BeanDefinitionBuilder;
 use Bee\Context\Xml\ParserContext;
 
@@ -29,10 +30,10 @@ class Bee_Security_Config_Utils {
 
         if (!$parserContext->getRegistry()->containsBeanDefinition(Bee_Security_Config_IBeanIds::ACCESS_MANAGER)) {
 
-            $roleVoter = new Bee_Context_Config_BeanDefinition_Generic();
+            $roleVoter = new GenericBeanDefinition();
             $roleVoter->setBeanClassName('Bee_Security_Vote_RoleVoter');
 
-//            $authenticatedVoter = new Bee_Context_Config_BeanDefinition_Generic();
+//            $authenticatedVoter = new GenericBeanDefinition();
 //            $authenticatedVoter->setBeanClassName('Bee_Security_Vote_AuthenticatedVoter'); // todo: implement...
 
             $defaultVoters = array(

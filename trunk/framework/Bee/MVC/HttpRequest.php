@@ -1,4 +1,5 @@
 <?php
+namespace Bee\MVC;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -15,7 +16,15 @@
  * limitations under the License.
  */
 
-class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
+use Bee\Utils\Env;
+use Bee\Utils\Strings;
+use Exception;
+
+/**
+ * Class HttpRequest
+ * @package Bee\MVC
+ */
+class HttpRequest implements IHttpRequest {
 	
 	const SERVER_REQUEST_METHOD = 'REQUEST_METHOD';
 	
@@ -68,13 +77,13 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 
 	public function __construct(array $parameters = null, $pathInfo = null, $method = null, array $headers = null) {
 		if(is_null($headers)) {
-			$headers = Bee_Utils_Env::getRequestHeaders();
+			$headers = Env::getRequestHeaders();
 		}
 		if(is_null($method)) {
 			$method = $_SERVER[self::SERVER_REQUEST_METHOD];
 		}
 		if(is_null($pathInfo)) {
-			$pathInfo = Bee_Utils_Env::getPathInfo();
+			$pathInfo = Env::getPathInfo();
 		}
 		if(is_null($parameters)) {
 			$parameters = $_REQUEST;
@@ -89,10 +98,10 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 	
 	public function getPathInfo() {
 //		if (is_null($this->pathInfo)) {
-//			if(Bee_Utils_Strings::hasText($_SERVER['PATH_INFO'])) {
+//			if(Strings::hasText($_SERVER['PATH_INFO'])) {
 //				$this->pathInfo = $_SERVER['PATH_INFO'];
 //
-//			} else if(Bee_Utils_Strings::hasText($_SERVER['ORIG_PATH_INFO'])) {
+//			} else if(Strings::hasText($_SERVER['ORIG_PATH_INFO'])) {
 //				if ($_SERVER['ORIG_PATH_INFO'] == $_SERVER['ORIG_SCRIPT_NAME']) {
 //					$this->pathInfo = '';
 //				} else {
@@ -181,24 +190,24 @@ class Bee_MVC_HttpRequest implements Bee_MVC_IHttpRequest {
 		return $this->parameters;
 	}
 	
-	public static function constructRequest(Bee_MVC_IHttpRequest $request, $pathInfo = null, array $params = null, $method = null) {
-		if(!($request instanceof Bee_MVC_HttpRequest)) {
-			throw new Exception('Invalid parameter: cannot handle foreign implementations of Bee_MVC_IHttpRequest');
+	public static function constructRequest(IHttpRequest $request, $pathInfo = null, array $params = null, $method = null) {
+		if(!($request instanceof HttpRequest)) {
+			throw new Exception('Invalid parameter: cannot handle foreign implementations of Bee\MVC\IHttpRequest');
 		}
-		if(!Bee_Utils_Strings::hasText($pathInfo)) {
+		if(!Strings::hasText($pathInfo)) {
 			$pathInfo = $request->getPathInfo();
 		}
 		
 		$params = array_merge($request->getParamArray(), (!is_null($params) ? $params : array()));
 
-		if(!Bee_Utils_Strings::hasText($method)) {
+		if(!Strings::hasText($method)) {
 			$method = $request->getMethod();
 		}
 		$headers = array();
 		foreach($request->getHeaderNames() as $header) {
 			$headers[$header] = $request->getHeader($header);
 		}
-		return new Bee_MVC_HttpRequest($params, $pathInfo, $method, $headers);
+		return new HttpRequest($params, $pathInfo, $method, $headers);
 	}
 
 	/**

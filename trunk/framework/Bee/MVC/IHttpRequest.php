@@ -1,4 +1,5 @@
 <?php
+namespace Bee\MVC;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -22,11 +23,11 @@
  * 
  * @todo what about $_FILES? we should probably make them accessible through this interface as well 
  * 
- * @see Bee_MVC_Dispatcher
+ * @see Bee\MVC\Dispatcher
  * 
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-interface Bee_MVC_IHttpRequest {
+interface IHttpRequest {
 	
 	/**
 	 * Returns any extra path information associated with the URL the client sent when it made this request.

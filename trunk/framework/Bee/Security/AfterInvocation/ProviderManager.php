@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\IInitializingBean;
+use Bee\Framework;
 
 /**
  * User: mp
@@ -21,7 +23,22 @@
  * Time: 11:32:55 PM
  */
 
-class Bee_Security_AfterInvocation_ProviderManager implements Bee_Security_IAfterInvocationManager, Bee_Context_Config_IInitializingBean {
+class Bee_Security_AfterInvocation_ProviderManager implements Bee_Security_IAfterInvocationManager, IInitializingBean {
+
+	/**
+	 * @var Logger
+	 */
+	protected static $log;
+
+	/**
+	 * @return Logger
+	 */
+	protected static function getLog() {
+		if (!self::$log) {
+			self::$log = Framework::getLoggerForClass(__CLASS__);
+		}
+		return self::$log;
+	}
 
     //~ Instance fields ================================================================================================
 
@@ -78,8 +95,8 @@ class Bee_Security_AfterInvocation_ProviderManager implements Bee_Security_IAfte
 
         foreach ($this->providers as $provider) {
 
-            if (Bee_Utils_Logger::isDebugEnabled()) {
-                Bee_Utils_Logger::debug("Evaluating $attribute against $provider");
+            if (self::getLog()->isDebugEnabled()) {
+				self::getLog()->debug("Evaluating $attribute against $provider");
             }
 
             if ($provider->supports($attribute)) {
@@ -90,15 +107,15 @@ class Bee_Security_AfterInvocation_ProviderManager implements Bee_Security_IAfte
         return false;
     }
 
-    /**
-     * Iterates through all <code>AfterInvocationProvider</code>s and ensures each can support the presented
-     * class.<p>If one or more providers cannot support the presented class, <code>false</code> is returned.</p>
-     *
-     * @param clazz the secure object class being queries
-     *
-     * @return if the <code>AfterInvocationProviderManager</code> can support the secure object class, which requires
-     *         every one of its <code>AfterInvocationProvider</code>s to support the secure object class
-     */
+	/**
+	 * Iterates through all <code>AfterInvocationProvider</code>s and ensures each can support the presented
+	 * class.<p>If one or more providers cannot support the presented class, <code>false</code> is returned.</p>
+	 *
+	 * @param ReflectionClass|string $classOrClassName
+	 *
+	 * @return bool if the <code>AfterInvocationProviderManager</code> can support the secure object class, which requires
+	 *         every one of its <code>AfterInvocationProvider</code>s to support the secure object class
+	 */
     public function supportsClass($classOrClassName) {
 
         foreach ($this->providers as $provider) {
@@ -111,4 +128,3 @@ class Bee_Security_AfterInvocation_ProviderManager implements Bee_Security_IAfte
     }
 
 }
-?>

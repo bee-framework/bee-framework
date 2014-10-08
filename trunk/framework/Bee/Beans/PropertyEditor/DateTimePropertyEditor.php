@@ -16,7 +16,7 @@ namespace Bee\Beans\PropertyEditor;
  * limitations under the License.
  */
 use Bee\Beans\IPropertyEditor;
-use Bee_Utils_Strings;
+use Bee\Utils\Strings;
 use Exception;
 
 /**
@@ -62,9 +62,9 @@ class DateTimePropertyEditor implements IPropertyEditor {
         }
 
 
-        $parts = Bee_Utils_Strings::tokenizeToArray($value, ' ');
-        $dateParts = Bee_Utils_Strings::tokenizeToArray($parts[0], '-');
-        $timeParts = Bee_Utils_Strings::tokenizeToArray($parts[1], ':');
+        $parts = Strings::tokenizeToArray($value, ' ');
+        $dateParts = Strings::tokenizeToArray($parts[0], '-');
+        $timeParts = Strings::tokenizeToArray($parts[1], ':');
 
         if (count($dateParts)<3) {
             throw new Exception('Invalid datetime format: '.$value);

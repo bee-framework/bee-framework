@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Assert;
 
 /**
  * User: mp
@@ -52,7 +53,7 @@ class Bee_Security_Acls_Impl_PermissionFactory implements Bee_Security_Acls_IPer
             $permToCheck = 1 << $i;
 
             if(($mask & $permToCheck) == $permToCheck) {
-                Bee_Utils_Assert::isTrue(array_key_exists('_'.$permToCheck, $this->registeredPermissions), 'Mask '.
+				Assert::isTrue(array_key_exists('_'.$permToCheck, $this->registeredPermissions), 'Mask '.
                         $permToCheck.' does not have a corresponding static Permission');
                 $p = $this->registeredPermissions['_'.$permToCheck];
                 $permission->set($p);
@@ -65,8 +66,7 @@ class Bee_Security_Acls_Impl_PermissionFactory implements Bee_Security_Acls_IPer
     }
 
     public function buildFromName($name) {
-        Bee_Utils_Assert::isTrue(array_key_exists($name, $this->registeredPermissions), 'Unknown permission '.$name);
+		Assert::isTrue(array_key_exists($name, $this->registeredPermissions), 'Unknown permission '.$name);
         return $this->registeredPermissions[$name];
     }
 }
-?>

@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Assert;
 
 /**
  * Created by IntelliJ IDEA.
@@ -65,7 +66,7 @@ abstract class Bee_Security_Vote_AbstractAclVoter implements Bee_Security_Vote_I
      * @return void
      */
     public function setProcessDomainObjectClass($processDomainObjectClass) {
-        Bee_Utils_Assert::hasText($processDomainObjectClass, 'processDomainObjectClass cannot be empty');
+		Assert::hasText($processDomainObjectClass, 'processDomainObjectClass cannot be empty');
         $this->processDomainObjectClass = $processDomainObjectClass;
     }
 
@@ -73,9 +74,9 @@ abstract class Bee_Security_Vote_AbstractAclVoter implements Bee_Security_Vote_I
      * This implementation supports only <code>MethodSecurityInterceptor</code>, because it queries the
      * presented <code>MethodInvocation</code>.
      *
-     * @param clazz the secure object
+     * @param string $className the secure object
      *
-     * @return <code>true</code> if the secure object is <code>MethodInvocation</code>, <code>false</code> otherwise
+     * @return bool <code>true</code> if the secure object is <code>MethodInvocation</code>, <code>false</code> otherwise
      */
     public function supportsClass($className) {
         return true; // todo
@@ -88,4 +89,3 @@ abstract class Bee_Security_Vote_AbstractAclVoter implements Bee_Security_Vote_I
 //        }
     }
 }
-?>

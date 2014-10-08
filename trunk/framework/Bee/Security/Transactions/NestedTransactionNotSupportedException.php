@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,8 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Transactions_NestedTransactionNotSupportedException extends Bee_Exceptions_Base {
+class Bee_Transactions_NestedTransactionNotSupportedException extends Exception {
     public function __construct($message, Exception $cause = null) {
-        parent::__construct($message, $cause);
+        parent::__construct($message, 0, $cause);
     }
 }
-?>

@@ -15,147 +15,161 @@
  * limitations under the License.
  */
 
-/**
- * Created by IntelliJ IDEA.
- * User: mp
- * Date: Feb 18, 2010
- * Time: 4:59:15 AM
- * To change this template use File | Settings | File Templates.
- */
-class Bee_Utils_Logger {
+namespace Bee\Utils {
+	use Exception;
 
-    private static $path = 'beelog';
-    private static $csvSeparator = ';';
+	/**
+	 * Created by IntelliJ IDEA.
+	 * User: mp
+	 * Date: Feb 18, 2010
+	 * Time: 4:59:15 AM
+	 * To change this template use File | Settings | File Templates.
+	 */
+	class Logger {
 
-    private static $debugEnabled = false;
+		/**
+		 * @var string
+		 */
+	    private static $path = 'beelog';
 
-    /**
-     * Gets the Path
-     *
-     * @return  $path
-     */
-    public function getPath() {
-        return self::$path;
-    }
+		/**
+		 * @var string
+		 */
+	    private static $csvSeparator = ';';
 
-    /**
-     * Sets the Path
-     *
-     * @param $path
-     * @return void
-     */
-    public function setPath($path) {
-        self::$path = $path;
-    }
+		/**
+		 * @var bool
+		 */
+	    private static $debugEnabled = false;
 
-    /**
-     * Gets the CsvSeparator
-     *
-     * @return  $csvSeparator
-     */
-    public function getCsvSeparator() {
-        return self::$csvSeparator;
-    }
+		/**
+		 * Gets the Path
+		 *
+		 * @return string $path
+		 */
+	    public function getPath() {
+	        return self::$path;
+	    }
 
-    /**
-     * Sets the CsvSeparator
-     *
-     * @param $csvSeparator
-     * @return void
-     */
-    public function setCsvSeparator($csvSeparator) {
-        self::$csvSeparator = $csvSeparator;
-    }
+	    /**
+	     * Sets the Path
+	     *
+	     * @param $path
+	     * @return void
+	     */
+	    public function setPath($path) {
+	        self::$path = $path;
+	    }
 
-    public static function isDebugEnabled() {
-        return self::$debugEnabled;
-    }
+		/**
+		 * Gets the CsvSeparator
+		 *
+		 * @return string $csvSeparator
+		 */
+	    public function getCsvSeparator() {
+	        return self::$csvSeparator;
+	    }
 
-    public static function setDebugEnabled($debugEnabled) {
-        self::$debugEnabled = $debugEnabled;
-    }
+	    /**
+	     * Sets the CsvSeparator
+	     *
+	     * @param $csvSeparator
+	     * @return void
+	     */
+	    public function setCsvSeparator($csvSeparator) {
+	        self::$csvSeparator = $csvSeparator;
+	    }
 
-    public static function debug($message) {
-        if (self::isDebugEnabled()) {
-            error_log($message, E_USER_NOTICE);
-        }
-    }
+	    public static function isDebugEnabled() {
+	        return self::$debugEnabled;
+	    }
 
-    public static function info($message) {
-        error_log($message, E_USER_NOTICE);
-    }
+	    public static function setDebugEnabled($debugEnabled) {
+	        self::$debugEnabled = $debugEnabled;
+	    }
 
-    public static function warn($message, Exception $ex = null) {
-        if($ex) {
-            $ex = self::getRootCause($ex);
-            error_log($message . ' - ' . $ex->getMessage(), E_USER_WARNING);
-        } else {
-            error_log($message, E_USER_WARNING);
-        }
-    }
+	    public static function debug($message) {
+	        if (self::isDebugEnabled()) {
+	            error_log($message, E_USER_NOTICE);
+	        }
+	    }
 
-    public static function error($message, Exception $ex = null) {
-        if($ex) {
-            $ex = self::getRootCause($ex);
-            error_log($message . ' - ' . $ex->getMessage(), E_USER_WARNING);
-        } else {
-            error_log($message, E_USER_WARNING);
-        }
-    }
+	    public static function info($message) {
+	        error_log($message, E_USER_NOTICE);
+	    }
 
-    /**
-     * @static
-     * @param string|array $message
-     * @param string $filename
-     * @param bool $timestamp
-     * @return void
-     */
-    public static function toFile($message, $filename="log.txt", $timestamp=true) {
-        if (is_array($message)) {
-            if ($timestamp) {
-                array_unshift($message, date('H:i:s'));
-                array_unshift($message, date('Y-m-d'));
-            }
-            $message = implode(self::$csvSeparator, $message);
-        } else if ($timestamp) {
-            $message = date('H:i:s').' | '.$message;
-            $message = date('Y-m-d').' - '.$message;
-        }
-        $message .= "\n";
+	    public static function warn($message, Exception $ex = null) {
+	        if($ex) {
+	            $ex = self::getRootCause($ex);
+	            error_log($message . ' - ' . $ex->getMessage(), E_USER_WARNING);
+	        } else {
+	            error_log($message, E_USER_WARNING);
+	        }
+	    }
 
-        $fn = self::$path;
-        if (mb_strlen($fn)>0 && $fn[mb_strlen($fn)]!=DIRECTORY_SEPARATOR) {
-            $fn .= DIRECTORY_SEPARATOR;
-        }
+	    public static function error($message, Exception $ex = null) {
+	        if($ex) {
+	            $ex = self::getRootCause($ex);
+	            error_log($message . ' - ' . $ex->getMessage(), E_USER_WARNING);
+	        } else {
+	            error_log($message, E_USER_WARNING);
+	        }
+	    }
 
-        $bn = pathinfo($filename, PATHINFO_DIRNAME);
-        if (Bee_Utils_Strings::hasText($bn) && $bn!=".") {
-            $fn .= $bn;
-            if (mb_strlen($fn)>0 && $fn[mb_strlen($fn)]!=DIRECTORY_SEPARATOR) {
-                $fn .= DIRECTORY_SEPARATOR;
-            }
-        }
+	    /**
+	     * @static
+	     * @param string|array $message
+	     * @param string $filename
+	     * @param bool $timestamp
+	     * @return void
+	     */
+	    public static function toFile($message, $filename="log.txt", $timestamp=true) {
+	        if (is_array($message)) {
+	            if ($timestamp) {
+	                array_unshift($message, date('H:i:s'));
+	                array_unshift($message, date('Y-m-d'));
+	            }
+	            $message = implode(self::$csvSeparator, $message);
+	        } else if ($timestamp) {
+	            $message = date('H:i:s').' | '.$message;
+	            $message = date('Y-m-d').' - '.$message;
+	        }
+	        $message .= "\n";
 
-        $fn .= pathinfo($filename, PATHINFO_FILENAME);
-        $fn .= "_".date("Y-m-d");
-        $fn .= ".".pathinfo($filename, PATHINFO_EXTENSION);
+	        $fn = self::$path;
+	        if (mb_strlen($fn)>0 && $fn[mb_strlen($fn)]!=DIRECTORY_SEPARATOR) {
+	            $fn .= DIRECTORY_SEPARATOR;
+	        }
 
-        file_put_contents($fn, $message, FILE_APPEND);
-    }
+	        $bn = pathinfo($filename, PATHINFO_DIRNAME);
+	        if (Strings::hasText($bn) && $bn!=".") {
+	            $fn .= $bn;
+	            if (mb_strlen($fn)>0 && $fn[mb_strlen($fn)]!=DIRECTORY_SEPARATOR) {
+	                $fn .= DIRECTORY_SEPARATOR;
+	            }
+	        }
 
-    private static function getRootCause(Exception $ex) {
-        while($ex instanceof Bee_Exceptions_Base && !is_null($ex->getCause())) {
-            $ex = $ex->getCause();
-        }
-        return $ex;
-    }
+	        $fn .= pathinfo($filename, PATHINFO_FILENAME);
+	        $fn .= "_".date("Y-m-d");
+	        $fn .= ".".pathinfo($filename, PATHINFO_EXTENSION);
+
+	        file_put_contents($fn, $message, FILE_APPEND);
+	    }
+
+	    private static function getRootCause(Exception $ex) {
+	        while(!is_null($ex->getPrevious())) {
+	            $ex = $ex->getPrevious();
+	        }
+	        return $ex;
+	    }
+	}
 }
 
-/**
- * Convenient alternative name
- *
- * @author bugs
- *
- */
-class LOG extends Bee_Utils_Logger {
+namespace {
+	/**
+	 * Class LOG
+	 * @deprecated
+	 */
+	class LOG extends Bee\Utils\Logger {
+	}
 }

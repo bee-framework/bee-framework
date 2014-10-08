@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Text;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Text\Normalization\INormalizer;
+use Bee\Text\Normalization\PEARNormalizer;
+use Bee\Text\Normalization\PHP53Normalizer;
+use Bee\Utils\Strings;
 
-class Bee_Text_EncodingConverter {
+class EncodingConverter {
 
 	const DEFAULT_INTERNAL_ENCODING = 'UTF-8';
-	const DEFAULT_INTERNAL_UNICODE_NORMALIZATION = Bee_Text_Normalization_INormalizer::UNICODE_NORMALIZATION_COMPOSED;
+	const DEFAULT_INTERNAL_UNICODE_NORMALIZATION = INormalizer::UNICODE_NORMALIZATION_COMPOSED;
 	
 	const DEFAULT_EXTERNAL_ENCODING = 'UTF-8';
-	const DEFAULT_EXTERNAL_UNICODE_NORMALIZATION = Bee_Text_Normalization_INormalizer::UNICODE_NORMALIZATION_COMPOSED;
+	const DEFAULT_EXTERNAL_UNICODE_NORMALIZATION = INormalizer::UNICODE_NORMALIZATION_COMPOSED;
 
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Text_Normalization_INormalizer
+	 * @var INormalizer
 	 */
 	private $normalizer;
 	
@@ -64,9 +69,9 @@ class Bee_Text_EncodingConverter {
 	 */
 	public function __construct() {
 		if(class_exists("Normalizer")) {
-			$this->normalizer = new Bee_Text_Normalization_PHP53Normalizer();
+			$this->normalizer = new PHP53Normalizer();
 		} else {
-			$this->normalizer = new Bee_Text_Normalization_PEARNormalizer();
+			$this->normalizer = new PEARNormalizer();
 		}
 	}
 
@@ -86,7 +91,7 @@ class Bee_Text_EncodingConverter {
 	 * @return void
 	 */
 	public final function setInternalEncoding($encoding) {
-		$this->internalEncoding = Bee_Utils_Strings::hasText($encoding) ? $encoding : self::DEFAULT_INTERNAL_ENCODING;
+		$this->internalEncoding = Strings::hasText($encoding) ? $encoding : self::DEFAULT_INTERNAL_ENCODING;
 	}
 	
 	/**
@@ -105,7 +110,7 @@ class Bee_Text_EncodingConverter {
 	 * @return void
 	 */
 	public final function setInternalUnicodeNormalization($normalization) {
-		$this->internalUnicodeNormalization = Bee_Utils_Strings::hasText($normalization) ? $normalization : self::DEFAULT_INTERNAL_UNICODE_NORMALIZATION;
+		$this->internalUnicodeNormalization = Strings::hasText($normalization) ? $normalization : self::DEFAULT_INTERNAL_UNICODE_NORMALIZATION;
 	}
 	
 	/**
@@ -124,7 +129,7 @@ class Bee_Text_EncodingConverter {
 	 * @return void
 	 */
 	public final function setExternalEncoding($encoding) {
-		$this->externalEncoding = Bee_Utils_Strings::hasText($encoding) ? $encoding : self::DEFAULT_EXTERNAL_ENCODING;
+		$this->externalEncoding = Strings::hasText($encoding) ? $encoding : self::DEFAULT_EXTERNAL_ENCODING;
 	}
 	
 	/**
@@ -143,7 +148,7 @@ class Bee_Text_EncodingConverter {
 	 * @return void
 	 */
 	public final function setExternalUnicodeNormalization($normalization) {
-		$this->externalUnicodeNormalization = Bee_Utils_Strings::hasText($normalization) ? $normalization : self::DEFAULT_EXTERNAL_UNICODE_NORMALIZATION;
+		$this->externalUnicodeNormalization = Strings::hasText($normalization) ? $normalization : self::DEFAULT_EXTERNAL_UNICODE_NORMALIZATION;
 	}
 	
 	public final function encode($value) {

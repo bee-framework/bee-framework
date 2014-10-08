@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\IInitializingBean;
 
 /**
  * User: mp
@@ -21,7 +22,7 @@
  * Time: 3:56:40 PM
  */
 
-class Bee_Persistence_Doctrine_ManagerAugmenter implements Bee_Context_Config_IInitializingBean {
+class Bee_Persistence_Doctrine_ManagerAugmenter implements IInitializingBean {
 
     /**
      * @var Doctrine_Manager

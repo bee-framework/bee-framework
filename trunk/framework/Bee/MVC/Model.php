@@ -14,74 +14,76 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * Enter description here...
- * 
- * @author Benjamin Hartmann
- * @author Michael Plomer <michael.plomer@iter8.de>
- */
-class Bee_MVC_Model {
-	
-	const CURRENT_REQUEST_KEY = '__CURRENT_REQUEST';
-	
-	private static $modelValues = array();	
-	
+namespace Bee\MVC {
 	/**
-	 * Add the values from the given (associative) array to the model.
+	 * Enter description here...
 	 *
-	 * @param array $values
+	 * @author Benjamin Hartmann
+	 * @author Michael Plomer <michael.plomer@iter8.de>
 	 */
-	public static function addValuesToModel(Array $values) {
-		self::$modelValues = array_merge(self::$modelValues, $values);
-	}
+	class Model {
 
-	/**
-	 * Add a single value to the model under the given key
-	 *
-	 * @param string $key
-	 * @param mixed $value
-	 */
-	public static function putValue($key, $value) {
-		self::$modelValues[$key] = $value;
-	}
+		const CURRENT_REQUEST_KEY = '__CURRENT_REQUEST';
 
-	/**
-	 * Clear the model, removing all 
-	 *
-	 */
-	public static function clear() {
-		self::$modelValues = array();
-	}
-	
-	public static function getValue($key) {
-		return self::$modelValues[$key];
-	}
-	
-	public static function hasValue($key) {
-		return array_key_exists($key, self::$modelValues);
-	}
+		private static $modelValues = array();
 
-	public static function getModelValues() {
-		return self::$modelValues;
+		/**
+		 * Add the values from the given (associative) array to the model.
+		 *
+		 * @param array $values
+		 */
+		public static function addValuesToModel(Array $values) {
+			self::$modelValues = array_merge(self::$modelValues, $values);
+		}
+
+		/**
+		 * Add a single value to the model under the given key
+		 *
+		 * @param string $key
+		 * @param mixed $value
+		 */
+		public static function putValue($key, $value) {
+			self::$modelValues[$key] = $value;
+		}
+
+		/**
+		 * Clear the model, removing all
+		 *
+		 */
+		public static function clear() {
+			self::$modelValues = array();
+		}
+
+		public static function getValue($key) {
+			return self::$modelValues[$key];
+		}
+
+		public static function hasValue($key) {
+			return array_key_exists($key, self::$modelValues);
+		}
+
+		public static function getModelValues() {
+			return self::$modelValues;
+		}
 	}
 }
 
+namespace {
+	/**
+	 * This class is a convenience for accessing
+	 *
+	 */
+	class MODEL extends Bee\MVC\Model {
 
-/**
- * This class is a convenience for accessing 
- *
- */
-class MODEL extends Bee_MVC_Model {
-	
-	public static function get($key, $defaultValue=null) {
-        if (!is_null($defaultValue) && !Bee_MVC_Model::hasValue($key)) {
-            return $defaultValue;
-        }
-		return Bee_MVC_Model::getValue($key);
-	}
+		public static function get($key, $defaultValue = null) {
+			if (!is_null($defaultValue) && !Bee\MVC\Model::hasValue($key)) {
+				return $defaultValue;
+			}
+			return Bee\MVC\Model::getValue($key);
+		}
 
-	public static function getModel() {
-		return Bee_MVC_Model::getModelValues();
+		public static function getModel() {
+			return Bee\MVC\Model::getModelValues();
+		}
 	}
 }

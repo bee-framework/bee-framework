@@ -18,7 +18,7 @@ namespace Bee\Persistence\Doctrine2;
  */
 use Bee\Persistence\IOrderAndLimitHolder;
 use Bee\Persistence\IRestrictionHolder;
-use Bee_Utils_Strings;
+use Bee\Utils\Strings;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -67,11 +67,11 @@ class DaoBase extends EntityManagerHolder {
 			return;
 		}
 
-		if (!Bee_Utils_Strings::hasText($restrictionHolder->getFilterString())) {
+		if (!Strings::hasText($restrictionHolder->getFilterString())) {
 			return;
 		}
 
-		$filterTokens = Bee_Utils_Strings::tokenizeToArray($restrictionHolder->getFilterString(), ' ');
+		$filterTokens = Strings::tokenizeToArray($restrictionHolder->getFilterString(), ' ');
 		foreach ($filterTokens as $no => $token) {
 			$andWhereString = '';
 			$params = array();
@@ -81,14 +81,14 @@ class DaoBase extends EntityManagerHolder {
 
 			foreach ($restrictionHolder->getFilterableFields() as $fieldName) {
 				// $fieldName MUST BE A DOCTRINE NAME
-				if (Bee_Utils_Strings::hasText($andWhereString)) {
+				if (Strings::hasText($andWhereString)) {
 					$andWhereString .= ' OR ';
 				}
 
 				$andWhereString .= $fieldName . ' LIKE :' . $tokenName;
 			}
 
-			if (Bee_Utils_Strings::hasText($andWhereString)) {
+			if (Strings::hasText($andWhereString)) {
 				$queryBuilder->andWhere($andWhereString);
 
 				foreach ($params as $key => $value) {
