@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-class Bee_Persistence_Exception_DataAccess extends Bee_Exceptions_Base {
+class Bee_Persistence_Exception_DataAccess extends Exception {
 	public function __construct($message, Exception $cause = null) {
-		parent::__construct($message, $cause);
+		parent::__construct($message, 0, $cause);
 	}
 }

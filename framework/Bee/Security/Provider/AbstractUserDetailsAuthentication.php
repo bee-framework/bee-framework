@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 
+use Bee\Utils\Assert;
+use Bee\Utils\Types;
+
 abstract class Bee_Security_Provider_AbstractUserDetailsAuthentication implements Bee_Security_IAuthenticationProvider {
 	
 	/**
@@ -80,7 +83,7 @@ abstract class Bee_Security_Provider_AbstractUserDetailsAuthentication implement
 	 */
 	public final function authenticate(Bee_Security_IAuthentication $authentication) {
 		
-		Bee_Utils_Assert::isInstanceOf('Bee_Security_UsernamePasswordAuthenticationToken', $authentication, 'Only UsernamePasswordAuthenticationToken is supported');
+		Assert::isInstanceOf('Bee_Security_UsernamePasswordAuthenticationToken', $authentication, 'Only UsernamePasswordAuthenticationToken is supported');
 
         // Determine username
         $username = is_null($authentication->getPrincipal()) ? "NONE_PROVIDED" : $authentication->getName();
@@ -102,7 +105,7 @@ abstract class Bee_Security_Provider_AbstractUserDetailsAuthentication implement
                 }
             }
 
-            Bee_Utils_Assert::notNull($user, 'retrieveUser returned null - a violation of the interface contract');
+			Assert::notNull($user, 'retrieveUser returned null - a violation of the interface contract');
         }
 
 //        $this->preAuthenticationChecks->check($user);
@@ -192,7 +195,7 @@ abstract class Bee_Security_Provider_AbstractUserDetailsAuthentication implement
 	protected abstract function retrieveUser($username, Bee_Security_UsernamePasswordAuthenticationToken $authentication);
 	
     public function supports($authenticationClass) {
-    	return Bee_Utils_Types::isAssignable($authenticationClass, 'Bee_Security_UsernamePasswordAuthenticationToken');
+    	return Types::isAssignable($authenticationClass, 'Bee_Security_UsernamePasswordAuthenticationToken');
     }
 	
 	/**

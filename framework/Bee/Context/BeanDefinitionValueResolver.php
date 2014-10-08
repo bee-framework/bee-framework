@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Context;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -20,6 +21,7 @@ use Bee\Context\Config\IBeanDefinition;
 use Bee\Context\Config\RuntimeBeanNameReference;
 use Bee\Context\Config\RuntimeBeanReference;
 use Bee\Context\Config\TypedStringValue;
+use Bee\IContext;
 
 /**
  * Enter description here...
@@ -27,12 +29,12 @@ use Bee\Context\Config\TypedStringValue;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_BeanDefinitionValueResolver {
+class BeanDefinitionValueResolver {
 	
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Context_Abstract
+	 * @var AbstractContext
 	 */
 	private $context;
 	
@@ -46,10 +48,10 @@ class Bee_Context_BeanDefinitionValueResolver {
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_Context_Abstract $context
+	 * @param AbstractContext $context
 	 * @param String $beanName
 	 */
-	public function __construct(Bee_Context_Abstract $context, $beanName) {
+	public function __construct(AbstractContext $context, $beanName) {
 		$this->context = $context;
 		$this->beanName = $beanName;
 	}
@@ -118,25 +120,29 @@ class Bee_Context_BeanDefinitionValueResolver {
 	 * @param $argName
 	 * @param RuntimeBeanNameReference $value
 	 * @return null
-	 * @throws Bee_Context_BeanDefinitionStoreException
+	 * @throws BeanDefinitionStoreException
 	 */
 	private function checkBeanNameReference($argName, RuntimeBeanNameReference $value) {
         $ref = $this->findApplicableBeanName($value->getBeanNames(), $this->context);
         if (!$this->context->containsBean($ref)) {
-            throw new Bee_Context_BeanDefinitionStoreException("Invalid bean name '$ref' in bean reference $argName");
+            throw new BeanDefinitionStoreException("Invalid bean name '$ref' in bean reference $argName");
         }
         return $ref;
     }
 
 	/**
 	 * Resolve a reference to another bean in the factory.
+	 * @param $argName
+	 * @param RuntimeBeanReference $ref
+	 * @throws BeanCreationException
+	 * @return mixed
 	 */
 	private function resolveReference($argName, RuntimeBeanReference $ref) {
 		try {
 			if ($ref->isToParent()) {
 				if (is_null($this->context->getParent())) {
 					// @todo: a lot of debug information is lost here
-					throw new Bee_Context_BeanCreationException($this->beanName);
+					throw new BeanCreationException($this->beanName);
 				}
 //				return $this->context->getParent()->getBean($ref->getBeanName());
 				return $this->getBeanFromContext($ref->getBeanNames(), $this->context->getParent());
@@ -147,18 +153,18 @@ class Bee_Context_BeanDefinitionValueResolver {
                 return $this->getBeanFromContext($ref->getBeanNames(), $this->context);
 			}
 
-		} catch (Bee_Context_BeansException $ex) {
+		} catch (BeansException $ex) {
 			// @todo: a lot of debug information is lost here
-			throw new Bee_Context_BeanCreationException($this->beanName, "Error resolving reference for argument $argName", $ex);
+			throw new BeanCreationException($this->beanName, "Error resolving reference for argument $argName", $ex);
 		}
 	}
 
 	/**
 	 * @param array $beanNames
-	 * @param Bee_IContext $context
+	 * @param IContext $context
 	 * @return null
 	 */
-	private function findApplicableBeanName(array $beanNames, Bee_IContext $context) {
+	private function findApplicableBeanName(array $beanNames, IContext $context) {
         $result = null;
         foreach($beanNames as $beanName) {
             $result = $beanName;
@@ -171,10 +177,10 @@ class Bee_Context_BeanDefinitionValueResolver {
 
 	/**
 	 * @param array $beanNames
-	 * @param Bee_IContext $context
+	 * @param IContext $context
 	 * @return Object
 	 */
-	private function getBeanFromContext(array $beanNames, Bee_IContext $context) {
+	private function getBeanFromContext(array $beanNames, IContext $context) {
         $beanName = $this->findApplicableBeanName($beanNames, $context);
         $bean = $context->getBean($beanName);
         if($context == $this->context) {
@@ -188,7 +194,7 @@ class Bee_Context_BeanDefinitionValueResolver {
 	 * @param String $argName the name of the argument that the inner bean is defined for
 	 * @param String $innerBeanName the name of the inner bean
 	 * @param IBeanDefinition $innerBeanDefinition the bean definition for the inner bean
-	 * @throws Bee_Context_BeanCreationException
+	 * @throws BeanCreationException
 	 * @return mixed the resolved inner bean instance
 	 */
 	private function resolveInnerBean($argName, $innerBeanName, IBeanDefinition $innerBeanDefinition) {
@@ -207,8 +213,8 @@ class Bee_Context_BeanDefinitionValueResolver {
 
 			return $innerBean;
 
-		} catch (Bee_Context_BeansException $ex) {
-			throw new Bee_Context_BeanCreationException($this->beanName, 'Error resolving inner bean for argument ' . $argName, $ex);
+		} catch (BeansException $ex) {
+			throw new BeanCreationException($this->beanName, 'Error resolving inner bean for argument ' . $argName, $ex);
 		}
 	}
 

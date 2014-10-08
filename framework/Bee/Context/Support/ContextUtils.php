@@ -16,10 +16,14 @@ namespace Bee\Context\Support;
  * limitations under the License.
  */
 
-use Bee_IContext;
-use Bee_Utils_Assert;
-use Bee_Utils_Strings;
+use Bee\IContext;
+use Bee\Utils\Assert;
+use Bee\Utils\Strings;
 
+/**
+ * Class ContextUtils
+ * @package Bee\Context\Support
+ */
 abstract class ContextUtils {
 	
     /**
@@ -30,7 +34,7 @@ abstract class ContextUtils {
      * @see BeanFactory#FACTORY_BEAN_PREFIX
      */
     public static function isFactoryDereference($name) {
-        return ($name != null && Bee_Utils_Strings::startsWith($name, Bee_IContext::FACTORY_BEAN_PREFIX));
+        return ($name != null && Strings::startsWith($name, IContext::FACTORY_BEAN_PREFIX));
     }
 
 	/**
@@ -39,21 +43,21 @@ abstract class ContextUtils {
 	 *
 	 * @param String $name the name of the bean
 	 * @return String the transformed name
-	 * @see Bee_IContext#FACTORY_BEAN_PREFIX
+	 * @see IContext#FACTORY_BEAN_PREFIX
 	 */
 	public static function transformedBeanName($name) {
-		Bee_Utils_Assert::notNull($name, '\'name\' must not be null');
+		Assert::notNull($name, '\'name\' must not be null');
 		$beanName = $name;
-		while(Bee_Utils_Strings::startsWith($beanName, Bee_IContext::FACTORY_BEAN_PREFIX)) {
-			$beanName = substr($beanName, strlen(Bee_IContext::FACTORY_BEAN_PREFIX));
+		while(Strings::startsWith($beanName, IContext::FACTORY_BEAN_PREFIX)) {
+			$beanName = substr($beanName, strlen(IContext::FACTORY_BEAN_PREFIX));
 		}
 		return $beanName;
 	}
 
-    public static function beanNamesForTypeIncludingAncestors(Bee_IContext $beeContext, $className) {
+    public static function beanNamesForTypeIncludingAncestors(IContext $beeContext, $className) {
         $result = $beeContext->getBeanNamesForType($className);
         $parent = $beeContext->getParent();
-        if ($parent instanceof Bee_IContext) {
+        if ($parent instanceof IContext) {
             $result = array_merge($result, self::beanNamesForTypeIncludingAncestors($parent, $className));
         }
         return $result;

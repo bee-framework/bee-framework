@@ -1,6 +1,5 @@
 <?php
 namespace Bee\Context\Support;
-
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -16,12 +15,13 @@ namespace Bee\Context\Support;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\BeanDefinitionStoreException;
+use Bee\Context\Config\BeanDefinition\AbstractBeanDefinition;
+use Bee\Context\Config\BeanDefinition\GenericBeanDefinition;
 use Bee\Context\Config\BeanDefinitionHolder;
 use Bee\Context\Config\IBeanDefinition;
 use Bee\Context\Config\IBeanDefinitionRegistry;
-use Bee_Context_BeanDefinitionStoreException;
-use Bee_Context_Config_BeanDefinition_Generic;
-use Bee_Utils_Strings;
+use Bee\Utils\Strings;
 
 /**
  * Enter description here...
@@ -40,10 +40,10 @@ class BeanDefinitionReaderUtils {
 	 *
 	 * @param string $parentName the name of the parent bean, if any
 	 * @param string $className the name of the bean class, if any
-	 * @return \Bee_Context_Config_BeanDefinition_Abstract the bean definition
+	 * @return AbstractBeanDefinition the bean definition
 	 */
 	public static function createBeanDefinition($parentName, $className) {
-		$bd = new Bee_Context_Config_BeanDefinition_Generic();
+		$bd = new GenericBeanDefinition();
 		$bd->setParentName($parentName);
 		if (!is_null($className)) {
 			$bd->setBeanClassName($className);
@@ -62,21 +62,21 @@ class BeanDefinitionReaderUtils {
 	 * @param boolean $isInnerBean $isInnerBean whether the given bean definition will be registered
 	 * as inner bean or as top-level bean (allowing for special name generation
 	 * for inner beans versus top-level beans)
-	 * @throws Bee_Context_BeanDefinitionStoreException
+	 * @throws BeanDefinitionStoreException
 	 * @return String the generated bean name
 	 */
 	public static function generateBeanName(IBeanDefinition $definition, IBeanDefinitionRegistry $registry, $isInnerBean = false) {
 
 		$generatedBeanName = $definition->getBeanClassName();
-		if (!Bee_Utils_Strings::hasText($generatedBeanName)) {
-			if (Bee_Utils_Strings::hasText($parentName = $definition->getParentName())) {
+		if (!Strings::hasText($generatedBeanName)) {
+			if (Strings::hasText($parentName = $definition->getParentName())) {
 				$generatedBeanName = $parentName . '$child';
-			} else if (Bee_Utils_Strings::hasText($factoryBeanName = $definition->getFactoryBeanName())) {
+			} else if (Strings::hasText($factoryBeanName = $definition->getFactoryBeanName())) {
 				$generatedBeanName = $factoryBeanName . '$created';
 			}
 		}
-		if (!Bee_Utils_Strings::hasText($generatedBeanName)) {
-			throw new Bee_Context_BeanDefinitionStoreException("Unnamed bean definition specifies neither 'class' nor 'parent' nor 'factory-bean' - can't generate bean name");
+		if (!Strings::hasText($generatedBeanName)) {
+			throw new BeanDefinitionStoreException("Unnamed bean definition specifies neither 'class' nor 'parent' nor 'factory-bean' - can't generate bean name");
 		}
 
 		$id = $generatedBeanName;

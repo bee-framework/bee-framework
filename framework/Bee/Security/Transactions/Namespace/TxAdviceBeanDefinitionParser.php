@@ -16,9 +16,12 @@
  */
 use Bee\Beans\PropertyEditor\BooleanPropertyEditor;
 use Bee\Beans\PropertyValue;
+use Bee\Context\Config\BeanDefinition\GenericBeanDefinition;
 use Bee\Context\Support\BeanDefinitionBuilder;
 use Bee\Context\Xml\ParserContext;
 use Bee\Context\Xml\XmlNamespace\AbstractSingleBeanDefinitionParser;
+use Bee\Utils\Dom;
+use Bee\Utils\Strings;
 
 /**
  * Created by IntelliJ IDEA.
@@ -58,13 +61,19 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends AbstractSi
         return 'Bee_Transactions_Interceptor_TransactionInterceptor';
     }
 
+	/**
+	 * @param DOMElement $element
+	 * @param ParserContext $parserContext
+	 * @param BeanDefinitionBuilder $builder
+	 * @throws \Bee\Context\BeanCreationException
+	 */
     protected function doParse(DOMElement $element, ParserContext $parserContext, BeanDefinitionBuilder $builder) {
         // Set the transaction manager property.
         $transactionManagerName = ($element->hasAttribute(self::TRANSACTION_MANAGER_ATTRIBUTE) ?
                 $element->getAttribute(self::TRANSACTION_MANAGER_ATTRIBUTE) : "transactionManager");
-        $builder->addPropertyReference(self::TRANSACTION_MANAGER_PROPERTY, Bee_Utils_Strings::tokenizeToArray($transactionManagerName, ','));
+        $builder->addPropertyReference(self::TRANSACTION_MANAGER_PROPERTY, Strings::tokenizeToArray($transactionManagerName, ','));
 
-        $txAttributes = Bee_Utils_Dom::getChildElementsByTagName($element, self::ATTRIBUTES);
+        $txAttributes = Dom::getChildElementsByTagName($element, self::ATTRIBUTES);
         if (count($txAttributes) > 1) {
             $parserContext->getReaderContext()->error(
                     "Element <attributes> is allowed at most once inside element <advice>", $element);
@@ -79,7 +88,7 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends AbstractSi
             // Assume annotations source.
             // todo: not yet implemented
             $sourceClassName = self::ANNOTATION_TRANSACTION_ATTRIBUTE_SOURCE_CLASS_NAME;
-            $srcDef = new Bee_Context_Config_BeanDefinition_Generic();
+            $srcDef = new GenericBeanDefinition();
             $srcDef->setBeanClassName($sourceClassName);
             $builder->addPropertyValue(self::TRANSACTION_ATTRIBUTE_SOURCE, $srcDef);
         }
@@ -88,10 +97,10 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends AbstractSi
 	/**
 	 * @param DOMElement $attrEle
 	 * @param ParserContext $parserContext
-	 * @return Bee_Context_Config_BeanDefinition_Generic
+	 * @return GenericBeanDefinition
 	 */
 	private function parseAttributeSource(DOMElement $attrEle, ParserContext $parserContext) {
-        $methods = Bee_Utils_Dom::getChildElementsByTagName($attrEle, "method");
+        $methods = Dom::getChildElementsByTagName($attrEle, "method");
         $transactionAttributeMap = array();
 
         foreach ($methods as $methodEle) {
@@ -104,16 +113,16 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends AbstractSi
             $isolation = $methodEle->getAttribute(self::ISOLATION);
             $timeout = $methodEle->getAttribute(self::TIMEOUT);
             $readOnly = $methodEle->getAttribute(self::READ_ONLY);
-            if (Bee_Utils_Strings::hasText($propagation)) {
+            if (Strings::hasText($propagation)) {
                 $attribute->setPropagationBehavior($propagation);
             }
-            if (Bee_Utils_Strings::hasText($isolation)) {
+            if (Strings::hasText($isolation)) {
                 $attribute->setIsolationLevel($isolation);
             }
-            if (Bee_Utils_Strings::hasText($timeout)) {
+            if (Strings::hasText($timeout)) {
                 $attribute->setTimeout($timeout);
             }
-            if (Bee_Utils_Strings::hasText($readOnly)) {
+            if (Strings::hasText($readOnly)) {
                 $attribute->setReadOnly(BooleanPropertyEditor::valueOf($methodEle->getAttribute(self::READ_ONLY)));
             }
 
@@ -132,7 +141,7 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends AbstractSi
             $transactionAttributeMap[$name] = $attribute;
         }
 
-        $attributeSourceDefinition = new Bee_Context_Config_BeanDefinition_Generic();
+        $attributeSourceDefinition = new GenericBeanDefinition();
         $attributeSourceDefinition->setBeanClassName('Bee_Transactions_NameMatchTransactionAttributeSource');
         $attributeSourceDefinition->addPropertyValue(new PropertyValue(self::NAME_MAP, $transactionAttributeMap));
         return $attributeSourceDefinition;
@@ -143,7 +152,7 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends AbstractSi
 	 * @param $rollbackForValue
 	 */
     private function addRollbackRuleAttributesTo(array &$rollbackRules, $rollbackForValue) {
-        $exceptionTypeNames = Bee_Utils_Strings::tokenizeToArray($rollbackForValue, ',');
+        $exceptionTypeNames = Strings::tokenizeToArray($rollbackForValue, ',');
         foreach($exceptionTypeNames as $exceptionTypeName) {
             $rollbackRules[] = new Bee_Transactions_Interceptor_RollbackRuleAttribute($exceptionTypeName);
         }
@@ -154,7 +163,7 @@ class Bee_Transactions_Namespace_TxAdviceBeanDefinitionParser extends AbstractSi
 	 * @param $noRollbackForValue
 	 */
     private function addNoRollbackRuleAttributesTo(array &$rollbackRules, $noRollbackForValue) {
-        $exceptionTypeNames = Bee_Utils_Strings::tokenizeToArray($noRollbackForValue, ',');
+        $exceptionTypeNames = Strings::tokenizeToArray($noRollbackForValue, ',');
         foreach($exceptionTypeNames as $exceptionTypeName) {
             $rollbackRules[] = new Bee_Transactions_Interceptor_NoRollbackRuleAttribute($exceptionTypeName);
         }

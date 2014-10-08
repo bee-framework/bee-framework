@@ -15,11 +15,11 @@ namespace Bee\Context\Xml\XmlNamespace;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\BeanDefinition\AbstractBeanDefinition;
 use Bee\Context\Config\IBeanDefinition;
 use Bee\Context\Support\BeanDefinitionBuilder;
 use Bee\Context\Xml\ParserContext;
 use Bee\Context\Xml\Utils;
-use Bee_Context_Config_BeanDefinition_Abstract;
 use DOMElement;
 
 /**
@@ -36,7 +36,7 @@ abstract class AbstractSingleBeanDefinitionParser extends AbstractBeanDefinition
      * {@link #doParse} strategy method.
      * @param DOMElement $element the element that is to be parsed into a single BeanDefinition
      * @param ParserContext $parserContext the object encapsulating the current state of the parsing process
-     * @return Bee_Context_Config_BeanDefinition_Abstract the BeanDefinition resulting from the parsing of the supplied {@link Element}
+     * @return AbstractBeanDefinition the BeanDefinition resulting from the parsing of the supplied {@link Element}
      * {@link #getBeanClass(org.w3c.dom.Element)} is <code>null</code>
      * @see #doParse
      */

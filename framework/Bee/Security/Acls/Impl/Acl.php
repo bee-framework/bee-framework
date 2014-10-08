@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Assert;
 
 /**
  * User: mp
@@ -78,11 +79,11 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
 
     public function __construct(Bee_Security_Acls_IObjectIdentity $objectIdentity, $id, Bee_Security_Acls_IAclAuthorizationStrategy $aclAuthorizationStrategy,
         Bee_Security_Acls_IAuditLogger $auditLogger, Bee_Security_Acls_IAcl $parentAcl = null, array $loadedSids = null, $entriesInheriting, Bee_Security_Acls_ISid $owner) {
-        Bee_Utils_Assert::notNull($objectIdentity, 'Object Identity required');
-        Bee_Utils_Assert::notNull($id, 'Id required');
-        Bee_Utils_Assert::notNull($aclAuthorizationStrategy, 'AclAuthorizationStrategy required');
-        Bee_Utils_Assert::notNull($owner, 'Owner required');
-        Bee_Utils_Assert::notNull($auditLogger, 'AuditLogger required');
+        Assert::notNull($objectIdentity, 'Object Identity required');
+        Assert::notNull($id, 'Id required');
+        Assert::notNull($aclAuthorizationStrategy, 'AclAuthorizationStrategy required');
+        Assert::notNull($owner, 'Owner required');
+        Assert::notNull($auditLogger, 'AuditLogger required');
         $this->objectIdentity = $objectIdentity;
         $this->id = $id;
         $this->aclAuthorizationStrategy = $aclAuthorizationStrategy;
@@ -124,8 +125,8 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
      * @throws Bee_Security_Acls_Exception_UnloadedSid|Bee_Security_Acls_Exception_NotFound
      */
     public function isGranted(array $permissions, array $sids, $administrativeMode) {
-        Bee_Utils_Assert::notEmpty($permissions, 'Permissions required');
-        Bee_Utils_Assert::notEmpty($sids, 'SIDs required');
+        Assert::notEmpty($permissions, 'Permissions required');
+        Assert::notEmpty($sids, 'SIDs required');
 
         if (!$this->isSidLoaded($sids)) {
             throw new Bee_Security_Acls_Exception_UnloadedSid('ACL was not loaded for one or more SID');
@@ -241,8 +242,8 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
 
     public function insertAce($atIndexLocation, Bee_Security_Acls_IPermission $permission, Bee_Security_Acls_ISid $sid, $granting) {
         $this->aclAuthorizationStrategy->securityCheck($this, Bee_Security_Acls_IAclAuthorizationStrategy::CHANGE_GENERAL);
-        Bee_Utils_Assert::notNull($permission, 'Permission required');
-        Bee_Utils_Assert::notNull($sid, 'Sid required');
+        Assert::notNull($permission, 'Permission required');
+        Assert::notNull($sid, 'Sid required');
         if ($atIndexLocation < 0) {
         	throw new Bee_Security_Acls_Exception_NotFound('atIndexLocation must be greater than or equal to zero');
         }
@@ -265,7 +266,7 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
 
     public function setOwner(Bee_Security_Acls_ISid $newOwner) {
         $this->aclAuthorizationStrategy->securityCheck($this, Bee_Security_Acls_IAclAuthorizationStrategy::CHANGE_OWNERSHIP);
-        Bee_Utils_Assert::notNull($newOwner, 'Owner required');
+		Assert::notNull($newOwner, 'Owner required');
         $this->owner = $newOwner;
     }
 
@@ -276,7 +277,7 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
 
     public function setParent(Bee_Security_Acls_IAcl $newParent) {
         $this->aclAuthorizationStrategy->securityCheck($this, Bee_Security_Acls_IAclAuthorizationStrategy::CHANGE_GENERAL);
-        Bee_Utils_Assert::isTrue(is_null($newParent) || $newParent != $this, 'Cannot be the parent of yourself');
+		Assert::isTrue(is_null($newParent) || $newParent != $this, 'Cannot be the parent of yourself');
         $this->parentAcl = $newParent;
     }
 
@@ -307,4 +308,3 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
         $this->parentAcl = $parentAcl;
     }
 }
-?>

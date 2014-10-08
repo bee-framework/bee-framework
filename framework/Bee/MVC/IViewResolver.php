@@ -15,7 +15,6 @@ namespace Bee\MVC;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_MVC_IHttpRequest;
 
 /**
  * Interface to be implemented by objects that can resolve views by name.
@@ -38,9 +37,9 @@ interface IViewResolver {
 	 * to build View objects with the given name, unable to return <code>null</code>
 	 * (rather throwing an exception when View creation failed).
 	 * @param String $viewName name of the view to resolve
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @return IView the IView object, or <code>null</code> if not found
 	 * (optional, to allow for ViewResolver chaining)
 	 */
-	public function resolveViewName($viewName, Bee_MVC_IHttpRequest $request);
+	public function resolveViewName($viewName, IHttpRequest $request);
 }

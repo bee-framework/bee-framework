@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\AbstractContext;
 
 /**
  * User: mp
@@ -45,7 +46,7 @@ class Bee_AOP_Scope_ScopedProxyMethodInterceptor implements Bee_Weaving_Callback
 
 	private function resolveTargetObjectIfNecessary() {
 		if($this->targetObject == null) {
-			$context = Bee_Context_Abstract::getRegisteredContext($this->contextIdentifier);
+			$context = AbstractContext::getRegisteredContext($this->contextIdentifier);
 			$this->targetObject = $context->getBean($this->targetBeanName);
 		}
 	}
@@ -54,5 +55,4 @@ class Bee_AOP_Scope_ScopedProxyMethodInterceptor implements Bee_Weaving_Callback
 		$this->targetObject = null;
 		return array('contextIdentifier', 'targetBeanName');
 	}
-
 }

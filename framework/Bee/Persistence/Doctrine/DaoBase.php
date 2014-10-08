@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
+use Bee\Framework;
 use Bee\Persistence\IOrderAndLimitHolder;
 use Bee\Persistence\IRestrictionHolder;
+use Bee\Utils\Strings;
 
 class Bee_Persistence_Doctrine_DaoBase {
 	
@@ -30,7 +32,7 @@ class Bee_Persistence_Doctrine_DaoBase {
 	 */
 	protected static function getLog() {
 		if (!self::$log) {
-			self::$log = \Bee_Framework::getLoggerForClass(__CLASS__);
+			self::$log = Framework::getLoggerForClass(__CLASS__);
 		}
 		return self::$log;
 	}
@@ -87,7 +89,7 @@ class Bee_Persistence_Doctrine_DaoBase {
             return;
         }
 
-        if (!Bee_Utils_Strings::hasText($restrictionHolder->getFilterString())) {
+        if (!Strings::hasText($restrictionHolder->getFilterString())) {
             return;
         }
 
@@ -98,7 +100,7 @@ class Bee_Persistence_Doctrine_DaoBase {
          */
         $mode = count($params) > 0 ? 'params' : 'inline';
 
-        $filterTokens = Bee_Utils_Strings::tokenizeToArray($restrictionHolder->getFilterString(), ' ');
+        $filterTokens = Strings::tokenizeToArray($restrictionHolder->getFilterString(), ' ');
         foreach ($filterTokens as $no => $token) {
             $andWhereStringParams = array();
             $andWhereString = null;
@@ -123,7 +125,7 @@ class Bee_Persistence_Doctrine_DaoBase {
                 $query->andWhere($andWhereString);
 
             } else {
-                if (!is_null($andWhereString) && Bee_Utils_Strings::hasText($andWhereString)) {
+                if (!is_null($andWhereString) && Strings::hasText($andWhereString)) {
                     $query->andWhere($andWhereString, $andWhereStringParams);
                 }
             }

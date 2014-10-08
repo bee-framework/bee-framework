@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Strings;
 
 /**
  * Votes if any {@link Bee_Security_IConfigAttribute#getAttribute()} starts with a prefix
@@ -62,7 +63,7 @@ class Bee_Security_Vote_RoleVoter implements Bee_Security_Vote_IAccessDecisionVo
 	}
 
 	public function supports(Bee_Security_IConfigAttribute $configAttribute) {
-		return Bee_Utils_Strings::startsWith($configAttribute->getAttribute(), $this->rolePrefix);
+		return Strings::startsWith($configAttribute->getAttribute(), $this->rolePrefix);
 	}
 
 	public function supportsClass($className) {

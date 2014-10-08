@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Utils;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -14,13 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use ReflectionClass;
+use ReflectionMethod;
 
 /**
  * Enter description here...
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Utils_Reflection {
+class Reflection {
 
 	/**
 	 * @param ReflectionMethod $method
@@ -54,11 +57,11 @@ class Bee_Utils_Reflection {
 	public static function createInstance($typeName, $requiredTypeName = false) {
 
         // todo: implement this in a more fancy way...
-        Bee_Utils_Assert::hasText($typeName);
+		Assert::hasText($typeName);
 
         $inst = new $typeName();
         if($requiredTypeName) {
-            Bee_Utils_Assert::isInstanceOf($requiredTypeName, $inst);
+			Assert::isInstanceOf($requiredTypeName, $inst);
         }
 
         return $inst;

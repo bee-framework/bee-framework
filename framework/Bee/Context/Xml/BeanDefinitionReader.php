@@ -15,10 +15,10 @@ namespace Bee\Context\Xml;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\BeansException;
 use Bee\Context\Config\IBeanDefinitionRegistry;
 use Bee\Context\Xml\XmlNamespace\IHandlerResolver;
-use Bee_Context_BeansException;
-use Bee_Utils_Assert;
+use Bee\Utils\Assert;
 use DOMDocument;
 use Exception;
 
@@ -51,7 +51,7 @@ class BeanDefinitionReader {
 	private $resourcesBeingLoaded = array(); 
 
 	public function __construct(IBeanDefinitionRegistry $registry) {
-		Bee_Utils_Assert::notNull($registry, 'Bean definition registry must not be NULL');
+		Assert::notNull($registry, 'Bean definition registry must not be NULL');
 		$this->registry = $registry;
 	}
 
@@ -59,14 +59,14 @@ class BeanDefinitionReader {
 	 * Enter description here...
 	 *
 	 * @param String $location
-	 * @throws Bee_Context_BeansException
+	 * @throws BeansException
 	 * @throws Exception
 	 */
 	public function loadBeanDefinitions($location) {
-		Bee_Utils_Assert::hasText($location, 'You must specify a location from which to load bean definitions!');
+		Assert::hasText($location, 'You must specify a location from which to load bean definitions!');
 		
 		if(array_key_exists($location, $this->resourcesBeingLoaded)) {
-			throw new Bee_Context_BeansException('Detected recursive loading of ' . $location . ' - check your import definitions!');
+			throw new BeansException('Detected recursive loading of ' . $location . ' - check your import definitions!');
 		}
 		$this->resourcesBeingLoaded[$location] = true;
 		try {

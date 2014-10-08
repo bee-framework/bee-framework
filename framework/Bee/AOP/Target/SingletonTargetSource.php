@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Assert;
 
 /**
  * User: mp
@@ -29,10 +30,10 @@ class Bee_AOP_Target_SingletonTargetSource implements Bee_AOP_ITargetSource {
 
     /**
      * Create a new SingletonTargetSource for the given target.
-     * @param target the target object
+     * @param object $target the target object
      */
     public function __construct($target) {
-        Bee_Utils_Assert::notNull($target, "Target object must not be null");
+		Assert::notNull($target, "Target object must not be null");
         $this->target = $target;
     }
 
@@ -53,5 +54,3 @@ class Bee_AOP_Target_SingletonTargetSource implements Bee_AOP_ITargetSource {
     }
 
 }
-
-?>

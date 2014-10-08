@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Assert;
 
 /**
  * User: mp
@@ -126,7 +127,7 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 	}
 
 	private static function computeRepeatingSql($repeatingSql, $requiredRepetitions) {
-		Bee_Utils_Assert::isTrue($requiredRepetitions >= 1, 'Must be => 1');
+		Assert::isTrue($requiredRepetitions >= 1, 'Must be => 1');
 		$sqlStringBuffer = array_fill(0, $requiredRepetitions, $repeatingSql);
 		return self::DEFAULT_SELECT_CLAUSE() . join(' OR ', $sqlStringBuffer) . self::DEFAULT_ORDER_BY_CLAUSE;
 	}
@@ -138,8 +139,8 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 	 * @return Bee_Security_Acls_IAcl[]
 	 */
 	public function readAclsByOidsAndSids($objects, $sids) {
-		Bee_Utils_Assert::isTrue($this->batchSize >= 1, 'BatchSize must be >= 1');
-		Bee_Utils_Assert::isTrue(count($objects), 'Objects to lookup required');
+		Assert::isTrue($this->batchSize >= 1, 'BatchSize must be >= 1');
+		Assert::isTrue(count($objects), 'Objects to lookup required');
 
 		// Map<ObjectIdentity,Acl>
 		$result = array(); // contains FULLY loaded Acl objects
@@ -215,7 +216,7 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 	 * @return Bee_Security_Acls_IAcl[] fully loaded associative $oid->getIdentifierString() => $acl
 	 */
 	private function lookupObjectIdentities($objectIdentities, $sids) {
-		Bee_Utils_Assert::isTrue(count($objectIdentities) > 0, 'Must provide identities to lookup');
+		Assert::isTrue(count($objectIdentities) > 0, 'Must provide identities to lookup');
 
 		$acls = array(); // contains Acls with StubAclParents
 
@@ -237,7 +238,7 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 		$resultMap = array();
 
 		foreach ($acls as $inputAcl) {
-			Bee_Utils_Assert::isInstanceOf('Bee_Security_Acls_Impl_Acl', $inputAcl, 'Map should have contained an AclImpl');
+			Assert::isInstanceOf('Bee_Security_Acls_Impl_Acl', $inputAcl, 'Map should have contained an AclImpl');
 
 			$result = $this->convert($acls, $inputAcl->getId());
 			$resultMap[$result->getObjectIdentity()->getIdentifierString()] = $result;

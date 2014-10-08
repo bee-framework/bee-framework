@@ -16,15 +16,15 @@ namespace Bee\Context\Xml\XmlNamespace;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\BeanDefinitionStoreException;
+use Bee\Context\Config\BeanDefinition\AbstractBeanDefinition;
 use Bee\Context\Config\BeanDefinitionHolder;
 use Bee\Context\Config\IBeanDefinitionRegistry;
 use Bee\Context\Support\BeanDefinitionReaderUtils;
 use Bee\Context\Xml\IConstants;
 use Bee\Context\Xml\ParserContext;
 use Bee\Context\Xml\Utils;
-use Bee_Context_BeanDefinitionStoreException;
-use Bee_Context_Config_BeanDefinition_Abstract;
-use Bee_Utils_Strings;
+use Bee\Utils\Strings;
 use DOMElement;
 
 /**
@@ -44,10 +44,10 @@ abstract class AbstractBeanDefinitionParser implements IBeanDefinitionParser, IC
 				$aliases = $this->shouldParseNameAliases() ? Utils::parseNameAttribute($element) : null;
 
 				$id = $this->resolveId($element, $definition, $parserContext);
-				if (!Bee_Utils_Strings::hasText($id) && count($aliases) > 0) {
+				if (!Strings::hasText($id) && count($aliases) > 0) {
 					$id = Utils::getIdFromAliases($aliases, $parserContext->getReaderContext(), $element);
 				}
-				if (!Bee_Utils_Strings::hasText($id)) {
+				if (!Strings::hasText($id)) {
 //                    $parserContext->getReaderContext()->error(
 //                            "Id is required for element '" . $element->localName . "' when used as a top-level tag", $element);
 					// force-generate an ID so top level elements that are referenced e.g. via decorators can still be
@@ -61,7 +61,7 @@ abstract class AbstractBeanDefinitionParser implements IBeanDefinitionParser, IC
 //                    postProcessComponentDefinition(componentDefinition);
 //                    parserContext.registerComponent(componentDefinition);
 //                }
-			} catch (Bee_Context_BeanDefinitionStoreException $ex) {
+			} catch (BeanDefinitionStoreException $ex) {
 				$parserContext->getReaderContext()->error($ex->getMessage(), $element);
 				return null;
 			}
@@ -75,20 +75,20 @@ abstract class AbstractBeanDefinitionParser implements IBeanDefinitionParser, IC
 	 * Otherwise, the ID is extracted from the "id" attribute, potentially with a
 	 * {@link #shouldGenerateIdAsFallback() fallback} to a generated id.
 	 * @param DOMElement $element the element that the bean definition has been built from
-	 * @param Bee_Context_Config_BeanDefinition_Abstract $definition the bean definition to be registered
+	 * @param AbstractBeanDefinition $definition the bean definition to be registered
 	 * @param ParserContext $parserContext the object encapsulating the current state of the parsing process;
 	 * provides access to a {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
 	 * @return string the resolved id
-	 * @throws Bee_Context_BeanDefinitionStoreException if no unique name could be generated
+	 * @throws BeanDefinitionStoreException if no unique name could be generated
 	 * for the given bean definition
 	 */
-	protected function resolveId(DOMElement $element, Bee_Context_Config_BeanDefinition_Abstract $definition, ParserContext $parserContext) {
+	protected function resolveId(DOMElement $element, AbstractBeanDefinition $definition, ParserContext $parserContext) {
 
 		if ($this->shouldGenerateId()) {
 			return BeanDefinitionReaderUtils::generateBeanName($definition, $parserContext->getRegistry(), false);
 		} else {
 			$id = $element->getAttribute(self::ID_ATTRIBUTE);
-			if (!Bee_Utils_Strings::hasText($id) && $this->shouldGenerateIdAsFallback()) {
+			if (!Strings::hasText($id) && $this->shouldGenerateIdAsFallback()) {
 				$id = BeanDefinitionReaderUtils::generateBeanName($definition, $parserContext->getRegistry(), false);
 			}
 			return $id;
@@ -119,7 +119,7 @@ abstract class AbstractBeanDefinitionParser implements IBeanDefinitionParser, IC
 	 * @param DOMElement $element the element that is to be parsed into one or more {@link BeanDefinition BeanDefinitions}
 	 * @param ParserContext $parserContext the object encapsulating the current state of the parsing process;
 	 * provides access to a {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
-	 * @return Bee_Context_Config_BeanDefinition_Abstract the primary {@link BeanDefinition} resulting from the parsing of the supplied {@link Element}
+	 * @return AbstractBeanDefinition the primary {@link BeanDefinition} resulting from the parsing of the supplied {@link Element}
 	 * @see #parse(org.w3c.dom.Element, ParserContext)
 	 * @see #postProcessComponentDefinition(org.springframework.beans.factory.parsing.BeanComponentDefinition)
 	 */

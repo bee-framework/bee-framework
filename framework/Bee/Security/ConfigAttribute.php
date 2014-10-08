@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+use Bee\Utils\Assert;
+
 class Bee_Security_ConfigAttribute implements Bee_Security_IConfigAttribute {
 
 	/**
@@ -24,7 +26,7 @@ class Bee_Security_ConfigAttribute implements Bee_Security_IConfigAttribute {
 	private $attrib;
 
 	public function __construct($attrib) {
-		Bee_Utils_Assert::hasText($attrib, 'You must provide a configuration attribute');
+		Assert::hasText($attrib, 'You must provide a configuration attribute');
 		$this->attrib = $attrib;
 	}
 
@@ -32,4 +34,3 @@ class Bee_Security_ConfigAttribute implements Bee_Security_IConfigAttribute {
 		return $this->attrib;
 	}
 }
-?>

@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Assert;
 
 /**
  * User: mp
@@ -28,16 +29,16 @@ class Bee_Security_Acls_Impl_GrantedAuthoritySid implements Bee_Security_Acls_IS
      */
     private $grantedAuthority;
 
-    /**
-     * @param string|Bee_Security_IGrantedAuthority $grantedAuthority
-     * @return void
-     */
+	/**
+	 * @param string|Bee_Security_IGrantedAuthority $grantedAuthority
+	 * @return \Bee_Security_Acls_Impl_GrantedAuthoritySid
+	 */
     public function __construct($grantedAuthority) {
-        Bee_Utils_Assert::notNull($grantedAuthority);
+		Assert::notNull($grantedAuthority);
         if(is_string($grantedAuthority)) {
             $this->grantedAuthority = $grantedAuthority;
         } else {
-            Bee_Utils_Assert::isTrue($grantedAuthority instanceof Bee_Security_IGrantedAuthority, 'Unknown granted authority type');
+			Assert::isTrue($grantedAuthority instanceof Bee_Security_IGrantedAuthority, 'Unknown granted authority type');
             $this->grantedAuthority = $grantedAuthority->getAuthority();
         }
     }
@@ -63,4 +64,3 @@ class Bee_Security_Acls_Impl_GrantedAuthoritySid implements Bee_Security_Acls_IS
         return $this->getIdentifierString() == $sid->getIdentifierString();
     }
 }
-?>

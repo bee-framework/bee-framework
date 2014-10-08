@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
+use Bee\Context\AbstractContext;
 use Bee\Context\Config\ArrayValue;
 use Bee\Context\Config\TypedStringValue;
 use Bee\Context\Support\BeanDefinitionBuilder;
@@ -31,7 +32,7 @@ class Bee_Context_AbstractTest extends PHPUnit_Framework_TestCase {
 	const BEAN_NAME_ARRAY_CHILD_NOT_MERGED = 'arrayChildNotMerged';
 
 	/**
-	 * @var Bee_Context_Abstract
+	 * @var AbstractContext
 	 */
 	private $context;
 
@@ -72,7 +73,7 @@ class Bee_Context_AbstractTest extends PHPUnit_Framework_TestCase {
 	}
 }
 
-class Bee_Context_AbstractTestStub extends Bee_Context_Abstract {
+class Bee_Context_AbstractTestStub extends AbstractContext {
 
 	protected function loadBeanDefinitions() {
 		$this->registerArrayFactoryParent();

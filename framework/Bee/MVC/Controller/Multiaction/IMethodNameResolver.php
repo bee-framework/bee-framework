@@ -15,8 +15,8 @@ namespace Bee\MVC\Controller\Multiaction;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\Controller\MultiActionController;
-use Bee_MVC_IHttpRequest;
+use Bee\MVC\IDelegatingHandler;
+use Bee\MVC\IHttpRequest;
 
 /**
  * Base interface for method name resolvers. Used by the multiaction controller to determine the handler method for the
@@ -30,14 +30,14 @@ use Bee_MVC_IHttpRequest;
 interface IMethodNameResolver {
 
 	/**
-	 * @param MultiActionController $controller
+	 * @param IDelegatingHandler $controller
 	 * @return mixed
 	 */
-	public function setController(MultiActionController $controller);
+	public function setDelegatingHandler(IDelegatingHandler $controller);
 
 	/**
-	 * @param \Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @return string
 	 */
-	public function getHandlerMethodName(Bee_MVC_IHttpRequest $request);
+	public function getHandlerMethodName(IHttpRequest $request);
 }

@@ -16,7 +16,7 @@ namespace Bee\Context\Xml;
  * limitations under the License.
  */
 use Bee\Context\Config\IBeanDefinition;
-use Bee_Utils_Strings;
+use Bee\Utils\Strings;
 use DOMElement;
 
 /**
@@ -46,7 +46,7 @@ class Utils implements IConstants {
 	public static function parseDependsOnAttribute(DOMElement $ele, IBeanDefinition $bd) {
         if ($ele->hasAttribute(self::DEPENDS_ON_ATTRIBUTE)) {
             $dependsOn = $ele->getAttribute(self::DEPENDS_ON_ATTRIBUTE);
-            $bd->setDependsOn(Bee_Utils_Strings::tokenizeToArray($dependsOn, self::BEAN_NAME_DELIMITERS));
+            $bd->setDependsOn(Strings::tokenizeToArray($dependsOn, self::BEAN_NAME_DELIMITERS));
         }
     }
 
@@ -57,7 +57,7 @@ class Utils implements IConstants {
 	public static function parseNameAttribute(DOMElement $ele) {
         if($ele->hasAttribute(self::NAME_ATTRIBUTE)) {
             $nameAttr = $ele->getAttribute(self::NAME_ATTRIBUTE);
-            return Bee_Utils_Strings::tokenizeToArray($nameAttr, self::BEAN_NAME_DELIMITERS);
+            return Strings::tokenizeToArray($nameAttr, self::BEAN_NAME_DELIMITERS);
         }
         return null;
     }

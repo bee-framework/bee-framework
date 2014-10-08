@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +22,10 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_BeanIsNotAFactoryException extends Bee_Context_BeanNotOfRequiredTypeException {
+class BeanIsNotAFactoryException extends BeanNotOfRequiredTypeException {
 
 	public function __construct($beanName, $actualType) {
-		parent::__construct($beanName, 'Bee_Context_IFactoryBean', $actualType);
+		parent::__construct($beanName, 'Bee\Context\IFactoryBean', $actualType);
 	}
 	
 }
-
-?>

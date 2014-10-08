@@ -15,7 +15,7 @@ namespace Bee\Beans\PropertyEditor;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_Utils_Strings;
+use Bee\Utils\Strings;
 
 /**
  * Enter description here...
@@ -51,6 +51,6 @@ class BooleanPropertyEditor extends AbstractPropertyEditor {
 	}
 
     public static function valueOf($value) {
-        return Bee_Utils_Strings::hasText($value) && strtolower($value) != self::VALUE_FALSE;
+        return Strings::hasText($value) && strtolower($value) != self::VALUE_FALSE;
     }
 }

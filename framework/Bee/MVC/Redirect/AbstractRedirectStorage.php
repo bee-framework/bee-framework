@@ -15,8 +15,8 @@ namespace Bee\MVC\Redirect;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\IHttpRequest;
 use Bee\Utils\HashManager;
-use Bee_MVC_IHttpRequest;
 
 /**
  * Class AbstractRedirectStorage
@@ -57,7 +57,7 @@ abstract class AbstractRedirectStorage {
 
 	/**
 	 * @param RedirectedRequestBuilder $requestBuilder
-	 * @return \Bee_MVC_IHttpRequest
+	 * @return IHttpRequest
 	 */
 	abstract public function restoreRequestObject(RedirectedRequestBuilder $requestBuilder);
 }

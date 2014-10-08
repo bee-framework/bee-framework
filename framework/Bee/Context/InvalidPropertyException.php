@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_InvalidPropertyException extends Bee_Context_BeansException {
+class InvalidPropertyException extends BeansException {
 	
 	const EXCEPTION_MESSAGE = 'Could not access property %s on bean class %s: %s';
 
@@ -42,7 +43,7 @@ class Bee_Context_InvalidPropertyException extends Bee_Context_BeansException {
 	 * @param string $beanClassName
 	 * @param string $message
 	 * @internal param string $name
-	 * @return \Bee_Context_InvalidPropertyException
+	 * @return InvalidPropertyException
 	 */
 	public function __construct($propertyName, $beanClassName, $message=null) {
 		parent::__construct(sprintf(self::EXCEPTION_MESSAGE, $propertyName, $beanClassName, $message));
@@ -64,5 +65,3 @@ class Bee_Context_InvalidPropertyException extends Bee_Context_BeansException {
 		return $this->beanClassName;
 	}
 }
-
-?>

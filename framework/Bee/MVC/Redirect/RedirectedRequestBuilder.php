@@ -16,6 +16,7 @@ namespace Bee\MVC\Redirect;
  * limitations under the License.
  */
 use Bee\MVC\DefaultRequestBuilder;
+use Bee\MVC\IHttpRequest;
 
 /**
  * Class RedirectedRequestBuilder - restores a previously stored request from the session if applicable, or creates a
@@ -42,7 +43,7 @@ class RedirectedRequestBuilder extends DefaultRequestBuilder {
 	}
 
 	/**
-	 * @return \Bee_MVC_IHttpRequest
+	 * @return IHttpRequest
 	 */
 	public function buildRequestObject() {
 		if(array_key_exists($this->requestIdParamName, $_GET)) {

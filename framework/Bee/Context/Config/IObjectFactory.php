@@ -15,6 +15,7 @@ namespace Bee\Context\Config;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\BeansException;
 
 /**
  * Enter description here...
@@ -27,7 +28,7 @@ interface IObjectFactory {
 	/**
 	 * Enter description here...
 	 *
-	 * @throws \Bee_Context_BeansException
+	 * @throws BeansException
 	 * 
 	 * @return mixed
 	 */

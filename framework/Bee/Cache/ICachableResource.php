@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Cache;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +21,21 @@
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-interface Bee_Cache_ICachableResource {
-	
+interface ICachableResource {
+
+	/**
+	 * @return string
+	 */
 	public function getKey();
-	
+
+	/**
+	 * @return int
+	 */
 	public function getModificationTimestamp();
-	
+
+	/**
+	 * @param int $expirationTimestamp
+	 * @return mixed
+	 */
 	public function &createContent(&$expirationTimestamp = 0);
 }

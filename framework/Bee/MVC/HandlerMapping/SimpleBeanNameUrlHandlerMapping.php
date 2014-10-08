@@ -15,8 +15,8 @@ namespace Bee\MVC\HandlerMapping;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_MVC_IHttpRequest;
-use Bee_Utils_Strings;
+use Bee\MVC\IHttpRequest;
+use Bee\Utils\Strings;
 
 /**
  * Enter description here...
@@ -26,13 +26,17 @@ use Bee_Utils_Strings;
  *
  */
 class SimpleBeanNameUrlHandlerMapping extends AbstractHandlerMapping {
-	
-	protected function getControllerBeanName(Bee_MVC_IHttpRequest $request) {
+
+	/**
+	 * @param IHttpRequest $request
+	 * @return mixed|String
+	 */
+	protected function getControllerBeanName(IHttpRequest $request) {
 		$pathInfo = $request->getPathInfo();
 		
 		$parts = explode('/', $pathInfo);
 		
-		if(Bee_Utils_Strings::hasText($parts[1])) {
+		if(Strings::hasText($parts[1])) {
 			$controllerBeanName = '/'.$parts[1];
 		} else {
 			$controllerBeanName = $this->getDefaultControllerBeanName();

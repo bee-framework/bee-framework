@@ -15,10 +15,10 @@ namespace Bee\Context\Xml;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\BeanCreationException;
 use Bee\Context\Config\IBeanDefinitionRegistry;
 use Bee\Context\Xml\XmlNamespace\IHandlerResolver;
-use Bee_Context_BeanCreationException;
-use Bee_Framework;
+use Bee\Framework;
 use DOMElement;
 use Exception;
 use Logger;
@@ -48,12 +48,16 @@ class ReaderContext {
      * @var Logger
      */
 	private $log;
-	
+
+	/**
+	 * @param IBeanDefinitionRegistry $registry
+	 * @param IHandlerResolver $namespaceHandlerResolver
+	 */
 	public function __construct(
 			IBeanDefinitionRegistry $registry,
 			IHandlerResolver $namespaceHandlerResolver) {
 		
-        $this->log = Bee_Framework::getLoggerForClass(__CLASS__);
+        $this->log = Framework::getLoggerForClass(__CLASS__);
 
 		$this->registry = $registry;
 		$this->namespaceHandlerResolver = $namespaceHandlerResolver;
@@ -76,17 +80,33 @@ class ReaderContext {
 	public function getNamespaceHandlerResolver() {
 		return $this->namespaceHandlerResolver;
 	}
-	
+
+	/**
+	 * @param $message
+	 * @param DOMElement $elem
+	 * @param Exception $ex
+	 * @throws BeanCreationException
+	 */
 	public function error($message, DOMElement $elem, Exception $ex = null) {
 //		trigger_error($message, E_USER_ERROR);
         $this->log->fatal($message);
-        throw new Bee_Context_BeanCreationException('', $message, $ex);
+        throw new BeanCreationException('', $message, $ex);
 	}
 
+	/**
+	 * @param $message
+	 * @param DOMElement $elem
+	 * @param Exception $ex
+	 */
 	public function warning($message, DOMElement $elem, Exception $ex = null) {
         $this->log->warn($message);
 	}
-	
+
+	/**
+	 * @param $message
+	 * @param DOMElement $elem
+	 * @param Exception $ex
+	 */
 	public function notice($message, DOMElement $elem, Exception $ex = null) {
         $this->log->info($message);
 	}

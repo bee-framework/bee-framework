@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,15 +60,16 @@ class Bee_Security_Intercept_MethodSecurityInterceptor extends Bee_Security_Inte
         return 'Bee_AOP_Intercept_IMethodInvocation';
     }
 
-    /**
-     * This method should be used to enforce security on a <code>MethodInvocation</code>.
-     *
-     * @param mi The method being invoked which requires a security decision
-     *
-     * @return The returned value from the method invocation
-     *
-     * @throws Throwable if any error occurs
-     */
+	/**
+	 * This method should be used to enforce security on a <code>MethodInvocation</code>.
+	 *
+	 * @param Bee_AOP_Intercept_IMethodInvocation $mi The $mi method being invoked which requires a security decision
+	 * @throws Bee_Security_Exception_AccessDenied
+	 * @throws Exception
+	 *
+	 * @return mixed The returned value from the method invocation
+	 *
+	 */
     public function invoke(Bee_AOP_Intercept_IMethodInvocation $mi) {
         $result = null;
         $token = parent::beforeInvocation($mi);
@@ -86,4 +87,3 @@ class Bee_Security_Intercept_MethodSecurityInterceptor extends Bee_Security_Inte
         return $result;
     }
 }
-?>

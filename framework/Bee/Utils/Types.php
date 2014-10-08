@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Utils;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -14,14 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Utils\ITypeDefinitions;
+use ReflectionClass;
 
 /**
  * Enter description here...
  *
  * @author Benjamin Hartmann
  */
-final class Bee_Utils_Types {
+final class Types {
 
 	private static $primitves = array(ITypeDefinitions::BOOLEAN, ITypeDefinitions::INTEGER, ITypeDefinitions::DOUBLE, ITypeDefinitions::STRING);
 
@@ -34,7 +35,7 @@ final class Bee_Utils_Types {
 	 */
 	public static function isAssignable($actualClassOrClassName, $targetClassName) {
 		if ($targetClassName == ITypeDefinitions::OBJECT_TYPE) {
-			return is_object($actualClassOrClassName) ||  class_exists($actualClassOrClassName) ||  interface_exists($actualClassOrClassName);
+			return is_object($actualClassOrClassName) || class_exists($actualClassOrClassName) || interface_exists($actualClassOrClassName);
 		}
 		if (is_string($actualClassOrClassName) && class_exists($actualClassOrClassName)) {
 			// @todo: check php warnings

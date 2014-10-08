@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Exceptions\FilesystemException;
+use Bee\MVC\IHttpRequest;
+use Bee\MVC\ModelAndView;
+use Bee\Utils\Assert;
+use Bee\Utils\Strings;
 
 /**
  * Manages access to the servers local filesystem.
@@ -34,13 +39,13 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 	const FILE_UPLOAD_FIELD = 'fileManagerUpload';
 
 	private static $messagebundle = array(
-		Bee_Exceptions_FilesystemException::MESSAGE_COULD_NOT_CREATE => 'Erstellen fehlgeschlagen',
-		Bee_Exceptions_FilesystemException::MESSAGE_COULD_NOT_DELETE => 'Löschen fehlgeschlagen',
-		Bee_Exceptions_FilesystemException::MESSAGE_COULD_NOT_MOVE => 'Verschieben fehlgeschlagen',
-		Bee_Exceptions_FilesystemException::MESSAGE_COULD_NOT_RENAME => 'Umbenennen fehlgeschlagen',
-		Bee_Exceptions_FilesystemException::MESSAGE_RESOURCE_DOES_NOT_EXIST => 'Datei / Verzeichnis nicht vorhanden',
-		Bee_Exceptions_FilesystemException::MESSAGE_RESOURCE_EXISTS => 'Datei / Verzeichnis bereits vorhanden',
-		Bee_Exceptions_FilesystemException::MESSAGE_UNKNOWN_ERROR => 'Unbekannter Fehler'
+		FilesystemException::MESSAGE_COULD_NOT_CREATE => 'Erstellen fehlgeschlagen',
+		FilesystemException::MESSAGE_COULD_NOT_DELETE => 'Löschen fehlgeschlagen',
+		FilesystemException::MESSAGE_COULD_NOT_MOVE => 'Verschieben fehlgeschlagen',
+		FilesystemException::MESSAGE_COULD_NOT_RENAME => 'Umbenennen fehlgeschlagen',
+		FilesystemException::MESSAGE_RESOURCE_DOES_NOT_EXIST => 'Datei / Verzeichnis nicht vorhanden',
+		FilesystemException::MESSAGE_RESOURCE_EXISTS => 'Datei / Verzeichnis bereits vorhanden',
+		FilesystemException::MESSAGE_UNKNOWN_ERROR => 'Unbekannter Fehler'
 	);
 	
 	/**
@@ -67,7 +72,7 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 		return $this->fileManager->getNode($dirName);
 	}
 	
-	public function show(Bee_MVC_IHttpRequest $request) {
+	public function show(IHttpRequest $request) {
 		throw new Exception("Operation not supported");
 	}
 	
@@ -80,12 +85,12 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_ModelAndView
+	 * @param IHttpRequest $request
+	 * @return ModelAndView
 	 * 
 	 * @Bee_MVC_Controller_Multiaction_RequestHandler(httpMethod = "GET", pathPattern = "/**\/tree")
 	 */
-	public final function getFolderTree(Bee_MVC_IHttpRequest $request) {
+	public final function getFolderTree(IHttpRequest $request) {
 		$model = array();
 		$requestedFolderName = $request->getParameter(self::FILE_LIST_CURRENT_FOLDER_KEY);
 		$folders = array();
@@ -102,19 +107,19 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 		}
 		
 		$model['folders'] = $folders;
-		return new Bee_MVC_ModelAndView($model, 'service.json');
+		return new ModelAndView($model, 'service.json');
 	}
 	
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_ModelAndView
+	 * @param IHttpRequest $request
+	 * @return ModelAndView
 	 * 
 	 * @Bee_MVC_Controller_Multiaction_RequestHandler(httpMethod = "POST", pathPattern = "/**\/tree")
 	 * @Bee_MVC_Controller_Multiaction_RequestHandler(httpMethod = "GET", pathPattern = "/**\/testTree")
 	 */
-	public final function handleTreeAction(Bee_MVC_IHttpRequest $request) {
+	public final function handleTreeAction(IHttpRequest $request) {
 		$command = $request->getParameter('command');
 		
 		switch ($request->getParameter('command')) {
@@ -125,23 +130,23 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 		}
 		
 		$model['commandResult'] = 'failure';
-		return new Bee_MVC_ModelAndView($model, 'service.json');
+		return new ModelAndView($model, 'service.json');
 	}
 	
 	
 	/**
 	 * Handle create folder action
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_ModelAndView
+	 * @param IHttpRequest $request
+	 * @return ModelAndView
 	 */
-	private function doCreateFolder(Bee_MVC_IHttpRequest $request) {
+	private function doCreateFolder(IHttpRequest $request) {
 		try {
 			$requestedFolderName = $request->getParameter(self::FILE_LIST_CURRENT_FOLDER_KEY);
 			$currentNode = (!is_null($requestedFolderName)) ? $this->selectCurrentNode($requestedFolderName) : $this->selectRootNode($request);
 			
 			$newFolderName = $request->getParameter('folderName');
-			if (!Bee_Utils_Strings::hasText($newFolderName)) {
+			if (!Strings::hasText($newFolderName)) {
 				throw new Exception('No folder name specified for create folder action');
 			}
 
@@ -161,9 +166,9 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 				);
 				$model['commandResult'] = 'success';
 				$model['folders'] = $folders;
-				return new Bee_MVC_ModelAndView($model, 'service.json');
+				return new ModelAndView($model, 'service.json');
 			}
-		} catch (Bee_Exceptions_FilesystemException $fex) {
+		} catch (FilesystemException $fex) {
 			//return $this->relayExceptionMessage($mav, $fex);
 			return $mav;
 		} catch (Exception $e) {
@@ -173,13 +178,13 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 	/**
 	 * Handle delete folder action
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_ModelAndView
+	 * @param IHttpRequest $request
+	 * @return ModelAndView
 	 */
-	private function doDeleteFolder(Bee_MVC_IHttpRequest $request) {
+	private function doDeleteFolder(IHttpRequest $request) {
 		try {
 			$requestedFolderName = $request->getParameter(self::FILE_LIST_CURRENT_FOLDER_KEY);
-			if (!Bee_Utils_Strings::hasText($requestedFolderName)) {
+			if (!Strings::hasText($requestedFolderName)) {
 				throw new Exception();
 			}
 			$currentNode = (!is_null($requestedFolderName)) ? $this->selectCurrentNode($requestedFolderName) : $this->selectRootNode($request);
@@ -187,26 +192,26 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 			if (!$this->fileManager->isRootNode($currentNode)) {
 				$currentNode->delete();
 				$model['commandResult'] = 'success';
-				return new Bee_MVC_ModelAndView($model, 'service.json');
+				return new ModelAndView($model, 'service.json');
 			}
 			
 			$model['commandResult'] = 'failure';
-			return new Bee_MVC_ModelAndView($model, 'service.json');
-		} catch (Bee_Exceptions_FilesystemException $fex) {
+			return new ModelAndView($model, 'service.json');
+		} catch (FilesystemException $fex) {
 			return $this->relayExceptionMessage($mav, $fex);
 		} catch (Exception $e) {
 		}
 	}
 	
 	private function doMove(array $move) {
-		Bee_Utils_Assert::isTrue($move['relative'] == 'into', 'Folder tree does not support reordering. Cannot accept relative positions other than \'into\'.');
+		Assert::isTrue($move['relative'] == 'into', 'Folder tree does not support reordering. Cannot accept relative positions other than \'into\'.');
 		$subjectPath = $move['subject'];
 		$subjectPath = rawurldecode($subjectPath);
 		$subject = $this->fileManager->getNode($subjectPath);
 		if($subject) {
 			$targetPath = $move['target'];
 			$targetPath = rawurldecode($targetPath);
-			if(Bee_Utils_Strings::hasText($targetPath)) {
+			if(Strings::hasText($targetPath)) {
 				$subject->move($targetPath);
 			}
 		} // else maybe raise some error? or not, an exception should already be thrown by the fileManager...
@@ -223,11 +228,11 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_ModelAndView
+	 * @param IHttpRequest $request
+	 * @return ModelAndView
 	 * 
 	 */
-	private final function showFileList(Bee_MVC_IHttpRequest $request) {
+	private final function showFileList(IHttpRequest $request) {
 		
 		// @TODO: Check out FileManager's formatter
 		
@@ -288,18 +293,18 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 		}
 		
 		$model['files'] = $files;
-		return new Bee_MVC_ModelAndView($model, 'service.json');
+		return new ModelAndView($model, 'service.json');
 	}
 	
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_ModelAndView
+	 * @param IHttpRequest $request
+	 * @return ModelAndView
 	 * 
 	 * @Bee_MVC_Controller_Multiaction_RequestHandler(httpMethod = "GET", pathPattern = "/**\/filesExist")
 	 */
-	public final function filesExist(Bee_MVC_IHttpRequest $request) {
+	public final function filesExist(IHttpRequest $request) {
 		$existingFiles = array();
 		try {
 			//$files = explode(',', $request->getParameter('files'));
@@ -328,19 +333,19 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 			$model['filesExist'] = true;
 			$model['existingFiles'] = $existingFiles;
 		}
-		return new Bee_MVC_ModelAndView($model, 'service.json');
+		return new ModelAndView($model, 'service.json');
 	}
 	
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_ModelAndView
+	 * @param IHttpRequest $request
+	 * @return ModelAndView
 	 * 
 	 * @Bee_MVC_Controller_Multiaction_RequestHandler(pathPattern = "/**\/filelist")
 	 * @Bee_MVC_Controller_Multiaction_RequestHandler(httpMethod = "POST", pathPattern = "/**\/filelist")
 	 */
-	public final function handleFilesAction(Bee_MVC_IHttpRequest $request) {
+	public final function handleFilesAction(IHttpRequest $request) {
 		$command = $request->getParameter('command');
 		
 		switch ($command) {
@@ -362,7 +367,7 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 				$this->doDelete($delete);
 			}			
 		
-		} catch (Bee_Exceptions_FilesystemException $fex) {
+		} catch (FilesystemException $fex) {
 			return $this->relayExceptionMessage($this->showFileList($request), $fex);
 		}
 		
@@ -374,10 +379,10 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 	/**
 	 * Handle delete folder action
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_ModelAndView
+	 * @param IHttpRequest $request
+	 * @return ModelAndView
 	 */
-	private function doDeleteFiles(Bee_MVC_IHttpRequest $request) {
+	private function doDeleteFiles(IHttpRequest $request) {
 		try {
 			$toDeleteParam = $request->getParameter(self::FILE_LIST_FILES_KEY);
 			$toDelete = explode(',', $toDeleteParam);
@@ -395,7 +400,7 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 				}
 			}
 			$model['commandResult'] = $result;
-		} catch (Bee_Exceptions_FilesystemException $fex) {
+		} catch (FilesystemException $fex) {
 		} catch (Exception $e) {
 		}
 		return $this->showFileList($request);
@@ -404,13 +409,13 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_ModelAndView
+	 * @param IHttpRequest $request
+	 * @return ModelAndView
 	 * 
 	 * @Bee_MVC_Controller_Multiaction_RequestHandler(httpMethod = "POST", pathPattern = "/**\/upload")
 	 * @Bee_MVC_Controller_Multiaction_RequestHandler(httpMethod = "GET", pathPattern = "/**\/upload")
 	 */
-	public final function handleFileUpload(Bee_MVC_IHttpRequest $request) {
+	public final function handleFileUpload(IHttpRequest $request) {
 		$model = array();
 		try {
 			$requestedFolderName = $request->getParameter(self::FILE_LIST_CURRENT_FOLDER_KEY);
@@ -421,9 +426,9 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 			try {
 				$currentNode->addUploadedFile(self::FILE_UPLOAD_FIELD, $fileName);
 				
-			} catch (Bee_Exceptions_FilesystemException $e) {
+			} catch (FilesystemException $e) {
 				// delete file if it already exists
-				if ($e->getMessage()==Bee_Exceptions_FilesystemException::MESSAGE_RESOURCE_EXISTS) {
+				if ($e->getMessage()==FilesystemException::MESSAGE_RESOURCE_EXISTS) {
 					$existingFile = $currentNode->getPath().DIRECTORY_SEPARATOR.$currentNode->getFilename().DIRECTORY_SEPARATOR.$fileName;
 					$exFiNode = $this->fileManager->getNode($existingFile);
 					$exFiNode->delete();
@@ -432,7 +437,7 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 			} catch (Exception $e) {
 			}
 			
-		} catch (Bee_Exceptions_FilesystemException $fex) {
+		} catch (FilesystemException $fex) {
 			$errorMessage = $fex->getMessage();
 		}
 
@@ -452,7 +457,7 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 		file_put_contents('/UPLOADERLOG.txt', $nfc);
 		*/
 		
-		return new Bee_MVC_ModelAndView($model, 'service.json');
+		return new ModelAndView($model, 'service.json');
 	}
 
 	private function doDelete(array $delete) {
@@ -465,7 +470,7 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 		}
 	}
 	
-	protected final function selectRootNode(Bee_MVC_IHttpRequest $request) {
+	protected final function selectRootNode(IHttpRequest $request) {
 		$node = $request->getParameter(self::FOLDER_TREE_ROOT_FOLDER_KEY);
 		if(!($node instanceof Bee_Filesystem_INode)) {
 			$node = $this->fileManager->getNode();
@@ -497,28 +502,28 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 */
-	public function defaultMethod(Bee_MVC_IHttpRequest $request, array $mergeModel=array()) {
+	public function defaultMethod(IHttpRequest $request, array $mergeModel=array()) {
 		throw new Exception('Method deprecated: Admin_Files_HandlerDelegate::defaultMethod()');
 		$model = array();
-		return new Bee_MVC_ModelAndView($model, 'admin.files');
+		return new ModelAndView($model, 'admin.files');
 	}
 
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_ModelAndView
+	 * @param IHttpRequest $request
+	 * @return ModelAndView
 	 * 
 	 * @Bee_MVC_Controller_Multiaction_RequestHandler(pathPattern = "/**\/show")
 	 */
-	public final function showFileManager(Bee_MVC_IHttpRequest $request) {
+	public final function showFileManager(IHttpRequest $request) {
 		throw new Exception('Method deprecated: Admin_Files_HandlerDelegate::showFileManager()');
 		$model = array();
 		$model[self::FOLDER_TREE_ROOT_FOLDER_KEY] = $this->selectRootNode($request);
 		$model[self::FILE_LIST_CURRENT_FOLDER_KEY] = $this->selectCurrentNode($request);
-		return new Bee_MVC_ModelAndView($model, 'filemanager.panel');
+		return new ModelAndView($model, 'filemanager.panel');
 	}
 	
 	private function handleCreateFolder(Bee_Filesystem_INode $parent, $create) {
@@ -539,7 +544,7 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 		}
 		
 		$model['folders'] = $folders;
-		return new Bee_MVC_ModelAndView($model, 'service.json');
+		return new ModelAndView($model, 'service.json');
 	}
 
 	private function doCreate(Bee_Filesystem_INode $parent, $create) {
@@ -550,18 +555,24 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_ModelAndView
-	 * 
+	 * @param IHttpRequest $request
+	 * @throws Exception
+	 * @return ModelAndView
+	 *
 	 * @Bee_MVC_Controller_Multiaction_RequestHandler(httpMethod = "GET", pathPattern = "/**\/selectFileDialog")
 	 */
-	public final function showSelectFilesDialog(Bee_MVC_IHttpRequest $request) {
+	public final function showSelectFilesDialog(IHttpRequest $request) {
 		throw new Exception('Method deprecated: Admin_Files_HandlerDelegate::showSelectFilesDialog()');
 		$model = array();
-		return new Bee_MVC_ModelAndView($model, 'admin.files.selectFileDialog');
+		return new ModelAndView($model, 'admin.files.selectFileDialog');
 	}
-	
-	private final function selectCurrentNodeOld(Bee_MVC_IHttpRequest $request) {
+
+	/**
+	 * @param IHttpRequest $request
+	 * @return Bee_Filesystem_INode|String
+	 * @throws Exception
+	 */
+	private final function selectCurrentNodeOld(IHttpRequest $request) {
 		$node = $request->getParameter(self::FILE_LIST_CURRENT_FOLDER_KEY);
 		
 		if(!$node) {
@@ -589,10 +600,8 @@ class Bee_Filesystem_HandlerDelegate_Generic {
 		return $node;
 	}
 	
-	private final function relayExceptionMessage(Bee_MVC_ModelAndView $mav, Exception $ex) {
+	private final function relayExceptionMessage(ModelAndView $mav, Exception $ex) {
 		$mav->addModelValue('errorMessage', self::$messagebundle[$ex->getMessage()]);
 		return $mav;
 	}
-
-	
 }

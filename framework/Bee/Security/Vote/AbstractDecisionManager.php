@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\IInitializingBean;
+use Bee\Utils\Assert;
 
-abstract class Bee_Security_Vote_AbstractDecisionManager implements Bee_Security_IAccessDecisionManager, Bee_Context_Config_IInitializingBean {
+abstract class Bee_Security_Vote_AbstractDecisionManager implements Bee_Security_IAccessDecisionManager, IInitializingBean {
 
 	/**
 	 * 
@@ -30,7 +32,7 @@ abstract class Bee_Security_Vote_AbstractDecisionManager implements Bee_Security
 	private $allowIfAllAbstainDecisions;
 
 	public function afterPropertiesSet() {
-		Bee_Utils_Assert::isTrue(count($this->decisionVoters) > 0, 'A list of AccessDecisionVoters is required');
+		Assert::isTrue(count($this->decisionVoters) > 0, 'A list of AccessDecisionVoters is required');
 	}
 
 	protected final function checkAllowIfAllAbstainDecisions() {
@@ -62,7 +64,7 @@ abstract class Bee_Security_Vote_AbstractDecisionManager implements Bee_Security
 
     public function setDecisionVoters(array $decisionVoters) {
     	foreach($decisionVoters as $voter) {
-    		Bee_Utils_Assert::isInstanceOf('Bee_Security_Vote_IAccessDecisionVoter', $voter, 'AccessDecisionVoter ' . get_class($voter) . ' must implement Bee_Security_Vote_IAccessDecisionVoter');
+			Assert::isInstanceOf('Bee_Security_Vote_IAccessDecisionVoter', $voter, 'AccessDecisionVoter ' . get_class($voter) . ' must implement Bee_Security_Vote_IAccessDecisionVoter');
     	}
     	$this->decisionVoters = $decisionVoters; 
     }
@@ -85,4 +87,3 @@ abstract class Bee_Security_Vote_AbstractDecisionManager implements Bee_Security
 		return true;
 	}
 }
-?>

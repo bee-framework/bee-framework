@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Assert;
 
 /**
  * User: mp
@@ -60,9 +61,9 @@ class Bee_Security_Acls_Impl_AccessControlEntry implements Bee_Security_Acls_IAc
 
     public function __construct($id, Bee_Security_Acls_IAcl $acl, Bee_Security_Acls_ISid $sid,
                                 Bee_Security_Acls_IPermission $permission, $granting, $auditSuccess, $auditFailure) {
-        Bee_Utils_Assert::notNull($acl, 'Acl required');
-        Bee_Utils_Assert::notNull($sid, 'Sid required');
-        Bee_Utils_Assert::notNull($permission, 'Permission required');
+        Assert::notNull($acl, 'Acl required');
+        Assert::notNull($sid, 'Sid required');
+        Assert::notNull($permission, 'Permission required');
         $this->id = $id;
         $this->acl = $acl; // can be null
         $this->sid = $sid;

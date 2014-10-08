@@ -15,10 +15,10 @@ namespace Bee\MVC\Controller\Multiaction\MethodNameResolver;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\Controller\Multiaction\AbstractControllerHolder;
+use Bee\MVC\Controller\Multiaction\AbstractDelegatingHandlerHolder;
 use Bee\MVC\Controller\Multiaction\IMethodNameResolver;
-use Bee_MVC_IHttpRequest;
-use Bee_Utils_Strings;
+use Bee\MVC\IHttpRequest;
+use Bee\Utils\Strings;
 
 /**
  * A very simple method name resolver implementation that uses the last fragment of the path info as the method name.
@@ -29,16 +29,16 @@ use Bee_Utils_Strings;
  * @author Michael Plomer <michael.plomer@iter8.de>
  * @author Benjamin Hartmann
  */
-class SimplePathMethodNameResolver extends AbstractControllerHolder implements IMethodNameResolver {
+class SimplePathMethodNameResolver extends AbstractDelegatingHandlerHolder implements IMethodNameResolver {
 
 	/**
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @return string
 	 */
-	public function getHandlerMethodName(Bee_MVC_IHttpRequest $request) {
+	public function getHandlerMethodName(IHttpRequest $request) {
 		$methodName = null;
 		$pathInfo = $request->getPathInfo();
-		if(Bee_Utils_Strings::hasText($pathInfo)) {
+		if(Strings::hasText($pathInfo)) {
 			$parts = explode('/', $pathInfo);
 			if(count($parts) > 0) {
 				$methodName = $parts[count($parts) - 1];

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
  * limitations under the License.
  */
 use Bee\Context\Config\IBeanPostProcessor;
+use Bee\Context\Config\IContextAware;
+use Bee\Framework;
+use Bee\IContext;
 
 /**
  * User: mp
@@ -22,10 +25,25 @@ use Bee\Context\Config\IBeanPostProcessor;
  * Time: 10:29:38 PM
  */
 
-class Bee_Security_Config_MethodSecurityInterceptorPostProcessor implements IBeanPostProcessor, Bee_Context_Config_IContextAware {
+class Bee_Security_Config_MethodSecurityInterceptorPostProcessor implements IBeanPostProcessor, IContextAware {
+
+	/**
+	 * @var Logger
+	 */
+	protected static $log;
+
+	/**
+	 * @return Logger
+	 */
+	protected static function getLog() {
+		if (!self::$log) {
+			self::$log = Framework::getLoggerForClass(__CLASS__);
+		}
+		return self::$log;
+	}
 
     /**
-     * @var Bee_IContext      
+     * @var IContext
      */
     private $beeContext;
 
@@ -33,7 +51,7 @@ class Bee_Security_Config_MethodSecurityInterceptorPostProcessor implements IBea
 
         if(Bee_Security_Config_IBeanIds::METHOD_SECURITY_INTERCEPTOR == $beanName &&
                 $this->beeContext->containsBean(Bee_Security_Config_IBeanIds::AFTER_INVOCATION_MANAGER)) {
-            Bee_Utils_Logger::debug("Setting AfterInvocationManaer on MethodSecurityInterceptor");
+			self::getLog()->debug("Setting AfterInvocationManaer on MethodSecurityInterceptor");
             $bean->setAfterInvocationManager($this->beeContext->getBean(Bee_Security_Config_IBeanIds::AFTER_INVOCATION_MANAGER));
         }
 
@@ -44,9 +62,8 @@ class Bee_Security_Config_MethodSecurityInterceptorPostProcessor implements IBea
         return $bean;
     }
 
-    public function setBeeContext(Bee_IContext $context) {
+    public function setBeeContext(IContext $context) {
         $this->beeContext = $context;
     }
 
 }
-?>

@@ -15,6 +15,7 @@ namespace Bee\Persistence\Pdo;
 	 * See the License for the specific language governing permissions and
 	 * limitations under the License.
 	 */
+use Bee\Framework;
 
 /**
  * User: mp
@@ -40,7 +41,7 @@ class FeatureDetector {
 	 */
 	protected static function getLog() {
 		if (!self::$log) {
-			self::$log = \Bee_Framework::getLoggerForClass(__CLASS__);
+			self::$log = Framework::getLoggerForClass(__CLASS__);
 		}
 		return self::$log;
 	}

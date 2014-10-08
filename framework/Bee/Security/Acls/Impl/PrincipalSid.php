@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Assert;
 
 /**
  * User: mp
@@ -37,16 +38,16 @@ class Bee_Security_Acls_Impl_PrincipalSid implements Bee_Security_Acls_ISid {
         return $this->principal;
     }
 
-    /**
-     * @param string|Bee_Security_IAuthentication $principal
-     * @return void
-     */
+	/**
+	 * @param Bee_Security_IAuthentication|string $principalOrAuth
+	 * @return \Bee_Security_Acls_Impl_PrincipalSid
+	 */
     public function __construct($principalOrAuth) {
-        Bee_Utils_Assert::notNull($principalOrAuth);
+		Assert::notNull($principalOrAuth);
         if(is_string($principalOrAuth)) {
             $this->principal = $principalOrAuth;
         } else {
-            Bee_Utils_Assert::isTrue($principalOrAuth instanceof Bee_Security_IAuthentication, 'Principal is neither string nor authentication object');
+			Assert::isTrue($principalOrAuth instanceof Bee_Security_IAuthentication, 'Principal is neither string nor authentication object');
             $principal = $principalOrAuth->getPrincipal();
             if($principal instanceof Bee_Security_IUserDetails) {
                 $this->principal = $principal->getUsername();
@@ -68,4 +69,4 @@ class Bee_Security_Acls_Impl_PrincipalSid implements Bee_Security_Acls_ISid {
         return $this->getIdentifierString() == $sid->getIdentifierString();
     }
 }
-?>
+

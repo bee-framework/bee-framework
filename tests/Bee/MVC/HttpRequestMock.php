@@ -1,12 +1,11 @@
 <?php
 namespace Bee\MVC;
-use Bee_MVC_IHttpRequest;
 
 /**
  * Class HttpRequestMock
  * @package Bee\MVC
  */
-class HttpRequestMock implements Bee_MVC_IHttpRequest {
+class HttpRequestMock implements IHttpRequest {
 
 	/**
 	 * @var string

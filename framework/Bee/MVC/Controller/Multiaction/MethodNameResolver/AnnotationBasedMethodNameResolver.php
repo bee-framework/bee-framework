@@ -18,7 +18,7 @@ namespace Bee\MVC\Controller\Multiaction\MethodNameResolver;
 use Addendum\ReflectionAnnotatedMethod;
 use Bee\MVC\Controller\Multiaction\AbstractAnnotationBasedResolver;
 use Bee\MVC\Controller\Multiaction\IMethodNameResolver;
-use Bee_MVC_IHttpRequest;
+use Bee\MVC\IHttpRequest;
 use ReflectionMethod;
 
 /**
@@ -39,19 +39,19 @@ use ReflectionMethod;
 class AnnotationBasedMethodNameResolver extends AbstractAnnotationBasedResolver implements IMethodNameResolver {
 
 	/**
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @return string
 	 */
-	public function getHandlerMethodName(Bee_MVC_IHttpRequest $request) {
+	public function getHandlerMethodName(IHttpRequest $request) {
 		return $this->resolveMethodForRequest($request);
 	}
 
 	/**
 	 * @param AntPathMethodNameResolver $delegate
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @return mixed
 	 */
-	protected function obtainMethodFromDelegate($delegate, Bee_MVC_IHttpRequest $request) {
+	protected function obtainMethodFromDelegate($delegate, IHttpRequest $request) {
 		return $delegate->getHandlerMethodName($request);
 	}
 

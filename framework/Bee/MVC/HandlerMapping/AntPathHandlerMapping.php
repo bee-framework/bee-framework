@@ -15,8 +15,9 @@ namespace Bee\MVC\HandlerMapping;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\IHttpRequest;
 use Bee\Utils\AntPathMatcher;
-use Bee_MVC_IHttpRequest;
+use Bee\Utils\IPathMatcher;
 
 /**
  * Enter description here...
@@ -32,6 +33,11 @@ class AntPathHandlerMapping extends AbstractHandlerMapping {
 	 */
 	private $handlerMappings;
 
+	/**
+	 * @var IPathMatcher
+	 */
+	private $pathMatcher;
+
 	public function getHandlerMappings() {
 		return $this->handlerMappings;
 	}
@@ -39,9 +45,53 @@ class AntPathHandlerMapping extends AbstractHandlerMapping {
 	public function setHandlerMappings($handlerMappings) {
 		$this->handlerMappings = $handlerMappings;
 	}
-	
-	protected function getControllerBeanName(Bee_MVC_IHttpRequest $request) {
+
+	/**
+	 * @return IPathMatcher
+	 */
+	public function getPathMatcher() {
+		return $this->pathMatcher;
+	}
+
+	/**
+	 * @param IPathMatcher $pathMatcher
+	 */
+	public function setPathMatcher(IPathMatcher $pathMatcher) {
+		$this->pathMatcher = $pathMatcher;
+	}
+
+	/**
+	 * @param IHttpRequest $request
+	 * @return mixed
+	 */
+	protected function getControllerBeanName(IHttpRequest $request) {
 		$pathInfo = $request->getPathInfo();
-		return AntPathMatcher::getElementByMatchingArrayKey($pathInfo, $this->handlerMappings, $this->getDefaultControllerBeanName());
+		return $this->getElementByMatchingArrayKey($pathInfo, $this->handlerMappings, $this->getDefaultControllerBeanName());
+	}
+
+	/**
+	 * @param string $path
+	 * @param array $array
+	 * @param mixed $defaultValue
+	 * @return mixed
+	 */
+	public function getElementByMatchingArrayKey($path, array $array = null, $defaultValue = null) {
+		$result = $defaultValue;
+		if(is_array($array)) {
+			if (array_key_exists($path, $array)) {
+				// shortcut for direct path matches
+				$result = $array[$path];
+			} else {
+				$matcher = is_null($this->pathMatcher) ? new AntPathMatcher() : $this->pathMatcher;
+				foreach($array as $mapping => $element) {
+					if($matcher->match($mapping, $path)) {
+	//				if(($matcher->isPattern($mapping) && $matcher->match($mapping, $pathInfo)) || Strings::startsWith($pathInfo, $mapping)) {
+						$result = $element;
+						break;
+					}
+				}
+			}
+		}
+		return $result;
 	}
 }

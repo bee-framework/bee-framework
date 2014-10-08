@@ -14,13 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Cache\ICachableResource;
 
 /**
  * Cache helper for {@link Bee_Filesystem_CachedNode}.
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Filesystem_CachedNode_Cachable implements Bee_Cache_ICachableResource {
+class Bee_Filesystem_CachedNode_Cachable implements ICachableResource {
 	
 	const CACHE_KEY_PREFIX = 'FSMANAGER_NODEINFO_';
 	
@@ -30,20 +31,33 @@ class Bee_Filesystem_CachedNode_Cachable implements Bee_Cache_ICachableResource 
 	 * @var string
 	 */
 	private $dir;
-	
+
+	/**
+	 * @param $dir
+	 */
 	public function __construct($dir) {
 		$this->dir = $dir;
 	}
 
+	/**
+	 * @return string
+	 */
 	public final function getKey() {
 		return self::createKey($this->dir);
 	}
-	
+
+	/**
+	 * @return int|mixed
+	 */
 	public final function getModificationTimestamp() {
 //		trigger_error('###### CHECKTIME ' . $this->dir, E_USER_NOTICE);
 		return max(array(filectime($this->dir), filemtime($this->dir)));
 	}
-	
+
+	/**
+	 * @param int $expirationTimestamp
+	 * @return array|mixed
+	 */
 	public final function &createContent(&$expirationTimestamp = 0) {
 		$nodeInfo = array();
 		$fileInfo = new SplFileInfo($this->dir);
@@ -96,4 +110,3 @@ class Bee_Filesystem_CachedNode_Cachable implements Bee_Cache_ICachableResource 
 		return self::CACHE_KEY_PREFIX . $dir;
 	}
 }
-?>

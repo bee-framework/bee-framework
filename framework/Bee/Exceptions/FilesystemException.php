@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Exceptions;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,13 @@
  * limitations under the License.
  */
 
-class Bee_Exceptions_FilesystemException extends Bee_Exceptions_Base {
+use Exception;
+
+/**
+ * Class FilesystemException
+ * @package Bee\Exceptions
+ */
+class FilesystemException extends Exception {
 	
 	const MESSAGE_UNKNOWN_ERROR = 'filesystem.unknown.error';
 	const MESSAGE_RESOURCE_EXISTS = 'filesystem.resource.exists';
@@ -29,7 +36,7 @@ class Bee_Exceptions_FilesystemException extends Bee_Exceptions_Base {
 	private $path;
 	
 	public function __construct($message, $path = null, Exception $cause = null) {
-		parent::__construct($message, $cause);
+		parent::__construct($message, 0, $cause);
 		$this->path = $path;
 	}
 	
@@ -37,4 +44,3 @@ class Bee_Exceptions_FilesystemException extends Bee_Exceptions_Base {
 		return $this->path;
 	}
 }
-?>

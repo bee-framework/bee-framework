@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Framework;
 
 /**
  * User: mp
@@ -22,6 +23,21 @@
  */
 
 class Bee_Security_AfterInvocation_AclEntryCollectionFilteringProvider extends Bee_Security_AfterInvocation_AbstractAclProvider {
+
+	/**
+	 * @var Logger
+	 */
+	protected static $log;
+
+	/**
+	 * @return Logger
+	 */
+	protected static function getLog() {
+		if (!self::$log) {
+			self::$log = Framework::getLoggerForClass(__CLASS__);
+		}
+		return self::$log;
+	}
 
     public function __construct(Bee_Security_Acls_IAclService $aclService,
                                 $processConfigAttribute,
@@ -33,8 +49,8 @@ class Bee_Security_AfterInvocation_AclEntryCollectionFilteringProvider extends B
         $returnedObject) {
 
         if (is_null($returnedObject)) {
-            if (Bee_Utils_Logger::isDebugEnabled()) {
-                Bee_Utils_Logger::debug('Return object is null, skipping');
+            if (self::getLog()->isDebugEnabled()) {
+				self::getLog()->debug('Return object is null, skipping');
             }
 
             return null;
@@ -71,7 +87,7 @@ class Bee_Security_AfterInvocation_AclEntryCollectionFilteringProvider extends B
                 $identity = $identities[$i++];
 
 //                // Ignore nulls or entries which aren't instances of the configured domain object class
-//                if (is_null($domainObject) || !Bee_Utils_Types::isAssignable($domainObject, $this->getProcessDomainObjectClass())) {
+//                if (is_null($domainObject) || !Types::isAssignable($domainObject, $this->getProcessDomainObjectClass())) {
 //                    continue;
 //                }
                 $acl = $acls[$identity->getIdentifierString()];

@@ -19,7 +19,7 @@ use Addendum\Annotation;
 /**
  * Addendum annotation for the annotation-based method name resolver.
  *
- * @see Bee_MVC_Controller_Multiaction_MethodNameResolver_AnnotationBased
+ * @see \Bee\MVC\Controller\Multiaction\MethodNameResolver\AnnotationBasedMethodNameResolver
  * 
  * @author Michael Plomer <michael.plomer@iter8.de>
  * 

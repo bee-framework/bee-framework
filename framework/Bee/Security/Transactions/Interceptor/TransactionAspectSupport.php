@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\IInitializingBean;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,7 +24,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Transactions_Interceptor_TransactionAspectSupport implements Bee_Context_Config_IInitializingBean {
+class Bee_Transactions_Interceptor_TransactionAspectSupport implements IInitializingBean {
     /**
      * Holder to support the <code>currentTransactionStatus()</code> method,
      * and to support communication between different cooperating advices
@@ -55,22 +56,20 @@ class Bee_Transactions_Interceptor_TransactionAspectSupport implements Bee_Conte
         return self::$transactionInfoHolder;
     }
 
-    /**
-     * Return the transaction status of the current method invocation.
-     * Mainly intended for code that wants to set the current transaction
-     * rollback-only but not throw an application exception.
-     * @throws NoTransactionException if the transaction info cannot be found,
-     * because the method was invoked outside an AOP invocation context
-     * @static
-     * @throws NoTransactionException
-     * @return Bee_Transactions_ITransactionStatus
-     */
+	/**
+	 * Return the transaction status of the current method invocation.
+	 * Mainly intended for code that wants to set the current transaction
+	 * rollback-only but not throw an application exception.
+	 * @throws Bee_Transactions_NoTransactionException
+	 * @static
+	 * @return Bee_Transactions_ITransactionStatus
+	 */
     public static function currentTransactionStatus() {
         $info = self::currentTransactionInfo();
         if ($info == null) {
             throw new Bee_Transactions_NoTransactionException("No transaction aspect-managed TransactionStatus in scope");
         }
-        return $info->transactionStatus;
+        return $info->getTransactionStatus();
     }
 
     /**
@@ -254,7 +253,7 @@ class Bee_Transactions_Interceptor_TransactionAspectSupport implements Bee_Conte
 //                logger.trace("Completing transaction for [" + txInfo.getJoinpointIdentification() +
 //                        "] after exception: " + ex);
 //            }
-            if ($txInfo->transactionAttribute->rollbackOn($ex)) {
+            if ($txInfo->getTransactionAttribute()->rollbackOn($ex)) {
                 try {
                     $this->getTransactionManager()->rollback($txInfo->getTransactionStatus());
                 }
@@ -310,12 +309,12 @@ class Bee_Transactions_Interceptor_TransactionAspectSupportTransactionInfo {
     /**
      * @var Bee_Transactions_Interceptor_ITransactionAttribute
      */
-    private final $transactionAttribute;
+    private $transactionAttribute;
 
     /**
      * @var string
      */
-    private final $joinpointIdentification;
+    private $joinpointIdentification;
 
     /**
      * @var Bee_Transactions_ITransactionStatus
@@ -380,4 +379,3 @@ class Bee_Transactions_Interceptor_TransactionAspectSupportTransactionInfo {
         Bee_Transactions_Interceptor_TransactionAspectSupport::$transactionInfoHolder = $this->oldTransactionInfo;
     }
 }
-?>

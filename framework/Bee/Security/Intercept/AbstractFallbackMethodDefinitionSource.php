@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Framework;
+use Bee\Utils\Types;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,6 +26,21 @@
  */
 
 abstract class Bee_Security_Intercept_AbstractFallbackMethodDefinitionSource implements Bee_Security_Intercept_IMethodDefinitionSource {
+
+	/**
+	 * @var Logger
+	 */
+	protected static $log;
+
+	/**
+	 * @return Logger
+	 */
+	protected static function getLog() {
+		if (!self::$log) {
+			self::$log = Framework::getLoggerForClass(__CLASS__);
+		}
+		return self::$log;
+	}
 
     const NULL_CONFIG_ATTRIBUTE = '<<NULL_CONFIG_ATTRIBUTE>>';
     /**
@@ -42,7 +59,7 @@ abstract class Bee_Security_Intercept_AbstractFallbackMethodDefinitionSource imp
     }
 
     public final function supports($classOrClassName) {
-        return Bee_Utils_Types::isAssignable($classOrClassName, 'Bee_AOP_Intercept_IMethodInvocation');
+        return Types::isAssignable($classOrClassName, 'Bee_AOP_Intercept_IMethodInvocation');
     }
 
     public function getAttributesForMethod(ReflectionMethod $method, $targetClassOrClassName) {
@@ -66,8 +83,8 @@ abstract class Bee_Security_Intercept_AbstractFallbackMethodDefinitionSource imp
             if ($cfgAtt == null) {
                 $this->attributeCache[$cacheKey] = self::NULL_CONFIG_ATTRIBUTE;
             } else {
-                if (Bee_Utils_Logger::isDebugEnabled()) {
-                    Bee_Utils_Logger::debug("Adding security method [$cacheKey] with attribute [$cfgAtt]");
+                if (self::getLog()->isDebugEnabled()) {
+					self::getLog()->debug("Adding security method [$cacheKey] with attribute [$cfgAtt]");
                 }
                 $this->attributeCache[$cacheKey] = $cfgAtt;
             }
@@ -75,12 +92,12 @@ abstract class Bee_Security_Intercept_AbstractFallbackMethodDefinitionSource imp
         }
     }
 
-    /**
-     *
-     * @param ReflectionMethod $method the method for the current invocation (never <code>null</code>)
-     * @param ReflectionClass|string $targetClassOrClassName the target class for this invocation (may be <code>null</code>)
-     * @return
-     */
+	/**
+	 *
+	 * @param ReflectionMethod $method the method for the current invocation (never <code>null</code>)
+	 * @param ReflectionClass|string $targetClassOrClassName the target class for this invocation (may be <code>null</code>)
+	 * @return null|\the
+	 */
     private function computeAttributes(ReflectionMethod $method, $targetClassOrClassName) {
         $targetClass = $targetClassOrClassName;
         if(!$targetClass instanceof ReflectionClass) {
@@ -89,7 +106,7 @@ abstract class Bee_Security_Intercept_AbstractFallbackMethodDefinitionSource imp
 
         // The method may be on an interface, but we need attributes from the target class.
         // If the target class is null, the method will be unchanged.
-        $specificMethod = Bee_Utils_Reflection::getMostSpecificMethod($method, $targetClass);
+        $specificMethod = Bee\Utils\Reflection::getMostSpecificMethod($method, $targetClass);
 
         // First try is the method in the target class.
         $attr = $this->findAttributes($specificMethod, $targetClassOrClassName);
@@ -145,4 +162,3 @@ abstract class Bee_Security_Intercept_AbstractFallbackMethodDefinitionSource imp
      */
     protected abstract function findAttributes($targetClassOrClassName);
 }
-?>

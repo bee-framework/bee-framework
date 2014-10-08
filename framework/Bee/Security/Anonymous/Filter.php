@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Framework;
 use Bee\MVC\IFilter;
 use Bee\MVC\IFilterChain;
+use Bee\MVC\IHttpRequest;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,6 +28,21 @@ use Bee\MVC\IFilterChain;
  */
 
 class Bee_Security_Anonymous_Filter implements IFilter {
+
+	/**
+	 * @var Logger
+	 */
+	protected static $log;
+
+	/**
+	 * @return Logger
+	 */
+	protected static function getLog() {
+		if (!self::$log) {
+			self::$log = Framework::getLoggerForClass(__CLASS__);
+		}
+		return self::$log;
+	}
 
     /**
      * @var string
@@ -44,32 +61,37 @@ class Bee_Security_Anonymous_Filter implements IFilter {
      */
     private $removeAfterRequest = true;
 
-    /**
-     * Enables subclasses to determine whether or not an anonymous authentication token should be setup for
-     * this request. This is useful if anonymous authentication should be allowed only for specific IP subnet ranges
-     * etc.
-     *
-     * @param Bee_MVC_IHttpRequest $request to assist the method determine request details
-     *
-     * @return <code>true</code> if the anonymous token should be setup for this request (provided that the request
-     *         doesn't already have some other <code>Authentication</code> inside it), or <code>false</code> if no
-     *         anonymous token should be setup for this request
-     */
-    protected function applyAnonymousForThisRequest(Bee_MVC_IHttpRequest $request) {
+	/**
+	 * Enables subclasses to determine whether or not an anonymous authentication token should be setup for
+	 * this request. This is useful if anonymous authentication should be allowed only for specific IP subnet ranges
+	 * etc.
+	 *
+	 * @param IHttpRequest $request to assist the method determine request details
+	 *
+	 * @return bool <code>true</code> if the anonymous token should be setup for this request (provided that the request
+	 *         doesn't already have some other <code>Authentication</code> inside it), or <code>false</code> if no
+	 *         anonymous token should be setup for this request
+	 */
+    protected function applyAnonymousForThisRequest(IHttpRequest $request) {
         return true;
     }
 
     /**
-     * @param Bee_MVC_IHttpRequest $request
+     * @param IHttpRequest $request
      * @return Bee_Security_Anonymous_AuthenticationToken
      */
-    protected function createAuthentication(Bee_MVC_IHttpRequest $request) {
+    protected function createAuthentication(IHttpRequest $request) {
         $auth = new Bee_Security_Anonymous_AuthenticationToken($this->key, $this->anonymousPrincipal, $this->anonymousAuthorities);
         $auth->setDetails(new Bee_Security_WebAuthenticationDetails($request));
         return $auth;
     }
 
-    public function doFilter(Bee_MVC_IHttpRequest $request, IFilterChain $filterChain) {
+	/**
+	 * @param IHttpRequest $request
+	 * @param IFilterChain $filterChain
+	 * @throws Exception
+	 */
+    public function doFilter(IHttpRequest $request, IFilterChain $filterChain) {
         $addedToken = false;
 
         if ($this->applyAnonymousForThisRequest($request)) {
@@ -91,20 +113,20 @@ class Bee_Security_Anonymous_Filter implements IFilter {
                 Bee_Security_Context_Holder::getContext()->setAuthentication($this->createAuthentication($request));
                 $addedToken = true;
 
-                Bee_Utils_Logger::debug('Populated SecurityContextHolder with anonymous token: '
+                self::getLog()->debug('Populated SecurityContextHolder with anonymous token: '
                     . Bee_Security_Context_Holder::getContext()->getAuthentication());
             } else {
-                Bee_Utils_Logger::debug('SecurityContextHolder not populated with anonymous token, as it already contained: '
+				self::getLog()->debug('SecurityContextHolder not populated with anonymous token, as it already contained: '
                     . Bee_Security_Context_Holder::getContext()->getAuthentication());
             }
 //            if (is_null(Bee_Security_Context_Holder::getContext()->getAuthentication())) {
 //                Bee_Security_Context_Holder::getContext()->setAuthentication($this->createAuthentication($request));
 //                $addedToken = true;
 //
-//                    Bee_Utils_Logger::debug('Populated SecurityContextHolder with anonymous token: '
+//                    self::getLog()->debug('Populated SecurityContextHolder with anonymous token: '
 //                        . Bee_Security_Context_Holder::getContext()->getAuthentication());
 //            } else {
-//                    Bee_Utils_Logger::debug('SecurityContextHolder not populated with anonymous token, as it already contained: '
+//                    self::getLog()->debug('SecurityContextHolder not populated with anonymous token, as it already contained: '
 //                        . Bee_Security_Context_Holder::getContext()->getAuthentication());
 //            }
         }

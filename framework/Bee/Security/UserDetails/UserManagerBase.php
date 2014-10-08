@@ -17,9 +17,9 @@ namespace Bee\Security\UserDetails;
  */
 
 use Bee\Security\UserDetails\Doctrine2\UserBase;
+use Bee\Utils\Strings;
 use Bee_Security_IPasswordEncoder;
 use Bee_Security_Provider_ISaltSource;
-use Bee_Utils_Strings;
 use Exception;
 
 /**
@@ -79,7 +79,7 @@ abstract class UserManagerBase {
 		$user = is_numeric($frmdata['id']) ? $this->loadById($frmdata['id']) : $this->createUserInstance();
 		$user->setUsername($frmdata['username']);
 		$user->setName($frmdata['fullname']);
-		if (Bee_Utils_Strings::hasText($frmdata['password'])) {
+		if (Strings::hasText($frmdata['password'])) {
 			if ($frmdata['password'] !== $frmdata['password2']) {
 				throw new Exception("Passwords do not match!");
 			}

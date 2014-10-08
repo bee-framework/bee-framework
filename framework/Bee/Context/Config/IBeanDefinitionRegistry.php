@@ -15,6 +15,8 @@ namespace Bee\Context\Config;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\BeanDefinitionStoreException;
+use Bee\Context\NoSuchBeanDefinitionException;
 
 /**
  * Enter description here...
@@ -35,7 +37,7 @@ interface IBeanDefinitionRegistry {
 	/**
 	 * Enter description here...
 	 * 
-	 * @throws \Bee_Context_NoSuchBeanDefinitionException
+	 * @throws NoSuchBeanDefinitionException
 	 *
 	 * @param String $beanName
 	 * @return IBeanDefinition
@@ -59,7 +61,7 @@ interface IBeanDefinitionRegistry {
 	/**
 	 * Enter description here...
 	 * 
-	 * @throws \Bee_Context_BeanDefinitionStoreException
+	 * @throws BeanDefinitionStoreException
 	 *
 	 * @param String $beanName
 	 * @param IBeanDefinition $beanDefinition
@@ -70,7 +72,7 @@ interface IBeanDefinitionRegistry {
 	/**
 	 * Enter description here...
 	 * 
-	 * @throws \Bee_Context_NoSuchBeanDefinitionException
+	 * @throws NoSuchBeanDefinitionException
 	 *
 	 * @param String $beanName
 	 * @return void

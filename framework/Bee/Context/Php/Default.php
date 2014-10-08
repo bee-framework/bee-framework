@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\AbstractContext;
 
 /**
  * Enter description here...
@@ -23,7 +24,7 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_Php_Default extends Bee_Context_Abstract {
+class Bee_Context_Php_Default extends AbstractContext {
 	
 	/**
 	 * Enter description here...
@@ -48,4 +49,3 @@ class Bee_Context_Php_Default extends Bee_Context_Abstract {
 		}
 	}
 }
-?>

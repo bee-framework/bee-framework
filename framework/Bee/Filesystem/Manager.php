@@ -14,6 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Exceptions\FilesystemException;
+use Bee\Text\EncodingConverter;
+use Bee\Utils\Strings;
 
 /**
  * Manages access to the servers local filesystem.
@@ -32,7 +35,7 @@ class Bee_Filesystem_Manager {
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Text_EncodingConverter
+	 * @var EncodingConverter
 	 */
 	private $converter;
 		
@@ -75,7 +78,7 @@ class Bee_Filesystem_Manager {
 	private $rootNode;
 	
 	public function __construct($basePath = '') {
-		$this->converter = new Bee_Text_EncodingConverter();
+		$this->converter = new EncodingConverter();
 		$this->converter->setExternalEncoding(self::DEFAULT_CLIENT_ENCODING);
 		$this->converter->setExternalUnicodeNormalization(self::DEFAULT_CLIENT_UNICODE_NORMALIZATION);
 		$this->converter->setInternalEncoding(self::DEFAULT_FILESYSTEM_ENCODING);
@@ -87,7 +90,7 @@ class Bee_Filesystem_Manager {
 	/**
 	 * Enter description here...
 	 *
-	 * @return Bee_Text_EncodingConverter
+	 * @return EncodingConverter
 	 */
 	public function getConverter() {
 		return $this->converter;
@@ -96,10 +99,10 @@ class Bee_Filesystem_Manager {
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_Text_EncodingConverter $converter
+	 * @param EncodingConverter $converter
 	 * @return void
 	 */
-	public function setConverter(Bee_Text_EncodingConverter $converter) {
+	public function setConverter(EncodingConverter $converter) {
 		$this->converter = $converter;
 	}
 	
@@ -120,7 +123,7 @@ class Bee_Filesystem_Manager {
 	 */
 	public final function setBasePath($basePath) {
         $basePath = str_replace('/', DIRECTORY_SEPARATOR, $basePath);
-		if(Bee_Utils_Strings::endsWith($basePath, DIRECTORY_SEPARATOR)) {
+		if(Strings::endsWith($basePath, DIRECTORY_SEPARATOR)) {
 			$basePath = substr($basePath, 0, -strlen(DIRECTORY_SEPARATOR));
 		}
 		if($this->basePath != $basePath) {
@@ -133,6 +136,7 @@ class Bee_Filesystem_Manager {
 	 * Enter description here...
 	 *
 	 * @param string $path
+	 * @throws Exception
 	 * @return Bee_Filesystem_INode
 	 */
 	public final function getNode($path = '') {
@@ -180,7 +184,7 @@ class Bee_Filesystem_Manager {
 	}
 	
 	public function isInBasePath($realPath) {
-		return Bee_Utils_Strings::startsWith($realPath, $this->basePath);
+		return Strings::startsWith($realPath, $this->basePath);
 	}
  
 	public final function cleanPath($path) {
@@ -200,7 +204,7 @@ class Bee_Filesystem_Manager {
 			$nameClean = str_replace('\\', DIRECTORY_SEPARATOR, $name);
 			$nameClean = explode(DIRECTORY_SEPARATOR, $nameClean);
 			if(count($nameClean) > 1) {
-				throw new Bee_Exceptions_FilesystemException('Invalid name given, must not contain path delimiters', $name);
+				throw new FilesystemException('Invalid name given, must not contain path delimiters', $name);
 			}
 		}
 		return $nameClean[0]; 
@@ -236,7 +240,7 @@ class Bee_Filesystem_Manager {
 	}
 
 	public final function filterMatches(Bee_Filesystem_INode $node) {
-		if(!$this->showInvisible && Bee_Utils_Strings::startsWith($node->getFilename(), '.')) {
+		if(!$this->showInvisible && Strings::startsWith($node->getFilename(), '.')) {
 			return false;
 		}
 
@@ -248,10 +252,9 @@ class Bee_Filesystem_Manager {
 
 	// @TODO: Bugs Benny: is this check OK?
 	public final function isRootNode(Bee_Filesystem_INode $node) {
-		if (!Bee_Utils_Strings::hasText($node->getPathName())) {
+		if (!Strings::hasText($node->getPathName())) {
 			return false;
 		}
 		return $node->getPathName() == $this->getNode()->getPathName();
 	}
 }
-?>

@@ -81,12 +81,4 @@ class AntPathToRegexTransformer {
 		$matches = array();
 		return !!preg_match(self::PARAMETER_MATCH, $antPathPattern, $matches);
 	}
-
-	public static function test($antPathPattern = '/**') {
-		foreach(self::$SIMPLE_REPLACEMENTS as $pattern => $replace) {
-			var_dump($antPathPattern);
-			$antPathPattern = preg_replace($pattern, $replace, $antPathPattern);
-			echo $antPathPattern . '<hr/>';
-		}
-	}
 }

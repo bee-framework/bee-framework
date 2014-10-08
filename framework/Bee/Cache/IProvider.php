@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Cache;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +20,13 @@
  * Abstraction interface for PHP variable cache providers. Implementations of supported providers
  * currently include:
  * <ul>
- * 	<li>{@link Bee_Cache_Provider_APC}: Alternative PHP Cache</li>
- * 	<li>{@link Bee_Cache_Provider_XCache}: LIGHTTPD XCache</li>
+ * 	<li>{@link Bee\Cache\Provider\ProviderAPC}: Alternative PHP Cache</li>
+ * 	<li>{@link Bee\Cache\Provider\ProviderXCache}: LIGHTTPD XCache</li>
  *  * </ul>
  *
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-interface Bee_Cache_IProvider {
+interface IProvider {
 
 	/**
 	 * Initialize the cache provider if necessary. Called once per request, before the first cache access is made.

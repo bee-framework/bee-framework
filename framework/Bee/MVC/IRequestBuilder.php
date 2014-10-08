@@ -24,7 +24,7 @@ namespace Bee\MVC;
 interface IRequestBuilder {
 
 	/**
-	 * @return \Bee_MVC_IHttpRequest
+	 * @return IHttpRequest
 	 */
 	public function buildRequestObject();
 } 

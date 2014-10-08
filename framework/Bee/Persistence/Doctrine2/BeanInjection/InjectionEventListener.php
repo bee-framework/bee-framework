@@ -15,7 +15,8 @@ namespace Bee\Persistence\Doctrine2\BeanInjection;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_IContext;
+use Bee\Context\Config\IContextAware;
+use Bee\IContext;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM\Event\LifecycleEventArgs;
@@ -28,7 +29,7 @@ use ReflectionProperty;
 /**
  * Class InjectionEventListener
  */
-class InjectionEventListener implements EventSubscriber, \Bee_Context_Config_IContextAware {
+class InjectionEventListener implements EventSubscriber, IContextAware {
 
 	/**
 	 * @var Reader
@@ -36,7 +37,7 @@ class InjectionEventListener implements EventSubscriber, \Bee_Context_Config_ICo
 	private $reader;
 
 	/**
-	 * @var Bee_IContext
+	 * @var IContext
 	 */
 	private $context;
 
@@ -120,9 +121,9 @@ class InjectionEventListener implements EventSubscriber, \Bee_Context_Config_ICo
 	}
 
 	/**
-	 * @param Bee_IContext $context
+	 * @param IContext $context
 	 */
-	public function setBeeContext(Bee_IContext $context) {
+	public function setBeeContext(IContext $context) {
 		$this->context = $context;
 	}
 }

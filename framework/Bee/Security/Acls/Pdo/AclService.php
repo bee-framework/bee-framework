@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Assert;
 
 /**
  * User: mp
@@ -84,7 +85,7 @@ class Bee_Security_Acls_Pdo_AclService implements Bee_Security_Acls_IMutableAclS
 
     public function readAclForOidAndSids(Bee_Security_Acls_IObjectIdentity $object, $sids) {
         $map = $this->readAclsForOidsAndSids(array($object), $sids);
-        Bee_Utils_Assert::isTrue(array_key_exists($object->getIdentifierString(), $map), 'There should have been an Acl entry for ObjectIdentity '.$object->getIdentifierString());
+		Assert::isTrue(array_key_exists($object->getIdentifierString(), $map), 'There should have been an Acl entry for ObjectIdentity '.$object->getIdentifierString());
         return $map[$object->getIdentifierString()];
 
     }
@@ -97,12 +98,14 @@ class Bee_Security_Acls_Pdo_AclService implements Bee_Security_Acls_IMutableAclS
         return $this->readAclsForOidsAndSids($objects, null);
     }
 
-    /**
-     * @throws NotFoundException
-     * @param Bee_Security_Acls_IObjectIdentity[] $objects 
-     * @param  $sids
-     * @return #M#P#CBee_Security_Acls_Pdo_AclService.lookupStrategy.readAclsByOidsAndSids|?
-     */
+	/**
+	 *
+	 * @param Bee_Security_Acls_IObjectIdentity[] $objects
+	 * @param Bee_Security_Acls_ISid[] $sids
+	 * @param bool $check
+	 * @throws Bee_Security_Acls_Exception_NotFound
+	 * @return #M#P#CBee_Security_Acls_Pdo_AclService.lookupStrategy.readAclsByOidsAndSids|?
+	 */
     public function readAclsForOidsAndSids($objects, $sids, $check = true) {
         $result = $this->lookupStrategy->readAclsByOidsAndSids($objects, $sids);
 
@@ -119,7 +122,7 @@ class Bee_Security_Acls_Pdo_AclService implements Bee_Security_Acls_IMutableAclS
     }
 
     public function createAcl(Bee_Security_Acls_IObjectIdentity $objectIdentity) {
-        Bee_Utils_Assert::notNull($objectIdentity, 'Object Identity required');
+        Assert::notNull($objectIdentity, 'Object Identity required');
 
         // Check this object identity hasn't already been persisted
         if (!is_null($this->retrieveObjectIdentityPrimaryKey($objectIdentity))) {
@@ -135,15 +138,15 @@ class Bee_Security_Acls_Pdo_AclService implements Bee_Security_Acls_IMutableAclS
 
         // Retrieve the ACL via superclass (ensures cache registration, proper retrieval etc)
         $acl = $this->readAclForOid($objectIdentity);
-        Bee_Utils_Assert::isInstanceOf('Bee_Security_Acls_IMutableAcl', $acl, "MutableAcl should have been returned");
+		Assert::isInstanceOf('Bee_Security_Acls_IMutableAcl', $acl, "MutableAcl should have been returned");
 
         return $acl;
 
     }
 
     public function deleteAcl(Bee_Security_Acls_IObjectIdentity $objectIdentity, $deleteChildren) {
-        Bee_Utils_Assert::notNull($objectIdentity, 'Object Identity required');
-        Bee_Utils_Assert::notNull($objectIdentity->getIdentifier(), 'Object Identity doesn\'t provide an identifier');
+		Assert::notNull($objectIdentity, 'Object Identity required');
+		Assert::notNull($objectIdentity->getIdentifier(), 'Object Identity doesn\'t provide an identifier');
 
         if ($deleteChildren) {
         	$children = $this->findChildren($objectIdentity);
@@ -176,7 +179,7 @@ class Bee_Security_Acls_Pdo_AclService implements Bee_Security_Acls_IMutableAclS
     }
 
     public function updateAcl(Bee_Security_Acls_IMutableAcl $acl) {
-        Bee_Utils_Assert::notNull($acl->getId(), 'Object Identity doesn\'t provide an identifier');
+		Assert::notNull($acl->getId(), 'Object Identity doesn\'t provide an identifier');
 
         // Delete this ACL's ACEs in the acl_entry table
         $this->deleteEntries($this->retrieveObjectIdentityPrimaryKey($acl->getObjectIdentity()));
@@ -245,15 +248,15 @@ class Bee_Security_Acls_Pdo_AclService implements Bee_Security_Acls_IMutableAclS
      * Retrieves the primary key from acl_sid, creating a new row if needed and the allowCreate property is
      * true.
      *
-     * @param sid to find or create
-     * @param allowCreate true if creation is permitted if not found
+     * @param Bee_Security_Acls_ISid $sid to find or create
+     * @param bool allowCreate true if creation is permitted if not found
      *
-     * @return the primary key or null if not found
+     * @return mixed the primary key or null if not found
      *
      * @throws InvalidArgumentException DOCUMENT ME!
      */
     function createOrRetrieveSidPrimaryKey(Bee_Security_Acls_ISid $sid, $allowCreate) {
-        Bee_Utils_Assert::notNull($sid, 'Sid required');
+		Assert::notNull($sid, 'Sid required');
 
         $sidName = null;
         $principal = true;
@@ -300,14 +303,14 @@ class Bee_Security_Acls_Pdo_AclService implements Bee_Security_Acls_IMutableAclS
 
         if ($acl->getParentAcl() != null) {
             // I don't see a reason for this ...?
-//            Bee_Utils_Assert::isInstanceOf('Bee_Security_Acls_Impl_ObjectIdentity', $acl->getParentAcl()->getObjectIdentity(),
+//            Assert::isInstanceOf('Bee_Security_Acls_Impl_ObjectIdentity', $acl->getParentAcl()->getObjectIdentity(),
 //                'Implementation only supports ObjectIdentityImpl');
 
             $oii = $acl->getParentAcl()->getObjectIdentity();
             $parentId = $this->retrieveObjectIdentityPrimaryKey($oii);
         }
 
-        Bee_Utils_Assert::notNull($acl->getOwner(), 'Owner is required in this implementation');
+		Assert::notNull($acl->getOwner(), 'Owner is required in this implementation');
 
         $ownerSid = $this->createOrRetrieveSidPrimaryKey($acl->getOwner(), true);
         $count = $this->pdoTemplate->updateBySqlStringAndArgsArray(self::UPDATE_OBJECT_IDENTITY,
@@ -322,7 +325,7 @@ class Bee_Security_Acls_Pdo_AclService implements Bee_Security_Acls_IMutableAclS
     /**
      * Creates a new row in acl_entry for every ACE defined in the passed MutableAcl object.
      *
-     * @param acl containing the ACEs to insert
+     * @param Bee_Security_Acls_IMutableAcl $acl containing the ACEs to insert
      */
     protected function createEntries(Bee_Security_Acls_IMutableAcl $acl) {
         $this->pdoTemplate->batchUpdateBySqlString(self::INSERT_ENTRY,

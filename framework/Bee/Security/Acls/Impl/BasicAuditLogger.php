@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Framework;
+use Bee\Utils\Assert;
 
 /**
  * User: mp
@@ -22,16 +24,31 @@
  */
 
 class Bee_Security_Acls_Impl_BasicAuditLogger implements Bee_Security_Acls_IAuditLogger {
+
+	/**
+	 * @var Logger
+	 */
+	protected static $log;
+
+	/**
+	 * @return Logger
+	 */
+	protected static function getLog() {
+		if (!self::$log) {
+			self::$log = Framework::getLoggerForClass(__CLASS__);
+		}
+		return self::$log;
+	}
+
     public function logIfNeeded($granted, Bee_Security_Acls_IAccessControlEntry $ace) {
-        Bee_Utils_Assert::notNull($ace, 'AccessControlEntry required');
+		Assert::notNull($ace, 'AccessControlEntry required');
 
         if ($ace instanceof Bee_Security_Acls_IAuditableAccessControlEntry) {
             if ($granted && $ace->isAuditSuccess()) {
-                Bee_Utils_Logger::info('GRANTED due to ACE: ' . $ace->getId());
+				self::getLog()->info('GRANTED due to ACE: ' . $ace->getId());
             } else if (!$granted && $auditableAce->isAuditFailure()) {
-                Bee_Utils_Logger::info('DENIED due to ACE: ' . $ace->getId());
+				self::getLog()->info('DENIED due to ACE: ' . $ace->getId());
             }
         }
     }
 }
-?>

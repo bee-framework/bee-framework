@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context\Config;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +30,7 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-interface Bee_Context_Config_IBeanNameAware {
+interface IBeanNameAware {
 	
 	/**
 	 * Set the name of the bean in the bean factory that created this bean.
@@ -44,5 +45,4 @@ interface Bee_Context_Config_IBeanNameAware {
 	 * method to extract the original bean name (without suffix), if desired.
 	 */
 	public function setBeanName($beanName);
-	
 }

@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\BeanDefinition\GenericBeanDefinition;
 use Bee\Context\Config\IBeanDefinitionRegistry;
 
 /**
@@ -28,7 +29,7 @@ class Bee_AOP_Config_Utils {
     /**
      * @static
      * @param IBeanDefinitionRegistry $registry
-     * @return Bee_Context_Config_BeanDefinition_Generic
+     * @return GenericBeanDefinition
      */
     public static function registerAutoProxyCreatorIfNecessary(IBeanDefinitionRegistry $registry) {
         return self::registerOrEscalateApcAsRequired('Bee_AOP_Framework_AutoProxyCreator', $registry);
@@ -40,7 +41,7 @@ class Bee_AOP_Config_Utils {
      * @access private static
      * @param  $className
      * @param IBeanDefinitionRegistry $registry
-     * @return Bee_Context_Config_BeanDefinition_Generic
+     * @return GenericBeanDefinition
      */
     private static function registerOrEscalateApcAsRequired($className, IBeanDefinitionRegistry $registry) {
         if ($registry->containsBeanDefinition(self::AUTO_PROXY_CREATOR_BEAN_NAME)) {
@@ -56,7 +57,7 @@ class Bee_AOP_Config_Utils {
             return null;
         }
 
-        $beanDefinition = new Bee_Context_Config_BeanDefinition_Generic();
+        $beanDefinition = new GenericBeanDefinition();
         $beanDefinition->setBeanClassName($className);
 //        $beanDefinition->addPropertyValue(new PropertyValue('order', Ordered.HIGHEST_PRECEDENCE)); // todo: implement bean ordering
         $registry->registerBeanDefinition(self::AUTO_PROXY_CREATOR_BEAN_NAME, $beanDefinition);

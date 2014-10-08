@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 use Bee\Beans\PropertyValue;
+use Bee\Context\Config\BeanDefinition\GenericBeanDefinition;
 use Bee\Context\Config\BeanDefinitionHolder;
 use Bee\Context\Config\IBeanDefinitionRegistry;
 
@@ -43,7 +44,7 @@ class Bee_AOP_Scope_ScopedProxyUtils {
 
         // Create a scoped proxy definition for the original bean name,
         // "hiding" the target bean in an internal target definition.
-        $scopedProxyDefinition = new Bee_Context_Config_BeanDefinition_Generic();
+        $scopedProxyDefinition = new GenericBeanDefinition();
         $scopedProxyDefinition->setBeanClassName('Bee_AOP_Scope_ScopedProxyFactoryBean');
 
 

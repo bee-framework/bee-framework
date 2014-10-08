@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Utils;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use InvalidArgumentException;
+use PHPUnit_Framework_TestCase;
+use stdClass;
 
 /**
  * User: mp
@@ -21,17 +25,17 @@
  * Time: 15:16
  */
  
-class Bee_Utils_AssertTest extends PHPUnit_Framework_TestCase {
+class AssertTest extends PHPUnit_Framework_TestCase {
 
     /**
      * @test
      */
     public function isTrueTrue() {
-        Bee_Utils_Assert::isTrue(true);
-        Bee_Utils_Assert::isTrue(1);
-        Bee_Utils_Assert::isTrue("foo");
-        Bee_Utils_Assert::isTrue("false");
-        Bee_Utils_Assert::isTrue(array("1", "2"));
+        Assert::isTrue(true);
+        Assert::isTrue(1);
+        Assert::isTrue("foo");
+        Assert::isTrue("false");
+        Assert::isTrue(array("1", "2"));
     }
 
     /**
@@ -39,7 +43,7 @@ class Bee_Utils_AssertTest extends PHPUnit_Framework_TestCase {
      * @expectedException InvalidArgumentException
      */
     public function isTrueFalseBoolean() {
-        Bee_Utils_Assert::isTrue(false);
+		Assert::isTrue(false);
     }
 
     /**
@@ -47,7 +51,7 @@ class Bee_Utils_AssertTest extends PHPUnit_Framework_TestCase {
      * @expectedException InvalidArgumentException
      */
     public function isTrueFalseInteger() {
-        Bee_Utils_Assert::isTrue(0);
+		Assert::isTrue(0);
     }
 
     /**
@@ -55,7 +59,7 @@ class Bee_Utils_AssertTest extends PHPUnit_Framework_TestCase {
      * @expectedException InvalidArgumentException
      */
     public function isTrueFalseEmptyArray() {
-        Bee_Utils_Assert::isTrue(array());
+		Assert::isTrue(array());
     }
 
     /**
@@ -63,7 +67,7 @@ class Bee_Utils_AssertTest extends PHPUnit_Framework_TestCase {
      * @expectedException InvalidArgumentException
      */
     public function isTrueFalseNull() {
-        Bee_Utils_Assert::isTrue(null);
+		Assert::isTrue(null);
     }
 
     
@@ -74,7 +78,7 @@ class Bee_Utils_AssertTest extends PHPUnit_Framework_TestCase {
      * @test
      */
     public function isNullTrue() {
-        Bee_Utils_Assert::isNull(null);
+		Assert::isNull(null);
     }
 
     /**
@@ -82,7 +86,7 @@ class Bee_Utils_AssertTest extends PHPUnit_Framework_TestCase {
      * @expectedException InvalidArgumentException
      */
     public function isNullFalseBooleanFalse() {
-        Bee_Utils_Assert::isNull(false);
+		Assert::isNull(false);
     }
 
     /**
@@ -90,7 +94,7 @@ class Bee_Utils_AssertTest extends PHPUnit_Framework_TestCase {
      * @expectedException InvalidArgumentException
      */
     public function isNullFalseBooleanTrue() {
-        Bee_Utils_Assert::isNull(true);
+		Assert::isNull(true);
     }
 
     /**
@@ -98,7 +102,7 @@ class Bee_Utils_AssertTest extends PHPUnit_Framework_TestCase {
      * @expectedException InvalidArgumentException
      */
     public function isNullFalseInteger() {
-        Bee_Utils_Assert::isNull(0);
+		Assert::isNull(0);
     }
 
     /**
@@ -106,7 +110,7 @@ class Bee_Utils_AssertTest extends PHPUnit_Framework_TestCase {
      * @expectedException InvalidArgumentException
      */
     public function isNullFalseEmptyArray() {
-        Bee_Utils_Assert::isNull(array());
+		Assert::isNull(array());
     }
 
     /**
@@ -114,7 +118,7 @@ class Bee_Utils_AssertTest extends PHPUnit_Framework_TestCase {
      * @expectedException InvalidArgumentException
      */
     public function isNullFalseObject() {
-        Bee_Utils_Assert::isNull(new stdClass());
+		Assert::isNull(new stdClass());
     }
 
     /**

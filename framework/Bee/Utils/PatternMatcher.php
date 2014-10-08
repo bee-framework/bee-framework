@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Strings;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,7 +32,7 @@ class Bee_Utils_PatternMatcher {
      * arbitrary number of pattern parts), as well as direct equality.
      * @param string $pattern the pattern to match against
      * @param string $str the String to match
-     * @return whether the String matches the given pattern
+     * @return bool whether the String matches the given pattern
      */
     public static function simpleMatch($pattern, $str) {
         if ($pattern == null || $str == null) {
@@ -48,7 +49,7 @@ class Bee_Utils_PatternMatcher {
             }
             $nextIndex = strpos($pattern, '*', $firstIndex + 1);
             if ($nextIndex == -1) {
-                return Bee_Utils_Strings::endsWith($str, substr($pattern, 1));
+                return Strings::endsWith($str, substr($pattern, 1));
             }
             $part = substr($pattern, 1, $nextIndex - 1);
             $partIndex = strpos($str, $part);
@@ -70,7 +71,7 @@ class Bee_Utils_PatternMatcher {
      * arbitrary number of pattern parts), as well as direct equality.
      * @param string[] $patterns the patterns to match against
      * @param string $str the String to match
-     * @return whether the String matches any of the given patterns
+     * @return bool whether the String matches any of the given patterns
      */
     public static function simpleMatchMultiple(array $patterns, $str) {
         if ($patterns != null) {
@@ -82,5 +83,4 @@ class Bee_Utils_PatternMatcher {
         }
         return false;
     }
-
 }

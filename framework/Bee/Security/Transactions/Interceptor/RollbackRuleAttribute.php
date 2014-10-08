@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+use Bee\Utils\Types;
 
 /**
  * Created by IntelliJ IDEA.
@@ -53,7 +53,7 @@ class Bee_Transactions_Interceptor_RollbackRuleAttribute {
      * not a <code>Throwable</code> type or is <code>null</code>
      */
     public function __construct($className) {
-        if (Bee_Utils_Types::isAssignable($className, 'Exception')) {
+        if (Types::isAssignable($className, 'Exception')) {
             throw new InvalidArgumentException(
                     "Cannot construct rollback rule from [$className]: it's not an Exception");
         }
@@ -94,4 +94,3 @@ class Bee_Transactions_Interceptor_RollbackRuleAttribute {
         return "RollbackRuleAttribute with pattern [$this->exceptionName]";
     }
 }
-?>

@@ -1,6 +1,7 @@
 <?php
+namespace Bee\MVC\View;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +24,7 @@
  *
  * @deprecated
  */
-class Bee_MVC_View_Xhtml extends Bee_MVC_View_Text {
+class XhtmlView extends TextView {
 	
 	const CONTENT_TYPE_XHTML = 'application/xhtml+xml';
 	const CONTENT_TYPE_XML = 'application/xml';
@@ -120,4 +121,3 @@ class Bee_MVC_View_Xhtml extends Bee_MVC_View_Text {
 		$this->renderRootElementEnd();
 	}
 }
-?>

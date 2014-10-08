@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\IInitializingBean;
+use Bee\Framework;
+use Bee\Utils\Assert;
+use Bee\Utils\Types;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,7 +27,22 @@
  * To change this template use File | Settings | File Templates.
  */
 
-abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements Bee_Context_Config_IInitializingBean {
+abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IInitializingBean {
+
+	/**
+	 * @var Logger
+	 */
+	protected static $log;
+
+	/**
+	 * @return Logger
+	 */
+	protected static function getLog() {
+		if (!self::$log) {
+			self::$log = Framework::getLoggerForClass(__CLASS__);
+		}
+		return self::$log;
+	}
 
     /**
      * @var Bee_Security_IAccessDecisionManager
@@ -64,14 +83,16 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements Bee
         $this->runAsManager = new Bee_Security_Runas_NullRunAsManager();
     }
 
-    /**
-     * Completes the work of the <tt>AbstractSecurityInterceptor</tt> after the secure object invocation has been
-     * completed.
-     *
-     * @param Bee_Security_Intercept_InterceptorStatusToken $token as returned by the {@link #beforeInvocation(Object)}} method
-     * @param mixed $returnedObject any object returned from the secure object invocation (may be <tt>null</tt>)
-     * @return mixed the object the secure object invocation should ultimately return to its caller (may be <tt>null</tt>)
-     */
+	/**
+	 * Completes the work of the <tt>AbstractSecurityInterceptor</tt> after the secure object invocation has been
+	 * completed.
+	 *
+	 * @param Bee_Security_Intercept_InterceptorStatusToken $token as returned by the {@link #beforeInvocation(Object)}} method
+	 * @param mixed $returnedObject any object returned from the secure object invocation (may be <tt>null</tt>)
+	 * @throws Bee_Security_Exception_AccessDenied
+	 * @throws Exception
+	 * @return mixed the object the secure object invocation should ultimately return to its caller (may be <tt>null</tt>)
+	 */
     protected function afterInvocation(Bee_Security_Intercept_InterceptorStatusToken $token, $returnedObject) {
         if ($token == null) {
             // public object
@@ -79,8 +100,8 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements Bee
         }
 
         if ($token->isContextHolderRefreshRequired()) {
-            if (Bee_Utils_Logger::isDebugEnabled()) {
-                Bee_Utils_Logger::debug("Reverting to original Authentication: " . $token->getAuthentication());
+            if (self::getLog()->isDebugEnabled()) {
+				self::getLog()->debug("Reverting to original Authentication: " . $token->getAuthentication());
             }
 
             Bee_Security_Context_Holder::getContext()->setAuthentication($token->getAuthentication());
@@ -106,21 +127,21 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements Bee
     }
 
     public function afterPropertiesSet() {
-        Bee_Utils_Assert::notNull($this->getSecureObjectClassName(), "Subclass must provide a non-null response to getSecureObjectClass()");
-//        Bee_Utils_Assert::notNull($this->messages, "A message source must be set");
-        Bee_Utils_Assert::notNull($this->authenticationManager, "An AuthenticationManager is required");
-        Bee_Utils_Assert::notNull($this->accessDecisionManager, "An AccessDecisionManager is required");
-        Bee_Utils_Assert::notNull($this->runAsManager, "A RunAsManager is required");
-        Bee_Utils_Assert::notNull($this->obtainObjectDefinitionSource(), "An ObjectDefinitionSource is required");
-        Bee_Utils_Assert::isTrue($this->obtainObjectDefinitionSource()->supports($this->getSecureObjectClassName()),
+        Assert::notNull($this->getSecureObjectClassName(), "Subclass must provide a non-null response to getSecureObjectClass()");
+//        Assert::notNull($this->messages, "A message source must be set");
+        Assert::notNull($this->authenticationManager, "An AuthenticationManager is required");
+        Assert::notNull($this->accessDecisionManager, "An AccessDecisionManager is required");
+        Assert::notNull($this->runAsManager, "A RunAsManager is required");
+        Assert::notNull($this->obtainObjectDefinitionSource(), "An ObjectDefinitionSource is required");
+        Assert::isTrue($this->obtainObjectDefinitionSource()->supports($this->getSecureObjectClassName()),
                 "ObjectDefinitionSource does not support secure object class: " . $this->getSecureObjectClassName());
-        Bee_Utils_Assert::isTrue($this->runAsManager->supportsClass($this->getSecureObjectClassName()),
+		Assert::isTrue($this->runAsManager->supportsClass($this->getSecureObjectClassName()),
                 "RunAsManager does not support secure object class: " . $this->getSecureObjectClassName());
-        Bee_Utils_Assert::isTrue($this->accessDecisionManager->supportsClass($this->getSecureObjectClassName()),
+		Assert::isTrue($this->accessDecisionManager->supportsClass($this->getSecureObjectClassName()),
                 "AccessDecisionManager does not support secure object class: " . $this->getSecureObjectClassName());
 
         if ($this->afterInvocationManager != null) {
-            Bee_Utils_Assert::isTrue($this->afterInvocationManager->supportsClass($this->getSecureObjectClassName()),
+			Assert::isTrue($this->afterInvocationManager->supportsClass($this->getSecureObjectClassName()),
                     "AfterInvocationManager does not support secure object class: " . $this->getSecureObjectClassName());
         }
 
@@ -128,7 +149,7 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements Bee
             $attributeDefs = $this->obtainObjectDefinitionSource()->getConfigAttributeDefinitions();
 
             if ($attributeDefs == null) {
-                Bee_Utils_Logger::warn("Could not validate configuration attributes as the ObjectDefinitionSource did not return "
+				self::getLog()->warn("Could not validate configuration attributes as the ObjectDefinitionSource did not return "
                         . "a ConfigAttributeDefinition collection");
                 return;
             }
@@ -151,20 +172,23 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements Bee
                 throw new InvalidArgumentException("Unsupported configuration attributes: " . $unsupportedAttrs);
             }
 
-            Bee_Utils_Logger::info("Validated configuration attributes");
+			self::getLog()->info("Validated configuration attributes");
         }
     }
 
-    /**
-     * @access protected
-     * @throws #CBee_Security_Exception_AccessDenied|InvalidArgumentException|?
-     * @param  $object
-     * @return Bee_Security_Intercept_InterceptorStatusToken
-     */
+	/**
+	 * @access protected
+	 *
+	 * @param $object
+	 * @throws Bee_Security_Exception_AccessDenied
+	 * @throws Bee_Security_Exception_AuthenticationCredentialsNotFound
+	 * @throws Exception
+	 * @return Bee_Security_Intercept_InterceptorStatusToken
+	 */
     protected function beforeInvocation($object) {
-        Bee_Utils_Assert::notNull($object, "Object was null");
+		Assert::notNull($object, "Object was null");
 
-        if (!Bee_Utils_Types::isAssignable(get_class($object), $this->getSecureObjectClassName())) {
+        if (!Types::isAssignable(get_class($object), $this->getSecureObjectClassName())) {
             throw new InvalidArgumentException("Security invocation attempted for object "
                     . get_class($object)
                     . " but AbstractSecurityInterceptor only configured to support secure objects of type: "
@@ -181,8 +205,8 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements Bee
                                 . "AbstractSecurityInterceptor.rejectPublicInvocations property is set to 'true'");
             }
 
-            if (Bee_Utils_Logger::isDebugEnabled()) {
-                Bee_Utils_Logger::debug("Public object - authentication not attempted");
+            if (self::getLog()->isDebugEnabled()) {
+                self::getLog()->debug("Public object - authentication not attempted");
             }
 
 //            publishEvent(new PublicInvocationEvent(object));
@@ -190,8 +214,8 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements Bee
             return null; // no further work post-invocation
         }
 
-        if (Bee_Utils_Logger::isDebugEnabled()) {
-            Bee_Utils_Logger::debug("Secure object: $object; ConfigAttributes: $attr");
+        if (self::getLog()->isDebugEnabled()) {
+            self::getLog()->debug("Secure object: $object; ConfigAttributes: $attr");
         }
 
         if (Bee_Security_Context_Holder::getContext()->getAuthentication() == null) {
@@ -212,8 +236,8 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements Bee
             throw $accessDeniedException;
         }
 
-        if (Bee_Utils_Logger::isDebugEnabled()) {
-            Bee_Utils_Logger::debug("Authorization successful");
+        if (self::getLog()->isDebugEnabled()) {
+            self::getLog()->debug("Authorization successful");
         }
 //
 //        $event = new AuthorizedEvent(object, attr, authenticated);
@@ -223,15 +247,15 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements Bee
         $runAs = $this->runAsManager->buildRunAs($authenticated, $object, $attr);
 
         if ($runAs == null) {
-            if (Bee_Utils_Logger::isDebugEnabled()) {
-                Bee_Utils_Logger::debug("RunAsManager did not change Authentication object");
+            if (self::getLog()->isDebugEnabled()) {
+                self::getLog()->debug("RunAsManager did not change Authentication object");
             }
 
             // no further work post-invocation
             return new Bee_Security_Intercept_InterceptorStatusToken($authenticated, false, $attr, $object);
         } else {
-            if (Bee_Utils_Logger::isDebugEnabled()) {
-                Bee_Utils_Logger::debug("Switching to RunAs Authentication: " . $runAs);
+            if (self::getLog()->isDebugEnabled()) {
+                self::getLog()->debug("Switching to RunAs Authentication: " . $runAs);
             }
 
             Bee_Security_Context_Holder::getContext()->setAuthentication($runAs);
@@ -252,8 +276,8 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements Bee
         $authentication = Bee_Security_Context_Holder::getContext()->getAuthentication();
 
         if ($authentication->isAuthenticated() && !$this->alwaysReauthenticate) {
-            if (Bee_Utils_Logger::isDebugEnabled()) {
-                Bee_Utils_Logger::debug("Previously Authenticated: " . $authentication);
+            if (self::getLog()->isDebugEnabled()) {
+                self::getLog()->debug("Previously Authenticated: " . $authentication);
             }
 
             return $authentication;
@@ -262,8 +286,8 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements Bee
         $authentication = $this->authenticationManager->authenticate($authentication);
 
         // We don't authenticated.setAuthentication(true), because each provider should do that
-        if (Bee_Utils_Logger::isDebugEnabled()) {
-            Bee_Utils_Logger::debug("Successfully Authenticated: " . $authentication);
+        if (self::getLog()->isDebugEnabled()) {
+            self::getLog()->debug("Successfully Authenticated: " . $authentication);
         }
 
         Bee_Security_Context_Holder::getContext()->setAuthentication($authentication);
@@ -364,7 +388,7 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements Bee
      * wired to the <code>AbstractSecurityInterceptor</code> all support the
      * indicated secure object class.
      *
-     * @return the type of secure object the subclass provides services for
+     * @return string the type of secure object the subclass provides services for
      */
     public abstract function getSecureObjectClassName();
 
@@ -430,7 +454,4 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements Bee
      * @return Bee_Security_Intercept_IObjectDefinitionSource
      */
     public abstract function obtainObjectDefinitionSource();
-
-
 }
-?>

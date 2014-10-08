@@ -1,7 +1,7 @@
 <?php
 namespace Bee\Exceptions;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@ namespace Bee\Exceptions;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Exception;
 
 /**
  * User: mp
@@ -24,7 +25,7 @@ namespace Bee\Exceptions;
  * todo: move this to Bee Framework
  */
  
-class ProcExecException extends \Bee_Exceptions_Base {
+class ProcExecException extends Exception {
 
 	private $returnValue;
 
@@ -32,8 +33,8 @@ class ProcExecException extends \Bee_Exceptions_Base {
 
 	private $stdErr;
 
-	function __construct($message, $returnValue = false, $stdOut = false, $stdErr = false) {
-		parent::__construct($message);
+	function __construct($message, $returnValue = false, $stdOut = false, $stdErr = false, Exception $previous = null) {
+		parent::__construct($message, is_int($returnValue) ? $returnValue : 0, $previous);
 		$this->returnValue = $returnValue;
 		$this->stdOut = $stdOut;
 		$this->stdErr = $stdErr;

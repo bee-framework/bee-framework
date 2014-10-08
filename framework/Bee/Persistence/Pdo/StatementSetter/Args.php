@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Assert;
 
 /**
  * User: mp
@@ -34,15 +35,15 @@ class Bee_Persistence_Pdo_StatementSetter_Args implements Bee_Persistence_Pdo_IS
 	 */
 	private $types;
 
-    /**
-     * @param $args
-     * @param $types
-     * @return void
-     */
+	/**
+	 * @param array $args
+	 * @param array $types
+	 * @return \Bee_Persistence_Pdo_StatementSetter_Args
+	 */
     public function __construct(array $args, array $types = null) {
 		$this->args = $args;
 		if (is_array($types)) {
-			Bee_Utils_Assert::isTrue(count($args) == count($types), 'Size of types array must be equal to size of args array');
+			Assert::isTrue(count($args) == count($types), 'Size of types array must be equal to size of args array');
 			$this->types = $types;
 		}
     }

@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Text\Normalization;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@
  * Time: 12:09
  */
 
-interface Bee_Text_Normalization_INormalizer {
+interface INormalizer {
 
 	const UNICODE_NORMALIZATION_DECOMPOSED = 'NFD';  // Canonical Decomposition
 	const UNICODE_NORMALIZATION_COMPOSED = 'NFC'; // Canonical Decomposition, followed by Canonical Composition

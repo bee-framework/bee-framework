@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\IOrdered;
 
 /**
  * User: mp
@@ -21,12 +22,12 @@
  * Time: 10:40:52 PM
  */
 
-abstract class Bee_AOP_Support_AbstractPointcutAdvisor implements Bee_AOP_IPointcutAdvisor, Bee_Utils_IOrdered {
+abstract class Bee_AOP_Support_AbstractPointcutAdvisor implements Bee_AOP_IPointcutAdvisor, IOrdered {
 
     /**
      * @var int
      */
-    private $order = Bee_Utils_IOrdered::LOWEST_PRECEDENCE;
+    private $order = IOrdered::LOWEST_PRECEDENCE;
 
     /**
      * Gets the Order

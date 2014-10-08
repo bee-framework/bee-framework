@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+use Bee\Utils\Assert;
+
 abstract class Bee_Security_PasswordEncoder_Base implements Bee_Security_IPasswordEncoder {
 	
 	/**
@@ -25,7 +27,7 @@ abstract class Bee_Security_PasswordEncoder_Base implements Bee_Security_IPasswo
 	 * @return array<String>(2)
 	 */
     protected function demergePasswordAndSalt($mergedPasswordSalt) {
-    	Bee_Utils_Assert::hasText($mergedPasswordSalt, 'Cannot pass a null or empty String');
+		Assert::hasText($mergedPasswordSalt, 'Cannot pass a null or empty String');
 
         $password = $mergedPasswordSalt;
         $salt = '';
@@ -69,4 +71,3 @@ abstract class Bee_Security_PasswordEncoder_Base implements Bee_Security_IPasswo
     }
     
 }
-?>

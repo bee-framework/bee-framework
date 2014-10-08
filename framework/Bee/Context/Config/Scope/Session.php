@@ -23,7 +23,7 @@ use Bee\Context\Config\IScope;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_Config_Scope_Session implements IScope {
+class SessionScope implements IScope {
 	
 	const SESSION_SCOPE_PREFIX = '__sessionScopeContent';
 

@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+use Bee\Exceptions\FilesystemException;
+
 abstract class Bee_Filesystem_AbstractNode implements Bee_Filesystem_INode {
 	
 	/**
@@ -66,7 +68,7 @@ abstract class Bee_Filesystem_AbstractNode implements Bee_Filesystem_INode {
 			$this->afterChildCreate();
 			return $this->createNode($newDir);
 		} else {
-			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_COULD_NOT_CREATE, $newDir);
+			throw new FilesystemException(FilesystemException::MESSAGE_COULD_NOT_CREATE, $newDir);
 		}
 	}
 
@@ -134,24 +136,24 @@ abstract class Bee_Filesystem_AbstractNode implements Bee_Filesystem_INode {
 
 		$newFile = $this->realPath . DIRECTORY_SEPARATOR . $filename;
 //		if(file_exists($newFile)) {
-//			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_RESOURCE_EXISTS, $newFile);
+//			throw new FilesystemException(FilesystemException::MESSAGE_RESOURCE_EXISTS, $newFile);
 //		}
 
         var_dump($newFile);
 
 
 //		if (empty($_FILES[$fileFieldName]["name"])) {
-//			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_RESOURCE_DOES_NOT_EXIST);
+//			throw new FilesystemException(FilesystemException::MESSAGE_RESOURCE_DOES_NOT_EXIST);
 //		}
 //		if (is_null($fileName)) {
 //			$fileName = $_FILES[$fileFieldName]["name"];
 //		}
 //		$newFile = $this->realPath . DIRECTORY_SEPARATOR . $fileName;
 //		if(file_exists($newFile)) {
-//			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_RESOURCE_EXISTS, $newFile);
+//			throw new FilesystemException(FilesystemException::MESSAGE_RESOURCE_EXISTS, $newFile);
 //		}
 //		if (!@move_uploaded_file($_FILES[$fileFieldName]["tmp_name"], $newFile)) {
-//			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_UNKNOWN_ERROR);
+//			throw new FilesystemException(FilesystemException::MESSAGE_UNKNOWN_ERROR);
 //		}
 //		$this->afterChildCreate();
 //		return $this->createNode($newFile);
@@ -200,7 +202,7 @@ abstract class Bee_Filesystem_AbstractNode implements Bee_Filesystem_INode {
 			$this->realPath = $newPath;
 			$this->afterRename();
 		} else {
-			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_COULD_NOT_RENAME, $newPath);
+			throw new FilesystemException(FilesystemException::MESSAGE_COULD_NOT_RENAME, $newPath);
 		}	
 	}
 	
@@ -210,7 +212,7 @@ abstract class Bee_Filesystem_AbstractNode implements Bee_Filesystem_INode {
 			$this->realPath = $newRealPath;
 			$this->afterMove();
 		} else {
-			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_COULD_NOT_MOVE, $newRealPath);
+			throw new FilesystemException(FilesystemException::MESSAGE_COULD_NOT_MOVE, $newRealPath);
 		}
 	}
 
@@ -220,7 +222,7 @@ abstract class Bee_Filesystem_AbstractNode implements Bee_Filesystem_INode {
 			$this->realPath = $newRealPath;
 			$this->afterCopy();
 		} else {
-			throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_COULD_NOT_COPY, $newRealPath);
+			throw new FilesystemException(FilesystemException::MESSAGE_COULD_NOT_COPY, $newRealPath);
 		}
 	}
 
@@ -242,7 +244,7 @@ abstract class Bee_Filesystem_AbstractNode implements Bee_Filesystem_INode {
 			if($result) {
 				$this->afterDelete();
 			} else {
-				throw new Bee_Exceptions_FilesystemException(Bee_Exceptions_FilesystemException::MESSAGE_COULD_NOT_DELETE, $this->realPath);
+				throw new FilesystemException(FilesystemException::MESSAGE_COULD_NOT_DELETE, $this->realPath);
 			}
 			
 		}
@@ -266,4 +268,3 @@ abstract class Bee_Filesystem_AbstractNode implements Bee_Filesystem_INode {
 	protected abstract function afterDelete();
 	
 }
-?>

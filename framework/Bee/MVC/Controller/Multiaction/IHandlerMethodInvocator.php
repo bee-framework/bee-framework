@@ -15,8 +15,10 @@ namespace Bee\MVC\Controller\Multiaction;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\Controller\MultiActionController;
-use Bee_MVC_IHttpRequest;
+use Bee\MVC\IController;
+use Bee\MVC\IDelegatingHandler;
+use Bee\MVC\IHttpRequest;
+use Bee\MVC\ModelAndView;
 
 /**
  * Interface MethodInvocator
@@ -25,14 +27,14 @@ use Bee_MVC_IHttpRequest;
 interface IHandlerMethodInvocator {
 
 	/**
-	 * @param MultiActionController $controller
-	 * @return mixed
+	 * @param IDelegatingHandler $controller
 	 */
-	public function setController(MultiActionController $controller);
+	public function setDelegatingHandler(IDelegatingHandler $controller);
 
 	/**
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return \Bee_MVC_ModelAndView
+	 * @param IHttpRequest $request
+	 * @param array $fixedParams
+	 * @return ModelAndView
 	 */
-	public function invokeHandlerMethod(Bee_MVC_IHttpRequest $request);
+	public function invokeHandlerMethod(IHttpRequest $request, array $fixedParams = array());
 } 

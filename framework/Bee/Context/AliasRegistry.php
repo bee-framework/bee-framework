@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\Assert;
+use Bee\Utils\Strings;
 
 /**
  * Enter description here...
@@ -21,7 +24,7 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_AliasRegistry {
+class AliasRegistry {
 	
 	/**
 	 * Enter description here...
@@ -30,24 +33,25 @@ class Bee_Context_AliasRegistry {
 	 */
 	private $aliasMap = array();
 
-	
+
 	/**
 	 * Enter description here...
 	 *
-	 * @param String $name
-	 * @param String $alias
+	 * @param string $name
+	 * @param string $alias
+	 * @throws BeanDefinitionStoreException
 	 * @return void
 	 */
 	public function registerAlias($name, $alias) {
-		Bee_Utils_Assert::hasText($name, 'name must not be empty');
-		Bee_Utils_Assert::hasText($alias, 'alias must not be empty');
+		Assert::hasText($name, 'name must not be empty');
+		Assert::hasText($alias, 'alias must not be empty');
 		if ($alias === $name) {
 			unset($this->aliasMap[$alias]);
 		} else {
 			if (!$this->allowAliasOverriding()) {
 				$registeredName = $this->aliasMap[$alias];
-				if (Bee_Utils_Strings::hasText($registeredName) && $registeredName !== $name) {
-					throw new Bee_Context_BeanDefinitionStoreException("Cannot register alias '$alias' for name '$name': It is already registered for name '$registeredName'.");
+				if (Strings::hasText($registeredName) && $registeredName !== $name) {
+					throw new BeanDefinitionStoreException("Cannot register alias '$alias' for name '$name': It is already registered for name '$registeredName'.");
 				}
 			}
 			$this->aliasMap[$alias] = $name;
@@ -64,18 +68,19 @@ class Bee_Context_AliasRegistry {
 	protected function allowAliasOverriding() {
 		// @todo: parametrize this
 		return true;
-	}	
+	}
 
-	
+
 	/**
 	 * Enter description here...
 	 *
-	 * @param String $alias
+	 * @param string $alias
+	 * @throws BeanDefinitionStoreException
 	 * @return void
 	 */
 	public function removeAlias($alias) {
 		if ($this->isAlias($alias)) {
-			throw new Bee_Context_BeanDefinitionStoreException("No alias '$alias' registered, cannot remove it.");
+			throw new BeanDefinitionStoreException("No alias '$alias' registered, cannot remove it.");
 		}
 		unset($this->aliasMap[$alias]);
 	}
@@ -121,8 +126,7 @@ class Bee_Context_AliasRegistry {
 		return $canonicalName;
 	}
 	
-	public function getAliasesFromRegistry(Bee_Context_AliasRegistry $registry) {
+	public function getAliasesFromRegistry(AliasRegistry $registry) {
 		$this->aliasMap = $registry->aliasMap;
 	}
 }
-?>

@@ -15,7 +15,7 @@ namespace Bee\Context\Config;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee_Utils_Assert;
+use Bee\Utils\Assert;
 
 /**
  * Enter description here...
@@ -58,8 +58,8 @@ class BeanDefinitionHolder {
 	 * @param array $aliases
 	 */
 	public function __construct(IBeanDefinition $beanDefinition, $beanName, array $aliases = null) {
-		Bee_Utils_Assert::notNull($beanDefinition, 'BeanDefinition must not be null');
-		Bee_Utils_Assert::hasText($beanName, 'Bean name must be present');
+		Assert::notNull($beanDefinition, 'BeanDefinition must not be null');
+		Assert::hasText($beanName, 'Bean name must be present');
 		$this->beanDefinition = $beanDefinition;
 		$this->beanName = $beanName;
 		$this->aliases = $aliases;

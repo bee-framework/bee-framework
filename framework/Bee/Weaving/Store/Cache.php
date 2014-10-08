@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Cache\Manager;
 
 /**
  * User: mp
@@ -28,7 +29,7 @@ class Bee_Weaving_Store_Cache implements Bee_Weaving_IEnhancedClassesStore {
 	 * @return bool
 	 */
 	function hasStoredClass($className) {
-		return Bee_Cache_Manager::exists($this->getKeyForClass($className));
+		return Manager::exists($this->getKeyForClass($className));
 	}
 
 	/**
@@ -37,7 +38,7 @@ class Bee_Weaving_Store_Cache implements Bee_Weaving_IEnhancedClassesStore {
 	 * @return void
 	 */
 	function storeClass($className, $classSource) {
-		Bee_Cache_Manager::store($this->getKeyForClass($className), $classSource);
+		Manager::store($this->getKeyForClass($className), $classSource);
 	}
 
 	/**
@@ -48,7 +49,7 @@ class Bee_Weaving_Store_Cache implements Bee_Weaving_IEnhancedClassesStore {
 		if(class_exists($className) || interface_exists($className)) {
 			return false;
 		}
-		$src = Bee_Cache_Manager::getProvider()->retrieve($this->getKeyForClass($className));
+		$src = Manager::getProvider()->retrieve($this->getKeyForClass($className));
 		if($src !== false) {
 			return eval($src) !== false;
 		}

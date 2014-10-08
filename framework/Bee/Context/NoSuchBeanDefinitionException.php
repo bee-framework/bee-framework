@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Context;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,30 +22,28 @@
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-class Bee_Context_NoSuchBeanDefinitionException extends Bee_Context_BeansException {
+class NoSuchBeanDefinitionException extends BeansException {
 	
 	const EXCEPTION_MESSAGE = 'Bean definition for bean with name %s of type %s not found.';
 	
 	private $name;
 	private $type;
-	
-	
-	
+
+
 	/**
 	 * Enter description here...
 	 *
 	 * @param String $name
 	 * @param String $type
-	 * @return void
+	 * @param null $message
+	 * @return NoSuchBeanDefinitionException
 	 */
 	public function __construct($name, $type=null, $message = null) {
 		parent::__construct(is_null($message) ? sprintf(self::EXCEPTION_MESSAGE, $name, $type) : $message);
 		$this->name = $name;
 		$this->type = $type;
 	}
-	
-	
-	
+
 	/**
 	 * Enter description here...
 	 *
@@ -54,8 +53,6 @@ class Bee_Context_NoSuchBeanDefinitionException extends Bee_Context_BeansExcepti
 		return $this->name;
 	}
 
-	
-	
 	/**
 	 * Enter description here...
 	 *
@@ -65,5 +62,3 @@ class Bee_Context_NoSuchBeanDefinitionException extends Bee_Context_BeansExcepti
 		return $this->type;
 	}
 }
-
-?>

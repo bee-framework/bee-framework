@@ -17,7 +17,6 @@ namespace Bee\MVC;
  */
 use Bee\MVC\Request\DefaultAjaxDetectionStrategy;
 use Bee\MVC\Request\IAjaxDetectionStrategy;
-use Bee_MVC_HttpRequest;
 
 /**
  * Class DefaultRequestBuilder
@@ -31,17 +30,17 @@ class DefaultRequestBuilder implements IRequestBuilder {
 	private $ajaxDetectionStrategy;
 
 	/**
-	 * @return \Bee_MVC_IHttpRequest
+	 * @return IHttpRequest
 	 */
 	public function buildRequestObject() {
-		return $this->massageConstructedRequest(new Bee_MVC_HttpRequest());
+		return $this->massageConstructedRequest(new HttpRequest());
 	}
 
 	/**
-	 * @param Bee_MVC_HttpRequest $request
-	 * @return Bee_MVC_HttpRequest
+	 * @param HttpRequest $request
+	 * @return HttpRequest
 	 */
-	public function massageConstructedRequest(Bee_MVC_HttpRequest $request) {
+	public function massageConstructedRequest(HttpRequest $request) {
 		$request->setAjax($this->getAjaxDetectionStrategy()->isAjaxRequest($request));
 		return $request;
 	}

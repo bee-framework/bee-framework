@@ -15,6 +15,7 @@ namespace Bee\Context\Config;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\BeansException;
 
 /**
  * User: mp
@@ -55,7 +56,7 @@ interface IInstantiationAwareBeanPostProcessor extends IBeanPostProcessor {
      * if property population should be skipped. Normal implementations should return <code>true</code>.
      * Returning <code>false</code> will also prevent any subsequent InstantiationAwareBeanPostProcessor
      * instances being invoked on this bean instance.
-     * @throws \Bee_Context_BeansException in case of errors
+     * @throws BeansException in case of errors
      */
     public function postProcessAfterInstantiation($bean, $beanName);
 
@@ -74,7 +75,7 @@ interface IInstantiationAwareBeanPostProcessor extends IBeanPostProcessor {
      * @return the actual property values to apply to to the given bean
      * (can be the passed-in PropertyValues instance), or <code>null</code>
      * to skip property population
-     * @throws \Bee_Context_BeansException in case of errors
+     * @throws BeansException in case of errors
      * @see org.springframework.beans.MutablePropertyValues
      *
      * @todo

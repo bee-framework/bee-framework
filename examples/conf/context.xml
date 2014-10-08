@@ -11,7 +11,7 @@
     <mvc:viewresolver contextLocation="conf/views.xml" />
 
     <!-- HANDLER MAPPING -->
-    <bean id="handlerMapping" class="Bee_MVC_HandlerMapping_AntPath">
+    <bean id="handlerMapping" class="Bee\MVC\HandlerMapping\AntPathHandlerMapping">
         <property name="defaultControllerBeanName" value="defaultController"/>
         <property name="handlerMappings">
             <array>
@@ -21,7 +21,7 @@
     </bean>
 
     <!-- METHOD NAME RESOLVER -->
-    <bean id="methodNameResolver" class="Bee_MVC_Controller_Multiaction_MethodNameResolver_AnnotationBased" scope="prototype"/>
+    <bean id="methodNameResolver" class="Bee\MVC\Controller\Multiaction\MethodNameResolver\AnnotationBasedMethodNameResolver" scope="prototype"/>
 
     <bean id="multiactionControllerTemplate" class="Bee\MVC\Controller\MultiActionController">
         <property name="methodNameResolver" ref="methodNameResolver"/>

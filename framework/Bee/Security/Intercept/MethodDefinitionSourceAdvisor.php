@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\IContextAware;
+use Bee\IContext;
+use Bee\Utils\Assert;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,10 +26,10 @@
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Security_Intercept_MethodDefinitionSourceAdvisor extends Bee_AOP_Support_AbstractPointcutAdvisor implements Bee_Context_Config_IContextAware {
+class Bee_Security_Intercept_MethodDefinitionSourceAdvisor extends Bee_AOP_Support_AbstractPointcutAdvisor implements IContextAware {
 
     /**
-     * @var Bee_IContext
+     * @var IContext
      */
     private $beeContext;
 
@@ -61,12 +64,12 @@ class Bee_Security_Intercept_MethodDefinitionSourceAdvisor extends Bee_AOP_Suppo
      * class should extend in future. The original hierarchy and constructor have been retained for backwards
      * compatibility.
      *
-     * @param adviceBeanName name of the MethodSecurityInterceptor bean
-     * @param attributeSource the attribute source (should be the same as the one used on the interceptor)
+     * @param string $adviceBeanName name of the MethodSecurityInterceptor bean
+     * @param Bee_Security_Intercept_IMethodDefinitionSource $attributeSource the attribute source (should be the same as the one used on the interceptor)
      */
     public function __construct($adviceBeanName, Bee_Security_Intercept_IMethodDefinitionSource $attributeSource) {
-        Bee_Utils_Assert::notNull($adviceBeanName, "The adviceBeanName cannot be null");
-        Bee_Utils_Assert::notNull($attributeSource, "The attributeSource cannot be null");
+        Assert::notNull($adviceBeanName, "The adviceBeanName cannot be null");
+        Assert::notNull($attributeSource, "The attributeSource cannot be null");
 
         $this->adviceBeanName = $adviceBeanName;
         $this->attributeSource = $attributeSource;
@@ -82,17 +85,23 @@ class Bee_Security_Intercept_MethodDefinitionSourceAdvisor extends Bee_AOP_Suppo
 
     public function getAdvice() {
         if ($this->interceptor == null) {
-            Bee_Utils_Assert::notNull($this->adviceBeanName, "'adviceBeanName' must be set for use with bean factory lookup.");
-            Bee_Utils_Assert::notNull($this->beeContext != null, "BeanFactory must be set to resolve 'adviceBeanName'");
+            Assert::notNull($this->adviceBeanName, "'adviceBeanName' must be set for use with bean factory lookup.");
+            Assert::notNull($this->beeContext != null, "BeanFactory must be set to resolve 'adviceBeanName'");
             $this->interceptor = $this->beeContext->getBean($this->adviceBeanName, 'Bee_Security_Intercept_MethodSecurityInterceptor');
         }
         return $this->interceptor;
     }
 
-    public function setBeeContext(Bee_IContext $context) {
+	/**
+	 * @param IContext $context
+	 */
+    public function setBeeContext(IContext $context) {
         $this->beeContext = $context;
     }
 
+	/**
+	 * @return Bee_Security_Intercept_IMethodDefinitionSource
+	 */
     public function getAttributeSource() {
         return $this->attributeSource;
     }
@@ -113,4 +122,3 @@ class Bee_Security_Intercept_MethodDefinitionSourceAdvisor_MethodDefinitionSourc
         return $this->owner->getAttributeSource()->getAttributesForMethod($m, $targetClass) != null;
     }
 }
-?>

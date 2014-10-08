@@ -1,4 +1,5 @@
 <?php
+namespace Bee\MVC;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -14,8 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\IController;
-use Bee\MVC\IHandlerInterceptor;
 
 /**
  * Enter description here...
@@ -23,7 +22,7 @@ use Bee\MVC\IHandlerInterceptor;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-final class Bee_MVC_HandlerExecutionChain {
+final class HandlerExecutionChain {
 	
 	/**
 	 * Enter description here...

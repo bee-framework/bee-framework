@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Utils;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -22,7 +23,7 @@
  * Time: 14:52:22
  * To change this template use File | Settings | File Templates.
  */
-class Bee_Utils_UserAgent {
+class UserAgent {
 
     private $name;
     private $version;
@@ -87,6 +88,4 @@ class Bee_Utils_UserAgent {
         $this->majorVersion = intval(floor($version));
         $this->minorVersion = intval(floor(($this->version - $this->majorVersion)*10));
     }
-
-
 }

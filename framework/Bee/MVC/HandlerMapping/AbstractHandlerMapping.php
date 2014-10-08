@@ -15,12 +15,12 @@ namespace Bee\MVC\HandlerMapping;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\Config\IContextAware;
+use Bee\IContext;
+use Bee\MVC\HandlerExecutionChain;
 use Bee\MVC\IController;
 use Bee\MVC\IHandlerMapping;
-use Bee_Context_Config_IContextAware;
-use Bee_IContext;
-use Bee_MVC_HandlerExecutionChain;
-use Bee_MVC_IHttpRequest;
+use Bee\MVC\IHttpRequest;
 use Exception;
 
 /**
@@ -29,19 +29,19 @@ use Exception;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-abstract class AbstractHandlerMapping implements IHandlerMapping, Bee_Context_Config_IContextAware {
+abstract class AbstractHandlerMapping implements IHandlerMapping, IContextAware {
 
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_IContext
+	 * @var IContext
 	 */
 	private $context;
 
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_IContext
+	 * @var string
 	 */
 	private $defaultControllerBeanName;
 
@@ -53,16 +53,16 @@ abstract class AbstractHandlerMapping implements IHandlerMapping, Bee_Context_Co
 	private $interceptors = array();
 
 	/**
-	 * @param Bee_IContext $context
+	 * @param IContext $context
 	 */
-	public function setBeeContext(Bee_IContext $context) {
+	public function setBeeContext(IContext $context) {
 		$this->context = $context;
 	}
 
 	/**
 	 * Enter description here...
 	 *
-	 * @return String
+	 * @return string
 	 */
 	public function getDefaultControllerBeanName() {
 		return $this->defaultControllerBeanName;
@@ -71,7 +71,7 @@ abstract class AbstractHandlerMapping implements IHandlerMapping, Bee_Context_Co
 	/**
 	 * Enter description here...
 	 *
-	 * @param String $defaultControllerBeanName
+	 * @param string $defaultControllerBeanName
 	 * @return void
 	 */
 	public function setDefaultControllerBeanName($defaultControllerBeanName) {
@@ -97,11 +97,11 @@ abstract class AbstractHandlerMapping implements IHandlerMapping, Bee_Context_Co
 	}
 
 	/**
-	 * @param Bee_MVC_IHttpRequest $request
-	 * @return Bee_MVC_HandlerExecutionChain
+	 * @param IHttpRequest $request
+	 * @return HandlerExecutionChain
 	 * @throws Exception
 	 */
-	public function getHandler(Bee_MVC_IHttpRequest $request) {
+	public function getHandler(IHttpRequest $request) {
 		$controllerBeanName = $this->getControllerBeanName($request);
 		$handlerBean = is_string($controllerBeanName) ?
 				$handlerBean = $this->context->getBean($controllerBeanName, 'Bee\MVC\IController') :
@@ -111,15 +111,15 @@ abstract class AbstractHandlerMapping implements IHandlerMapping, Bee_Context_Co
 			throw new Exception('Error retrieving handler bean: must be a valid bean name or Bee\MVC\IController instance');
 		}
 		
-		$hec = new Bee_MVC_HandlerExecutionChain($handlerBean);
+		$hec = new HandlerExecutionChain($handlerBean);
 		$hec->addInterceptors($this->interceptors);
 		return $hec;
 	}
 
 	/**
 	 * Resolves the actual controller bean name (may also return a controller instance directly)
-	 * @param Bee_MVC_IHttpRequest $request
+	 * @param IHttpRequest $request
 	 * @return mixed
 	 */
-	protected abstract function getControllerBeanName(Bee_MVC_IHttpRequest $request);
+	protected abstract function getControllerBeanName(IHttpRequest $request);
 }

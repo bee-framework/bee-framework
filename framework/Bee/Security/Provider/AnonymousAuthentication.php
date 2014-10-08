@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+use Bee\Utils\Types;
 /**
  * Created by IntelliJ IDEA.
  * User: mp
@@ -50,6 +50,6 @@ class Bee_Security_Provider_AnonymousAuthentication implements Bee_Security_IAut
     }
 
     public function supports($authenticationClass) {
-        return Bee_Utils_Types::isAssignable($authenticationClass, 'Bee_Security_AnonymousAuthenticationToken');
+        return Types::isAssignable($authenticationClass, 'Bee_Security_AnonymousAuthenticationToken');
     }
 }

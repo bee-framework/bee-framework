@@ -1,4 +1,5 @@
 <?php
+namespace Bee\MVC;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -14,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\IView;
 
 /**
  * Enter description here...
@@ -22,7 +22,7 @@ use Bee\MVC\IView;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-final class Bee_MVC_ModelAndView {
+final class ModelAndView {
 
 	/**
 	 * Enter description here...

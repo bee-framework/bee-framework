@@ -15,10 +15,10 @@ namespace Bee\Context\Xml;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\BeanDefinitionStoreException;
 use Bee\Context\Support\BeanDefinitionReaderUtils;
-use Bee_Context_BeanDefinitionStoreException;
-use Bee_Utils_Dom;
-use Bee_Utils_Strings;
+use Bee\Utils\Dom;
+use Bee\Utils\Strings;
 use DOMDocument;
 use DOMElement;
 use Exception;
@@ -103,11 +103,11 @@ class BeanDefinitionDocumentReader {
 	}
 	
 	private function parseDefaultElement(DOMElement $ele, ParserDelegate $delegate) {
-		if (Bee_Utils_Dom::nodeNameEquals($ele, self::IMPORT_ELEMENT)) {
+		if (Dom::nodeNameEquals($ele, self::IMPORT_ELEMENT)) {
 			$this->importBeanDefinitionResource($ele);
-		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::ALIAS_ELEMENT)) {
+		} else if (Dom::nodeNameEquals($ele, self::ALIAS_ELEMENT)) {
 			$this->processAliasRegistration($ele);
-		} else if (Bee_Utils_Dom::nodeNameEquals($ele, self::BEAN_ELEMENT)) {
+		} else if (Dom::nodeNameEquals($ele, self::BEAN_ELEMENT)) {
 			$this->processBeanDefinition($ele, $delegate);
 		}
 	}
@@ -116,11 +116,11 @@ class BeanDefinitionDocumentReader {
 		$name = $ele->getAttribute(self::NAME_ATTRIBUTE);
 		$alias = $ele->getAttribute(self::ALIAS_ATTRIBUTE);
 		$valid = true;
-		if (!Bee_Utils_Strings::hasText($name)) {
+		if (!Strings::hasText($name)) {
 			$this->getReaderContext()->error('Name must not be empty', $ele);
 			$valid = false;
 		}
-		if (!Bee_Utils_Strings::hasText($alias)) {
+		if (!Strings::hasText($alias)) {
 			$this->getReaderContext()->error('Alias must not be empty', $ele);
 			$valid = false;
 		}
@@ -157,7 +157,7 @@ class BeanDefinitionDocumentReader {
 			try {
 				// Register the final decorated instance.
 				BeanDefinitionReaderUtils::registerBeanDefinition($bdHolder, $this->getReaderContext()->getRegistry());
-			} catch (Bee_Context_BeanDefinitionStoreException $ex) {
+			} catch (BeanDefinitionStoreException $ex) {
 				$beanName = $bdHolder->getBeanName(); 
 				$this->getReaderContext()->error("Failed to register bean definition with name '$beanName'", $ele, $ex);
 			}

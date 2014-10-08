@@ -15,6 +15,7 @@ namespace Bee\Context\Config;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Context\BeansException;
 
 /**
  * User: mp
@@ -31,7 +32,7 @@ interface IDestructionAwareBeanPostProcessor extends IBeanPostProcessor {
      * inner beans).
      * @param mixed $bean the bean instance to be destroyed
      * @param string $beanName the name of the bean
-     * @throws \Bee_Context_BeansException in case of errors
+     * @throws BeansException in case of errors
      * @see org.springframework.beans.factory.DisposableBean
      * @see org.springframework.beans.factory.support.AbstractBeanDefinition#setDestroyMethodName
      */
