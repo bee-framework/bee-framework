@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Utils\PatternMatcher;
 
 /**
  * Created by IntelliJ IDEA.
@@ -91,11 +92,10 @@ class Bee_Transactions_Interceptor_NameMatchTransactionAttributeSource implement
      * as well as direct equality. Can be overridden in subclasses.
      * @param string $methodName the method name of the class
      * @param string $mappedName the name in the descriptor
-     * @return if the names match
+     * @return bool if the names match
      * @see org.springframework.util.PatternMatchUtils#simpleMatch(String, String)
      */
     protected function isMatch($methodName, $mappedName) {
-        return Bee_Utils_PatternMatcher::simpleMatch($mappedName, $methodName);
+        return PatternMatcher::simpleMatch($mappedName, $methodName);
     }
 }
-?>
