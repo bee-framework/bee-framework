@@ -36,6 +36,7 @@ class RegexMappingInvocationResolverTest extends PHPUnit_Framework_TestCase {
 	public function testMapping(RegexMappingInvocationResolver $resolver, $pathInfo, $expectedAntPath, $expectedParams = array()) {
 		$request = new HttpRequestMock($pathInfo);
 		$invocation = $resolver->getInvocationDefinition($request);
+		$this->assertTrue(!is_null($invocation));
 		$this->assertEquals($expectedAntPath, $invocation->getAntPathPattern());
 
 		$res = array_intersect_key($invocation->getParamValues(), array_flip($invocation->getUrlParameterPositions()));
@@ -94,7 +95,7 @@ class RegexMappingInvocationResolverTest extends PHPUnit_Framework_TestCase {
 						'/complicated/more/x/y/z/compliment/hermelin/hase',
 						'/complicated/more/**/compl*/{string2}/**',
 						array('hermelin')),
-
+				array($testMapping, '', '/**')
 		);
 	}
 

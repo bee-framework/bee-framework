@@ -27,7 +27,8 @@ class AntPathToRegexTransformer {
 			'#\*#' => '([^/]*)',										// "*" matches any string that does not contain slashes
 			'#\(\[\^/\]\*\)\(\[\^/\]\*\)/#' => '((?:[^/]+/)*?)',			// "**/" - replaced by "([^/]+)" above - matches 0:n path elements
 			'#\(\[\^/\]\*\)\(\[\^/\]\*\)#' => '(.*?)',
-			'#(^|(?<=[^(*]))\?#' => '[^/]'
+			'#(^|(?<=[^(*]))\?#' => '[^/]',
+			'#/\(\.\*\?\)$#' => '(?:/(.*?))??'
 	);
 
 	public static $TYPE_EXPRESSION_MAP = array(
@@ -79,5 +80,13 @@ class AntPathToRegexTransformer {
 	public static function isParametrized($antPathPattern) {
 		$matches = array();
 		return !!preg_match(self::PARAMETER_MATCH, $antPathPattern, $matches);
+	}
+
+	public static function test($antPathPattern = '/**') {
+		foreach(self::$SIMPLE_REPLACEMENTS as $pattern => $replace) {
+			var_dump($antPathPattern);
+			$antPathPattern = preg_replace($pattern, $replace, $antPathPattern);
+			echo $antPathPattern . '<hr/>';
+		}
 	}
 }

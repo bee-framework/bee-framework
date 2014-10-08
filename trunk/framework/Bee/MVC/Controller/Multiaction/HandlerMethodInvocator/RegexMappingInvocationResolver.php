@@ -1,5 +1,6 @@
 <?php
 namespace Bee\MVC\Controller\Multiaction\HandlerMethodInvocator;
+
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -82,12 +83,11 @@ class RegexMappingInvocationResolver implements IInvocationResolver {
 	 */
 	public function getInvocationDefinition(Bee_MVC_IHttpRequest $request) {
 		$pathInfo = $request->getPathInfo();
+		/** @var MethodInvocation[] $matchingPatterns */
 		$matchingPatterns = array();
 		foreach ($this->mappedMethods as $regex => $invocInfo) {
-			$matches = array();
 			if (preg_match($regex, $pathInfo, $matches) === 1) {
 				$invocInfo->setParamValues($matches);
-//				return $invocInfo;
 				$matchingPatterns[$regex] = $invocInfo;
 			}
 		}
@@ -97,32 +97,31 @@ class RegexMappingInvocationResolver implements IInvocationResolver {
 		}
 
 		uksort($matchingPatterns, function ($patternA, $patternB) use ($matchingPatterns, $pathInfo) {
-			/** @var MethodInvocation[] $matchingPatterns */
-			$matchA = $matchingPatterns[$patternA];
-			$matchB = $matchingPatterns[$patternB];
-
 			$emptyMatches = 0;
 			$litLength = function ($carry, $item) use (&$emptyMatches) {
 				if ($carry === false) {
 					return $item;
 				}
-				if($item) {
-					if(substr($item, -1) == '/') {
+				if ($item) {
+					if (substr($item, -1) == '/') {
 						$item = substr($item, 0, -1);
 					}
-					return preg_replace('#/'.preg_quote($item).'#', '', $carry, 1);
+					return preg_replace('#/' . preg_quote($item) . '#', '', $carry, 1);
 				}
 				$emptyMatches++;
 				return $carry;
 			};
+
+			$matchA = $matchingPatterns[$patternA];
 			$litA = array_reduce($matchA->getParamValues(), $litLength, false);
 			$litA = preg_replace('#//#', '/', $litA);
+			$litCountA = substr_count($litA, '/');
 
 			$emptyMatches *= -1;
 
+			$matchB = $matchingPatterns[$patternB];
 			$litB = array_reduce($matchB->getParamValues(), $litLength, false);
 			$litB = preg_replace('#//#', '/', $litB);
-			$litCountA = substr_count($litA, '/');
 			$litCountB = substr_count($litB, '/');
 
 			if ($litCountA != $litCountB) {
@@ -145,7 +144,10 @@ class RegexMappingInvocationResolver implements IInvocationResolver {
 			if ($countA != $countB) {
 				return $countA - $countB;
 			}
-			return -$emptyMatches;
+			if($emptyMatches != 0) {
+				return -$emptyMatches;
+			}
+			return strlen($matchA->getAntPathPattern()) - strlen($matchB->getAntPathPattern());
 		});
 
 		if (self::getLog()->isDebugEnabled()) {
@@ -169,5 +171,4 @@ class RegexMappingInvocationResolver implements IInvocationResolver {
 		}
 		return self::$methodMetadataMap[$methodFullName];
 	}
-
 }
