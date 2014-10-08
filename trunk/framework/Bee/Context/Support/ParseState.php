@@ -36,10 +36,10 @@ class ParseState {
 
     /**
      * Add a new {@link Bee_Context_Support_ParseStateEntry} to the stack
-     * @param Bee_Context_Support_ParseStateEntry $entry
+     * @param ParseState_Entry $entry
      * @return void
      */
-    public function push(Bee_Context_Support_ParseStateEntry $entry) {
+    public function push(ParseState_Entry $entry) {
         array_push($this->state, $entry);
     }
 
@@ -64,7 +64,6 @@ class ParseState {
 /**
  * Marker interface for entries into the {@link ParseState}.
  */
-interface Bee_Context_Support_ParseStateEntry {
+interface ParseState_Entry {
 
 }
-?>
