@@ -103,10 +103,12 @@ abstract class AntPathDataProvider extends PHPUnit_Framework_TestCase {
 				array("*bla*/**/bla/*", "XXXblaXXXX/testing/testing/bla/testing/testing", False),
 
 				array("/x/x/**/bla", "/x/x/x/", False),
+				array("/x/x/**/bla", "/x/x/bla", true),
 
 				array("/test/**", "/test", true),
 
-				array("", "", True)//,
+				array("/**", "", true),
+				array("", "", true)//,
 
 //            array("/{bla}.*", "/testing.html", True)                                                // #65
 		);
