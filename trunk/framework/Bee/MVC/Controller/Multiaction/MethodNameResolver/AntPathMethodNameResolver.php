@@ -22,7 +22,7 @@ use Bee\Utils\AntPathMatcher;
 
 /**
  * A method name resolver that uses a mapping from ant-style path definitions to handler method names. The path definitions are parsed
- * by <code>Bee_Utils_AntPathMatcher</code> and can contain wildcards (*, ?).
+ * by <code>Bee\Utils\AntPathMatcher</code> and can contain wildcards (*, ?).
  *
  * @see Bee\MVC\Controller\MultiAction
  * @see Bee\MVC\Controller\Multiaction\IMethodNameResolver
