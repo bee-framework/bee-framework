@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Utils;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -14,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Utils\Strings;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,7 +24,7 @@ use Bee\Utils\Strings;
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Utils_PatternMatcher {
+class PatternMatcher {
 
     /**
      * Match a String against the given pattern, supporting the following simple
