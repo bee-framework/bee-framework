@@ -38,7 +38,7 @@ class BeanCreationException extends BeansException {
 	 * @return BeanCreationException
 	 */
 	public function __construct($name, $message=null, Exception $cause = null) {
-		parent::__construct(sprintf(self::EXCEPTION_MESSAGE, $name, $message), $cause);
+		parent::__construct(sprintf(self::EXCEPTION_MESSAGE, $name, $message), 0, $cause);
 		$this->name = $name;
 	}
 
