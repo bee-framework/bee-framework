@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Context\Config\Scope;
 /*
  * Copyright 2008-2014 the original author or authors.
  *

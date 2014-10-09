@@ -31,12 +31,13 @@ use Bee\Context\Config\IScope;
 use Bee\Context\Config\IScopeAware;
 use Bee\Context\Config\Scope\CacheScope;
 use Bee\Context\Config\Scope\PrototypeScope;
+use Bee\Context\Config\Scope\RequestScope;
+use Bee\Context\Config\Scope\SessionScope;
 use Bee\Context\Support\ContextUtils;
 use Bee\IContext;
 use Bee\Utils\Types;
 use Exception;
 use ReflectionClass;
-use RequestScope;
 
 /**
  * Enter description here...
@@ -554,7 +555,7 @@ abstract class AbstractContext extends BasicBeanDefinitionRegistry implements IC
 				IBeanDefinition::SCOPE_CACHE => new CacheScope($uniqueId),
 				IBeanDefinition::SCOPE_PROTOTYPE => new PrototypeScope($uniqueId),
 				IBeanDefinition::SCOPE_REQUEST => new RequestScope($uniqueId),
-				IBeanDefinition::SCOPE_SESSION => new Scope($uniqueId)
+				IBeanDefinition::SCOPE_SESSION => new SessionScope($uniqueId)
 		);
 		$this->scopes = $scopes;
 	}
