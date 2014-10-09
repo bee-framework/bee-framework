@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Persistence\Exception;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -15,7 +16,9 @@
  * limitations under the License.
  */
 
-class Bee_Persistence_Exception_DataAccess extends Exception {
+use Exception;
+
+class DataAccessException extends Exception {
 	public function __construct($message, Exception $cause = null) {
 		parent::__construct($message, 0, $cause);
 	}

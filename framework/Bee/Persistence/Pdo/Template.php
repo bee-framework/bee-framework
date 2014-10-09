@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 use Bee\Framework;
+use Bee\Persistence\Exception\DataAccessException;
 use Bee\Utils\Assert;
 
 /**
@@ -86,7 +87,7 @@ class Bee_Persistence_Pdo_Template {
             new Bee_Persistence_Pdo_RowMapper_SingleColumn()));
         $count = count($results);
         if($count != 1) {
-            throw new Bee_Persistence_Exception_DataAccess('Incorrect result size, is ' .$count. ', expected 1');
+            throw new DataAccessException('Incorrect result size, is ' .$count. ', expected 1');
         }
         return $results[0];
     }
@@ -100,7 +101,7 @@ class Bee_Persistence_Pdo_Template {
      * @param pss object that knows how to set values on the prepared statement.
      * If this is null, the SQL will be assumed to contain no bind parameters.
      * @param rse object that will extract results.
-     * @return an arbitrary result object, as returned by the ResultSetExtractor
+     * @return mixed an arbitrary result object, as returned by the ResultSetExtractor
      * @throws DataAccessException if there is any problem
      */
     public function query(Bee_Persistence_Pdo_IStatementCreator $psc, Bee_Persistence_Pdo_IStatementSetter $pss,
@@ -158,7 +159,7 @@ class Bee_Persistence_Pdo_Template {
             // Release Connection early, to avoid potential connection pool deadlock
             // in the case when the exception translator hasn't been initialized yet.
 //            $sql = $this->getSql($psc);
-            throw new Bee_Persistence_Exception_DataAccess('Bee_Persistence_Pdo_Template caught an exception', $ex);
+            throw new DataAccessException('Bee_Persistence_Pdo_Template caught an exception', $ex);
 //            throw getExceptionTranslator().translate("PreparedStatementCallback", sql, ex);
         }
     }

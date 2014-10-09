@@ -15,6 +15,7 @@ namespace Bee\MVC\HandlerMapping;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\IHandlerInterceptor;
 use Bee\MVC\IHttpRequest;
 use Bee\Utils\AntPathMatcher;
 use Bee\Utils\IPathMatcher;
@@ -50,7 +51,7 @@ class AntPathHandlerMapping extends AbstractHandlerMapping {
 	 * @return IPathMatcher
 	 */
 	public function getPathMatcher() {
-		return $this->pathMatcher;
+		return $this->pathMatcher ?: ($this->pathMatcher = new AntPathMatcher());
 	}
 
 	/**
@@ -65,8 +66,7 @@ class AntPathHandlerMapping extends AbstractHandlerMapping {
 	 * @return mixed
 	 */
 	protected function getControllerBeanName(IHttpRequest $request) {
-		$pathInfo = $request->getPathInfo();
-		return $this->getElementByMatchingArrayKey($pathInfo, $this->handlerMappings, $this->getDefaultControllerBeanName());
+		return $this->getElementByMatchingArrayKey($request->getPathInfo(), $this->handlerMappings, $this->getDefaultControllerBeanName());
 	}
 
 	/**
@@ -82,7 +82,7 @@ class AntPathHandlerMapping extends AbstractHandlerMapping {
 				// shortcut for direct path matches
 				$result = $array[$path];
 			} else {
-				$matcher = is_null($this->pathMatcher) ? new AntPathMatcher() : $this->pathMatcher;
+				$matcher = $this->getPathMatcher();
 				foreach($array as $mapping => $element) {
 					if($matcher->match($mapping, $path)) {
 	//				if(($matcher->isPattern($mapping) && $matcher->match($mapping, $pathInfo)) || Strings::startsWith($pathInfo, $mapping)) {
@@ -90,6 +90,22 @@ class AntPathHandlerMapping extends AbstractHandlerMapping {
 						break;
 					}
 				}
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * @param IHttpRequest $request
+	 * @return IHandlerInterceptor[]
+	 */
+	protected function filterInterceptors(IHttpRequest $request) {
+		$result = array();
+		$pathInfo = $request->getPathInfo();
+		$matcher = $this->getPathMatcher();
+		foreach($this->getInterceptors() as $key => $interceptor) {
+			if(!is_string($key) || $key == $pathInfo || $matcher->match($key, $pathInfo)) {
+				$result[] = $interceptor;
 			}
 		}
 		return $result;

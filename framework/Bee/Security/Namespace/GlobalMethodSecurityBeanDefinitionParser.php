@@ -33,7 +33,7 @@ use Bee\Utils\Strings;
 
 class Bee_Security_Namespace_GlobalMethodSecurityBeanDefinitionParser implements IBeanDefinitionParser {
 
-    const SECURED_METHOD_DEFINITION_SOURCE_CLASS = 'Bee_Security_Annotations_SecuredMethodDefinitionSource';
+    const SECURED_METHOD_DEFINITION_SOURCE_CLASS = 'Bee\Security\Annotations\SecuredMethodDefinitionSource';
 
     const ATT_USE_SECURED = 'secured-annotations';
     const ATT_ACCESS_MGR = "access-decision-manager-ref";
