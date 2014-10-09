@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Persistence\Exception\DataAccessException;
 use Bee\Utils\Assert;
 
 /**
@@ -211,7 +212,7 @@ class Bee_Security_Acls_Pdo_AclService implements Bee_Security_Acls_IMutableAclS
         try {
             return $this->pdoTemplate->queryScalarBySqlStringAndArgsArray(self::SELECT_OBJECT_IDENTITY_PRIMARY_KEY,
                 array($oid->getType(), $oid->getIdentifier()));
-        } catch (Bee_Persistence_Exception_DataAccess $notFound) {
+        } catch (DataAccessException $notFound) {
             return null;
         }
     }
@@ -420,4 +421,3 @@ class Bee_Security_Acls_Pdo_AclService_BatchStatementSetter_createEntries implem
     }
 
 }
-?>

@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Persistence\Exception\DataAccessException;
 
 /**
  * User: mp
@@ -30,9 +31,7 @@ interface Bee_Persistence_Pdo_IResultSetExtractor {
      * (the extractor will typically be stateful in the latter case).
      * @throws PDOException if a PDOException is encountered getting column
      * values or navigating (that is, there's no need to catch PDOException)
-     * @throws Bee_Persistence_Exception_DataAccess in case of custom exceptions
+     * @throws DataAccessException in case of custom exceptions
      */
     public function extractData(PDOStatement $rs);
-
 }
-?>

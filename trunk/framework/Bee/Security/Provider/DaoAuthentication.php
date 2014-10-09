@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+use Bee\Persistence\Exception\DataAccessException;
+
 class Bee_Security_Provider_DaoAuthentication extends Bee_Security_Provider_AbstractUserDetailsAuthentication {
 	
 	/**
@@ -69,7 +71,7 @@ class Bee_Security_Provider_DaoAuthentication extends Bee_Security_Provider_Abst
 
         try {
             $loadedUser = $this->getUserDetailsService()->loadUserByUsername($username);
-        } catch (Bee_Persistence_Exception_DataAccess $repositoryProblem) {
+        } catch (DataAccessException $repositoryProblem) {
             throw new Bee_Security_Exception_Authentication($repositoryProblem->getMessage(), null, $repositoryProblem);
         }
 

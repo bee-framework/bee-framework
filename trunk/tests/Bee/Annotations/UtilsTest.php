@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Annotations;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +16,7 @@
  * limitations under the License.
  */
 use Addendum\Annotation;
+use ReflectionClass;
 
 /**
  * User: mp
@@ -22,46 +24,46 @@ use Addendum\Annotation;
  * Time: 14:49
  */
 
-class Bee_Annotations_UtilsTest /*extends PHPUnit_Framework_TestCase*/ {
+class UtilsTest /*extends PHPUnit_Framework_TestCase*/ {
 
     public function testFindInheritedAnnotation() {
 
-        $class = new ReflectionClass('Bee_Annotations_UtilsTestChildAnnotatedClass');
+        $class = new ReflectionClass('UtilsTestChildAnnotatedClass');
         $method = $class->getMethod('testMethod');
 
-        $annot = Bee_Annotations_Utils::findAnnotation($method, 'Bee_Annotations_UtilsTestAnnotation1');
+        $annot = Utils::findAnnotation($method, 'UtilsTestAnnotation1');
 
-//        $this->assertNotNull($annot, 'Annotation Bee_Annotations_UtilsTestAnnotation1 not found on Bee_Annotations_UtilsTestChildAnnotatedClass::testMethod()');
+//        $this->assertNotNull($annot, 'Annotation UtilsTestAnnotation1 not found on UtilsTestChildAnnotatedClass::testMethod()');
 //
 //        $this->assertEquals('parentAnnotation', $annot->value);
     }
 }
 
-class Bee_Annotations_UtilsTestAnnotation1 extends Annotation {
+class UtilsTestAnnotation1 extends Annotation {
 	public $value;
 }
 
-class Bee_Annotations_UtilsTestAnnotation2 extends Annotation {
+class UtilsTestAnnotation2 extends Annotation {
 	public $value;
 }
 
-class Bee_Annotations_UtilsTestParentAnnotatedClass {
+class UtilsTestParentAnnotatedClass {
 
     /**
      * @return void
      *
-     * @Bee_Annotations_UtilsTestAnnotation1(value = "parentAnnotation")
+     * @UtilsTestAnnotation1(value = "parentAnnotation")
      */
     public function testMethod() {
     }
 }
 
-class Bee_Annotations_UtilsTestChildAnnotatedClass extends Bee_Annotations_UtilsTestParentAnnotatedClass {
+class UtilsTestChildAnnotatedClass extends UtilsTestParentAnnotatedClass {
 
     /**
      * @return void
      *
-     * @Bee_Annotations_UtilsTestAnnotation2(value = "childAnnotation")
+     * @UtilsTestAnnotation2(value = "childAnnotation")
      */
     public function testMethod() {
     }

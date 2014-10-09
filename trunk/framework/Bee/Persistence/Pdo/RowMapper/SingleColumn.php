@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Persistence\Exception\DataAccessException;
 
 /**
  * User: mp
@@ -26,9 +27,8 @@ class Bee_Persistence_Pdo_RowMapper_SingleColumn implements Bee_Persistence_Pdo_
     public function mapRow(PDOStatement $rs, $rowNum) {
         $colCount = $rs->columnCount();
         if($colCount != 1) {
-            throw new Bee_Persistence_Exception_DataAccess('Incorrect column count, is ' . $colCount . ', should be 1');
+            throw new DataAccessException('Incorrect column count, is ' . $colCount . ', should be 1');
         }
         return $rs->fetchColumn();
     }
 }
-?>

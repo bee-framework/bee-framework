@@ -19,6 +19,7 @@ use Bee\Context\Config\IContextAware;
 use Bee\IContext;
 use Bee\MVC\HandlerExecutionChain;
 use Bee\MVC\IController;
+use Bee\MVC\IHandlerInterceptor;
 use Bee\MVC\IHandlerMapping;
 use Bee\MVC\IHttpRequest;
 use Exception;
@@ -48,7 +49,7 @@ abstract class AbstractHandlerMapping implements IHandlerMapping, IContextAware 
 	/**
 	 * Enter description here...
 	 *
-	 * @var \Bee\MVC\IHandlerInterceptor[]
+	 * @var IHandlerInterceptor[]
 	 */
 	private $interceptors = array();
 
@@ -81,7 +82,7 @@ abstract class AbstractHandlerMapping implements IHandlerMapping, IContextAware 
 	/**
 	 * Enter description here...
 	 *
-	 * @param \Bee\MVC\IHandlerInterceptor[] $interceptors
+	 * @param IHandlerInterceptor[] $interceptors
 	 */
 	public function setInterceptors(array $interceptors) {
 		$this->interceptors = $interceptors;
@@ -90,7 +91,7 @@ abstract class AbstractHandlerMapping implements IHandlerMapping, IContextAware 
 	/**
 	 * Enter description here...
 	 *
-	 * @return \Bee\MVC\IHandlerInterceptor[]
+	 * @return IHandlerInterceptor[]
 	 */
 	public function getInterceptors() {
 		return $this->interceptors;
@@ -112,8 +113,17 @@ abstract class AbstractHandlerMapping implements IHandlerMapping, IContextAware 
 		}
 		
 		$hec = new HandlerExecutionChain($handlerBean);
-		$hec->addInterceptors($this->interceptors);
+		$hec->addInterceptors($this->filterInterceptors($request));
 		return $hec;
+	}
+
+	/**
+	 * Default implementation returns unfiltered view of the interceptors collection.
+	 * @param IHttpRequest $request
+	 * @return IHandlerInterceptor[]
+	 */
+	protected function filterInterceptors(IHttpRequest $request) {
+		return $this->interceptors;
 	}
 
 	/**

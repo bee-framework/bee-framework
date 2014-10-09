@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Annotations;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Addendum\Annotation;
 use Addendum\ReflectionAnnotatedClass;
+use Bee\Annotations\Utils;
+use Bee_Security_ConfigAttributeDefinition;
+use Bee_Security_Intercept_AbstractFallbackMethodDefinitionSource;
+use ReflectionClass;
+use ReflectionMethod;
 
 /**
  * Created by IntelliJ IDEA.
@@ -24,9 +31,9 @@ use Addendum\ReflectionAnnotatedClass;
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Security_Annotations_SecuredMethodDefinitionSource extends Bee_Security_Intercept_AbstractFallbackMethodDefinitionSource {
+class SecuredMethodDefinitionSource extends Bee_Security_Intercept_AbstractFallbackMethodDefinitionSource {
 
-    const SECURED_ANNOTATION_CLASS_NAME = 'Bee_Security_Annotations_Secured';
+    const SECURED_ANNOTATION_CLASS_NAME = 'Bee\Security\Annotations\Secured';
 
     /**
      * @access protected
@@ -51,7 +58,7 @@ class Bee_Security_Annotations_SecuredMethodDefinitionSource extends Bee_Securit
      * @return Bee_Security_ConfigAttributeDefinition
      */
     protected function findAttributesForMethod(ReflectionMethod $method, $targetClassOrClassName) {
-        return $this->processAnnotation(Bee_Annotations_Utils::findAnnotation($method, self::SECURED_ANNOTATION_CLASS_NAME));
+        return $this->processAnnotation(Utils::findAnnotation($method, self::SECURED_ANNOTATION_CLASS_NAME));
     }
 
     /**
@@ -67,10 +74,9 @@ class Bee_Security_Annotations_SecuredMethodDefinitionSource extends Bee_Securit
      * @return Bee_Security_ConfigAttributeDefinition
      */
     private function processAnnotation(Annotation $a) {
-        if ($a == null || !($a instanceof Bee_Security_Annotations_Secured)) {
+        if ($a == null || !($a instanceof Secured)) {
             return null;
         }
         return new Bee_Security_ConfigAttributeDefinition($a->value);
     }
 }
-?>

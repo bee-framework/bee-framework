@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Annotations;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 use Addendum\ReflectionAnnotatedClass;
 use Addendum\ReflectionAnnotatedMethod;
+use ReflectionMethod;
+
 /**
  * User: mp
  * Date: Feb 19, 2010
  * Time: 7:14:44 PM
  */
-
-class Bee_Annotations_Utils {
+class Utils {
 
 	/**
 	 * Get a single {@link Annotation} of <code>annotationType</code> from the
@@ -33,7 +34,7 @@ class Bee_Annotations_Utils {
 	 * this explicitly. Tge
 	 * @param ReflectionMethod $method
 	 * @param $annotationClassName
-	 * @return the annotation found, or <code>null</code> if none found
+	 * @return mixed the annotation found, or <code>null</code> if none found
 	 */
     public static function findAnnotation(ReflectionMethod $method, $annotationClassName) {
         $annotatedMethod = self::getReflectionAnnotatedMethodIfNecessary($method);

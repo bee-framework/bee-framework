@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Persistence\Exception\DataAccessException;
 
 /**
  * User: mp
@@ -44,9 +45,7 @@ interface Bee_Persistence_Pdo_IStatementCallback {
      * @param ps active JDBC PreparedStatement
      * @return a result object, or <code>null</code> if none
      * @throws PDOException
-     * @throws Bee_Persistence_Exception_DataAccess in case of custom exceptions
+     * @throws DataAccessException in case of custom exceptions
      */
     public function doInPreparedStatement(PDOStatement $ps);
-
 }
-?>
