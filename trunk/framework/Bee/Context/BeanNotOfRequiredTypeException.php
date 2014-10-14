@@ -15,6 +15,7 @@ namespace Bee\Context;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Exception;
 
 /**
  * Enter description here...
@@ -47,10 +48,11 @@ class BeanNotOfRequiredTypeException extends BeansException {
 	 * @param String $name
 	 * @param String $requiredType
 	 * @param String $actualType
+	 * @param Exception $prev
 	 * @return BeanNotOfRequiredTypeException
 	 */
-	public function __construct($name, $requiredType, $actualType=null) {
-		parent::__construct(sprintf(self::EXCEPTION_MESSAGE, $name, $actualType, $requiredType));
+	public function __construct($name, $requiredType, $actualType=null, Exception $prev = null) {
+		parent::__construct(sprintf(self::EXCEPTION_MESSAGE, $name, $actualType, $requiredType), 0, $prev);
 		$this->name = $name;
 		$this->requiredType = $requiredType;
 		$this->actualType = $actualType;
