@@ -15,6 +15,7 @@ namespace Bee\Context;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Exception;
 
 /**
  * Enter description here...
@@ -36,10 +37,11 @@ class NoSuchBeanDefinitionException extends BeansException {
 	 * @param String $name
 	 * @param String $type
 	 * @param null $message
+	 * @param Exception $prev
 	 * @return NoSuchBeanDefinitionException
 	 */
-	public function __construct($name, $type=null, $message = null) {
-		parent::__construct(is_null($message) ? sprintf(self::EXCEPTION_MESSAGE, $name, $type) : $message);
+	public function __construct($name, $type=null, $message = null, Exception $prev = null) {
+		parent::__construct(is_null($message) ? sprintf(self::EXCEPTION_MESSAGE, $name, $type) : $message, 0, $prev);
 		$this->name = $name;
 		$this->type = $type;
 	}
