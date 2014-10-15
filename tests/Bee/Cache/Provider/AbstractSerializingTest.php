@@ -24,7 +24,7 @@ use PHPUnit_Framework_TestCase;
  * Time: 15:16
  */
 
-class Bee_Cache_Provider_AbstractSerializingTest extends PHPUnit_Framework_TestCase {
+class AbstractSerializingTest extends PHPUnit_Framework_TestCase {
 
 //    /**
 //   	 * Initialize the cache provider if necessary. Called once per request, before the first cache access is made.
@@ -79,7 +79,7 @@ class Bee_Cache_Provider_AbstractSerializingTest extends PHPUnit_Framework_TestC
     private $provider;
 
     protected function setUp() {
-        $this->provider = new Bee_Cache_Provider_AbstractSerializingMock(array(
+        $this->provider = new AbstractSerializingMock(array(
             'foo' => serialize('bar'),
             'foo__ETIME__' => time()
         ));
@@ -106,10 +106,10 @@ class Bee_Cache_Provider_AbstractSerializingTest extends PHPUnit_Framework_TestC
         $value2 = array(
             'level-1-1' => 'level-1-1 value',
             'level-1-2' => 17,
-            'level-1-3' => new stdClass(),
+            'level-1-3' => new \stdClass(),
             'level-1-4' => array(
-                'level-2-1' => new stdClass(),
-                'level-2-2' => new stdClass(),
+                'level-2-1' => new \stdClass(),
+                'level-2-2' => new \stdClass(),
                 'level-2-3' => 'level-2-3 value',
                 'level-2-3' => array(
                     'value-true' => true,

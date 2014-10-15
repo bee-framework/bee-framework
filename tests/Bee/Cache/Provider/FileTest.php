@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Cache\Provider;
 /*
  * Copyright 2008-2010 the original author or authors.
  *
@@ -15,6 +16,7 @@
  * limitations under the License.
  */
 use Bee\Cache\IProvider;
+use PHPUnit_Framework_TestCase;
 
 /**
  * User: mp
@@ -22,7 +24,7 @@ use Bee\Cache\IProvider;
  * Time: 15:16
  */
 
-class Bee_Cache_Provider_FileTest extends PHPUnit_Framework_TestCase {
+class FileTest extends PHPUnit_Framework_TestCase {
 
 //    /**
 //   	 * Initialize the cache provider if necessary. Called once per request, before the first cache access is made.
