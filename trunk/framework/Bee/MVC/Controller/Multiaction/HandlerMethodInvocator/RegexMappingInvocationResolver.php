@@ -48,7 +48,7 @@ class RegexMappingInvocationResolver implements IInvocationResolver {
 	/**
 	 * @var HandlerMethodMetadata[]
 	 */
-	private static $methodMetadataMap;
+	private static $methodMetadataMap = array();
 
 	/**
 	 * @var MethodInvocation[]
