@@ -91,7 +91,8 @@ abstract class GenericDaoBase extends DaoBase {
 			}
 		}
 
-		$this->idRestrictor($qb = $this->getBaseQuery(), $id);
+		$setter = $this->idRestrictor;
+		$setter($qb = $this->getBaseQuery(), $id);
 		return $this->getSingleResult($qb);
 	}
 
@@ -100,8 +101,6 @@ abstract class GenericDaoBase extends DaoBase {
 	 * @param IOrderAndLimitHolder $orderAndLimitHolder
 	 * @param array $defaultOrderMapping
 	 * @return array
-	 *
-	 * @deprecated use executeListQuery() instead
 	 */
 	public function getList(IRestrictionHolder $restrictionHolder = null, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null) {
 		return $this->executeListQuery($this->getBaseQuery(), $restrictionHolder, $orderAndLimitHolder, $defaultOrderMapping, null);
