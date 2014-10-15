@@ -211,7 +211,7 @@ class Dispatcher implements IFilterChain {
 		try {
 			$this->requestBuilder = $this->context->getBean(self::REQUEST_BUILDER_BEAN_NAME, '\Bee\MVC\IRequestBuilder');
 		} catch (NoSuchBeanDefinitionException $ex) {
-			$this->getLog()->info('no RequestBuilder configured, using DefaultRequestBuilder');
+			$this->getLog()->debug('no RequestBuilder configured, using DefaultRequestBuilder');
 			$this->requestBuilder = new DefaultRequestBuilder();
 		}
 
@@ -223,13 +223,13 @@ class Dispatcher implements IFilterChain {
 		try {
 			$this->filterChainProxy = $this->context->getBean(self::FILTER_CHAIN_PROXY_NAME, 'Bee\MVC\IFilter');
 		} catch (NoSuchBeanDefinitionException $ex) {
-			$this->getLog()->info('no filter chain proxy configured');
+			$this->getLog()->debug('no filter chain proxy configured');
 		}
 
 		try {
 			$this->handlerExceptionResolver = $this->context->getBean(self::HANDLER_EXCEPTION_RESOLVER_NAME, 'Bee\MVC\IHandlerExceptionResolver');
 		} catch (NoSuchBeanDefinitionException $ex) {
-			$this->getLog()->info('no exception resolver configured');
+			$this->getLog()->debug('no exception resolver configured');
 		}
 	}
 
@@ -304,7 +304,7 @@ class Dispatcher implements IFilterChain {
 				}
 
 			} catch (Exception $e) {
-				$this->getLog()->warn('handler or interceptor exception caught, trying to resolve appropriate error view', $e);
+				$this->getLog()->info('handler or interceptor exception caught, trying to resolve appropriate error view', $e);
 				// @todo: handle exceptions caused by handlers properly (i.e. as application level exceptions)
 				if ($this->handlerExceptionResolver) {
 					$mav = $this->handlerExceptionResolver->resolveException($request, $handler, $e);
