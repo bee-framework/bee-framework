@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +17,15 @@
  */
 
 /**
- * User: mp
- * Date: Mar 16, 2010
- * Time: 11:56:07 PM
+ * Interface IObjectIdentityRetrievalStrategy
+ * @package Bee\Security\Acls
  */
-
-interface Bee_Security_Acls_IObjectIdentityRetrievalStrategy {
+interface IObjectIdentityRetrievalStrategy {
 
     /**
      * @abstract
      * @param mixed $domainObject
-     * @return Bee_Security_Acls_IObjectIdentity
+     * @return IObjectIdentity
      */
     public function getObjectIdentity($domainObject);
 }
-?>

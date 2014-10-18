@@ -15,8 +15,7 @@ namespace Bee\Security\UserDetails\Doctrine2;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-use \Bee_Security_IGrantedAuthority;
+use Bee\Security\IGrantedAuthority;
 
 /**
  * Base class for user entities
@@ -38,7 +37,8 @@ class SimpleUserBase extends UserBase {
 	/**
 	 * Returns the authorities granted to the user. Cannot return <code>null</code>.
 	 *
-	 * @return Bee_Security_IGrantedAuthority[] the authorities, sorted by natural key (never <code>null</code>)
+	 * todo: doesn't actually return IGrantedAuthority[] ... what gives?
+	 * @return IGrantedAuthority[] the authorities, sorted by natural key (never <code>null</code>)
 	 */
 	public function getAuthorities() {
 		if(!$this->rolesTransformed) {

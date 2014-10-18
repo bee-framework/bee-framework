@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +17,10 @@
  */
 
 /**
- * User: mp
- * Date: Mar 18, 2010
- * Time: 1:15:49 AM
+ * Interface IAuditableAccessControlEntry
+ * @package Bee\Security\Acls
  */
-
-interface Bee_Security_Acls_IAuditableAccessControlEntry extends Bee_Security_Acls_IAccessControlEntry {
+interface IAuditableAccessControlEntry extends IAccessControlEntry {
 
     /**
      * @abstract
@@ -35,4 +34,3 @@ interface Bee_Security_Acls_IAuditableAccessControlEntry extends Bee_Security_Ac
      */
     public function isAuditSuccess();
 }
-?>

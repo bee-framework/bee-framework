@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Security\AfterInvocation;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -14,20 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Acls\Exception\NotFoundException;
+use Bee\Security\Acls\IAcl;
+use Bee\Security\Acls\IAclService;
+use Bee\Security\Acls\Impl\ObjectIdentityRetrievalStrategy;
+use Bee\Security\Acls\Impl\SidRetrievalStrategy;
+use Bee\Security\Acls\IObjectIdentityRetrievalStrategy;
+use Bee\Security\Acls\IPermission;
+use Bee\Security\Acls\ISidRetrievalStrategy;
+use Bee\Security\ConfigAttribute;
+use Bee\Security\Exception\GenericSecurityException;
 use Bee\Utils\Assert;
 use Bee\Utils\ITypeDefinitions;
 use Bee\Utils\Strings;
 
 /**
- * User: mp
- * Date: Mar 23, 2010
- * Time: 2:11:43 PM
+ * Class AbstractAclProvider
+ * @package Bee\Security\AfterInvocation
  */
-
-abstract class Bee_Security_AfterInvocation_AbstractAclProvider implements Bee_Security_AfterInvocation_IProvider {
+abstract class AbstractAclProvider implements IProvider {
 
     /**
-     * @var Bee_Security_Acls_IAclService
+     * @var IAclService
      */
     protected $aclService;
 
@@ -37,12 +46,12 @@ abstract class Bee_Security_AfterInvocation_AbstractAclProvider implements Bee_S
     protected $processDomainObjectClass = ITypeDefinitions::OBJECT_TYPE;
 
     /**
-     * @var Bee_Security_Acls_IObjectIdentityRetrievalStrategy
+     * @var IObjectIdentityRetrievalStrategy
      */
     protected $objectIdentityRetrievalStrategy;
 
     /**
-     * @var Bee_Security_Acls_ISidRetrievalStrategy
+     * @var ISidRetrievalStrategy
      */
     protected $sidRetrievalStrategy;
 
@@ -57,25 +66,25 @@ abstract class Bee_Security_AfterInvocation_AbstractAclProvider implements Bee_S
     protected $processConfigAttribute;
 
     /**
-     * @var Bee_Security_Acls_IPermission[]
+     * @var IPermission[]
      */
     private $requirePermission;
 
-    public function __construct(Bee_Security_Acls_IAclService $aclService,
+    public function __construct(IAclService $aclService,
                                 $processConfigAttribute,
                                 array $requirePermission) {
         $this->aclService = $aclService;
-        $this->objectIdentityRetrievalStrategy = new Bee_Security_Acls_Impl_ObjectIdentityRetrievalStrategy();
-        $this->sidRetrievalStrategy = new Bee_Security_Acls_Impl_SidRetrievalStrategy();
+        $this->objectIdentityRetrievalStrategy = new ObjectIdentityRetrievalStrategy();
+        $this->sidRetrievalStrategy = new SidRetrievalStrategy();
         $this->processConfigAttribute = $processConfigAttribute;
         $this->requirePermission = $requirePermission;
     }
 
-    protected function hasAclPermission(Bee_Security_Acls_IAcl $acl = null, array $sids) {
+    protected function hasAclPermission(IAcl $acl = null, array $sids) {
         if(!is_null($acl)) {
             try {
                 return $acl->isGranted($this->requirePermission, $sids, false);
-            } catch (Bee_Security_Acls_Exception_NotFound $nfe) {
+            } catch (NotFoundException $nfe) {
                 // fall through
             }
         }
@@ -103,10 +112,10 @@ abstract class Bee_Security_AfterInvocation_AbstractAclProvider implements Bee_S
     }
 
     /**
-     * @param Bee_Security_Acls_IObjectIdentityRetrievalStrategy $objectIdentityRetrievalStrategy
+     * @param IObjectIdentityRetrievalStrategy $objectIdentityRetrievalStrategy
      * @return void
      */
-    public function setObjectIdentityRetrievalStrategy(Bee_Security_Acls_IObjectIdentityRetrievalStrategy $objectIdentityRetrievalStrategy) {
+    public function setObjectIdentityRetrievalStrategy(IObjectIdentityRetrievalStrategy $objectIdentityRetrievalStrategy) {
         $this->objectIdentityRetrievalStrategy = $objectIdentityRetrievalStrategy;
     }
 
@@ -133,7 +142,7 @@ abstract class Bee_Security_AfterInvocation_AbstractAclProvider implements Bee_S
         // Evaluate if we are required to use an inner domain object
         if (Strings::hasText($this->internalMethod)) {
             if(!method_exists($domainObject, $this->internalMethod)) {
-                throw new Bee_Security_Exception_Generic('Object of class ' .
+                throw new GenericSecurityException('Object of class ' .
                         get_class($domainObject) . ' does not provide requested method ' .
                         $this->internalMethod);
             }
@@ -144,17 +153,25 @@ abstract class Bee_Security_AfterInvocation_AbstractAclProvider implements Bee_S
     }
 
     /**
-     * @param Bee_Security_Acls_ISidRetrievalStrategy $sidIdentityRetrievalStrategy
+     * @param ISidRetrievalStrategy $sidIdentityRetrievalStrategy
      * @return void
      */
-    public function setSidRetrievalStrategy(Bee_Security_Acls_ISidRetrievalStrategy $sidIdentityRetrievalStrategy) {
+    public function setSidRetrievalStrategy(ISidRetrievalStrategy $sidIdentityRetrievalStrategy) {
         $this->sidRetrievalStrategy = $sidIdentityRetrievalStrategy;
     }
 
-    public function supports(Bee_Security_ConfigAttribute $attribute) {
+	/**
+	 * @param ConfigAttribute $attribute
+	 * @return bool|true
+	 */
+    public function supports(ConfigAttribute $attribute) {
         return $attribute->getAttribute() == $this->getProcessConfigAttribute();
     }
 
+	/**
+	 * @param string $className
+	 * @return bool|true
+	 */
     public function supportsClass($className) {
         return true;
     }

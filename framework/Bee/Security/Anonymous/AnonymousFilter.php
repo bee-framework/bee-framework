@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Security\Anonymous;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -18,6 +19,10 @@ use Bee\Framework;
 use Bee\MVC\IFilter;
 use Bee\MVC\IFilterChain;
 use Bee\MVC\IHttpRequest;
+use Bee\Security\Context\SecurityContextHolder;
+use Bee\Security\WebAuthenticationDetails;
+use Exception;
+use Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -27,7 +32,7 @@ use Bee\MVC\IHttpRequest;
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Security_Anonymous_Filter implements IFilter {
+class AnonymousFilter implements IFilter {
 
 	/**
 	 * @var Logger
@@ -78,11 +83,11 @@ class Bee_Security_Anonymous_Filter implements IFilter {
 
     /**
      * @param IHttpRequest $request
-     * @return Bee_Security_Anonymous_AuthenticationToken
+     * @return AnonymousAuthenticationToken
      */
     protected function createAuthentication(IHttpRequest $request) {
-        $auth = new Bee_Security_Anonymous_AuthenticationToken($this->key, $this->anonymousPrincipal, $this->anonymousAuthorities);
-        $auth->setDetails(new Bee_Security_WebAuthenticationDetails($request));
+        $auth = new AnonymousAuthenticationToken($this->key, $this->anonymousPrincipal, $this->anonymousAuthorities);
+        $auth->setDetails(new WebAuthenticationDetails($request));
         return $auth;
     }
 
@@ -96,7 +101,7 @@ class Bee_Security_Anonymous_Filter implements IFilter {
 
         if ($this->applyAnonymousForThisRequest($request)) {
 
-            $auth = Bee_Security_Context_Holder::getContext()->getAuthentication();
+            $auth = SecurityContextHolder::getContext()->getAuthentication();
 
             $doLogin = false;
             if (is_null($auth)) {
@@ -110,24 +115,24 @@ class Bee_Security_Anonymous_Filter implements IFilter {
             }
 
             if ($doLogin) {
-                Bee_Security_Context_Holder::getContext()->setAuthentication($this->createAuthentication($request));
+				SecurityContextHolder::getContext()->setAuthentication($this->createAuthentication($request));
                 $addedToken = true;
 
                 self::getLog()->debug('Populated SecurityContextHolder with anonymous token: '
-                    . Bee_Security_Context_Holder::getContext()->getAuthentication());
+                    . SecurityContextHolder::getContext()->getAuthentication());
             } else {
 				self::getLog()->debug('SecurityContextHolder not populated with anonymous token, as it already contained: '
-                    . Bee_Security_Context_Holder::getContext()->getAuthentication());
+                    . SecurityContextHolder::getContext()->getAuthentication());
             }
-//            if (is_null(Bee_Security_Context_Holder::getContext()->getAuthentication())) {
-//                Bee_Security_Context_Holder::getContext()->setAuthentication($this->createAuthentication($request));
+//            if (is_null(SecurityContextHolder::getContext()->getAuthentication())) {
+//                SecurityContextHolder::getContext()->setAuthentication($this->createAuthentication($request));
 //                $addedToken = true;
 //
 //                    self::getLog()->debug('Populated SecurityContextHolder with anonymous token: '
-//                        . Bee_Security_Context_Holder::getContext()->getAuthentication());
+//                        . SecurityContextHolder::getContext()->getAuthentication());
 //            } else {
 //                    self::getLog()->debug('SecurityContextHolder not populated with anonymous token, as it already contained: '
-//                        . Bee_Security_Context_Holder::getContext()->getAuthentication());
+//                        . SecurityContextHolder::getContext()->getAuthentication());
 //            }
         }
 
@@ -135,8 +140,8 @@ class Bee_Security_Anonymous_Filter implements IFilter {
             $filterChain->doFilter($request);
         } catch (Exception $e) {
             if ($addedToken && $this->removeAfterRequest
-                && $this->createAuthentication($request)->equals(Bee_Security_Context_Holder::getContext()->getAuthentication())) {
-                Bee_Security_Context_Holder::getContext()->setAuthentication(null);
+                && $this->createAuthentication($request)->equals(SecurityContextHolder::getContext()->getAuthentication())) {
+				SecurityContextHolder::getContext()->setAuthentication(null);
             }
             throw $e;
         }
@@ -161,11 +166,11 @@ class Bee_Security_Anonymous_Filter implements IFilter {
         $this->key = $key;
     }
 
-    /**
-     * Gets the RemoveAfterRequest
-     *
-     * @return  $removeAfterRequest
-     */
+	/**
+	 * Gets the RemoveAfterRequest
+	 *
+	 * @return bool $removeAfterRequest
+	 */
     public function getRemoveAfterRequest() {
         return $this->removeAfterRequest;
     }
@@ -222,5 +227,4 @@ class Bee_Security_Anonymous_Filter implements IFilter {
     public function setAnonymousAuthorities(array $anonymousAuthorities) {
         $this->anonymousAuthorities = $anonymousAuthorities;
     }
-
 }

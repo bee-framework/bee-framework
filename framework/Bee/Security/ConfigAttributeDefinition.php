@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,29 +18,33 @@
 use Bee\Utils\Assert;
 
 /**
- *
+ * Class ConfigAttributeDefinition
+ * @package Bee\Security
  */
-class Bee_Security_ConfigAttributeDefinition {
+class ConfigAttributeDefinition {
 
 	/**
 	 * 
-	 * @var Bee_Security_IConfigAttribute[]
+	 * @var IConfigAttribute[]
 	 */
 	private $configAttributes;
 
+	/**
+	 * @param $attrib
+	 */
 	public function __construct($attrib) {
 		if($attrib) {
 			if(is_string($attrib)) {
-				$this->configAttributes = array(new Bee_Security_ConfigAttribute($attrib));
-			} else if($attrib instanceof Bee_Security_IConfigAttribute) {
+				$this->configAttributes = array(new ConfigAttribute($attrib));
+			} else if($attrib instanceof IConfigAttribute) {
 				$this->configAttributes = array($attrib);
 			} else if(is_array($attrib)) {
 				$newList = array();
 				foreach($attrib as $attr) {
 					if(is_string($attr)) {
-						$newList[] = new Bee_Security_ConfigAttribute($attr); 
+						$newList[] = new ConfigAttribute($attr);
 					} else {
-						Assert::isInstanceOf('Bee_Security_IConfigAttribute', $attr, 'List entries must be of type ConfigAttribute');
+						Assert::isInstanceOf('IConfigAttribute', $attr, 'List entries must be of type ConfigAttribute');
 						$newList[] = $attr;
 					}
 				}
@@ -51,7 +56,7 @@ class Bee_Security_ConfigAttributeDefinition {
 	}
 
     /**
-     * @return Bee_Security_IConfigAttribute[]
+     * @return IConfigAttribute[]
      */
 	public function getConfigAttributes() {
 		return $this->configAttributes;

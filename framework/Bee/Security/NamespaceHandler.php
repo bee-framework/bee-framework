@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +18,13 @@
 
 use Bee\Context\Xml\XmlNamespace\HandlerSupport;
 
+/**
+ * Class Bee_Security_NamespaceHandler
+ * @package Bee\Security
+ */
 class Bee_Security_NamespaceHandler extends HandlerSupport {
 	
 	public function init() {
-		$this->registerBeanDefinitionParser(Bee_Security_Elements::HTTP, new Bee_Security_HttpSecurityBeanDefinitionParser());
+		$this->registerBeanDefinitionParser(Elements::HTTP, new HttpSecurityBeanDefinitionParser());
 	}
 }

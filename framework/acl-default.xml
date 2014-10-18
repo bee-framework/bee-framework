@@ -4,34 +4,34 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.beeframework.org/schema/beans http://www.beeframework.org/schema/beans/bee-beans-1.2.xsd">
 
-    <bean id="basicAuditLogger" class="Bee_Security_Acls_Impl_BasicAuditLogger" />
+    <bean id="basicAuditLogger" class="Bee\Security\Acls\Impl\BasicAuditLogger" />
 
-    <bean id="readPermission" class="Bee_Security_Acls_Impl_BasePermission">
+    <bean id="readPermission" class="Bee\Security\Acls\Impl\BasePermission">
         <constructor-arg index="0" value="1" />
         <constructor-arg index="1" value="R" />
     </bean>
 
-    <bean id="writePermission" class="Bee_Security_Acls_Impl_BasePermission">
+    <bean id="writePermission" class="Bee\Security\Acls\Impl\BasePermission">
         <constructor-arg index="0" value="2" />
         <constructor-arg index="1" value="W" />
     </bean>
 
-    <bean id="createPermission" class="Bee_Security_Acls_Impl_BasePermission">
+    <bean id="createPermission" class="Bee\Security\Acls\Impl\BasePermission">
         <constructor-arg index="0" value="4" />
         <constructor-arg index="1" value="C" />
     </bean>
 
-    <bean id="deletePermission" class="Bee_Security_Acls_Impl_BasePermission">
+    <bean id="deletePermission" class="Bee\Security\Acls\Impl\BasePermission">
         <constructor-arg index="0" value="8" />
         <constructor-arg index="1" value="D" />
     </bean>
 
-    <bean id="administrationPermission" class="Bee_Security_Acls_Impl_BasePermission">
+    <bean id="administrationPermission" class="Bee\Security\Acls\Impl\BasePermission">
         <constructor-arg index="0" value="16" />
         <constructor-arg index="1" value="A" />
     </bean>
 
-    <bean id="defaultAclAuthorizationStrategy" class="Bee_Security_Acls_Impl_AclAuthorizationStrategy">
+    <bean id="defaultAclAuthorizationStrategy" class="Bee\Security\Acls\Impl\AclAuthorizationStrategy">
         <constructor-arg index="0">
             <array>
                 <ref bean="administrationPermission" />
@@ -39,7 +39,7 @@
         </constructor-arg>
     </bean>
 
-    <bean id="defaultPermissionFactory" class="Bee_Security_Acls_Impl_PermissionFactory">
+    <bean id="defaultPermissionFactory" class="Bee\Security\Acls\Impl\PermissionFactory">
         <property name="registeredPermissions">
             <array>
                 <assoc-item key="READ" ref="readPermission" />
@@ -51,10 +51,10 @@
         </property>
     </bean>
 
-    <bean id="defaultAclService" class="Bee_Security_Acls_Pdo_AclService">
+    <bean id="defaultAclService" class="Bee\Security\Acls\Pdo\AclService">
         <constructor-arg index="0" ref="pdoConnection" />
         <constructor-arg index="1">
-            <bean class="Bee_Security_Acls_Pdo_BasicLookupStrategy">
+            <bean class="Bee\Security\Acls\Pdo\BasicLookupStrategy">
                 <constructor-arg index="0" ref="pdoConnection" />
                 <constructor-arg index="1" ref="defaultAclAuthorizationStrategy" />
                 <constructor-arg index="2" ref="basicAuditLogger" />
@@ -137,7 +137,7 @@
 		</property>
 	</bean>
 
-    <bean id="aclEntryCollectionFilteringProviderRead" class="Bee_Security_AfterInvocation_AclEntryCollectionFilteringProvider">
+    <bean id="aclEntryCollectionFilteringProviderRead" class="Bee\Security\AfterInvocation\AclEntryCollectionFilteringProvider">
         <constructor-arg index="0" ref="defaultAclService" />
         <constructor-arg index="1" value="AFTER_ACL_COLLECTION_READ" />
         <constructor-arg index="2">
@@ -147,7 +147,7 @@
         </constructor-arg>
     </bean>
 
-    <bean id="aclEntryCollectionFilteringProviderModify" class="Bee_Security_AfterInvocation_AclEntryCollectionFilteringProvider">
+    <bean id="aclEntryCollectionFilteringProviderModify" class="Bee\Security\AfterInvocation\AclEntryCollectionFilteringProvider">
         <constructor-arg index="0" ref="defaultAclService" />
         <constructor-arg index="1" value="AFTER_ACL_COLLECTION_MODIFY" />
         <constructor-arg index="2">
@@ -159,7 +159,7 @@
         </constructor-arg>
     </bean>
 
-    <bean id="afterInvocationProviderManager" class="Bee_Security_AfterInvocation_ProviderManager">
+    <bean id="afterInvocationProviderManager" class="Bee\Security\AfterInvocation\ProviderManager">
         <property name="providers">
             <array>
                 <ref bean="aclEntryCollectionFilteringProviderRead" />
@@ -168,7 +168,7 @@
         </property>
     </bean>
 
-    <bean id="authHelper" class="Bee_Security_Helper" factory-method="construct">
+    <bean id="authHelper" class="Bee\Security\Helper" factory-method="construct">
         <constructor-arg index="0" ref="accessDecisionManager" />
         <constructor-arg index="1" ref="afterInvocationProviderManager" />
     </bean>

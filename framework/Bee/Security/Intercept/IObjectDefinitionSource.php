@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\ConfigAttributeDefinition;
 
 /**
  * Created by IntelliJ IDEA.
@@ -29,9 +30,9 @@ interface Bee_Security_Intercept_IObjectDefinitionSource {
      * Accesses the <code>ConfigAttributeDefinition</code> that applies to a given secure object.<P>Returns
      * <code>null</code> if no <code>ConfigAttribiteDefinition</code> applies.</p>
      *
-     * @param $object the object being secured
+     * @param mixed $object the object being secured
      *
-     * @return Bee_Security_ConfigAttributeDefinition the <code>ConfigAttributeDefinition</code> that applies to the passed object
+     * @return ConfigAttributeDefinition the <code>ConfigAttributeDefinition</code> that applies to the passed object
      *
      * @throws InvalidArgumentException if the passed object is not of a type supported by the
      *         <code>ObjectDefinitionSource</code> implementation
@@ -44,7 +45,7 @@ interface Bee_Security_Intercept_IObjectDefinitionSource {
      * This is used by the {@link AbstractSecurityInterceptor} to perform startup time validation of each
      * <code>ConfigAttribute</code> configured against it.
      *
-     * @return Bee_Security_ConfigAttributeDefinition[] the <code>ConfigAttributeDefinition</code>s or <code>null</code> if unsupported
+     * @return ConfigAttributeDefinition[] the <code>ConfigAttributeDefinition</code>s or <code>null</code> if unsupported
      */
     public function getConfigAttributeDefinitions(); // todo: do we need this in PHP?
 

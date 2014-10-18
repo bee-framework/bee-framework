@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Provider;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Anonymous\AnonymousAuthenticationToken;
+use Bee\Security\Exception\BadCredentialsException;
+use Bee\Security\IAuthentication;
+use Bee\Security\IAuthenticationProvider;
 use Bee\Utils\Types;
 /**
  * Created by IntelliJ IDEA.
@@ -22,20 +27,20 @@ use Bee\Utils\Types;
  * Time: 9:10:57 PM
  * To change this template use File | Settings | File Templates.
  */
-class Bee_Security_Provider_AnonymousAuthentication implements Bee_Security_IAuthenticationProvider {
+class AnonymousAuthentication implements IAuthenticationProvider {
 
     private $key;
 
     //~ Methods ========================================================================================================
 
-    public function authenticate(Bee_Security_IAuthentication $authentication) {
+    public function authenticate(IAuthentication $authentication) {
         if (!$this->supports($authentication)) {
             return null;
         }
-		/** @var Bee_Security_AnonymousAuthenticationToken $authentication */
+		/** @var AnonymousAuthenticationToken $authentication */
 
         if (hash('md5', $this->key) != $authentication->getKeyHash()) {
-            throw new Bee_Security_Exception_BadCredentials('The presented AnonymousAuthenticationToken does not contain the expected key');
+            throw new BadCredentialsException('The presented AnonymousAuthenticationToken does not contain the expected key');
         }
 
         return $authentication;

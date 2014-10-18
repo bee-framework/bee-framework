@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Security\Exception;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -15,11 +16,14 @@
  * limitations under the License.
  */
 
+use Exception;
+
 /**
- * Common superclass for exceptions thrown by the security sub-framework.
+ * Class UsernameNotFoundException
+ * @package Bee\Security\Exception
  */
-class Bee_Security_Exception_Generic extends Exception {
-	public function __construct($message, Exception $cause = null) {
-		parent::__construct($message, 0, $cause);
-	}
+class UsernameNotFoundException extends BadCredentialsException {
+    public function __construct($msg, $extraInformation = null, Exception $cause = null) {
+    	parent::__construct($msg, $extraInformation, $cause);
+    }
 }

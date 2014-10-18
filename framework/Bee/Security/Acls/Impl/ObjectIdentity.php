@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls\Impl;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Acls\IObjectIdentity;
 
 /**
  * User: mp
@@ -21,7 +23,7 @@
  * Time: 6:43:55 PM
  */
 
-class Bee_Security_Acls_Impl_ObjectIdentity implements Bee_Security_Acls_IObjectIdentity {
+class ObjectIdentity implements IObjectIdentity {
 
     /**
      * @var string
@@ -61,10 +63,10 @@ class Bee_Security_Acls_Impl_ObjectIdentity implements Bee_Security_Acls_IObject
     }
 
     public function __toString() {
-        return 'Bee_Security_Acls_Impl_ObjectIdentity['.$this->getIdentifierString().']';
+        return 'ObjectIdentity['.$this->getIdentifierString().']';
     }
 
-	public function equals(Bee_Security_Acls_IObjectIdentity $other) {
+	public function equals(IObjectIdentity $other) {
 		return $this->getIdentifierString() == $other->getIdentifierString();
 	}
 }

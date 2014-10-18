@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@
  * Time: 6:31:44 PM
  */
 
-interface Bee_Security_Acls_IMutableAcl extends Bee_Security_Acls_IAcl {
+interface IMutableAcl extends IAcl {
 
     /**
      * @abstract
@@ -33,47 +34,46 @@ interface Bee_Security_Acls_IMutableAcl extends Bee_Security_Acls_IAcl {
     /**
      * Obtains an identifier that represents this <tt>MutableAcl</tt>.
      *
-     * @return the identifier, or <tt>null</tt> if unsaved
+     * @return int the identifier, or <tt>null</tt> if unsaved
      */
     public function getId();
 
     /**
      * @abstract
      * @param int $atIndexLocation
-     * @param Bee_Security_Acls_IPermission $permission
-     * @param Bee_Security_Acls_ISid $sid
+     * @param IPermission $permission
+     * @param ISid $sid
      * @param boolean $granting
      * @return void
      */
-    public function insertAce($atIndexLocation, Bee_Security_Acls_IPermission $permission, Bee_Security_Acls_ISid $sid, $granting);
+    public function insertAce($atIndexLocation, IPermission $permission, ISid $sid, $granting);
 
     /**
      * Changes the present owner to a different owner.
      *
-     * @param newOwner the new owner (mandatory; cannot be null)
+     * @param ISid $newOwner the new owner (mandatory; cannot be null)
      */
-    public function setOwner(Bee_Security_Acls_ISid $newOwner);
+    public function setOwner(ISid $newOwner);
 
     /**
      * Change the value returned by {@link Acl#isEntriesInheriting()}.
      *
-     * @param boolean entriesInheriting the new value
+     * @param boolean $entriesInheriting the new value
      */
     public function setEntriesInheriting($entriesInheriting);
 
     /**
      * Changes the parent of this ACL.
      *
-     * @param newParent the new parent
+     * @param IAcl $newParent the new parent
      */
-    public function setParent(Bee_Security_Acls_IAcl $newParent);
+    public function setParent(IAcl $newParent);
 
     /**
      * @abstract
-     * @param  $aceIndex
-     * @param Bee_Security_Acls_IPermission $permission
+     * @param int $aceIndex
+     * @param IPermission $permission
      * @return void
      */
-    public function updateAce($aceIndex, Bee_Security_Acls_IPermission $permission);
+    public function updateAce($aceIndex, IPermission $permission);
 }
-?>

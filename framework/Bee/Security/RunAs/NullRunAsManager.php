@@ -14,28 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\ConfigAttribute;
+use Bee\Security\ConfigAttributeDefinition;
+use Bee\Security\IAuthentication;
+use Bee\Security\IRunAsManager;
 
 /**
- * Created by IntelliJ IDEA.
- * User: mp
- * Date: Feb 19, 2010
- * Time: 11:22:40 PM
- * To change this template use File | Settings | File Templates.
+ * Class Bee_Security_RunAs_NullRunAsManager
  */
+class Bee_Security_RunAs_NullRunAsManager implements IRunAsManager {
 
-class Bee_Security_RunAs_NullRunAsManager implements Bee_Security_IRunAsManager {
-
-    public function buildRunAs(Bee_Security_IAuthentication $authentication, $object, Bee_Security_ConfigAttributeDefinition $config) {
+    public function buildRunAs(IAuthentication $authentication, $object, ConfigAttributeDefinition $config) {
         return null;
     }
 
-    public function supports(Bee_Security_ConfigAttribute $attribute) {
+    public function supports(ConfigAttribute $attribute) {
         return false;
     }
 
     public function supportsClass($classOrClassName) {
         return true;
     }
-
 }
-?>

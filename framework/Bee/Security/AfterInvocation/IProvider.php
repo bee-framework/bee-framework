@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\AfterInvocation;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\ConfigAttribute;
+use Bee\Security\ConfigAttributeDefinition;
+use Bee\Security\IAuthentication;
 
 /**
- * User: mp
- * Date: Feb 19, 2010
- * Time: 11:34:52 PM
+ * Interface IProvider
+ * @package Bee\Security\AfterInvocation
  */
+interface IProvider {
 
-interface Bee_Security_AfterInvocation_IProvider {
-
-    public function decide(Bee_Security_IAuthentication $authentication, $object, Bee_Security_ConfigAttributeDefinition $config,
+    public function decide(IAuthentication $authentication, $object, ConfigAttributeDefinition $config,
         $returnedObject);
 
     /**
@@ -33,22 +35,20 @@ interface Bee_Security_AfterInvocation_IProvider {
      * configured <code>AccessDecisionManager</code> and/or <code>RunAsManager</code> and/or
      * <code>AccessDecisionManager</code>.</p>
      *
-     * @param attribute a configuration attribute that has been configured against the
+     * @param ConfigAttribute $attribute a configuration attribute that has been configured against the
      *        <code>AbstractSecurityInterceptor</code>
      *
      * @return true if this <code>AfterInvocationProvider</code> can support the passed configuration attribute
      */
-    public function supports(Bee_Security_ConfigAttribute $attribute);
+    public function supports(ConfigAttribute $attribute);
 
     /**
      * Indicates whether the <code>AfterInvocationProvider</code> is able to provide "after invocation"
      * processing for the indicated secured object type.
      *
-     * @param clazz the class of secure object that is being queried
+     * @param string $classOrClassName the class of secure object that is being queried
      *
      * @return true if the implementation can process the indicated class
      */
     public function supportsClass($classOrClassName);
-
 }
-?>

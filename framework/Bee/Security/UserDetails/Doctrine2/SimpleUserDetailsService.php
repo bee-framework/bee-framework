@@ -16,10 +16,10 @@ namespace Bee\Security\UserDetails\Doctrine2;
  * limitations under the License.
  */
 
+use Bee\Security\Exception\UsernameNotFoundException;
+use Bee\Security\IUserDetails;
+use Bee\Security\IUserDetailsService;
 use Bee\Security\UserDetails\UserManagerBase;
-use Bee_Security_Exception_UsernameNotFound;
-use Bee_Security_IUserDetails;
-use Bee_Security_IUserDetailsService;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\NoResultException;
 
@@ -27,7 +27,7 @@ use Doctrine\ORM\NoResultException;
  * Class SimpleUserDetailsService
  * @package Bee\Security\UserDetails\Doctrine2
  */
-class SimpleUserDetailsService extends UserManagerBase implements Bee_Security_IUserDetailsService {
+class SimpleUserDetailsService extends UserManagerBase implements IUserDetailsService {
 
 	/**
 	 * @var EntityManager
@@ -70,12 +70,12 @@ class SimpleUserDetailsService extends UserManagerBase implements Bee_Security_I
 	/**
 	 * Locates the user based on the username. In the actual implementation, the search may possibly be case
 	 * insensitive, or case insensitive depending on how the implementaion instance is configured. In this case, the
-	 * <code>Bee_Security_IUserDetails</code> object that comes back may have a username that is of a different case
+	 * <code>IUserDetails</code> object that comes back may have a username that is of a different case
 	 * than what was actually requested.
 	 *
 	 * @param $username
-	 * @throws \Bee_Security_Exception_UsernameNotFound
-	 * @return Bee_Security_IUserDetails a fully populated user record (never <code>null</code>)
+	 * @throws UsernameNotFoundException
+	 * @return IUserDetails a fully populated user record (never <code>null</code>)
 	 */
 	function loadUserByUsername($username) {
 		try {
@@ -83,7 +83,7 @@ class SimpleUserDetailsService extends UserManagerBase implements Bee_Security_I
 					->createQuery('SELECT u FROM ' . $this->getUserEntityName() . ' u WHERE u.username = :username')
 					->setParameter('username', $username)->getSingleResult();
 		} catch (NoResultException $e) {
-			throw new Bee_Security_Exception_UsernameNotFound('User name ' . $username . ' not found', null, $e);
+			throw new UsernameNotFoundException('User name ' . $username . ' not found', null, $e);
 		}
 	}
 

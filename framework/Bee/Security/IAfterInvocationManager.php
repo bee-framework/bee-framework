@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +15,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Exception\AccessDeniedException;
+use ReflectionClass;
 
 /**
- * Created by IntelliJ IDEA.
- * User: mp
- * Date: Feb 19, 2010
- * Time: 11:25:59 PM
- * To change this template use File | Settings | File Templates.
+ * Interface IAfterInvocationManager
+ * @package Bee\Security
  */
-interface Bee_Security_IAfterInvocationManager {
+interface IAfterInvocationManager {
 
     /**
      * Given the details of a secure object invocation including its returned <code>Object</code>, make an
      * access control decision or optionally modify the returned <code>Object</code>.
      *
-     * @param Bee_Security_IAuthentication $authentication the caller that invoked the method
+     * @param IAuthentication $authentication the caller that invoked the method
      * @param mixed object the secured object that was called
-     * @param Bee_Security_ConfigAttributeDefinition $config the configuration attributes associated with the secured object that was invoked
-     * @param mixed returnedObject the <code>Object</code> that was returned from the secure object invocation
+     * @param ConfigAttributeDefinition $config the configuration attributes associated with the secured object that was invoked
+     * @param mixed $returnedObject the <code>Object</code> that was returned from the secure object invocation
      *
      * @return mixed the <code>Object</code> that will ultimately be returned to the caller (if an implementation does not
      *         wish to modify the object to be returned to the caller, the implementation should simply return the
      *         same object it was passed by the <code>returnedObject</code> method argument)
      *
-     * @throws Bee_Security_Exception_AccessDenied if access is denied
+     * @throws AccessDeniedException if access is denied
      */
-    function decide(Bee_Security_IAuthentication $authentication, $object, Bee_Security_ConfigAttributeDefinition $config,
+    function decide(IAuthentication $authentication, $object, ConfigAttributeDefinition $config,
         $returnedObject);
 
     /**
@@ -49,12 +49,12 @@ interface Bee_Security_IAfterInvocationManager {
      * configured <code>AccessDecisionManager</code> and/or <code>RunAsManager</code> and/or
      * <code>AfterInvocationManager</code>.</p>
      *
-     * @param attribute a configuration attribute that has been configured against the
+     * @param ConfigAttribute $attribute a configuration attribute that has been configured against the
      *        <code>AbstractSecurityInterceptor</code>
      *
      * @return boolean true if this <code>AfterInvocationManager</code> can support the passed configuration attribute
      */
-    function supports(Bee_Security_ConfigAttribute $attribute);
+    function supports(ConfigAttribute $attribute);
 
     /**
      * Indicates whether the <code>AfterInvocationManager</code> implementation is able to provide access
@@ -67,4 +67,3 @@ interface Bee_Security_IAfterInvocationManager {
     function supportsClass($classOrClassName);
 
 }
-?>

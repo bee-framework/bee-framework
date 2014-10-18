@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +17,15 @@
  */
 use Bee\Context\Xml\ParserContext;
 use Bee\Context\Xml\XmlNamespace\IBeanDefinitionParser;
+use DOMElement;
 
 /**
- * 
+ * Class HttpSecurityBeanDefinitionParser
+ * @package Bee\Security
  */
-class Bee_Security_HttpSecurityBeanDefinitionParser implements IBeanDefinitionParser {
+class HttpSecurityBeanDefinitionParser implements IBeanDefinitionParser {
 	
 	public function parse(DOMElement $element, ParserContext $parserContext) {
-		trigger_error('Bee_Security_HttpSecurityBeanDefinitionParser.parse() : TO BE IMPLEMENTED', E_USER_ERROR);	
+		trigger_error('Bee\Security\HttpSecurityBeanDefinitionParser.parse() : TO BE IMPLEMENTED', E_USER_ERROR);
 	}
 }

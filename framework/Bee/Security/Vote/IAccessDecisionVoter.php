@@ -14,6 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\ConfigAttributeDefinition;
+use Bee\Security\IAuthentication;
+use Bee\Security\IConfigAttribute;
 
 /**
  * Indicates a class is responsible for voting on authorization decisions.
@@ -37,11 +40,11 @@ interface Bee_Security_Vote_IAccessDecisionVoter {
      * configuration attribute can be consumed by the configured <code>AccessDecisionManager</code> and/or
      * <code>RunAsManager</code> and/or <code>AfterInvocationManager</code>.</p>
      * 
-	 * @param Bee_Security_IConfigAttribute $configAttribute a configuration attribute that has been configured against the
+	 * @param IConfigAttribute $configAttribute a configuration attribute that has been configured against the
      *        <code>AbstractSecurityInterceptor</code>
 	 * @return boolean true if this <code>AccessDecisionVoter</code> can support the passed configuration attribute
 	 */
-	public function supports(Bee_Security_IConfigAttribute $configAttribute);
+	public function supports(IConfigAttribute $configAttribute);
 
 	/**
 	 * Indicates whether the <code>AccessDecisionVoter</code> implementation is able to provide access control
@@ -69,11 +72,10 @@ interface Bee_Security_Vote_IAccessDecisionVoter {
      * control decisions, implementing classes must never modify the behaviour of the method invocation (such as
      * calling <Code>MethodInvocation.proceed()</code>).</p>
      * 
-	 * @param Bee_Security_IAuthentication $authentication the caller invoking the method
+	 * @param IAuthentication $authentication the caller invoking the method
 	 * @param mixed $object the secured object
-	 * @param Bee_Security_ConfigAttributeDefinition $config the configuration attributes associated with the method being invoked
+	 * @param ConfigAttributeDefinition $config the configuration attributes associated with the method being invoked
 	 * @return int either {@link #ACCESS_GRANTED}, {@link #ACCESS_ABSTAIN} or {@link #ACCESS_DENIED}
 	 */
-	public function vote(Bee_Security_IAuthentication $authentication, $object, Bee_Security_ConfigAttributeDefinition $config);
+	public function vote(IAuthentication $authentication, $object, ConfigAttributeDefinition $config);
 }
-?>

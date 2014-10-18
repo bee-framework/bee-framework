@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls\Impl;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Acls\IAcl;
+use Bee\Security\Acls\IAclAuthorizationStrategy;
+use Bee\Security\Acls\IPermission;
+use Bee\Security\Acls\ISidRetrievalStrategy;
+use Bee\Security\Context\SecurityContextHolder;
+use Bee\Security\Exception\AccessDeniedException;
 
 /**
  * User: mp
@@ -21,31 +28,30 @@
  * Time: 8:59:57 AM
  */
 
-class Bee_Security_Acls_Impl_AclAuthorizationStrategy implements Bee_Security_Acls_IAclAuthorizationStrategy {
+class AclAuthorizationStrategy implements IAclAuthorizationStrategy {
 
     /**
-     * @var Bee_Security_Acls_ISidRetrievalStrategy
+     * @var ISidRetrievalStrategy
      */
     private $sidRetrievalStrategy;
 
     /**
-     * @var Bee_Security_Acls_IPermission[]
+     * @var IPermission[]
      */
     private $requirePermission;
 
     /**
-     * @param Bee_Security_Acls_IPermission[] $requirePermission
-     * @return void
+     * @param IPermission[] $requirePermission
      */
     public function __construct(array $requirePermission) {
-        $this->sidRetrievalStrategy = new Bee_Security_Acls_Impl_SidRetrievalStrategy();
+        $this->sidRetrievalStrategy = new SidRetrievalStrategy();
         $this->requirePermission = $requirePermission;
     }
 
     /**
      * Gets the SidRetrievalStrategy
      *
-     * @return Bee_Security_Acls_ISidRetrievalStrategy $sidRetrievalStrategy
+     * @return ISidRetrievalStrategy $sidRetrievalStrategy
      */
     public function getSidRetrievalStrategy() {
         return $this->sidRetrievalStrategy;
@@ -54,25 +60,32 @@ class Bee_Security_Acls_Impl_AclAuthorizationStrategy implements Bee_Security_Ac
     /**
      * Sets the SidRetrievalStrategy
      *
-     * @param $sidRetrievalStrategy Bee_Security_Acls_ISidRetrievalStrategy
+     * @param $sidRetrievalStrategy ISidRetrievalStrategy
      * @return void
      */
-    public function setSidRetrievalStrategy(Bee_Security_Acls_ISidRetrievalStrategy $sidRetrievalStrategy) {
+    public function setSidRetrievalStrategy(ISidRetrievalStrategy $sidRetrievalStrategy) {
         $this->sidRetrievalStrategy = $sidRetrievalStrategy;
     }
 
-    public function securityCheck(Bee_Security_Acls_IAcl $acl, $changeType) {
+	/**
+	 * @param IAcl $acl
+	 * @param $changeType
+	 * @throws AccessDeniedException
+	 *
+	 * todo: what is this????
+	 */
+    public function securityCheck(IAcl $acl, $changeType) {
         return;
-        if ((is_null(Bee_Security_Context_Holder::getContext()))
-            || (is_null(Bee_Security_Context_Holder::getContext()->getAuthentication()))
-            || !Bee_Security_Context_Holder::getContext()->getAuthentication()->isAuthenticated()) {
-            throw new Bee_Security_Exception_AccessDenied('Authenticated principal required to operate with ACLs');
+        if ((is_null(SecurityContextHolder::getContext()))
+            || (is_null(SecurityContextHolder::getContext()->getAuthentication()))
+            || !SecurityContextHolder::getContext()->getAuthentication()->isAuthenticated()) {
+            throw new AccessDeniedException('Authenticated principal required to operate with ACLs');
         }
 
-        $authentication = Bee_Security_Context_Holder::getContext()->getAuthentication();
+        $authentication = SecurityContextHolder::getContext()->getAuthentication();
 
         // Check if authorized by virtue of ACL ownership
-        $currentUser = new Bee_Security_Acls_Impl_PrincipalSid($authentication);
+        $currentUser = new PrincipalSid($authentication);
 
         if ($currentUser->equals($acl->getOwner())
                 && (($changeType == self::CHANGE_GENERAL) || ($changeType == self::CHANGE_OWNERSHIP))) {
@@ -92,7 +105,7 @@ class Bee_Security_Acls_Impl_AclAuthorizationStrategy implements Bee_Security_Ac
 //            throw new InvalidArgumentException('Unknown change type');
 //        }
 //
-//        if($requiredAuthority instanceof Bee_Security_IGrantedAuthority) {
+//        if($requiredAuthority instanceof IGrantedAuthority) {
 //            $requiredAuthority = $requiredAuthority->getAuthority();
 //        }
 
@@ -112,8 +125,7 @@ class Bee_Security_Acls_Impl_AclAuthorizationStrategy implements Bee_Security_Ac
             return;
         }
 
-        throw new Bee_Security_Exception_AccessDenied(
+        throw new AccessDeniedException(
             'Principal does not have required ACL permissions to perform requested operation');
     }
 }
-?>

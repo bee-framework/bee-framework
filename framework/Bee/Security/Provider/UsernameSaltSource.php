@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Provider;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\IUserDetails;
 
 /**
+ * Class UsernameSaltSource
+ *
  * Provides alternative sources of the salt to use for encoding passwords.
+ * @package Bee\Security\Provider
  */
-class Bee_Security_Provider_UsernameSaltSource implements Bee_Security_Provider_ISaltSource {
+class UsernameSaltSource implements ISaltSource {
 	/**
 	 * Returns the salt to use for the indicated user.
 	 *
-	 * @param Bee_Security_IUserDetails $user from the <code>AuthenticationDao</code>
-	 * @return String the salt to use for this <code>Bee_Security_IUserDetails</code>
+	 * @param IUserDetails $user from the <code>AuthenticationDao</code>
+	 * @return String the salt to use for this <code>IUserDetails</code>
 	 */
-    public function getSalt(Bee_Security_IUserDetails $user) {
+    public function getSalt(IUserDetails $user) {
         return $user->getUsername();
     }
 }

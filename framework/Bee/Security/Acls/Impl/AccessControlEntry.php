@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls\Impl;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +15,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Acls\IAccessControlEntry;
+use Bee\Security\Acls\IAcl;
+use Bee\Security\Acls\IAuditableAccessControlEntry;
+use Bee\Security\Acls\IPermission;
+use Bee\Security\Acls\ISid;
 use Bee\Utils\Assert;
 
 /**
- * User: mp
- * Date: Mar 18, 2010
- * Time: 1:11:14 AM
+ * Class AccessControlEntry
+ * @package Bee\Security\Acls\Impl
  */
-
-class Bee_Security_Acls_Impl_AccessControlEntry implements Bee_Security_Acls_IAccessControlEntry, Bee_Security_Acls_IAuditableAccessControlEntry {
+class AccessControlEntry implements IAccessControlEntry, IAuditableAccessControlEntry {
 
     /**
-     * @var Bee_Security_Acls_IAcl
+     * @var IAcl
      */
     private $acl;
 
     /**
-     * @var Bee_Security_Acls_IPermission
+     * @var IPermission
      */
     private $permission;
 
@@ -40,7 +44,7 @@ class Bee_Security_Acls_Impl_AccessControlEntry implements Bee_Security_Acls_IAc
     private $id;
 
     /**
-     * @var Bee_Security_Acls_ISid
+     * @var ISid
      */
     private $sid;
 
@@ -59,8 +63,16 @@ class Bee_Security_Acls_Impl_AccessControlEntry implements Bee_Security_Acls_IAc
      */
     private $auditSuccess;
 
-    public function __construct($id, Bee_Security_Acls_IAcl $acl, Bee_Security_Acls_ISid $sid,
-                                Bee_Security_Acls_IPermission $permission, $granting, $auditSuccess, $auditFailure) {
+	/**
+	 * @param $id
+	 * @param IAcl $acl
+	 * @param ISid $sid
+	 * @param IPermission $permission
+	 * @param $granting
+	 * @param $auditSuccess
+	 * @param $auditFailure
+	 */
+    public function __construct($id, IAcl $acl, ISid $sid, IPermission $permission, $granting, $auditSuccess, $auditFailure) {
         Assert::notNull($acl, 'Acl required');
         Assert::notNull($sid, 'Sid required');
         Assert::notNull($permission, 'Permission required');
@@ -73,41 +85,66 @@ class Bee_Security_Acls_Impl_AccessControlEntry implements Bee_Security_Acls_IAc
         $this->auditFailure = $auditFailure;
     }
 
+	/**
+	 * @return IAcl
+	 */
     public function getAcl() {
         return $this->acl;
     }
 
-    public function setAcl(Bee_Security_Acls_IAcl $acl) {
+	/**
+	 * @param IAcl $acl
+	 */
+    public function setAcl(IAcl $acl) {
         $this->acl = $acl;
     }
 
+	/**
+	 * @return mixed
+	 */
     public function getId() {
         return $this->id;
     }
 
+	/**
+	 * @return IPermission
+	 */
     public function getPermission() {
         return $this->permission;
     }
 
+	/**
+	 * @param $permission
+	 */
     public function setPermission($permission) {
         $this->permission = $permission;
     }
 
+	/**
+	 * @return ISid
+	 */
     public function getSid() {
         return $this->sid;
     }
 
+	/**
+	 * @return bool
+	 */
     public function isGranting() {
         return $this->granting;
     }
 
+	/**
+	 * @return bool
+	 */
     public function isAuditFailure() {
         return $this->auditFailure;
     }
 
+	/**
+	 * @return bool
+	 */
     public function isAuditSuccess() {
         return $this->auditSuccess;
     }
-
 }
-?>

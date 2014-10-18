@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls\Impl;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Acls\ISid;
+use Bee\Security\IGrantedAuthority;
 use Bee\Utils\Assert;
 
 /**
- * User: mp
- * Date: Mar 17, 2010
- * Time: 11:36:06 AM
+ * Class GrantedAuthoritySid
+ * @package Bee\Security\Acls\Impl
  */
-
-class Bee_Security_Acls_Impl_GrantedAuthoritySid implements Bee_Security_Acls_ISid {
+class GrantedAuthoritySid implements ISid {
 
     /**
      * @var string
@@ -30,15 +31,15 @@ class Bee_Security_Acls_Impl_GrantedAuthoritySid implements Bee_Security_Acls_IS
     private $grantedAuthority;
 
 	/**
-	 * @param string|Bee_Security_IGrantedAuthority $grantedAuthority
-	 * @return \Bee_Security_Acls_Impl_GrantedAuthoritySid
+	 * @param string|IGrantedAuthority $grantedAuthority
+	 * @return GrantedAuthoritySid
 	 */
     public function __construct($grantedAuthority) {
 		Assert::notNull($grantedAuthority);
         if(is_string($grantedAuthority)) {
             $this->grantedAuthority = $grantedAuthority;
         } else {
-			Assert::isTrue($grantedAuthority instanceof Bee_Security_IGrantedAuthority, 'Unknown granted authority type');
+			Assert::isTrue($grantedAuthority instanceof IGrantedAuthority, 'Unknown granted authority type');
             $this->grantedAuthority = $grantedAuthority->getAuthority();
         }
     }
@@ -60,7 +61,7 @@ class Bee_Security_Acls_Impl_GrantedAuthoritySid implements Bee_Security_Acls_IS
         return 'GrantedAuthoritySid['.$this->grantedAuthority.']';
     }
 
-    public function equals(Bee_Security_Acls_ISid $sid) {
+    public function equals(ISid $sid) {
         return $this->getIdentifierString() == $sid->getIdentifierString();
     }
 }

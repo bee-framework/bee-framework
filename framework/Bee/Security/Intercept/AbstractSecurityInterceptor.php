@@ -16,6 +16,14 @@
  */
 use Bee\Context\Config\IInitializingBean;
 use Bee\Framework;
+use Bee\Security\ConfigAttributeDefinition;
+use Bee\Security\Context\SecurityContextHolder;
+use Bee\Security\Exception\AccessDeniedException;
+use Bee\Security\Exception\AuthenticationCredentialsNotFoundException;
+use Bee\Security\IAccessDecisionManager;
+use Bee\Security\IAfterInvocationManager;
+use Bee\Security\IAuthenticationManager;
+use Bee\Security\IRunAsManager;
 use Bee\Utils\Assert;
 use Bee\Utils\Types;
 
@@ -45,22 +53,22 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
 	}
 
     /**
-     * @var Bee_Security_IAccessDecisionManager
+     * @var IAccessDecisionManager
      */
     private $accessDecisionManager;
 
     /**
-     * @var Bee_Security_IAfterInvocationManager
+     * @var IAfterInvocationManager
      */
     private $afterInvocationManager;
 
     /**
-     * @var Bee_Security_IAuthenticationManager
+     * @var IAuthenticationManager
      */
     private $authenticationManager;
 
     /**
-     * @var Bee_Security_IRunAsManager
+     * @var IRunAsManager
      */
     private $runAsManager;
 
@@ -89,7 +97,7 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
 	 *
 	 * @param Bee_Security_Intercept_InterceptorStatusToken $token as returned by the {@link #beforeInvocation(Object)}} method
 	 * @param mixed $returnedObject any object returned from the secure object invocation (may be <tt>null</tt>)
-	 * @throws Bee_Security_Exception_AccessDenied
+	 * @throws AccessDeniedException
 	 * @throws Exception
 	 * @return mixed the object the secure object invocation should ultimately return to its caller (may be <tt>null</tt>)
 	 */
@@ -104,7 +112,7 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
 				self::getLog()->debug("Reverting to original Authentication: " . $token->getAuthentication());
             }
 
-            Bee_Security_Context_Holder::getContext()->setAuthentication($token->getAuthentication());
+            SecurityContextHolder::getContext()->setAuthentication($token->getAuthentication());
         }
 
         if ($this->afterInvocationManager != null) {
@@ -113,7 +121,7 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
                 $returnedObject = $this->afterInvocationManager->decide($token->getAuthentication(), $token->getSecureObject(),
                         $token->getAttr(), $returnedObject);
             }
-            catch (Bee_Security_Exception_AccessDenied $accessDeniedException) {
+            catch (AccessDeniedException $accessDeniedException) {
                 // todo: what's with the event publishing...?
 //                AuthorizationFailureEvent event = new AuthorizationFailureEvent(token.getSecureObject(), token
 //                        .getAttr(), token.getAuthentication(), accessDeniedException);
@@ -180,8 +188,8 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
 	 * @access protected
 	 *
 	 * @param $object
-	 * @throws Bee_Security_Exception_AccessDenied
-	 * @throws Bee_Security_Exception_AuthenticationCredentialsNotFound
+	 * @throws AccessDeniedException
+	 * @throws AuthenticationCredentialsNotFoundException
 	 * @throws Exception
 	 * @return Bee_Security_Intercept_InterceptorStatusToken
 	 */
@@ -218,7 +226,7 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
             self::getLog()->debug("Secure object: $object; ConfigAttributes: $attr");
         }
 
-        if (Bee_Security_Context_Holder::getContext()->getAuthentication() == null) {
+        if (SecurityContextHolder::getContext()->getAuthentication() == null) {
             $this->credentialsNotFound("An Authentication object was not found in the SecurityContext", $object, $attr);
         }
 
@@ -228,7 +236,7 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
         try {
             $this->accessDecisionManager->decide($authenticated, $object, $attr);
         }
-        catch (Bee_Security_Exception_AccessDenied $accessDeniedException) {
+        catch (AccessDeniedException $accessDeniedException) {
 //            AuthorizationFailureEvent event = new AuthorizationFailureEvent(object, attr, authenticated,
 //                    accessDeniedException);
 //            publishEvent(event);
@@ -258,7 +266,7 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
                 self::getLog()->debug("Switching to RunAs Authentication: " . $runAs);
             }
 
-            Bee_Security_Context_Holder::getContext()->setAuthentication($runAs);
+			SecurityContextHolder::getContext()->setAuthentication($runAs);
 
             // revert to token.Authenticated post-invocation
             return new Bee_Security_Intercept_InterceptorStatusToken($authenticated, true, $attr, $object);
@@ -273,7 +281,7 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
      * @return an authenticated <tt>Authentication</tt> object.
      */
     private function authenticateIfRequired() {
-        $authentication = Bee_Security_Context_Holder::getContext()->getAuthentication();
+        $authentication = SecurityContextHolder::getContext()->getAuthentication();
 
         if ($authentication->isAuthenticated() && !$this->alwaysReauthenticate) {
             if (self::getLog()->isDebugEnabled()) {
@@ -290,13 +298,13 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
             self::getLog()->debug("Successfully Authenticated: " . $authentication);
         }
 
-        Bee_Security_Context_Holder::getContext()->setAuthentication($authentication);
+        SecurityContextHolder::getContext()->setAuthentication($authentication);
 
         return $authentication;
     }
 
-    private function credentialsNotFound($reason, $secureObject, Bee_Security_ConfigAttributeDefinition $configAttribs) {
-        $exception = new Bee_Security_Exception_AuthenticationCredentialsNotFound($reason);
+    private function credentialsNotFound($reason, $secureObject, ConfigAttributeDefinition $configAttribs) {
+        $exception = new AuthenticationCredentialsNotFoundException($reason);
 
 //        AuthenticationCredentialsNotFoundEvent event = new AuthenticationCredentialsNotFoundEvent(secureObject,
 //                configAttribs, exception);
@@ -308,7 +316,7 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
     /**
      * Gets the AccessDecisionManager
      *
-     * @return Bee_Security_IAccessDecisionManager $accessDecisionManager
+     * @return IAccessDecisionManager $accessDecisionManager
      */
     public function getAccessDecisionManager() {
         return $this->accessDecisionManager;
@@ -317,10 +325,10 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
     /**
      * Sets the AccessDecisionManager
      *
-     * @param $accessDecisionManager Bee_Security_IAccessDecisionManager
+     * @param $accessDecisionManager IAccessDecisionManager
      * @return void
      */
-    public function setAccessDecisionManager(Bee_Security_IAccessDecisionManager $accessDecisionManager) {
+    public function setAccessDecisionManager(IAccessDecisionManager $accessDecisionManager) {
         $this->accessDecisionManager = $accessDecisionManager;
     }
 
@@ -328,7 +336,7 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
     /**
      * Gets the AfterInvocationManager
      *
-     * @return Bee_Security_IAfterInvocationManager
+     * @return IAfterInvocationManager
      */
     public function getAfterInvocationManager() {
         return $this->afterInvocationManager;
@@ -337,17 +345,17 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
     /**
      * Sets the AfterInvocationManager
      *
-     * @param Bee_Security_IAfterInvocationManager $afterInvocationManager
+     * @param IAfterInvocationManager $afterInvocationManager
      * @return void
      */
-    public function setAfterInvocationManager(Bee_Security_IAfterInvocationManager $afterInvocationManager) {
+    public function setAfterInvocationManager(IAfterInvocationManager $afterInvocationManager) {
         $this->afterInvocationManager = $afterInvocationManager;
     }
 
     /**
      * Gets the AuthenticationManager
      *
-     * @return Bee_Security_IAuthenticationManager $authenticationManager
+     * @return IAuthenticationManager $authenticationManager
      */
     public function getAuthenticationManager() {
         return $this->authenticationManager;
@@ -356,17 +364,17 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
     /**
      * Sets the AuthenticationManager
      *
-     * @param $authenticationManager Bee_Security_IAuthenticationManager
+     * @param $authenticationManager IAuthenticationManager
      * @return void
      */
-    public function setAuthenticationManager(Bee_Security_IAuthenticationManager $authenticationManager) {
+    public function setAuthenticationManager(IAuthenticationManager $authenticationManager) {
         $this->authenticationManager = $authenticationManager;
     }
 
     /**
      * Gets the RunAsManager
      *
-     * @return Bee_Security_IRunAsManager $runAsManager
+     * @return IRunAsManager $runAsManager
      */
     public function getRunAsManager() {
         return $this->runAsManager;
@@ -375,10 +383,10 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
     /**
      * Sets the RunAsManager
      *
-     * @param $runAsManager Bee_Security_IRunAsManager
+     * @param $runAsManager IRunAsManager
      * @return void
      */
-    public function setRunAsManager(Bee_Security_IRunAsManager $runAsManager) {
+    public function setRunAsManager(IRunAsManager $runAsManager) {
         $this->runAsManager = $runAsManager;
     }
 

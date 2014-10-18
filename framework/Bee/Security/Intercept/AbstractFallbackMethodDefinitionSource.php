@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 use Bee\Framework;
+use Bee\Security\ConfigAttributeDefinition;
 use Bee\Utils\Types;
 
 /**
@@ -44,7 +45,7 @@ abstract class Bee_Security_Intercept_AbstractFallbackMethodDefinitionSource imp
 
     const NULL_CONFIG_ATTRIBUTE = '<<NULL_CONFIG_ATTRIBUTE>>';
     /**
-     * @var Bee_Security_ConfigAttributeDefinition[] 
+     * @var ConfigAttributeDefinition[]
      */
     private $attributeCache = array();
 

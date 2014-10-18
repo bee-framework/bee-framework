@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-class Bee_Security_PasswordEncoder_PlainText implements Bee_Security_IPasswordEncoder {
+use Bee\Security\IPasswordEncoder;
+
+class Bee_Security_PasswordEncoder_PlainText implements IPasswordEncoder {
     public function encodePassword($rawPass, $salt) {
     	return $rawPass;
     }
@@ -24,4 +26,3 @@ class Bee_Security_PasswordEncoder_PlainText implements Bee_Security_IPasswordEn
 		return $encPass === $rawPass;
 	}	
 }
-?>

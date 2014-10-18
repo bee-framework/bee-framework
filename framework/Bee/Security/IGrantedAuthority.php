@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +17,12 @@
  */
 
 /**
- * Represents an authority granted to an {@link Bee_Security_IAuthentication} object.
+ * Represents an authority granted to an {@link IAuthentication} object.
  *
  * <p>
- * A <code>Bee_Security_IGrantedAuthority</code> must either represent itself as a
+ * A <code>IGrantedAuthority</code> must either represent itself as a
  * <code>String</code> or be specifically supported by an  {@link
- * Bee_Security_IAccessDecisionManager}.
+ * IAccessDecisionManager}.
  * </p>
  * 
  * <p>
@@ -31,15 +32,15 @@
  * </p>
  *
  */
-interface Bee_Security_IGrantedAuthority { // extends Serializable, Comparable
+interface IGrantedAuthority { // extends Serializable, Comparable
 	
 	/**
-	 * If the <code>Bee_Security_IGrantedAuthority</code> can be represented as a <code>String</code> and that
+	 * If the <code>IGrantedAuthority</code> can be represented as a <code>String</code> and that
      * <code>String</code> is sufficient in precision to be relied upon for an access control decision by an {@link
-     * Bee_Security_IAccessDecisionManager} (or delegate), this method should return such a <code>String</code>.<p>If the
-     * <code>Bee_Security_IGrantedAuthority</code> cannot be expressed with sufficient precision as a <code>String</code>,
+     * IAccessDecisionManager} (or delegate), this method should return such a <code>String</code>.<p>If the
+     * <code>IGrantedAuthority</code> cannot be expressed with sufficient precision as a <code>String</code>,
      * <code>null</code> should be returned. Returning <code>null</code> will require an
-     * <code>Bee_Security_IAccessDecisionManager</code> (or delegate) to  specifically support the <code>Bee_Security_IGrantedAuthority</code>
+     * <code>IAccessDecisionManager</code> (or delegate) to  specifically support the <code>IGrantedAuthority</code>
      * implementation, so returning <code>null</code> should be avoided unless actually  required.</p>
 	 *
 	 * @return String a representation of the granted authority (or <code>null</code> if the granted authority cannot be
@@ -47,4 +48,3 @@ interface Bee_Security_IGrantedAuthority { // extends Serializable, Comparable
 	 */
 	public function getAuthority();
 }
-?>

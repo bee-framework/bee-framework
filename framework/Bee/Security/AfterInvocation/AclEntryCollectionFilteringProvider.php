@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\AfterInvocation;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use ArrayAccess;
 use Bee\Framework;
+use Bee\Security\Acls\IAclService;
+use Bee\Security\Acls\IObjectIdentity;
+use Bee\Security\ConfigAttributeDefinition;
+use Bee\Security\Exception\GenericSecurityException;
+use Bee\Security\IAuthentication;
+use Logger;
+use Traversable;
 
 /**
- * User: mp
- * Date: Mar 23, 2010
- * Time: 2:20:25 PM
+ * Class AclEntryCollectionFilteringProvider
+ * @package Bee\Security\AfterInvocation
  */
-
-class Bee_Security_AfterInvocation_AclEntryCollectionFilteringProvider extends Bee_Security_AfterInvocation_AbstractAclProvider {
+class AclEntryCollectionFilteringProvider extends AbstractAclProvider {
 
 	/**
 	 * @var Logger
@@ -39,13 +46,13 @@ class Bee_Security_AfterInvocation_AclEntryCollectionFilteringProvider extends B
 		return self::$log;
 	}
 
-    public function __construct(Bee_Security_Acls_IAclService $aclService,
+    public function __construct(IAclService $aclService,
                                 $processConfigAttribute,
                                 array $requirePermission) {
         parent::__construct($aclService, $processConfigAttribute, $requirePermission);
     }
 
-    public function decide(Bee_Security_IAuthentication $authentication, $object, Bee_Security_ConfigAttributeDefinition $config,
+    public function decide(IAuthentication $authentication, $object, ConfigAttributeDefinition $config,
         $returnedObject) {
 
         if (is_null($returnedObject)) {
@@ -63,9 +70,10 @@ class Bee_Security_AfterInvocation_AclEntryCollectionFilteringProvider extends B
             }
 
             if(!(is_array($returnedObject) || $returnedObject instanceof Traversable)) {
-                throw new Bee_Security_Exception_Generic('returned object must be Traversable');
+                throw new GenericSecurityException('returned object must be Traversable');
             }
 
+			/** @var IObjectIdentity[] $identities */
             $identities = array();
             foreach($returnedObject as $domainObject) {
                 $identities[] = $this->objectIdentityRetrievalStrategy->getObjectIdentity($this->getDomainObject($domainObject));
@@ -106,6 +114,4 @@ class Bee_Security_AfterInvocation_AclEntryCollectionFilteringProvider extends B
 
         return $returnedObject;
     }
-
 }
-?>

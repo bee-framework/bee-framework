@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls\Impl;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Acls\ISid;
+use Bee\Security\IAuthentication;
+use Bee\Security\IUserDetails;
 use Bee\Utils\Assert;
 
 /**
- * User: mp
- * Date: Mar 17, 2010
- * Time: 11:24:30 AM
+ * Class PrincipalSid
+ * @package Bee\Security\Acls\Impl
  */
-
-class Bee_Security_Acls_Impl_PrincipalSid implements Bee_Security_Acls_ISid {
+class PrincipalSid implements ISid {
 
     /**
      * @var string
@@ -39,17 +41,17 @@ class Bee_Security_Acls_Impl_PrincipalSid implements Bee_Security_Acls_ISid {
     }
 
 	/**
-	 * @param Bee_Security_IAuthentication|string $principalOrAuth
-	 * @return \Bee_Security_Acls_Impl_PrincipalSid
+	 * @param IAuthentication|string $principalOrAuth
+	 * @return PrincipalSid
 	 */
     public function __construct($principalOrAuth) {
 		Assert::notNull($principalOrAuth);
         if(is_string($principalOrAuth)) {
             $this->principal = $principalOrAuth;
         } else {
-			Assert::isTrue($principalOrAuth instanceof Bee_Security_IAuthentication, 'Principal is neither string nor authentication object');
+			Assert::isTrue($principalOrAuth instanceof IAuthentication, 'Principal is neither string nor authentication object');
             $principal = $principalOrAuth->getPrincipal();
-            if($principal instanceof Bee_Security_IUserDetails) {
+            if($principal instanceof IUserDetails) {
                 $this->principal = $principal->getUsername();
             } else {
                 $this->principal = ''.$principal;
@@ -62,10 +64,10 @@ class Bee_Security_Acls_Impl_PrincipalSid implements Bee_Security_Acls_ISid {
     }
 
     public function __toString() {
-        return 'Bee_Security_Acls_Impl_PrincipalSid['.$this->getIdentifierString().']';
+        return 'PrincipalSid['.$this->getIdentifierString().']';
     }
 
-    public function equals(Bee_Security_Acls_ISid $sid) {
+    public function equals(ISid $sid) {
         return $this->getIdentifierString() == $sid->getIdentifierString();
     }
 }

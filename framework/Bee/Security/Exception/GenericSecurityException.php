@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Exception;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Exception;
 
 /**
- * Created by IntelliJ IDEA.
- * User: mp
- * Date: Feb 19, 2010
- * Time: 10:08:52 PM
- * To change this template use File | Settings | File Templates.
+ * Class GenericSecurityException
+ * Common superclass for exceptions thrown by the security sub-framework.
+ * @package Bee\Security\Exception
  */
-
-class Bee_Security_Exception_AuthenticationCredentialsNotFound extends Bee_Security_Exception_Authentication {
-    public function __construct($msg, $extraInformation = null, Exception $cause = null) {
-    	parent::__construct($msg, $extraInformation, $cause);
-    }
+class GenericSecurityException extends Exception {
+	public function __construct($message, Exception $cause = null) {
+		parent::__construct($message, 0, $cause);
+	}
 }
-?>

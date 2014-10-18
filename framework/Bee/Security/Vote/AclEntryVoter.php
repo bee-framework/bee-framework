@@ -15,6 +15,17 @@
  * limitations under the License.
  */
 use Bee\Framework;
+use Bee\Security\Acls\Exception\NotFoundException;
+use Bee\Security\Acls\IAclService;
+use Bee\Security\Acls\Impl\ObjectIdentityRetrievalStrategy;
+use Bee\Security\Acls\Impl\SidRetrievalStrategy;
+use Bee\Security\Acls\IObjectIdentityRetrievalStrategy;
+use Bee\Security\Acls\IPermission;
+use Bee\Security\Acls\ISidRetrievalStrategy;
+use Bee\Security\ConfigAttributeDefinition;
+use Bee\Security\Exception\GenericSecurityException;
+use Bee\Security\IAuthentication;
+use Bee\Security\IConfigAttribute;
 use Bee\Utils\Strings;
 
 /**
@@ -43,17 +54,17 @@ class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter
 	}
 
     /**
-     * @var Bee_Security_Acls_IAclService
+     * @var IAclService
      */
     private $aclService;
 
     /**
-     * @var Bee_Security_Acls_IObjectIdentityRetrievalStrategy
+     * @var IObjectIdentityRetrievalStrategy
      */
     private $objectIdentityRetrievalStrategy;
 
     /**
-     * @var Bee_Security_Acls_ISidRetrievalStrategy
+     * @var ISidRetrievalStrategy
      */
     private $sidRetrievalStrategy;
 
@@ -68,16 +79,16 @@ class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter
     private $processConfigAttribute;
 
     /**
-     * @var Bee_Security_Acls_IPermission[]
+     * @var IPermission[]
      */
     private $requirePermission;
 
-    public function __construct(Bee_Security_Acls_IAclService $aclService,
+    public function __construct(IAclService $aclService,
                                 $processConfigAttribute,
                                 array $requirePermission) {
         $this->aclService = $aclService;
-        $this->objectIdentityRetrievalStrategy = new Bee_Security_Acls_Impl_ObjectIdentityRetrievalStrategy();
-        $this->sidRetrievalStrategy = new Bee_Security_Acls_Impl_SidRetrievalStrategy();
+        $this->objectIdentityRetrievalStrategy = new ObjectIdentityRetrievalStrategy();
+        $this->sidRetrievalStrategy = new SidRetrievalStrategy();
         $this->processConfigAttribute = $processConfigAttribute;
         $this->requirePermission = $requirePermission;
     }
@@ -109,27 +120,26 @@ class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter
     }
 
     /**
-     * @param Bee_Security_Acls_IObjectIdentityRetrievalStrategy $objectIdentityRetrievalStrategy
+     * @param IObjectIdentityRetrievalStrategy $objectIdentityRetrievalStrategy
      * @return void
      */
-    public function setObjectIdentityRetrievalStrategy(Bee_Security_Acls_IObjectIdentityRetrievalStrategy $objectIdentityRetrievalStrategy) {
+    public function setObjectIdentityRetrievalStrategy(IObjectIdentityRetrievalStrategy $objectIdentityRetrievalStrategy) {
         $this->objectIdentityRetrievalStrategy = $objectIdentityRetrievalStrategy;
     }
 
     /**
-     * @param Bee_Security_Acls_ISidRetrievalStrategy $sidIdentityRetrievalStrategy
+     * @param ISidRetrievalStrategy $sidIdentityRetrievalStrategy
      * @return void
      */
-    public function setSidRetrievalStrategy(Bee_Security_Acls_ISidRetrievalStrategy $sidIdentityRetrievalStrategy) {
+    public function setSidRetrievalStrategy(ISidRetrievalStrategy $sidIdentityRetrievalStrategy) {
         $this->sidRetrievalStrategy = $sidIdentityRetrievalStrategy;
     }
 
-    public function supports(Bee_Security_IConfigAttribute $configAttribute) {
+    public function supports(IConfigAttribute $configAttribute) {
         return $configAttribute->getAttribute() == $this->getProcessConfigAttribute();
     }
 
-    public function vote(Bee_Security_IAuthentication $authentication, $object,
-                         Bee_Security_ConfigAttributeDefinition $config) {
+    public function vote(IAuthentication $authentication, $object, ConfigAttributeDefinition $config) {
 
 
         foreach($config->getConfigAttributes() as $attr) {
@@ -154,7 +164,7 @@ class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter
             // Evaluate if we are required to use an inner domain object
             if (Strings::hasText($this->internalMethod)) {
                 if(!method_exists($domainObject, $this->internalMethod)) {
-                    throw new Bee_Security_Exception_Generic('Object of class ' .
+                    throw new GenericSecurityException('Object of class ' .
                             get_class($domainObject) . ' does not provide requested method ' .
                             $this->internalMethod);
                 }
@@ -173,7 +183,7 @@ class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter
             try {
                 // Lookup only ACLs for SIDs we're interested in
                 $acl = $this->aclService->readAclForOidAndSids($objectIdentity, $sids);
-            } catch (Bee_Security_Acls_Exception_NotFound $nfe) {
+            } catch (NotFoundException $nfe) {
                 if (self::getLog()->isDebugEnabled()) {
                     self::getLog()->debug('Voting to deny access - no ACLs apply for this principal');
                 }
@@ -195,7 +205,7 @@ class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter
 
                     return self::ACCESS_DENIED;
                 }
-            } catch (Bee_Security_Acls_Exception_NotFound $nfe) {
+            } catch (NotFoundException $nfe) {
                 if (self::getLog()->isDebugEnabled()) {
                     self::getLog()->debug('Voting to deny access - no ACLs apply for this principal');
                 }

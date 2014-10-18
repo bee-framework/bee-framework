@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Provider;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +17,38 @@
  */
 
 use Bee\Persistence\Exception\DataAccessException;
+use Bee\Security\Exception\AuthenticationException;
+use Bee\Security\Exception\BadCredentialsException;
+use Bee\Security\IPasswordEncoder;
+use Bee\Security\IUserDetails;
+use Bee\Security\IUserDetailsService;
+use Bee\Security\UsernamePasswordAuthenticationToken;
+use Bee_Security_PasswordEncoder_PlainText;
 
-class Bee_Security_Provider_DaoAuthentication extends Bee_Security_Provider_AbstractUserDetailsAuthentication {
+/**
+ * Class DaoAuthentication
+ * @package Bee\Security\Provider
+ */
+class DaoAuthentication extends AbstractUserDetailsAuthentication {
 	
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Security_IPasswordEncoder
+	 * @var IPasswordEncoder
 	 */
     private $passwordEncoder;
 
     /**
      * Enter description here...
      *
-     * @var Bee_Security_Provider_ISaltSource
+     * @var ISaltSource
      */
     private $saltSource = null;
 
     /**
      * Enter description here...
      *
-     * @var Bee_Security_IUserDetailsService
+     * @var IUserDetailsService
      */
     private $userDetailsService;
 
@@ -44,8 +56,7 @@ class Bee_Security_Provider_DaoAuthentication extends Bee_Security_Provider_Abst
 		$this->passwordEncoder = new Bee_Security_PasswordEncoder_PlainText();
     }
     
-    protected function additionalAuthenticationChecks(Bee_Security_IUserDetails $userDetails,
-            Bee_Security_UsernamePasswordAuthenticationToken $authentication) {
+    protected function additionalAuthenticationChecks(IUserDetails $userDetails,  UsernamePasswordAuthenticationToken $authentication) {
 		$salt = null;
 
         if (!is_null($this->saltSource)) {
@@ -54,30 +65,29 @@ class Bee_Security_Provider_DaoAuthentication extends Bee_Security_Provider_Abst
 
         $credentials = $authentication->getCredentials();
         if (is_null($credentials)) {
-            throw new Bee_Security_Exception_BadCredentials('Bad credentials', $userDetails);
+            throw new BadCredentialsException('Bad credentials', $userDetails);
         }
 
         $presentedPassword = is_object($credentials) ? $credentials->__toString() : $credentials;
 
         if (!$this->passwordEncoder->isPasswordValid($userDetails->getPassword(), $presentedPassword, $salt)) {
-            throw new Bee_Security_Exception_BadCredentials('Bad credentials', $userDetails);
+            throw new BadCredentialsException('Bad credentials', $userDetails);
         }
         
         
     }
 
-    protected final function retrieveUser($username, Bee_Security_UsernamePasswordAuthenticationToken $authentication) {
+    protected final function retrieveUser($username, UsernamePasswordAuthenticationToken $authentication) {
         $loadedUser = null;
 
         try {
             $loadedUser = $this->getUserDetailsService()->loadUserByUsername($username);
         } catch (DataAccessException $repositoryProblem) {
-            throw new Bee_Security_Exception_Authentication($repositoryProblem->getMessage(), null, $repositoryProblem);
+            throw new AuthenticationException($repositoryProblem->getMessage(), null, $repositoryProblem);
         }
 
         if (is_null($loadedUser)) {
-            throw new Bee_Security_Exception_Authentication(
-                    "UserDetailsService returned null, which is an interface contract violation");
+            throw new AuthenticationException("UserDetailsService returned null, which is an interface contract violation");
         }
         return $loadedUser;
     }
@@ -85,7 +95,7 @@ class Bee_Security_Provider_DaoAuthentication extends Bee_Security_Provider_Abst
     /**
      * Enter description here...
      *
-     * @return Bee_Security_IPasswordEncoder
+     * @return IPasswordEncoder
      */
     public final function getPasswordEncoder() {
     	return $this->passwordEncoder;
@@ -94,17 +104,17 @@ class Bee_Security_Provider_DaoAuthentication extends Bee_Security_Provider_Abst
     /**
      * Enter description here...
      *
-     * @param Bee_Security_IPasswordEncoder $passworEncoder
+     * @param IPasswordEncoder $passworEncoder
      * @return void
      */
-    public final function setPasswordEncoder(Bee_Security_IPasswordEncoder $passworEncoder) {
+    public final function setPasswordEncoder(IPasswordEncoder $passworEncoder) {
     	$this->passwordEncoder = $passworEncoder; 
     }
     
     /**
      * Enter description here...
      *
-     * @return Bee_Security_Provider_ISaltSource
+     * @return ISaltSource
      */
     public final function getSaltSource() {
     	return $this->saltSource;
@@ -113,17 +123,17 @@ class Bee_Security_Provider_DaoAuthentication extends Bee_Security_Provider_Abst
     /**
      * Enter description here...
      *
-     * @param Bee_Security_Provider_ISaltSource $saltSource
+     * @param ISaltSource $saltSource
      * @return void
      */
-    public final function setSaltSource(Bee_Security_Provider_ISaltSource $saltSource) {
+    public final function setSaltSource(ISaltSource $saltSource) {
     	 $this->saltSource = $saltSource;
     }
     
     /**
      * Enter description here...
      *
-     * @return Bee_Security_IUserDetailsService
+     * @return IUserDetailsService
      */
     protected function getUserDetailsService() {
         return $this->userDetailsService;
@@ -132,10 +142,10 @@ class Bee_Security_Provider_DaoAuthentication extends Bee_Security_Provider_Abst
     /**
      * Enter description here...
      *
-     * @param Bee_Security_IUserDetailsService $userDetailsService
+     * @param IUserDetailsService $userDetailsService
      * @return void
      */
-    public final function setUserDetailsService(Bee_Security_IUserDetailsService $userDetailsService) {
+    public final function setUserDetailsService(IUserDetailsService $userDetailsService) {
         $this->userDetailsService = $userDetailsService;
     }
 }

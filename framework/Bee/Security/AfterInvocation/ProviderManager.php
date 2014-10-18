@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Security\AfterInvocation;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -16,6 +17,13 @@
  */
 use Bee\Context\Config\IInitializingBean;
 use Bee\Framework;
+use Bee\Security\ConfigAttribute;
+use Bee\Security\ConfigAttributeDefinition;
+use Bee\Security\IAfterInvocationManager;
+use Bee\Security\IAuthentication;
+use InvalidArgumentException;
+use Logger;
+use ReflectionClass;
 
 /**
  * User: mp
@@ -23,7 +31,7 @@ use Bee\Framework;
  * Time: 11:32:55 PM
  */
 
-class Bee_Security_AfterInvocation_ProviderManager implements Bee_Security_IAfterInvocationManager, IInitializingBean {
+class ProviderManager implements IAfterInvocationManager, IInitializingBean {
 
 	/**
 	 * @var Logger
@@ -43,7 +51,7 @@ class Bee_Security_AfterInvocation_ProviderManager implements Bee_Security_IAfte
     //~ Instance fields ================================================================================================
 
     /**
-     * @var Bee_Security_AfterInvocation_IProvider[]
+     * @var IProvider[]
      */
     private $providers;
 
@@ -59,7 +67,7 @@ class Bee_Security_AfterInvocation_ProviderManager implements Bee_Security_IAfte
         }
     }
 
-    public function decide(Bee_Security_IAuthentication $authentication, $object, Bee_Security_ConfigAttributeDefinition $config,
+    public function decide(IAuthentication $authentication, $object, ConfigAttributeDefinition $config,
         $returnedObject) {
 
         $result = $returnedObject;
@@ -71,7 +79,7 @@ class Bee_Security_AfterInvocation_ProviderManager implements Bee_Security_IAfte
     }
 
     /**
-     * @return Bee_Security_AfterInvocation_IProvider[]
+     * @return IProvider[]
      */
     public function getProviders() {
         return $this->providers;
@@ -91,7 +99,7 @@ class Bee_Security_AfterInvocation_ProviderManager implements Bee_Security_IAfte
         $this->providers = $newList;
     }
 
-    public function supports(Bee_Security_ConfigAttribute $attribute) {
+    public function supports(ConfigAttribute $attribute) {
 
         foreach ($this->providers as $provider) {
 
@@ -126,5 +134,4 @@ class Bee_Security_AfterInvocation_ProviderManager implements Bee_Security_IAfte
 
         return true;
     }
-
 }

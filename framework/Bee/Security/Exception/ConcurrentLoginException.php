@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Exception;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +17,11 @@
  */
 
 /**
- * User: mp
- * Date: Mar 18, 2010
- * Time: 12:29:22 AM
+ * Class ConcurrentLoginException
+ * @package Bee\Security\Exception
  */
-
-class Bee_Security_Acls_Exception_UnloadedSid extends Bee_Security_Exception_Generic {
-    public function __construct($message) {
-        parent::__construct($message);
+class ConcurrentLoginException extends AuthenticationException {
+    public function __construct($msg) {
+    	parent::__construct($msg, null, null);
     }
 }
-?>

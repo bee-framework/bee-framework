@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Exception;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +16,19 @@
  * limitations under the License.
  */
 
-class Bee_Security_Exception_Authentication extends Bee_Security_Exception_Generic {
+use Bee\Security\IAuthentication;
+use Exception;
+
+/**
+ * Class AuthenticationException
+ * @package Bee\Security\Exception
+ */
+class AuthenticationException extends GenericSecurityException {
 	
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Security_IAuthentication
+	 * @var IAuthentication
 	 */
     private $authentication;
     
@@ -39,7 +47,7 @@ class Bee_Security_Exception_Authentication extends Bee_Security_Exception_Gener
     /**
      * Enter description here...
      *
-     * @return Bee_Security_IAuthentication
+     * @return IAuthentication
      */
     public final function getAuthentication() {
     	return $this->authentication;
@@ -48,10 +56,10 @@ class Bee_Security_Exception_Authentication extends Bee_Security_Exception_Gener
     /**
      * Enter description here...
      *
-     * @param Bee_Security_IAuthentication $authentication
+     * @param IAuthentication $authentication
      * @return void
      */
-    public final function setAuthentication(Bee_Security_IAuthentication $authentication) {
+    public final function setAuthentication(IAuthentication $authentication) {
     	$this->authentication = $authentication;
     }
     
@@ -73,4 +81,3 @@ class Bee_Security_Exception_Authentication extends Bee_Security_Exception_Gener
     	$this->extraInformation = null;
     }
 }
-?>

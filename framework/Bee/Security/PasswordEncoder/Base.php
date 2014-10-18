@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
+use Bee\Security\IPasswordEncoder;
 use Bee\Utils\Assert;
 
-abstract class Bee_Security_PasswordEncoder_Base implements Bee_Security_IPasswordEncoder {
+abstract class Bee_Security_PasswordEncoder_Base implements IPasswordEncoder {
 	
 	/**
 	 * Enter description here...
@@ -58,7 +59,7 @@ abstract class Bee_Security_PasswordEncoder_Base implements Bee_Security_IPasswo
         }
 
         if ($strict && !is_null($salt)) {
-            if ((salt.toString().lastIndexOf("{") != -1) || (salt.toString().lastIndexOf("}") != -1)) {
+            if (($salt.toString().lastIndexOf("{") != -1) || (salt.toString().lastIndexOf("}") != -1)) {
                 throw new IllegalArgumentException("Cannot use { or } in salt.toString()");
             }
         }

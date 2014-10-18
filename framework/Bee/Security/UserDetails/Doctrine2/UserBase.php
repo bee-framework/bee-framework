@@ -15,15 +15,14 @@ namespace Bee\Security\UserDetails\Doctrine2;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-use Bee_Security_IUserDetails;
+use Bee\Security\IUserDetails;
 
 /**
  * Class UserBase
  * @package Bee\Security\UserDetails\Doctrine2
  * @MappedSuperclass
  */
-abstract class UserBase implements Bee_Security_IUserDetails {
+abstract class UserBase implements IUserDetails {
 
 	/**
 	 * @var integer

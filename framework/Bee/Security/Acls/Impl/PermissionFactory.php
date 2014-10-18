@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls\Impl;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Acls\IPermission;
+use Bee\Security\Acls\IPermissionFactory;
 use Bee\Utils\Assert;
 
 /**
@@ -22,15 +25,15 @@ use Bee\Utils\Assert;
  * Time: 11:00:52 AM
  */
 
-class Bee_Security_Acls_Impl_PermissionFactory implements Bee_Security_Acls_IPermissionFactory {
+class PermissionFactory implements IPermissionFactory {
 
     /**
-     * @var Bee_Security_Acls_IPermission[]
+     * @var IPermission[]
      */
     private $registeredPermissions;
 
     /**
-     * @param Bee_Security_Acls_IPermission[] $registeredPermissions
+     * @param IPermission[] $registeredPermissions
      * @return void
      */
     public function setRegisteredPermissions(array $registeredPermissions) {
@@ -47,7 +50,7 @@ class Bee_Security_Acls_Impl_PermissionFactory implements Bee_Security_Acls_IPer
             return $this->registeredPermissions['_'.$mask];
         }
 
-        $permission = new Bee_Security_Acls_Impl_CumulativePermission();
+        $permission = new CumulativePermission();
 
         for($i = 0; $i < 32; $i++) {
             $permToCheck = 1 << $i;

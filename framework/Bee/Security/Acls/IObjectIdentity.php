@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +17,10 @@
  */
 
 /**
- * User: mp
- * Date: Mar 16, 2010
- * Time: 6:42:18 PM
+ * Interface IObjectIdentity
+ * @package Bee\Security\Acls
  */
-
-interface Bee_Security_Acls_IObjectIdentity {
+interface IObjectIdentity {
     /**
      * Obtains the actual identifier. This identifier must not be reused to represent other domain objects with
      * the same <tt>javaType</tt>.
@@ -31,7 +30,7 @@ interface Bee_Security_Acls_IObjectIdentity {
      * business meaning, as that business meaning may change in the future such change will cascade to the ACL
      * subsystem data.</p>
      *
-     * @return the identifier (unique within this <tt>type</tt>; never <tt>null</tt>)
+     * @return string the identifier (unique within this <tt>type</tt>; never <tt>null</tt>)
      */
     public function getIdentifier();
 
@@ -39,7 +38,7 @@ interface Bee_Security_Acls_IObjectIdentity {
      * Obtains the Java type represented by the domain object. The Java type can be an interface or a class, but is
      * most often the domain object implementation class.
      *
-     * @return the type of the domain object (usually the class name, never <tt>null</tt>)
+     * @return string the type of the domain object (usually the class name, never <tt>null</tt>)
      */
     public function getType();
 
@@ -51,8 +50,8 @@ interface Bee_Security_Acls_IObjectIdentity {
     public function getIdentifierString();
 
 	/**
-	 * @param Bee_Security_Acls_IObjectIdentity $other
+	 * @param IObjectIdentity $other
 	 * @return boolean
 	 */
-	public function equals(Bee_Security_Acls_IObjectIdentity $other);
+	public function equals(IObjectIdentity $other);
 }

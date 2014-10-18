@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Exception;
 
 /**
- * @throws Exception
- *
+ * Class UsernamePasswordAuthenticationToken
+ * @package Bee\Security
  */
-class Bee_Security_UsernamePasswordAuthenticationToken extends Bee_Security_AbstractAuthenticationToken {
+class UsernamePasswordAuthenticationToken extends AbstractAuthenticationToken {
 
 	private $credentials;
 
@@ -30,7 +32,7 @@ class Bee_Security_UsernamePasswordAuthenticationToken extends Bee_Security_Abst
 	 *
 	 * @param mixed $principal
 	 * @param mixed $credentials
-	 * @param Bee_Security_IGrantedAuthority[] $authorities
+	 * @param IGrantedAuthority[] $authorities
 	 */
 	public function __construct($principal, $credentials, $authorities = null) {
 		parent::__construct($authorities);
@@ -40,14 +42,24 @@ class Bee_Security_UsernamePasswordAuthenticationToken extends Bee_Security_Abst
 		parent::setAuthenticated(!is_null($authorities) ? true : false);
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function getPrincipal() {
 		return $this->principal;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function getCredentials() {
 		return $this->credentials;
 	}
 
+	/**
+	 * @param bool $authenticated
+	 * @throws Exception
+	 */
 	public function setAuthenticated($authenticated) {
 		if ($authenticated) {
 			throw new Exception("Cannot set this token to trusted - use constructor containing granted authority[]s instead");
@@ -55,7 +67,10 @@ class Bee_Security_UsernamePasswordAuthenticationToken extends Bee_Security_Abst
 		parent::setAuthenticated(false);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function __toString() {
-		return 'Bee_Security_UsernamePasswordAuthenticationToken[' . $this->principal . ']';
+		return 'UsernamePasswordAuthenticationToken[' . $this->principal . ']';
 	}
 }

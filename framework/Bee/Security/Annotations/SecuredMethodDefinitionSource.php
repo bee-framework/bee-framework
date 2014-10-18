@@ -18,7 +18,7 @@ namespace Bee\Security\Annotations;
 use Addendum\Annotation;
 use Addendum\ReflectionAnnotatedClass;
 use Bee\Annotations\Utils;
-use Bee_Security_ConfigAttributeDefinition;
+use Bee\Security\ConfigAttributeDefinition;
 use Bee_Security_Intercept_AbstractFallbackMethodDefinitionSource;
 use ReflectionClass;
 use ReflectionMethod;
@@ -38,7 +38,7 @@ class SecuredMethodDefinitionSource extends Bee_Security_Intercept_AbstractFallb
     /**
      * @access protected
      * @param ReflectionClass|string $classOrClassName
-     * @return Bee_Security_ConfigAttributeDefinition
+     * @return ConfigAttributeDefinition
      */
     protected function findAttributes($classOrClassName) {
         if($classOrClassName instanceof ReflectionAnnotatedClass) {
@@ -55,7 +55,7 @@ class SecuredMethodDefinitionSource extends Bee_Security_Intercept_AbstractFallb
      * @access protected
      * @param ReflectionMethod $method
      * @param ReflectionClass|string $targetClassOrClassName
-     * @return Bee_Security_ConfigAttributeDefinition
+     * @return ConfigAttributeDefinition
      */
     protected function findAttributesForMethod(ReflectionMethod $method, $targetClassOrClassName) {
         return $this->processAnnotation(Utils::findAnnotation($method, self::SECURED_ANNOTATION_CLASS_NAME));
@@ -71,12 +71,12 @@ class SecuredMethodDefinitionSource extends Bee_Security_Intercept_AbstractFallb
     /**
      * @access private
      * @param Annotation $a
-     * @return Bee_Security_ConfigAttributeDefinition
+     * @return ConfigAttributeDefinition
      */
     private function processAnnotation(Annotation $a) {
         if ($a == null || !($a instanceof Secured)) {
             return null;
         }
-        return new Bee_Security_ConfigAttributeDefinition($a->value);
+        return new ConfigAttributeDefinition($a->value);
     }
 }

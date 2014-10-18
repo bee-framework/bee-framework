@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Exception;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +16,14 @@
  * limitations under the License.
  */
 
-/**
- * User: mp
- * Date: Mar 16, 2010
- * Time: 6:53:08 PM
- */
+use Exception;
 
-class Bee_Security_Acls_Exception_NotFound extends Bee_Security_Exception_Generic {
-    public function __construct($message) {
-        parent::__construct($message);
+/**
+ * Class AccountStatusException
+ * @package Bee\Security\Exception
+ */
+class AccountStatusException extends AuthenticationException {
+    public function __construct($msg, $extraInformation = null, Exception $cause = null) {
+    	parent::__construct($msg, $extraInformation, $cause);
     }
 }
-?>

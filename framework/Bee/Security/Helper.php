@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +15,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Context\SecurityContextHolder;
+use Bee\Security\Exception\AuthenticationException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: mp
- * Date: Mar 23, 2010
- * Time: 11:11:15 AM
- * To change this template use File | Settings | File Templates.
+ * Class Helper
+ * @package Bee\Security
  */
-class Bee_Security_Helper {
+class Helper {
 
 	/**
-	 * @var Bee_Security_IAccessDecisionManager
+	 * @var IAccessDecisionManager
 	 */
 	private static $accessDecisionManager;
 
 	/**
-	 * @var Bee_Security_IAfterInvocationManager
+	 * @var IAfterInvocationManager
 	 */
 	private static $afterInvocationProviderManager;
 
 	/**
-	 * @var Bee_Security_IUserDetailsService
+	 * @var IUserDetailsService
 	 */
 	private static $userDetailsService;
 
-	public static function construct(Bee_Security_IAccessDecisionManager $accessDecisionManager = null,
-									 Bee_Security_IAfterInvocationManager $afterInvocationProviderManager = null,
-									 Bee_Security_IUserDetailsService $userDetailsService = null) {
+	public static function construct(IAccessDecisionManager $accessDecisionManager = null,
+									 IAfterInvocationManager $afterInvocationProviderManager = null,
+									 IUserDetailsService $userDetailsService = null) {
 		self::$accessDecisionManager = $accessDecisionManager;
 		self::$afterInvocationProviderManager = $afterInvocationProviderManager;
 		self::$userDetailsService = $userDetailsService;
@@ -51,7 +51,7 @@ class Bee_Security_Helper {
 	 * @return bool
 	 */
 	public static function isAuthenticated() {
-		$auth = Bee_Security_Context_Holder::getContext()->getAuthentication();
+		$auth = SecurityContextHolder::getContext()->getAuthentication();
 		return is_null($auth) ? false : $auth->isAuthenticated();
 	}
 
@@ -59,7 +59,7 @@ class Bee_Security_Helper {
 	 * @return array
 	 */
 	public static function getRoles() {
-		$auth = Bee_Security_Context_Holder::getContext()->getAuthentication();
+		$auth = SecurityContextHolder::getContext()->getAuthentication();
 		if (is_null($auth) || !$auth->isAuthenticated()) {
 			return array();
 		}
@@ -69,12 +69,12 @@ class Bee_Security_Helper {
 	/**
 	 * @param $role
 	 * @return bool
-	 * @throws Bee_Security_Exception_Authentication
+	 * @throws AuthenticationException
 	 */
 	public static function checkRole($role) {
 		self::$accessDecisionManager->decide(
 			self::getAuthIfAuthenticated(), null,
-			new Bee_Security_ConfigAttributeDefinition($role)
+			new ConfigAttributeDefinition($role)
 		);
 		return true;
 	}
@@ -83,12 +83,12 @@ class Bee_Security_Helper {
 	 * @param $configAttribute
 	 * @param null $secureObject
 	 * @return bool
-	 * @throws Bee_Security_Exception_Authentication
+	 * @throws AuthenticationException
 	 */
 	public static function checkAccess($configAttribute, $secureObject = null) {
 		self::$accessDecisionManager->decide(
 			self::getAuthIfAuthenticated(), $secureObject,
-			new Bee_Security_ConfigAttributeDefinition($configAttribute)
+			new ConfigAttributeDefinition($configAttribute)
 		);
 		return true;
 	}
@@ -98,12 +98,12 @@ class Bee_Security_Helper {
 	 * @param null $secureObject
 	 * @param null $returnedObject
 	 * @return mixed
-	 * @throws Bee_Security_Exception_Authentication
+	 * @throws AuthenticationException
 	 */
 	public static function checkResultAccess($configAttribute, $secureObject = null, $returnedObject = null) {
 		return self::$afterInvocationProviderManager->decide(
 			self::getAuthIfAuthenticated(), $secureObject,
-			new Bee_Security_ConfigAttributeDefinition($configAttribute), $returnedObject
+			new ConfigAttributeDefinition($configAttribute), $returnedObject
 		);
 	}
 
@@ -114,14 +114,18 @@ class Bee_Security_Helper {
 		return self::getAuthIfAuthenticated()->getPrincipal();
 	}
 
+	/**
+	 * @return IAuthentication
+	 * @throws AuthenticationException
+	 */
 	private static function getAuthIfAuthenticated() {
-		$auth = Bee_Security_Context_Holder::getContext()->getAuthentication();
+		$auth = SecurityContextHolder::getContext()->getAuthentication();
 		if (is_null($auth) || !$auth->isAuthenticated()) {
-			throw new Bee_Security_Exception_Authentication('Not authenticated');
+			throw new AuthenticationException('Not authenticated');
 		}
 		return $auth;
 	}
 }
 
-class SEC extends Bee_Security_Helper {
+class SEC extends Helper {
 }

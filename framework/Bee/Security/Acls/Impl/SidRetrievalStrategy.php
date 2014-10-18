@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls\Impl;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Acls\ISidRetrievalStrategy;
+use Bee\Security\IAuthentication;
 
 /**
- * User: mp
- * Date: Mar 22, 2010
- * Time: 11:34:21 PM
+ * Class SidRetrievalStrategy
+ * @package Bee\Security\Acls\Impl
  */
+class SidRetrievalStrategy implements ISidRetrievalStrategy {
 
-class Bee_Security_Acls_Impl_SidRetrievalStrategy implements Bee_Security_Acls_ISidRetrievalStrategy {
-
-    public function getSids(Bee_Security_IAuthentication $authentication) {
+    public function getSids(IAuthentication $authentication) {
         $sids = array();
 
-        $sids[] = new Bee_Security_Acls_Impl_PrincipalSid($authentication);
+        $sids[] = new PrincipalSid($authentication);
 
         $authorities = $authentication->getAuthorities();
         foreach($authorities as $authority => $dummy) {
-            $sids[] = new Bee_Security_Acls_Impl_GrantedAuthoritySid($authority);
+            $sids[] = new GrantedAuthoritySid($authority);
         }
 
         return $sids;
     }
 }
-?>

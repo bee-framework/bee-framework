@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls\Pdo;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Acls\IAcl;
+use Bee\Security\Acls\IAclAuthorizationStrategy;
+use Bee\Security\Acls\IAuditLogger;
+use Bee\Security\Acls\Impl\AccessControlEntry;
+use Bee\Security\Acls\Impl\Acl;
+use Bee\Security\Acls\Impl\GrantedAuthoritySid;
+use Bee\Security\Acls\Impl\ObjectIdentity;
+use Bee\Security\Acls\Impl\PrincipalSid;
+use Bee\Security\Acls\IObjectIdentity;
+use Bee\Security\Acls\IPermissionFactory;
+use Bee\Security\Acls\ISid;
 use Bee\Utils\Assert;
+use Bee_Persistence_Pdo_IResultSetExtractor;
+use Bee_Persistence_Pdo_IStatementSetter;
+use Bee_Persistence_Pdo_Template;
+use Exception;
+use InvalidArgumentException;
+use PDO;
+use PDOStatement;
 
 /**
  * User: mp
@@ -22,7 +41,7 @@ use Bee\Utils\Assert;
  * Time: 11:38:06 PM
  */
 
-class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo_ILookupStrategy {
+class BasicLookupStrategy implements ILookupStrategy {
 
 	public static function DEFAULT_SELECT_CLAUSE() {
 		return 'SELECT acl_object_identity.object_id_identity, '
@@ -65,23 +84,29 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 	private $pdoTemplate;
 
 	/**
-	 * @var Bee_Security_Acls_IAclAuthorizationStrategy
+	 * @var IAclAuthorizationStrategy
 	 */
 	private $aclAuthorizationStrategy;
 
 	/**
-	 * @var Bee_Security_Acls_IAuditLogger
+	 * @var IAuditLogger
 	 */
 	private $auditLogger;
 
 	/**
-	 * @var Bee_Security_Acls_IPermissionFactory
+	 * @var IPermissionFactory
 	 */
 	private $permissionFactory;
 
-	public function __construct(PDO $pdoConnection, Bee_Security_Acls_IAclAuthorizationStrategy $aclAuthorizationStrategy,
-								Bee_Security_Acls_IAuditLogger $auditLogger,
-								Bee_Security_Acls_IPermissionFactory $permissionFactory) {
+	/**
+	 * @param PDO $pdoConnection
+	 * @param IAclAuthorizationStrategy $aclAuthorizationStrategy
+	 * @param IAuditLogger $auditLogger
+	 * @param IPermissionFactory $permissionFactory
+	 */
+	public function __construct(PDO $pdoConnection, IAclAuthorizationStrategy $aclAuthorizationStrategy,
+								IAuditLogger $auditLogger,
+								IPermissionFactory $permissionFactory) {
 		$this->pdoTemplate = new Bee_Persistence_Pdo_Template($pdoConnection);
 		$this->aclAuthorizationStrategy = $aclAuthorizationStrategy;
 		$this->auditLogger = $auditLogger;
@@ -134,9 +159,9 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 
 	/**
 	 * @throws InvalidArgumentException
-	 * @param Bee_Security_Acls_IObjectIdentity[] $objects
-	 * @param Bee_Security_Acls_ISid[] $sids
-	 * @return Bee_Security_Acls_IAcl[]
+	 * @param IObjectIdentity[] $objects
+	 * @param ISid[] $sids
+	 * @return IAcl[]
 	 */
 	public function readAclsByOidsAndSids($objects, $sids) {
 		Assert::isTrue($this->batchSize >= 1, 'BatchSize must be >= 1');
@@ -210,14 +235,15 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 	 *  <p>This subclass is required to return fully valid <code>Acl</code>s, including properly-configured
 	 * parent ACLs.</p>
 	 *
-	 * @param Bee_Security_Acls_IObjectIdentity[] $objectIdentities associative $oid->getIdentifierString() => $oid
-	 * @param Bee_Security_Acls_ISid[] $sids DOCUMENT ME!
+	 * @param IObjectIdentity[] $objectIdentities associative $oid->getIdentifierString() => $oid
+	 * @param ISid[] $sids DOCUMENT ME!
 	 *
-	 * @return Bee_Security_Acls_IAcl[] fully loaded associative $oid->getIdentifierString() => $acl
+	 * @return IAcl[] fully loaded associative $oid->getIdentifierString() => $acl
 	 */
 	private function lookupObjectIdentities($objectIdentities, $sids) {
 		Assert::isTrue(count($objectIdentities) > 0, 'Must provide identities to lookup');
 
+		/** @var Acl[] $acls */
 		$acls = array(); // contains Acls with StubAclParents
 
 		// Make the "acls" map contain all requested objectIdentities
@@ -225,8 +251,8 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 		$sql = self::computeRepeatingSql(self::DEFAULT_LOOKUP_IDENTITIES_WHERE_CLAUSE, count($objectIdentities));
 
 		$parentsToLookup = $this->pdoTemplate->queryBySqlString($sql,
-			new Bee_Security_Acls_Pdo_BasicLookupStrategy_StatementSetter_lookupObjectIdentities($objectIdentities),
-			new Bee_Security_Acls_Pdo_BasicLookupStrategy_ResultSetExtractor($acls, $sids, $this));
+			new Pdo_BasicLookupStrategy_StatementSetter_lookupObjectIdentities($objectIdentities),
+			new Pdo_BasicLookupStrategy_ResultSetExtractor($acls, $sids, $this));
 
 		// Lookup the parents, now that our JdbcTemplate has released the database connection (SEC-547)
 		if (count($parentsToLookup) > 0) {
@@ -238,7 +264,7 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 		$resultMap = array();
 
 		foreach ($acls as $inputAcl) {
-			Assert::isInstanceOf('Bee_Security_Acls_Impl_Acl', $inputAcl, 'Map should have contained an AclImpl');
+			Assert::isInstanceOf('Acl', $inputAcl, 'Map should have contained an AclImpl');
 
 			$result = $this->convert($acls, $inputAcl->getId());
 			$resultMap[$result->getObjectIdentity()->getIdentifierString()] = $result;
@@ -251,11 +277,8 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 	 * Accepts the current <code>ResultSet</code> row, and converts it into an <code>AclImpl</code> that
 	 * contains a <code>StubAclParent</code>
 	 *
-	 * @param Bee_Security_Acls_IAcl[] acls the Map we should add the converted Acl to
-	 * @param rs the ResultSet focused on a current row
-	 *
-	 * @throws SQLException if something goes wrong converting values
-	 * @throws IllegalStateException DOCUMENT ME!
+	 * @param IAcl[] $acls
+	 * @param array $row the ResultSet focused on a current row
 	 */
 	function convertCurrentResultIntoObject(&$acls, $row) {
 		$id = $row['acl_id'];
@@ -266,19 +289,19 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 		} else {
 			// Make an AclImpl and pop it into the Map
 			// todo: new instance of ObjectIdentity generated. can we avoid this?
-			$objectIdentity = new Bee_Security_Acls_Impl_ObjectIdentity($row['class'], $row['object_id_identity']);
+			$objectIdentity = new ObjectIdentity($row['class'], $row['object_id_identity']);
 
-			$parentAcl = $row['parent_object'] ? new Bee_Security_Acls_Pdo_BasicLookupStrategy_StubAclParent($row['parent_object']) : null;
+			$parentAcl = $row['parent_object'] ? new Pdo_BasicLookupStrategy_StubAclParent($row['parent_object']) : null;
 
 			$entriesInheriting = $row['entries_inheriting'];
 
 			if ($row['acl_principal']) {
-				$owner = new Bee_Security_Acls_Impl_PrincipalSid($row['acl_sid']);
+				$owner = new PrincipalSid($row['acl_sid']);
 			} else {
-				$owner = new Bee_Security_Acls_Impl_GrantedAuthoritySid($row['acl_sid']);
+				$owner = new GrantedAuthoritySid($row['acl_sid']);
 			}
 
-			$acl = new Bee_Security_Acls_Impl_Acl($objectIdentity, $id, $this->aclAuthorizationStrategy,
+			$acl = new Acl($objectIdentity, $id, $this->aclAuthorizationStrategy,
 				$this->auditLogger, $parentAcl, null, $entriesInheriting, $owner);
 			$acls[$id] = $acl;
 		}
@@ -290,9 +313,9 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 
 			if (!$acl->hasAce($aceId)) {
 				if ($row['ace_principal']) {
-					$recipient = new Bee_Security_Acls_Impl_PrincipalSid($row['ace_sid']);
+					$recipient = new PrincipalSid($row['ace_sid']);
 				} else {
-					$recipient = new Bee_Security_Acls_Impl_GrantedAuthoritySid($row['ace_sid']);
+					$recipient = new GrantedAuthoritySid($row['ace_sid']);
 				}
 
 				$mask = $row['mask'];
@@ -301,7 +324,7 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 				$auditSuccess = $row['audit_success'];
 				$auditFailure = $row['audit_failure'];
 
-				$ace = new Bee_Security_Acls_Impl_AccessControlEntry($aceId, $acl, $recipient, $permission, $granting,
+				$ace = new AccessControlEntry($aceId, $acl, $recipient, $permission, $granting,
 					$auditSuccess, $auditFailure);
 
 				$acl->addAce($ace);
@@ -310,9 +333,9 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 	}
 
 	/**
-	 * @param Bee_Security_Acls_Impl_Acl[] $inputMap
-	 * @param long $currentIdentity
-	 * @return Bee_Security_Acls_Impl_Acl
+	 * @param Acl[] $inputMap
+	 * @param integer $currentIdentity
+	 * @return Acl
 	 */
 	private function convert(&$inputMap, $currentIdentity) {
 
@@ -321,7 +344,7 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 
 		$parent = $inputAcl->getParentAcl();
 
-		if (!is_null($parent) && $parent instanceof Bee_Security_Acls_Pdo_BasicLookupStrategy_StubAclParent) {
+		if (!is_null($parent) && $parent instanceof Pdo_BasicLookupStrategy_StubAclParent) {
 			// Lookup the parent
 			$parent = $this->convert($inputMap, $parent->getId());
 
@@ -331,7 +354,7 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 //		return $inputAcl;
 
 		// Now we have the parent (if there is one), create the true AclImpl
-        $result = new Bee_Security_Acls_Impl_Acl($inputAcl->getObjectIdentity(), $inputAcl->getId(),
+        $result = new Acl($inputAcl->getObjectIdentity(), $inputAcl->getId(),
             $this->aclAuthorizationStrategy, $this->auditLogger, $parent, null, $inputAcl->isEntriesInheriting(),
             $inputAcl->getOwner());
 
@@ -349,17 +372,17 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 	 * Locates the primary key IDs specified in "findNow", adding AclImpl instances with StubAclParents to the
 	 * "acls" Map.
 	 *
-	 * @param acls the AclImpls (with StubAclParents)
-	 * @param findNow Long-based primary keys to retrieve
-	 * @param sids DOCUMENT ME!
+	 * @param array $acls the AclImpls (with StubAclParents)
+	 * @param array $findNow Long-based primary keys to retrieve
+	 * @param array $sids DOCUMENT ME!
 	 */
 	private function lookupPrimaryKeys(array &$acls, array $findNow, array $sids = null) {
 
 		$sql = self::computeRepeatingSql(self::DEFAULT_LOOKUP_KEYS_WHERE_CLAUSE, count($findNow));
 
 		$parentsToLookup = $this->pdoTemplate->queryBySqlString($sql,
-			new Bee_Security_Acls_Pdo_BasicLookupStrategy_StatementSetter_lookupPrimaryKeys($findNow),
-			new Bee_Security_Acls_Pdo_BasicLookupStrategy_ResultSetExtractor($acls, $sids, $this));
+			new Pdo_BasicLookupStrategy_StatementSetter_lookupPrimaryKeys($findNow),
+			new Pdo_BasicLookupStrategy_ResultSetExtractor($acls, $sids, $this));
 
 		if (count($parentsToLookup) > 0) {
 			$this->lookupPrimaryKeys($acls, $parentsToLookup, $sids);
@@ -367,11 +390,11 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy implements Bee_Security_Acls_Pdo
 	}
 }
 
-class Bee_Security_Acls_Pdo_BasicLookupStrategy_StatementSetter_lookupObjectIdentities
+class Pdo_BasicLookupStrategy_StatementSetter_lookupObjectIdentities
 	implements Bee_Persistence_Pdo_IStatementSetter {
 
 	/**
-	 * @var Bee_Security_Acls_IObjectIdentity[]
+	 * @var IObjectIdentity[]
 	 */
 	private $objectIdentities;
 
@@ -391,8 +414,7 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy_StatementSetter_lookupObjectIden
 	}
 }
 
-class Bee_Security_Acls_Pdo_BasicLookupStrategy_StatementSetter_lookupPrimaryKeys
-	implements Bee_Persistence_Pdo_IStatementSetter {
+class Pdo_BasicLookupStrategy_StatementSetter_lookupPrimaryKeys implements Bee_Persistence_Pdo_IStatementSetter {
 
 	/**
 	 * @var array
@@ -413,24 +435,24 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy_StatementSetter_lookupPrimaryKey
 	}
 }
 
-class Bee_Security_Acls_Pdo_BasicLookupStrategy_ResultSetExtractor implements Bee_Persistence_Pdo_IResultSetExtractor {
+class Pdo_BasicLookupStrategy_ResultSetExtractor implements Bee_Persistence_Pdo_IResultSetExtractor {
 
 	/**
-	 * @var Bee_Security_Acls_IAcl[]
+	 * @var IAcl[]
 	 */
 	private $acls;
 
 	/**
-	 * @var Bee_Security_Acls_ISid[]
+	 * @var ISid[]
 	 */
 	private $sids;
 
 	/**
-	 * @var Bee_Security_Acls_Pdo_BasicLookupStrategy
+	 * @var BasicLookupStrategy
 	 */
 	private $strategy;
 
-	public function __construct(&$acls, $sids, Bee_Security_Acls_Pdo_BasicLookupStrategy $strategy) {
+	public function __construct(&$acls, $sids, BasicLookupStrategy $strategy) {
 		$this->acls = & $acls;
 		$this->sids = $sids;
 		$this->strategy = $strategy;
@@ -470,7 +492,7 @@ class Bee_Security_Acls_Pdo_BasicLookupStrategy_ResultSetExtractor implements Be
 	}
 }
 
-class Bee_Security_Acls_Pdo_BasicLookupStrategy_StubAclParent implements Bee_Security_Acls_IAcl{
+class Pdo_BasicLookupStrategy_StubAclParent implements IAcl{
 
 	/**
 	 * @var int

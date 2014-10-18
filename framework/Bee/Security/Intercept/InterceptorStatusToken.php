@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\ConfigAttributeDefinition;
+use Bee\Security\IAuthentication;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,12 +28,12 @@
 class Bee_Security_Intercept_InterceptorStatusToken {
 
     /**
-     * @var Bee_Security_IAuthentication
+     * @var IAuthentication
      */
     private $authentication;
 
     /**
-     * @var Bee_Security_ConfigAttributeDefinition
+     * @var ConfigAttributeDefinition
      */
     private $attr;
 
@@ -47,8 +49,7 @@ class Bee_Security_Intercept_InterceptorStatusToken {
 
     //~ Constructors ===================================================================================================
 
-    public function __construct(Bee_Security_IAuthentication $authentication, $contextHolderRefreshRequired,
-        Bee_Security_ConfigAttributeDefinition $attr, $secureObject) {
+    public function __construct(IAuthentication $authentication, $contextHolderRefreshRequired, ConfigAttributeDefinition $attr, $secureObject) {
         $this->authentication = $authentication;
         $this->contextHolderRefreshRequired = $contextHolderRefreshRequired;
         $this->attr = $attr;
@@ -58,14 +59,14 @@ class Bee_Security_Intercept_InterceptorStatusToken {
     //~ Methods ========================================================================================================
 
     /**
-     * @return Bee_Security_ConfigAttributeDefinition
+     * @return ConfigAttributeDefinition
      */
     public function getAttr() {
         return $this->attr;
     }
 
     /**
-     * @return Bee_Security_IAuthentication
+     * @return IAuthentication
      */
     public function getAuthentication() {
         return $this->authentication;
@@ -85,4 +86,3 @@ class Bee_Security_Intercept_InterceptorStatusToken {
         return $this->contextHolderRefreshRequired;
     }
 }
-?>

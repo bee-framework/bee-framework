@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +17,10 @@
  */
 
 /**
- * User: mp
- * Date: Mar 18, 2010
- * Time: 1:44:23 AM
+ * Class FormattingUtils
+ * @package Bee\Security\Acls
  */
-
-class Bee_Security_Acls_FormattingUtils {
+class FormattingUtils {
 
     private static function printBinary($i, $on, $off) {
         $s = '';
@@ -29,7 +28,7 @@ class Bee_Security_Acls_FormattingUtils {
             $s = ($i & 1) . $s;
             $i >>= 1;
         }
-        $pattern = Bee_Security_Acls_IPermission::THIRTY_TWO_RESERVED_OFF;
+        $pattern = IPermission::THIRTY_TWO_RESERVED_OFF;
         $temp2 = substr($pattern, 0, strlen($pattern) - strlen($s)) . $s;
 
         return str_replace(array('0', '1'), array($off, $on), $temp2);
@@ -41,16 +40,16 @@ class Bee_Security_Acls_FormattingUtils {
      * <p>
      * Inactive bits will be denoted by character {@link Permission#RESERVED_OFF}.
      *
-     * @param mask the integer bit mask to print the active bits for
-     * @param code the character to print when an active bit is detected
+     * @param integer $mask the integer bit mask to print the active bits for
+     * @param string $code the character to print when an active bit is detected
      *
-     * @return a 32-character representation of the bit mask
+     * @return string a 32-character representation of the bit mask
      */
     public static function printActiveBinary($mask, $code) {
 
-        return self::printBinary($mask, $code, Bee_Security_Acls_IPermission::RESERVED_OFF);
-//        return str_replace(Bee_Security_Acls_IPermission::RESERVED_ON, $code, self::printBinary($mask,
-//            Bee_Security_Acls_IPermission::RESERVED_ON, Bee_Security_Acls_IPermission::RESERVED_OFF));
+        return self::printBinary($mask, $code, IPermission::RESERVED_OFF);
+//        return str_replace(IPermission::RESERVED_ON, $code, self::printBinary($mask,
+//            IPermission::RESERVED_ON, IPermission::RESERVED_OFF));
     }
 
     /**
@@ -63,7 +62,7 @@ class Bee_Security_Acls_FormattingUtils {
         $result = '';
         for($i = 0; $i < strlen($extraBits); $i++) {
             $extraBit = substr($extraBits, $i, 1);
-            if($extraBit == Bee_Security_Acls_IPermission::RESERVED_OFF) {
+            if($extraBit == IPermission::RESERVED_OFF) {
                 $result .= substr($original, $i, 1);
             } else {
                 $result .= $extraBit;
@@ -72,4 +71,3 @@ class Bee_Security_Acls_FormattingUtils {
         return $result;
     }
 }
-?>

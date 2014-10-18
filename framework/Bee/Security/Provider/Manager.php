@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Provider;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +15,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\AbstractAuthenticationManager;
+use Bee\Security\AbstractAuthenticationToken;
+use Bee\Security\Concurrent\ISessionController;
+use Bee\Security\Concurrent\NullSessionController;
+use Bee\Security\Exception\AccountStatusException;
+use Bee\Security\Exception\AuthenticationException;
+use Bee\Security\Exception\ConcurrentLoginException;
+use Bee\Security\Exception\ProviderNotFoundException;
+use Bee\Security\IAuthentication;
+use Bee\Security\IAuthenticationProvider;
 
-
-class Bee_Security_Provider_Manager extends Bee_Security_AbstractAuthenticationManager {
+/**
+ * Class Manager
+ * @package Bee\Security\Provider
+ */
+class Manager extends AbstractAuthenticationManager {
 
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Security_Concurrent_ISessionController
+	 * @var ISessionController
 	 */
     private $sessionController;
 
     /**
      * Enter description here...
      *
-     * @var Bee_Security_IAuthenticationProvider[]
+     * @var IAuthenticationProvider[]
      */
     private $providers = array();
 
@@ -37,10 +51,10 @@ class Bee_Security_Provider_Manager extends Bee_Security_AbstractAuthenticationM
     //private $additionalExceptionMappings = new Properties();
     
     public function __construct() {
-    	$this->sessionController = new Bee_Security_Concurrent_NullSessionController();
+    	$this->sessionController = new NullSessionController();
     }
 
-    protected function doAuthentication(Bee_Security_IAuthentication $authentication) {
+    protected function doAuthentication(IAuthentication $authentication) {
     	
         $lastException = null;
         
@@ -58,14 +72,14 @@ class Bee_Security_Provider_Manager extends Bee_Security_AbstractAuthenticationM
                 	$this->sessionController->checkAuthenticationAllowed($result);
                 }
 
-            } catch (Bee_Security_Exception_Authentication $ae) {
+            } catch (AuthenticationException $ae) {
                 $lastException = $ae;
                 $result = null;
             }
 
             // SEC-546: Avoid polling additional providers if auth failure is due to invalid account status or
             // disallowed concurrent login.
-            if ($lastException instanceof Bee_Security_Exception_AccountStatus || $lastException instanceof Bee_Security_Exception_ConcurrentLogin) {
+            if ($lastException instanceof AccountStatusException || $lastException instanceof ConcurrentLoginException) {
                 break;
             }
 
@@ -77,7 +91,7 @@ class Bee_Security_Provider_Manager extends Bee_Security_AbstractAuthenticationM
         }
 
         if ($lastException == null) {
-            $lastException = new Bee_Security_Exception_ProviderNotFound('No AuthenticationProvider found for class ' . get_class($authentication));
+            $lastException = new ProviderNotFoundException('No AuthenticationProvider found for class ' . get_class($authentication));
         }
 
 //        publishAuthenticationFailure($lastException, $authentication);
@@ -85,8 +99,8 @@ class Bee_Security_Provider_Manager extends Bee_Security_AbstractAuthenticationM
         throw $lastException;    	
     }
     
-    private function copyDetails(Bee_Security_IAuthentication $source, Bee_Security_IAuthentication $dest) {
-        if (($dest instanceof Bee_Security_AbstractAuthenticationToken) && ($dest->getDetails() == null)) {
+    private function copyDetails(IAuthentication $source, IAuthentication $dest) {
+        if (($dest instanceof AbstractAuthenticationToken) && ($dest->getDetails() == null)) {
             $dest->setDetails($source->getDetails());
         }
     }
@@ -94,7 +108,7 @@ class Bee_Security_Provider_Manager extends Bee_Security_AbstractAuthenticationM
     /**
      * Enter description here...
      *
-     * @return array<Bee_Security_IAuthenticationProvider>
+     * @return IAuthenticationProvider[]
      */
     public final function getProviders() {
     	return $this->providers; 
@@ -112,7 +126,7 @@ class Bee_Security_Provider_Manager extends Bee_Security_AbstractAuthenticationM
     /**
      * Enter description here...
      *
-     * @return Bee_Security_Concurrent_ISessionController
+     * @return ISessionController
      */
     public final function getSessionController() {
     	return $this->sessionController;
@@ -121,11 +135,11 @@ class Bee_Security_Provider_Manager extends Bee_Security_AbstractAuthenticationM
     /**
      * Enter description here...
      *
-     * @param Bee_Security_Concurrent_ISessionController $sessionController
+     * @param ISessionController $sessionController
      * 
      * @return void
      */
-    public final function setSessionController(Bee_Security_Concurrent_ISessionController $sessionController) {
+    public final function setSessionController(ISessionController $sessionController) {
     	$this->sessionController = $sessionController;
     }
 }

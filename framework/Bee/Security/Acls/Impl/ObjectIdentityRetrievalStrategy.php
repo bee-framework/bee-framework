@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls\Impl;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Acls\Exception\IdentityUnavailableException;
+use Bee\Security\Acls\IObjectIdentityRetrievalStrategy;
 
 /**
- * User: mp
- * Date: Mar 16, 2010
- * Time: 11:57:15 PM
+ * Class ObjectIdentityRetrievalStrategy
+ * @package Bee\Security\Acls\Impl
  */
-
-class Bee_Security_Acls_Impl_ObjectIdentityRetrievalStrategy implements Bee_Security_Acls_IObjectIdentityRetrievalStrategy {
+class ObjectIdentityRetrievalStrategy implements IObjectIdentityRetrievalStrategy {
 
     public function getObjectIdentity($domainObject) {
         if(!method_exists($domainObject, 'getId')) {
-            throw new Bee_Security_Acls_Exception_IdentityUnavailable($domainObject);
+            throw new IdentityUnavailableException($domainObject);
         }
-        return new Bee_Security_Acls_Impl_ObjectIdentity(get_class($domainObject), $domainObject->getId());
+        return new ObjectIdentity(get_class($domainObject), $domainObject->getId());
     }
 }
-?>

@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Exception\AccessDeniedException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -64,7 +65,7 @@ class Bee_Security_Intercept_MethodSecurityInterceptor extends Bee_Security_Inte
 	 * This method should be used to enforce security on a <code>MethodInvocation</code>.
 	 *
 	 * @param Bee_AOP_Intercept_IMethodInvocation $mi The $mi method being invoked which requires a security decision
-	 * @throws Bee_Security_Exception_AccessDenied
+	 * @throws AccessDeniedException
 	 * @throws Exception
 	 *
 	 * @return mixed The returned value from the method invocation

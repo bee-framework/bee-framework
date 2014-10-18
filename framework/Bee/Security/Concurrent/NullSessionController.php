@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Concurrent;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\IAuthentication;
 
 /**
- * No-op implementation of {@link Bee_Security_Concurrent_ISessionController}.
- *
+ * Class NullSessionController
+ * No-op implementation of {@link ISessionController}.
+ * @package Bee\Security\Concurrent
  */
-class Bee_Security_Concurrent_NullSessionController implements Bee_Security_Concurrent_ISessionController {
-    public function checkAuthenticationAllowed(Bee_Security_IAuthentication $request) {}
-    public function registerSuccessfulAuthentication(Bee_Security_IAuthentication $authentication) {}
+class NullSessionController implements ISessionController {
+    public function checkAuthenticationAllowed(IAuthentication $request) {}
+    public function registerSuccessfulAuthentication(IAuthentication $authentication) {}
 }
-?>

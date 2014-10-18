@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +17,7 @@
  */
 
 /**
+ * Interface IUserDetails
  * Provides core user information.
  *
  * <p>
@@ -38,13 +40,14 @@
  * like a String). This is because the <code>UserDetails</code> will be
  * stored in caches and as such multiple threads may use the same instance.
  * </p>
+ * @package Bee\Security
  */
-interface Bee_Security_IUserDetails {
+interface IUserDetails {
 	
     /**
      * Returns the authorities granted to the user. Cannot return <code>null</code>.
      *
-     * @return Bee_Security_IGrantedAuthority[] the authorities, sorted by natural key (never <code>null</code>)
+     * @return IGrantedAuthority[] the authorities, sorted by natural key (never <code>null</code>)
      */
     function getAuthorities();
 
@@ -92,6 +95,4 @@ interface Bee_Security_IUserDetails {
      * @return boolean <code>true</code> if the user is enabled, <code>false</code> otherwise
      */
     function isEnabled();
-		
 }
-?>
