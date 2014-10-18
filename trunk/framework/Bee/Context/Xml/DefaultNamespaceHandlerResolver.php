@@ -29,8 +29,8 @@ class DefaultNamespaceHandlerResolver implements IHandlerResolver {
 	
 	private static $NAMESPACE_HANDLERS = array(
 		'http://www.beeframework.org/schema/aop' => 'Bee_AOP_Namespace_Handler',
-		'http://www.beeframework.org/schema/security' => 'Bee_Security_Namespace_Handler',
-		'http://www.beeframework.org/schema/tx' => null,
+		'http://www.beeframework.org/schema/security' => 'Bee\Security\XmlNamespace\Handler',
+//		'http://www.beeframework.org/schema/tx' => null,
 		'http://www.beeframework.org/schema/util' => 'Bee\Context\Util\XmlNamespace\Handler',
 		'http://www.beeframework.org/schema/mvc' => 'Bee\MVC\XmlNamespace\Handler'
 	);

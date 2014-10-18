@@ -1,5 +1,5 @@
 <?php
-namespace Bee\Security;
+namespace Bee\Security\XmlNamespace;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
