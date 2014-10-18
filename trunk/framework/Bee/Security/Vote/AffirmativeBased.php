@@ -15,8 +15,12 @@
  * limitations under the License.
  */
 
+use Bee\Security\ConfigAttributeDefinition;
+use Bee\Security\Exception\AccessDeniedException;
+use Bee\Security\IAuthentication;
+
 class Bee_Security_Vote_AffirmativeBased extends Bee_Security_Vote_AbstractDecisionManager {
-	public function decide(Bee_Security_IAuthentication $authentication, $object, Bee_Security_ConfigAttributeDefinition $configAttributes) {
+	public function decide(IAuthentication $authentication, $object, ConfigAttributeDefinition $configAttributes) {
 		$deny = 0;
 		
 		foreach($this->getDecisionVoters() as $voter) {
@@ -34,11 +38,10 @@ class Bee_Security_Vote_AffirmativeBased extends Bee_Security_Vote_AbstractDecis
 		}
 
 		if($deny > 0) {
-			throw new Bee_Security_Exception_AccessDenied('access_denied');
+			throw new AccessDeniedException('access_denied');
 		}
 
         // To get this far, every AccessDecisionVoter abstained
         $this->checkAllowIfAllAbstainDecisions();
 	}
 }
-?>

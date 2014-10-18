@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls\Pdo;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Acls\IAcl;
+use Bee\Security\Acls\IObjectIdentity;
+use Bee\Security\Acls\ISid;
 
 /**
  * User: mp
@@ -21,20 +25,19 @@
  * Time: 11:34:15 PM
  */
 
-interface Bee_Security_Acls_Pdo_ILookupStrategy {
+interface ILookupStrategy {
 
     /**
      * Perform database-specific optimized lookup.
      *
-     * @param Bee_Security_Acls_IObjectIdentity[] $objects the identities to lookup (required)
-     * @param Bee_Security_Acls_ISid[] $sids the SIDs for which identities are required (may be <tt>null</tt> - implementations may elect not
+     * @param IObjectIdentity[] $objects the identities to lookup (required)
+     * @param ISid[] $sids the SIDs for which identities are required (may be <tt>null</tt> - implementations may elect not
      *        to provide SID optimisations)
-     * @return Bee_Security_Acls_IAcl[] associative array where keys represent the {@link Bee_Security_Acls_IObjectIdentity}
-     *         (in terms of $oid->getIdentifierString()) of the located {@link Bee_Security_Acls_IAcl} and values are the
+     * @return IAcl[] associative array where keys represent the {@link IObjectIdentity}
+     *         (in terms of $oid->getIdentifierString()) of the located {@link IAcl} and values are the
      *         located {@link Acl} (never <tt>null</tt> although some entries may be missing; this method should not throw
-     *         {@link Bee_Security_Acls_Exception_NotFound}, as a chain of {@link Bee_Security_Acls_Pdo_ILookupStrategy}s
+     *         {@link NotFoundException}, as a chain of {@link ILookupStrategy}s
      *         may be used to automatically create entries if required)
      */
     public function readAclsByOidsAndSids($objects, $sids);
 }
-?>

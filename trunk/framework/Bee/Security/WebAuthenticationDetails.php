@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Security;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -15,6 +16,7 @@
  * limitations under the License.
  */
 use Bee\MVC\IHttpRequest;
+use Bee\Security\Concurrent\ISessionIdentifierAware;
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,7 +24,7 @@ use Bee\MVC\IHttpRequest;
  * Date: Apr 23, 2010
  * Time: 10:02:43 PM
  */
-class Bee_Security_WebAuthenticationDetails implements Bee_Security_Concurrent_ISessionIdentifierAware {
+class WebAuthenticationDetails implements ISessionIdentifierAware {
 
     private $remoteAddress;
     private $sessionId;
@@ -53,7 +55,7 @@ class Bee_Security_WebAuthenticationDetails implements Bee_Security_Concurrent_I
     protected function doPopulateAdditionalInformation(IHttpRequest $request) {}
 
     public function equals($obj) {
-        if ($obj instanceof Bee_Security_WebAuthenticationDetails) {
+        if ($obj instanceof WebAuthenticationDetails) {
 
             if ($this->remoteAddress != $obj->getRemoteAddress()) {
                 return false;
@@ -88,6 +90,6 @@ class Bee_Security_WebAuthenticationDetails implements Bee_Security_Concurrent_I
     }
 
     public function __toString() {
-        return 'Bee_Security_WebAuthenticationDetails[RemoteIpAddress='.$this->getRemoteAddress().';SessionId='.$this->getSessionId().']';
+        return 'WebAuthenticationDetails[RemoteIpAddress='.$this->getRemoteAddress().';SessionId='.$this->getSessionId().']';
     }
 }

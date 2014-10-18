@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +17,20 @@
  */
 
 /**
- * 
+ * Interface IAccessDecisionManager
+ * @package Bee\Security
  */
-interface Bee_Security_IAccessDecisionManager {
+interface IAccessDecisionManager {
 
     /**
      * @abstract
-     * @param Bee_Security_IAuthentication $authentication the caller invoking the method
-     * @param  $object the secured object being called
-     * @param Bee_Security_ConfigAttributeDefinition $configAttributes the configuration attributes associated with the
+     * @param IAuthentication $authentication the caller invoking the method
+     * @param mixed $object the secured object being called
+     * @param ConfigAttributeDefinition $configAttributes the configuration attributes associated with the
      * secured object being invoked
      * @return void
      */
-    function decide(Bee_Security_IAuthentication $authentication, $object, Bee_Security_ConfigAttributeDefinition $configAttributes);
+    function decide(IAuthentication $authentication, $object, ConfigAttributeDefinition $configAttributes);
 
     /**
      * Indicates whether this <code>AccessDecisionManager</code> is able to process authorization requests
@@ -38,11 +40,11 @@ interface Bee_Security_IAccessDecisionManager {
      * <code>AfterInvocationManager</code>.</p>
      *
      * @abstract
-     * @param Bee_Security_IConfigAttribute $configAttribute a configuration attribute that has been configured against the
+     * @param IConfigAttribute $configAttribute a configuration attribute that has been configured against the
      *        <code>AbstractSecurityInterceptor</code>
      * @return boolean true if this <code>AccessDecisionManager</code> can support the passed configuration attribute
      */
-    function supports(Bee_Security_IConfigAttribute $configAttribute);
+    function supports(IConfigAttribute $configAttribute);
 
     /**
      * Indicates whether the <code>AccessDecisionManager</code> implementation is able to provide access
@@ -54,4 +56,3 @@ interface Bee_Security_IAccessDecisionManager {
      */
     function supportsClass($className);
 }
-?>

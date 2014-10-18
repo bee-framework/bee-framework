@@ -16,10 +16,10 @@ namespace Bee\Security\UserDetails;
  * limitations under the License.
  */
 
+use Bee\Security\IPasswordEncoder;
+use Bee\Security\Provider\ISaltSource;
 use Bee\Security\UserDetails\Doctrine2\UserBase;
 use Bee\Utils\Strings;
-use Bee_Security_IPasswordEncoder;
-use Bee_Security_Provider_ISaltSource;
 use Exception;
 
 /**
@@ -31,40 +31,40 @@ abstract class UserManagerBase {
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Security_IPasswordEncoder
+	 * @var IPasswordEncoder
 	 */
 	private $passwordEncoder;
 
 	/**
 	 * Enter description here...
 	 *
-	 * @var Bee_Security_Provider_ISaltSource
+	 * @var ISaltSource
 	 */
 	private $saltSource = null;
 
 	/**
-	 * @param Bee_Security_IPasswordEncoder $passwordEncoder
+	 * @param IPasswordEncoder $passwordEncoder
 	 */
-	public function setPasswordEncoder(Bee_Security_IPasswordEncoder $passwordEncoder) {
+	public function setPasswordEncoder(IPasswordEncoder $passwordEncoder) {
 		$this->passwordEncoder = $passwordEncoder;
 	}
 
 	/**
-	 * @return Bee_Security_IPasswordEncoder
+	 * @return IPasswordEncoder
 	 */
 	public function getPasswordEncoder() {
 		return $this->passwordEncoder;
 	}
 
 	/**
-	 * @param Bee_Security_Provider_ISaltSource $saltSource
+	 * @param ISaltSource $saltSource
 	 */
-	public function setSaltSource(Bee_Security_Provider_ISaltSource $saltSource) {
+	public function setSaltSource(ISaltSource $saltSource) {
 		$this->saltSource = $saltSource;
 	}
 
 	/**
-	 * @return Bee_Security_Provider_ISaltSource
+	 * @return ISaltSource
 	 */
 	public function getSaltSource() {
 		return $this->saltSource;

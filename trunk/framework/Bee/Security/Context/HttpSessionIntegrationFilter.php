@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Security\Context;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -19,7 +20,11 @@ use Bee\MVC\IFilter;
 use Bee\MVC\IFilterChain;
 use Bee\MVC\IHttpRequest;
 
-class Bee_Security_Context_HttpSessionIntegrationFilter implements IFilter {
+/**
+ * Class HttpSessionIntegrationFilter
+ * @package Bee\Security\Context
+ */
+class HttpSessionIntegrationFilter implements IFilter {
 	
 	const BEE_SECURITY_CONTEXT_KEY = 'BEE_SECURITY_CONTEXT';
 	
@@ -61,7 +66,7 @@ class Bee_Security_Context_HttpSessionIntegrationFilter implements IFilter {
 //		}
 		
 		if(array_key_exists(self::BEE_SECURITY_CONTEXT_KEY, $_SESSION)) {
-			Bee_Security_Context_Holder::setContext($_SESSION[self::BEE_SECURITY_CONTEXT_KEY]);
+			SecurityContextHolder::setContext($_SESSION[self::BEE_SECURITY_CONTEXT_KEY]);
 		}
 
 		$filterChain->doFilter($request);
@@ -69,6 +74,6 @@ class Bee_Security_Context_HttpSessionIntegrationFilter implements IFilter {
 		// @todo: detect change in SecurityContext, only create a session if such change ocurred
 		// spl_object_hash _could_ help, but is not a solution by itself
 
-		$_SESSION[self::BEE_SECURITY_CONTEXT_KEY] = Bee_Security_Context_Holder::getContext();		
+		$_SESSION[self::BEE_SECURITY_CONTEXT_KEY] = SecurityContextHolder::getContext();
 	}
 }

@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Exception\AuthenticationException;
 
 /**
- * Processes an {@link Bee_Security_IAuthentication} request.
- *
+ * Interface IAuthenticationManager
+ * Processes an {@link IAuthentication} request.
+ * @package Bee\Security
  */
-interface Bee_Security_IAuthenticationManager {
+interface IAuthenticationManager {
 
 	/**
-     * Attempts to authenticate the passed {@link Bee_Security_IAuthentication} object, returning a fully populated
-     * <code>Bee_Security_IAuthentication</code> object (including granted authorities) if successful.<p>An
-     * <code>Bee_Security_IAuthenticationManager</code> must honour the following contract concerning exceptions:</p>
+     * Attempts to authenticate the passed {@link IAuthentication} object, returning a fully populated
+     * <code>IAuthentication</code> object (including granted authorities) if successful.<p>An
+     * <code>IAuthenticationManager</code> must honour the following contract concerning exceptions:</p>
      *  <p>A {@link DisabledException} must be thrown if an account is disabled and the
      * <code>AuthenticationManager</code> can test for this state.</p>
      *  <p>A {@link LockedException} must be thrown if an account is locked and the
@@ -35,11 +38,10 @@ interface Bee_Security_IAuthenticationManager {
      * account is disabled or locked, the authentication request is immediately rejected and the credentials testing
      * process is not performed). This prevents credentials being tested against  disabled or locked accounts.</p>
      *
-	 * @param Bee_Security_IAuthentication $authentication
-	 * @return Bee_Security_IAuthentication
+	 * @param IAuthentication $authentication
+	 * @return IAuthentication
 	 * 
-	 * @throws Bee_Security_AuthenticationException if authentication fails
+	 * @throws AuthenticationException if authentication fails
 	 */
-	function authenticate(Bee_Security_IAuthentication $authentication);
+	function authenticate(IAuthentication $authentication);
 }
-?>

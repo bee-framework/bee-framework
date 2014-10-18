@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Context;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +16,18 @@
  * limitations under the License.
  */
 
-class Bee_Security_Context_Holder {
+use Bee\Security\Context;
+
+/**
+ * Class SecurityContextHolder
+ * @package Bee\Security\Context
+ */
+class SecurityContextHolder {
 	
 	/**
 	 * Single context instance
 	 *
-	 * @var Bee_Security_Context
+	 * @var Context
 	 */
 	private static $context;
 	
@@ -36,11 +43,11 @@ class Bee_Security_Context_Holder {
 	/**
 	 * Obtain the current <code>SecurityContext</code>.
 	 *
-	 * @return Bee_Security_Context the security context (never <code>null</code>)
+	 * @return Context the security context (never <code>null</code>)
 	 */
 	public static function getContext() {
 		if(is_null(self::$context)) {
-			self::$context = new Bee_Security_Context();
+			self::$context = new Context();
 		}
 		return self::$context;
 	}
@@ -48,10 +55,9 @@ class Bee_Security_Context_Holder {
 	/**
 	 * Associates a new <code>SecurityContext</code> with the current thread of execution.
 	 *
-	 * @param Bee_Security_Context $context the new <code>SecurityContext</code> (may not be <code>null</code>)
+	 * @param Context $context the new <code>SecurityContext</code> (may not be <code>null</code>)
 	 */
-	public static function setContext(Bee_Security_Context $context) {
+	public static function setContext(Context $context) {
 		self::$context = $context;
 	}
 }
-?>

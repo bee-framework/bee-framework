@@ -15,9 +15,12 @@
  * limitations under the License.
  */
 use Bee\Context\Config\IInitializingBean;
+use Bee\Security\Exception\AccessDeniedException;
+use Bee\Security\IAccessDecisionManager;
+use Bee\Security\IConfigAttribute;
 use Bee\Utils\Assert;
 
-abstract class Bee_Security_Vote_AbstractDecisionManager implements Bee_Security_IAccessDecisionManager, IInitializingBean {
+abstract class Bee_Security_Vote_AbstractDecisionManager implements IAccessDecisionManager, IInitializingBean {
 
 	/**
 	 * 
@@ -37,7 +40,7 @@ abstract class Bee_Security_Vote_AbstractDecisionManager implements Bee_Security
 
 	protected final function checkAllowIfAllAbstainDecisions() {
         if (!$this->isAllowIfAllAbstainDecisions()) {
-            throw new Bee_Security_Exception_AccessDenied('access_denied'); // @todo: message source
+            throw new AccessDeniedException('access_denied'); // @todo: message source
         }
     }
 
@@ -69,7 +72,7 @@ abstract class Bee_Security_Vote_AbstractDecisionManager implements Bee_Security
     	$this->decisionVoters = $decisionVoters; 
     }
 
-	public function supports(Bee_Security_IConfigAttribute $configAttribute) {
+	public function supports(IConfigAttribute $configAttribute) {
 		foreach($this->decisionVoters as $voter) {
 			if($voter->supports($configAttribute)) {
 				return true;

@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls\Impl;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +15,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Acls\Exception\NotFoundException;
+use Bee\Security\Acls\Exception\UnloadedSidException;
+use Bee\Security\Acls\IAccessControlEntry;
+use Bee\Security\Acls\IAcl;
+use Bee\Security\Acls\IAclAuthorizationStrategy;
+use Bee\Security\Acls\IAuditLogger;
+use Bee\Security\Acls\IMutableAcl;
+use Bee\Security\Acls\IObjectIdentity;
+use Bee\Security\Acls\IPermission;
+use Bee\Security\Acls\ISid;
 use Bee\Utils\Assert;
 
 /**
- * User: mp
- * Date: Mar 18, 2010
- * Time: 12:15:11 AM
+ * Class Acl
+ * @package Bee\Security\Acls\Impl
  */
-
-class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security_Acls_IMutableAcl {
+class Acl implements IAcl, IMutableAcl {
 
     /**
      * @var mixed
@@ -31,29 +40,29 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
 
     /**
      * 
-     * @var Bee_Security_Acls_Impl_AccessControlEntry[]
+     * @var AccessControlEntry[]
      */
     private $aces = array();
 
     /**
      * Associative array of $ace->getId() -> $ace mappings
      *
-     * @var Bee_Security_Acls_Impl_AccessControlEntry[]
+     * @var AccessControlEntry[]
      */
     private $acesById = array();
 
     /**
-     * @var Bee_Security_Acls_IObjectIdentity
+     * @var IObjectIdentity
      */
     private $objectIdentity;
 
     /**
-     * @var Bee_Security_Acls_ISid
+     * @var ISid
      */
     private $owner;
 
     /**
-     * @var Bee_Security_Acls_IAcl
+     * @var IAcl
      */
     private $parentAcl;
 
@@ -63,22 +72,32 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
     private $entriesInheriting;
 
     /**
-     * @var Bee_Security_Acls_ISid[]
+     * @var ISid[]
      */
     private $loadedSids = null;
 
     /**
-     * @var Bee_Security_Acls_IAuditLogger
+     * @var IAuditLogger
      */
     private $auditLogger;
 
     /**
-     * @var Bee_Security_Acls_IAclAuthorizationStrategy
+     * @var IAclAuthorizationStrategy
      */
     private $aclAuthorizationStrategy;
 
-    public function __construct(Bee_Security_Acls_IObjectIdentity $objectIdentity, $id, Bee_Security_Acls_IAclAuthorizationStrategy $aclAuthorizationStrategy,
-        Bee_Security_Acls_IAuditLogger $auditLogger, Bee_Security_Acls_IAcl $parentAcl = null, array $loadedSids = null, $entriesInheriting, Bee_Security_Acls_ISid $owner) {
+	/**
+	 * @param IObjectIdentity $objectIdentity
+	 * @param $id
+	 * @param IAclAuthorizationStrategy $aclAuthorizationStrategy
+	 * @param IAuditLogger $auditLogger
+	 * @param IAcl $parentAcl
+	 * @param array $loadedSids
+	 * @param $entriesInheriting
+	 * @param ISid $owner
+	 */
+    public function __construct(IObjectIdentity $objectIdentity, $id, IAclAuthorizationStrategy $aclAuthorizationStrategy,
+        IAuditLogger $auditLogger, IAcl $parentAcl = null, array $loadedSids = null, $entriesInheriting, ISid $owner) {
         Assert::notNull($objectIdentity, 'Object Identity required');
         Assert::notNull($id, 'Id required');
         Assert::notNull($aclAuthorizationStrategy, 'AclAuthorizationStrategy required');
@@ -95,41 +114,53 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
     }
 
     /**
-     * @return Bee_Security_Acls_Impl_AccessControlEntry[]
+     * @return AccessControlEntry[]
      */
     public function getEntries() {
         return $this->aces;
     }
 
+	/**
+	 * @return IObjectIdentity
+	 */
     public function getObjectIdentity() {
         return $this->objectIdentity;
     }
 
+	/**
+	 * @return ISid
+	 */
     public function getOwner() {
         return $this->owner;
     }
 
+	/**
+	 * @return IAcl
+	 */
     public function getParentAcl() {
         return $this->parentAcl;
     }
 
+	/**
+	 * @return bool
+	 */
     public function isEntriesInheriting() {
         return $this->entriesInheriting;
     }
 
     /**
-     * @param Bee_Security_Acls_IPermission[] $permissions
-     * @param Bee_Security_Acls_ISid[] $sids
+     * @param IPermission[] $permissions
+     * @param ISid[] $sids
      * @param boolean $administrativeMode
      * @return bool|string
-     * @throws Bee_Security_Acls_Exception_UnloadedSid|Bee_Security_Acls_Exception_NotFound
+     * @throws UnloadedSidException|NotFoundException
      */
     public function isGranted(array $permissions, array $sids, $administrativeMode) {
         Assert::notEmpty($permissions, 'Permissions required');
         Assert::notEmpty($sids, 'SIDs required');
 
         if (!$this->isSidLoaded($sids)) {
-            throw new Bee_Security_Acls_Exception_UnloadedSid('ACL was not loaded for one or more SID');
+            throw new UnloadedSidException('ACL was not loaded for one or more SID');
         }
 
         $firstRejection = null;
@@ -189,13 +220,13 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
             return $this->parentAcl->isGranted($permissions, $sids, false);
         } else {
             // We either have no parent, or we're the uppermost parent
-            throw new Bee_Security_Acls_Exception_NotFound('Unable to locate a matching ACE for passed permissions and SIDs');
+            throw new NotFoundException('Unable to locate a matching ACE for passed permissions and SIDs');
         }
 
     }
 
     /**
-     * @param Bee_Security_Acls_ISid[] $sids
+     * @param ISid[] $sids
      * @return bool
      */
     public function isSidLoaded(array $sids) {
@@ -226,8 +257,12 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
         return true;
     }
 
+	/**
+	 * @param int $aceIndex
+	 * @throws NotFoundException
+	 */
     public function deleteAce($aceIndex) {
-        $this->aclAuthorizationStrategy->securityCheck($this, Bee_Security_Acls_IAclAuthorizationStrategy::CHANGE_GENERAL);
+        $this->aclAuthorizationStrategy->securityCheck($this, IAclAuthorizationStrategy::CHANGE_GENERAL);
         $this->verifyAceIndexExists($aceIndex);
 
         $ace = $this->aces[$aceIndex];
@@ -236,22 +271,32 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
         $this->aces = array_merge($this->aces);
     }
 
+	/**
+	 * @return int|mixed
+	 */
     public function getId() {
         return $this->id;
     }
 
-    public function insertAce($atIndexLocation, Bee_Security_Acls_IPermission $permission, Bee_Security_Acls_ISid $sid, $granting) {
-        $this->aclAuthorizationStrategy->securityCheck($this, Bee_Security_Acls_IAclAuthorizationStrategy::CHANGE_GENERAL);
+	/**
+	 * @param int $atIndexLocation
+	 * @param IPermission $permission
+	 * @param ISid $sid
+	 * @param bool $granting
+	 * @throws NotFoundException
+	 */
+    public function insertAce($atIndexLocation, IPermission $permission, ISid $sid, $granting) {
+        $this->aclAuthorizationStrategy->securityCheck($this, IAclAuthorizationStrategy::CHANGE_GENERAL);
         Assert::notNull($permission, 'Permission required');
         Assert::notNull($sid, 'Sid required');
         if ($atIndexLocation < 0) {
-        	throw new Bee_Security_Acls_Exception_NotFound('atIndexLocation must be greater than or equal to zero');
+        	throw new NotFoundException('atIndexLocation must be greater than or equal to zero');
         }
         if ($atIndexLocation > count($this->aces)) {
-        	throw new Bee_Security_Acls_Exception_NotFound('atIndexLocation must be less than or equal to the size of the AccessControlEntry collection');
+        	throw new NotFoundException('atIndexLocation must be less than or equal to the size of the AccessControlEntry collection');
         }
 
-        $ace = new Bee_Security_Acls_Impl_AccessControlEntry(null, $this, $sid, $permission, $granting, false, false);
+        $ace = new AccessControlEntry(null, $this, $sid, $permission, $granting, false, false);
 
         if($atIndexLocation == 0) {
             array_unshift($this->aces, $ace);
@@ -264,47 +309,76 @@ class Bee_Security_Acls_Impl_Acl implements Bee_Security_Acls_IAcl, Bee_Security
         }
     }
 
-    public function setOwner(Bee_Security_Acls_ISid $newOwner) {
-        $this->aclAuthorizationStrategy->securityCheck($this, Bee_Security_Acls_IAclAuthorizationStrategy::CHANGE_OWNERSHIP);
+	/**
+	 * @param ISid $newOwner
+	 */
+    public function setOwner(ISid $newOwner) {
+        $this->aclAuthorizationStrategy->securityCheck($this, IAclAuthorizationStrategy::CHANGE_OWNERSHIP);
 		Assert::notNull($newOwner, 'Owner required');
         $this->owner = $newOwner;
     }
 
+	/**
+	 * @param bool $entriesInheriting
+	 */
     public function setEntriesInheriting($entriesInheriting) {
-        $this->aclAuthorizationStrategy->securityCheck($this, Bee_Security_Acls_IAclAuthorizationStrategy::CHANGE_GENERAL);
+        $this->aclAuthorizationStrategy->securityCheck($this, IAclAuthorizationStrategy::CHANGE_GENERAL);
         $this->entriesInheriting = $entriesInheriting;
     }
 
-    public function setParent(Bee_Security_Acls_IAcl $newParent) {
-        $this->aclAuthorizationStrategy->securityCheck($this, Bee_Security_Acls_IAclAuthorizationStrategy::CHANGE_GENERAL);
+	/**
+	 * @param IAcl $newParent
+	 */
+    public function setParent(IAcl $newParent) {
+        $this->aclAuthorizationStrategy->securityCheck($this, IAclAuthorizationStrategy::CHANGE_GENERAL);
 		Assert::isTrue(is_null($newParent) || $newParent != $this, 'Cannot be the parent of yourself');
         $this->parentAcl = $newParent;
     }
 
-    public function updateAce($aceIndex, Bee_Security_Acls_IPermission $permission) {
-        $this->aclAuthorizationStrategy->securityCheck($this, Bee_Security_Acls_IAclAuthorizationStrategy::CHANGE_GENERAL);
+	/**
+	 * @param int $aceIndex
+	 * @param IPermission $permission
+	 * @throws NotFoundException
+	 */
+    public function updateAce($aceIndex, IPermission $permission) {
+        $this->aclAuthorizationStrategy->securityCheck($this, IAclAuthorizationStrategy::CHANGE_GENERAL);
         $this->verifyAceIndexExists($aceIndex);
         $this->aces[$aceIndex]->setPermission($permission);
     }
 
+	/**
+	 * @param $aceIndex
+	 * @throws NotFoundException
+	 */
     private function verifyAceIndexExists($aceIndex) {
         if ($aceIndex < 0) {
-        	throw new Bee_Security_Acls_Exception_NotFound('atIndexLocation must be greater than or equal to zero');
+        	throw new NotFoundException('atIndexLocation must be greater than or equal to zero');
         }
         if ($aceIndex >= count($this->aces)) {
-        	throw new Bee_Security_Acls_Exception_NotFound('atIndexLocation must be less than or equal to the size of the AccessControlEntry collection');
+        	throw new NotFoundException('atIndexLocation must be less than or equal to the size of the AccessControlEntry collection');
         }
     }
 
+	/**
+	 * @param $aceId
+	 * @return bool
+	 */
     function hasAce($aceId) {
         return array_key_exists('_'.$aceId, $this->acesById);
     }
-    function addAce(Bee_Security_Acls_IAccessControlEntry $ace) {
+
+	/**
+	 * @param IAccessControlEntry $ace
+	 */
+    function addAce(IAccessControlEntry $ace) {
         $this->aces[] = $ace;
         $this->acesById['_'.$ace->getId()] = $ace;
     }
 
-    function setParentAcl(Bee_Security_Acls_Impl_Acl $parentAcl) {
+	/**
+	 * @param Acl $parentAcl
+	 */
+    function setParentAcl(Acl $parentAcl) {
         $this->parentAcl = $parentAcl;
     }
 }

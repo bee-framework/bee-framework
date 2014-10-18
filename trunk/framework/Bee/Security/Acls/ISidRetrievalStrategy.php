@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +15,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\IAuthentication;
 
 /**
- * User: mp
- * Date: Mar 22, 2010
- * Time: 11:32:56 PM
+ * Interface ISidRetrievalStrategy
+ * @package Bee\Security\Acls
  */
-
-interface Bee_Security_Acls_ISidRetrievalStrategy {
+interface ISidRetrievalStrategy {
 
     /**
      * @abstract
-     * @param Bee_Security_IAuthentication $authentication
-     * @return Bee_Security_Acls_ISid[]
+     * @param IAuthentication $authentication
+     * @return ISid[]
      */
-    public function getSids(Bee_Security_IAuthentication $authentication);
-
+    public function getSids(IAuthentication $authentication);
 }
-?>

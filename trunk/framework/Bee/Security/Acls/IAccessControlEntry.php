@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +22,13 @@
  * Time: 6:35:49 PM
  */
 
-interface Bee_Security_Acls_IAccessControlEntry {
+interface IAccessControlEntry {
 
     //~ Methods ========================================================================================================
 
     /**
      * @abstract
-     * @return Bee_Security_Acls_IAcl
+     * @return IAcl
      */
     public function getAcl();
 
@@ -40,13 +41,13 @@ interface Bee_Security_Acls_IAccessControlEntry {
 
     /**
      * @abstract
-     * @return Bee_Security_Acls_IPermission
+     * @return IPermission
      */
     public function getPermission();
 
     /**
      * @abstract
-     * @return Bee_Security_Acls_ISid
+     * @return ISid
      */
     public function getSid();
 
@@ -58,4 +59,3 @@ interface Bee_Security_Acls_IAccessControlEntry {
      */
     public function isGranting();
 }
-?>

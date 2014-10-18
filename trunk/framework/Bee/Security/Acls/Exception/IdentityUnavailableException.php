@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls\Exception;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Exception\GenericSecurityException;
 
-class Bee_Security_Exception_ConcurrentLogin extends Bee_Security_Exception_Authentication {
-    public function __construct($msg) {
-    	parent::__construct($msg, null, null);
+/**
+ * Class IdentityUnavailableException
+ * @package Bee\Security\Acls\Exception
+ */
+class IdentityUnavailableException extends GenericSecurityException {
+    public function __construct($object) {
+        parent::__construct('Identity could not be determined for object of type ' . get_class($object));
     }
 }
-?>

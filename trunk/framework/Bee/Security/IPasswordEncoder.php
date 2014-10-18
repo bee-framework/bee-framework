@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@
  * </p>
  *
  */
-interface Bee_Security_IPasswordEncoder {
+interface IPasswordEncoder {
 	
 	/**
 	 * <p>Encodes the specified raw password with an implementation specific algorithm.</p>
@@ -44,7 +45,6 @@ interface Bee_Security_IPasswordEncoder {
      * 
      * @return String encoded password
 	 * 
-	 * @throws DataAccessException
 	 */
     function encodePassword($rawPass, $salt);
     
@@ -55,16 +55,13 @@ interface Bee_Security_IPasswordEncoder {
      * compared it with the presented <code>encPass</code>.</p>
      * <p>For a discussion of salts, please refer to {@link #encodePassword(String, Object)}.</p>
      *
-     * @param String $encPass a pre-encoded password
-     * @param String $rawPass a raw password to encode and compare against the pre-encoded password
+     * @param string $encPass a pre-encoded password
+     * @param string $rawPass a raw password to encode and compare against the pre-encoded password
      * @param mixed $salt optionally used by the implementation to "salt" the raw password before encoding. A
      *        <code>null</code> value is legal.
      * 
      * @return boolean true if the password is valid , false otherwise
-     * 
-     * @throws DataAccessException DOCUMENT ME!
      */
     function isPasswordValid($encPass, $rawPass, $salt);
     
 }
-?>

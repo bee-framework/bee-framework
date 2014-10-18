@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Security;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -15,7 +16,13 @@
  * limitations under the License.
  */
 
-abstract class Bee_Security_AbstractAuthenticationManager implements Bee_Security_IAuthenticationManager {
+use Bee\Security\Exception\AuthenticationException;
+
+/**
+ * Class AbstractAuthenticationManager
+ * @package Bee\Security
+ */
+abstract class AbstractAuthenticationManager implements IAuthenticationManager {
 
 	/**
 	 * Enter description here...
@@ -24,10 +31,10 @@ abstract class Bee_Security_AbstractAuthenticationManager implements Bee_Securit
 	 */
 	private $clearExtraInformation;
 
-	public final function authenticate(Bee_Security_IAuthentication $authentication) {
+	public final function authenticate(IAuthentication $authentication) {
         try {
             return $this->doAuthentication($authentication);
-        } catch (Bee_Security_Exception_Authentication $e) {
+        } catch (AuthenticationException $e) {
             $e->setAuthentication($authentication);
 
             if ($this->clearExtraInformation) {
@@ -41,11 +48,11 @@ abstract class Bee_Security_AbstractAuthenticationManager implements Bee_Securit
 	/**
 	 * Enter description here...
 	 *
-	 * @param Bee_Security_IAuthentication $authentication
+	 * @param IAuthentication $authentication
 	 * 
-	 * @throws Bee_Security_Exception_Authentication
+	 * @throws AuthenticationException
 	 */
-    protected abstract function doAuthentication(Bee_Security_IAuthentication $authentication);
+    protected abstract function doAuthentication(IAuthentication $authentication);
 	
     /**
      * If set to true, the <tt>extraInformation</tt> set on an <tt>Bee_Security_AuthenticationException</tt> will be cleared

@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls\Impl;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +16,11 @@
  * limitations under the License.
  */
 use Bee\Framework;
+use Bee\Security\Acls\IAccessControlEntry;
+use Bee\Security\Acls\IAuditableAccessControlEntry;
+use Bee\Security\Acls\IAuditLogger;
 use Bee\Utils\Assert;
+use Logger;
 
 /**
  * User: mp
@@ -23,7 +28,7 @@ use Bee\Utils\Assert;
  * Time: 12:51:38 AM
  */
 
-class Bee_Security_Acls_Impl_BasicAuditLogger implements Bee_Security_Acls_IAuditLogger {
+class BasicAuditLogger implements IAuditLogger {
 
 	/**
 	 * @var Logger
@@ -40,13 +45,16 @@ class Bee_Security_Acls_Impl_BasicAuditLogger implements Bee_Security_Acls_IAudi
 		return self::$log;
 	}
 
-    public function logIfNeeded($granted, Bee_Security_Acls_IAccessControlEntry $ace) {
+	/**
+	 * @param $granted
+	 * @param IAccessControlEntry $ace
+	 */
+    public function logIfNeeded($granted, IAccessControlEntry $ace) {
 		Assert::notNull($ace, 'AccessControlEntry required');
-
-        if ($ace instanceof Bee_Security_Acls_IAuditableAccessControlEntry) {
+        if ($ace instanceof IAuditableAccessControlEntry) {
             if ($granted && $ace->isAuditSuccess()) {
 				self::getLog()->info('GRANTED due to ACE: ' . $ace->getId());
-            } else if (!$granted && $auditableAce->isAuditFailure()) {
+            } else if (!$granted && $ace->isAuditFailure()) {
 				self::getLog()->info('DENIED due to ACE: ' . $ace->getId());
             }
         }

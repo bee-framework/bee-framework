@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +17,10 @@
  */
 
 /**
- * User: mp
- * Date: Mar 16, 2010
- * Time: 6:39:01 PM
+ * Interface ISid
+ * @package Bee\Security\Acls
  */
-
-interface Bee_Security_Acls_ISid {
+interface ISid {
     /**
      * Used for associative array indexing. Kinda like Java's hashCode()...
      * @abstract
@@ -31,9 +30,8 @@ interface Bee_Security_Acls_ISid {
 
     /**
      * @abstract
-     * @param Bee_Security_Acls_ISid $sid
+     * @param ISid $sid
      * @return bool
      */
-    public function equals(Bee_Security_Acls_ISid $sid);
+    public function equals(ISid $sid);
 }
-?>

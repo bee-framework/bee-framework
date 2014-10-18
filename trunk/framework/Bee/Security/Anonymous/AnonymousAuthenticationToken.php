@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Anonymous;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +15,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\AbstractAuthenticationToken;
+use Bee\Security\IGrantedAuthority;
 use Bee\Utils\Strings;
+use InvalidArgumentException;
 
 /**
- * Created by IntelliJ IDEA.
- * User: mp
- * Date: Apr 23, 2010
- * Time: 8:52:33 PM
- * To change this template use File | Settings | File Templates.
+ * Class AuthenticationToken
+ * @package Bee\Security\Anonymous
  */
-
-class Bee_Security_Anonymous_AuthenticationToken extends Bee_Security_AbstractAuthenticationToken {
+class AnonymousAuthenticationToken extends AbstractAuthenticationToken {
 
     /**
      * @var mixed
@@ -43,9 +43,7 @@ class Bee_Security_Anonymous_AuthenticationToken extends Bee_Security_AbstractAu
      *
      * @param string $key to identify if this object made by an authorised client
      * @param mixed $principal the principal (typically a <code>UserDetails</code>)
-     * @param Bee_Security_IGrantedAuthority[] $authorities the authorities granted to the principal
-     *
-     * @throws IllegalArgumentException if a <code>null</code> was passed
+     * @param IGrantedAuthority[] $authorities the authorities granted to the principal
      */
     public function __construct($key, $principal, $authorities = null) {
         parent::__construct($authorities);
@@ -63,7 +61,7 @@ class Bee_Security_Anonymous_AuthenticationToken extends Bee_Security_AbstractAu
     //~ Methods ========================================================================================================
 
     public function equals($obj) {
-        if ($obj instanceof Bee_Security_Anonymous_AuthenticationToken) {
+        if ($obj instanceof AnonymousAuthenticationToken) {
             if ($this->getKeyHash() != $obj->getKeyHash()) {
                 return false;
             }
@@ -75,7 +73,7 @@ class Bee_Security_Anonymous_AuthenticationToken extends Bee_Security_AbstractAu
     /**
      * Always returns an empty <code>String</code>
      *
-     * @return an empty String
+     * @return string an empty String
      */
     public function getCredentials() {
         return '';
@@ -90,7 +88,6 @@ class Bee_Security_Anonymous_AuthenticationToken extends Bee_Security_AbstractAu
     }
 
     public function __toString() {
-        return 'Bee_Security_Anonymous_AuthenticationToken['.$this->principal.','.$this->keyHash.']';
+        return 'AuthenticationToken['.$this->principal.','.$this->keyHash.']';
     }
 }
-?>

@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +17,10 @@
  */
 
 /**
- * User: mp
- * Date: Mar 18, 2010
- * Time: 1:34:49 AM
+ * Interface IPermission
+ * @package Bee\Security\Acls
  */
-
-interface Bee_Security_Acls_IPermission {
+interface IPermission {
 
     const RESERVED_ON = '~';
     const RESERVED_OFF = '.';
@@ -32,7 +31,7 @@ interface Bee_Security_Acls_IPermission {
     /**
      * Returns the bits that represents the permission.
      *
-     * @return the bits that represent the permission
+     * @return string the bits that represent the permission
      */
     public function getMask();
 
@@ -49,10 +48,10 @@ interface Bee_Security_Acls_IPermission {
      *  <p>This method is only used for user interface and logging purposes. It is not used in any permission
      * calculations. Therefore, duplication of characters within the output is permitted.</p>
      *
-     * @return a 32-character bit pattern
+     * @return string a 32-character bit pattern
      */
     public function getPattern();
 
-	public function equals(Bee_Security_Acls_IPermission $other);
+	public function equals(IPermission $other);
 }
 

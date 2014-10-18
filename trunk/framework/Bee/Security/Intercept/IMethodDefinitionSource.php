@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\ConfigAttributeDefinition;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,8 +29,7 @@ interface Bee_Security_Intercept_IMethodDefinitionSource extends Bee_Security_In
      * @abstract
      * @param ReflectionMethod $method
      * @param ReflectionClass|string $targetClassOrClassName
-     * @return Bee_Security_ConfigAttributeDefinition
+     * @return ConfigAttributeDefinition
      */
     public function getAttributesForMethod(ReflectionMethod $method, $targetClassOrClassName);
 }
-?>

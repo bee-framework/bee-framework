@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Concurrent;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,38 +15,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Exception\AuthenticationException;
+use Bee\Security\IAuthentication;
 
 /**
- * Provides two methods that can be called by an {@link Bee_Security_IAuthenticationManager} to integrate with
+ * Interface ISessionController
+ * Provides two methods that can be called by an {@link IAuthenticationManager} to integrate with
  * the concurrent session handling infrastructure.
- *
+ * @package Bee\Security\Concurrent
  */
-interface Bee_Security_Concurrent_ISessionController {
+interface ISessionController {
 	
 	/**
 	 * Called by any class that wishes to know whether the current authentication request should be permitted.
-     * Generally callers will be <code>Bee_Security_IAuthenticationManager</code>s before they authenticate, but
+     * Generally callers will be <code>IAuthenticationManager</code>s before they authenticate, but
      * could equally include <code>Filter</code>s or other interceptors that wish to confirm the ongoing validity
-     * of a previously authenticated <code>Bee_Security_IAuthentication</code>.<p>The implementation should throw
+     * of a previously authenticated <code>IAuthentication</code>.<p>The implementation should throw
      * a suitable exception if the user has exceeded their maximum allowed concurrent sessions.</p>
 	 *
-	 * @param Bee_Security_IAuthentication $request the authentication request (never <code>null</code>)
+	 * @param IAuthentication $request the authentication request (never <code>null</code>)
 	 * 
-	 * @throws Bee_Security_Exception_Authentication if the user has exceeded their maximum allowed current sessions
+	 * @throws AuthenticationException if the user has exceeded their maximum allowed current sessions
 	 * 
 	 * @return void
 	 */
-    public function checkAuthenticationAllowed(Bee_Security_IAuthentication $request);
+    public function checkAuthenticationAllowed(IAuthentication $request);
 	
     /**
-     * Called by an <code>Bee_Security_IAuthenticationManager</code> when the authentication was successful. An
+     * Called by an <code>IAuthenticationManager</code> when the authentication was successful. An
      * implementation is expected to register the authenticated user in some sort of registry, for future concurrent
-     * tracking via the {@link #checkAuthenticationAllowed(Bee_Security_IAuthentication)} method.
+     * tracking via the {@link #checkAuthenticationAllowed(IAuthentication)} method.
      *
-     * @param Bee_Security_IAuthentication $authentication the successfully authenticated user (never <code>null</code>)
+     * @param IAuthentication $authentication the successfully authenticated user (never <code>null</code>)
      * 
      * @return void
      */
-    public function registerSuccessfulAuthentication(Bee_Security_IAuthentication $authentication);
+    public function registerSuccessfulAuthentication(IAuthentication $authentication);
 }
-?>

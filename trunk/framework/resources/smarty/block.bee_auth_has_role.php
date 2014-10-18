@@ -19,6 +19,8 @@
  * Smarty
  *
  */
+use Bee\Security\Helper;
+
 /**
  * Smarty block displayed if the currently authenticated user has a given role.
  * Parameters:
@@ -33,7 +35,7 @@
  */
 function smarty_block_bee_auth_has_role ($params, $content, &$smarty, &$repeat) {
 	if($repeat) {
-		$roles = Bee_Security_Helper::getRoles();
+		$roles = Helper::getRoles();
 
 		$requiredRoles = array_filter(array_map('trim', explode(',', $params['all'])));
 		$possibleRoles = array_filter(array_map('trim', explode(',', $params['any'])));

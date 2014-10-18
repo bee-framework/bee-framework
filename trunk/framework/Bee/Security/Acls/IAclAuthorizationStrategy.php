@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +22,7 @@
  * Time: 1:02:34 AM
  */
 
-interface Bee_Security_Acls_IAclAuthorizationStrategy {
+interface IAclAuthorizationStrategy {
 
     const CHANGE_OWNERSHIP = 0;
     const CHANGE_AUDITING = 1;
@@ -29,6 +30,5 @@ interface Bee_Security_Acls_IAclAuthorizationStrategy {
 
     //~ Methods ========================================================================================================
 
-    public function securityCheck(Bee_Security_Acls_IAcl $acl, $changeType);
+    public function securityCheck(IAcl $acl, $changeType);
 }
-?>

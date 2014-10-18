@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls\Impl;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,30 +15,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Acls\FormattingUtils;
+use Bee\Security\Acls\IPermission;
 
 /**
- * User: mp
- * Date: Mar 23, 2010
- * Time: 9:52:56 AM
+ * Class CumulativePermission
+ * @package Bee\Security\Acls\Impl
  */
-
-class Bee_Security_Acls_Impl_CumulativePermission extends Bee_Security_Acls_Impl_BasePermission {
+class CumulativePermission extends BasePermission {
 
     private $pattern = self::THIRTY_TWO_RESERVED_OFF;
 
+	/**
+	 *
+	 */
     public function __construct() {
         parent::__construct(0, ' ');
     }
 
-    public function set(Bee_Security_Acls_IPermission $permission) {
+	/**
+	 * @param IPermission $permission
+	 * @return $this
+	 */
+    public function set(IPermission $permission) {
         $this->mask |= $permission->getMask();
-        $this->pattern = Bee_Security_Acls_FormattingUtils::mergePatterns($this->pattern, $permission->getPattern());
+        $this->pattern = FormattingUtils::mergePatterns($this->pattern, $permission->getPattern());
         return $this;
     }
 
+	/**
+	 * @return string
+	 */
     public function getPattern() {
         return $this->pattern;
     }
-
 }
-?>

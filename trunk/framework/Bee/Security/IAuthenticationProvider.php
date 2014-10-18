@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\Exception\AuthenticationException;
 
 /**
- * Indicates a class can process a specific  {@link Bee_Security_IAuthentication} implementation.
+ * Indicates a class can process a specific  {@link IAuthentication} implementation.
  *
  */
-interface Bee_Security_IAuthenticationProvider {
+interface IAuthenticationProvider {
 	
 	/**
-	 * Performs authentication with the same contract as {@link Bee_Security_IAuthenticationManager#authenticate(Bee_Security_IAuthentication)}.
+	 * Performs authentication with the same contract as {@link IAuthenticationManager#authenticate(IAuthentication)}.
 	 *
-	 * @param Bee_Security_IAuthentication $authentication the authentication request object.
+	 * @param IAuthentication $authentication the authentication request object.
 	 * 
-	 * @return Bee_Security_IAuthentication a fully authenticated object including credentials. May return <code>null</code> if the
+	 * @return IAuthentication a fully authenticated object including credentials. May return <code>null</code> if the
      *         <code>AuthenticationProvider</code> is unable to support authentication of the passed
      *         <code>Authentication</code> object. In such a case, the next <code>AuthenticationProvider</code> that
      *         supports the presented <code>Authentication</code> class will be tried.
      * 
-     * @throws Bee_Security_Exception_Authentication if authentication fails.
+     * @throws AuthenticationException if authentication fails.
 	 */
-    function authenticate(Bee_Security_IAuthentication $authentication);
+    function authenticate(IAuthentication $authentication);
 	
     /**
      * Enter description here...

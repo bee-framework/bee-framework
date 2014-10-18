@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Acls;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * User: mp
- * Date: Feb 13, 2010
- * Time: 6:17:43 PM
- */
+use Bee\Security\Acls\Exception\NotFoundException;
+use Bee\Security\Acls\Exception\UnloadedSidException;
 
 /**
  * Represents an access control list (ACL) for a domain object.
@@ -28,12 +25,12 @@
  * An <tt>Acl</tt> represents all ACL entries for a given domain object. In
  * order to avoid needing references to the domain object itself, this
  * interface handles indirection between a domain object and an ACL object
- * identity via the {@link Bee_Security_Acls_IObjectIdentity} interface.
+ * identity via the {@link IObjectIdentity} interface.
  * </p>
  *
  * <p>
  * Implementing classes may elect to return instances that represent
- * {@link Bee_Security_Acls_IPermission} information for either
+ * {@link IPermission} information for either
  * some OR all {@link Bee_Security_Acls_ISid} instances. Therefore, an
  * instance may NOT necessarily contain ALL <tt>Sid</tt>s
  * for a given domain object.
@@ -42,7 +39,7 @@
  * @author Ben Alex
  * @version $Id: Acl.java 2872 2008-04-05 20:43:10Z benalex $
  */
-interface Bee_Security_Acls_IAcl {
+interface IAcl {
     
     /**
      * Returns all of the entries represented by the present <tt>Acl</tt>. Entries associated with
@@ -61,7 +58,7 @@ interface Bee_Security_Acls_IAcl {
      * <tt>Sid</tt>s. The caller is responsible for correctly handling the result if only a subset of
      * <tt>Sid</tt>s is represented.</p>
      *
-     * @return Bee_Security_Acls_IAccessControlEntry[] the list of entries represented by the <tt>Acl</tt>, or <tt>null</tt> if there are
+     * @return IAccessControlEntry[] the list of entries represented by the <tt>Acl</tt>, or <tt>null</tt> if there are
      * no entries presently associated with this <tt>Acl</tt>.
      */
     public function getEntries();
@@ -70,7 +67,7 @@ interface Bee_Security_Acls_IAcl {
      * Obtains the domain object this <tt>Acl</tt> provides entries for. This is immutable once an
      * <tt>Acl</tt> is created.
      *
-     * @return Bee_Security_Acls_IObjectIdentity the object identity (never <tt>null</tt>)
+     * @return IObjectIdentity the object identity (never <tt>null</tt>)
      */
     public function getObjectIdentity();
 
@@ -78,7 +75,7 @@ interface Bee_Security_Acls_IAcl {
      * Determines the owner of the <tt>Acl</tt>. The meaning of ownership varies by implementation and is
      * unspecified.
      *
-     * @return Bee_Security_Acls_ISid the owner (may be <tt>null</tt> if the implementation does not use ownership concepts)
+     * @return ISid the owner (may be <tt>null</tt> if the implementation does not use ownership concepts)
      */
     public function getOwner();
 
@@ -94,7 +91,7 @@ interface Bee_Security_Acls_IAcl {
      * <tt>Sid</tt>s. The caller is responsible for correctly handling the result if only a subset of
      * <tt>Sid</tt>s is represented.</p>
      *
-     * @return Bee_Security_Acls_IAcl the parent <tt>Acl</tt> (may be <tt>null</tt> if this <tt>Acl</tt> does not have a parent)
+     * @return IAcl the parent <tt>Acl</tt> (may be <tt>null</tt> if this <tt>Acl</tt> does not have a parent)
      */
     public function getParentAcl();
 
@@ -134,8 +131,8 @@ interface Bee_Security_Acls_IAcl {
      * is called requesting an authorization decision for a {@link Sid} that was never loaded in this <tt>Acl</tt>.
      * </p>
      *
-     * @param Bee_Security_Acls_IPermission[] $permission the permission or permissions required (at least one entry required)
-     * @param Bee_Security_Acls_ISid[] $sids the security identities held by the principal (at least one entry required)
+     * @param IPermission[] $permission the permission or permissions required (at least one entry required)
+     * @param ISid[] $sids the security identities held by the principal (at least one entry required)
      * @param boolean $administrativeMode if <tt>true</tt> denotes the query is for administrative purposes and no logging
      *        or auditing (if supported by the implementation) should be undertaken
      *
@@ -160,11 +157,10 @@ interface Bee_Security_Acls_IAcl {
      * not the specified <tt>Sid</tt>s have been loaded or not.
      * </p>
      *
-     * @param Bee_Security_Acls_ISid[] sids one or more security identities the caller is interest in
+     * @param ISid[] sids one or more security identities the caller is interest in
      *        knowing whether this <tt>Sid</tt> supports
      *
      * @return boolean <tt>true</tt> if every passed <tt>Sid</tt> is represented by this <tt>Acl</tt> instance
      */
     public function isSidLoaded(array $sids);
 }
-?>

@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Security;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -17,6 +18,10 @@
 
 use Bee\Context\Config\IInitializingBean;
 
+/**
+ * Class AbstractSecurityInterceptor
+ * @package Bee\Security
+ */
 abstract class AbstractSecurityInterceptor implements IInitializingBean {
 
 	public function afterPropertiesSet() {

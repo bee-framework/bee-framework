@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Concurrent;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +17,10 @@
  */
 
 /**
- * Created by IntelliJ IDEA.
- * User: mp
- * Date: Apr 23, 2010
- * Time: 10:00:49 PM
- * To change this template use File | Settings | File Templates.
+ * Interface ISessionIdentifierAware
+ * @package Bee\Security\Concurrent
  */
-
-interface Bee_Security_Concurrent_ISessionIdentifierAware {
+interface ISessionIdentifierAware {
 
     /**
      * Obtains the session ID.
@@ -32,4 +29,3 @@ interface Bee_Security_Concurrent_ISessionIdentifierAware {
      */
     public function getSessionId();
 }
-?>

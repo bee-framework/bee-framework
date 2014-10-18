@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +19,7 @@
 use Bee\Utils\Assert;
 use Bee\Utils\Types;
 
-abstract class Bee_Security_AbstractAuthenticationToken implements Bee_Security_IAuthentication {
+abstract class AbstractAuthenticationToken implements IAuthentication {
 	
 	/**
 	 * Enter description here...
@@ -30,7 +31,7 @@ abstract class Bee_Security_AbstractAuthenticationToken implements Bee_Security_
     /**
      * Enter description here...
      *
-     * @var Bee_Security_IGrantedAuthority[]
+     * @var IGrantedAuthority[]
      */
     private $authorities;
     
@@ -44,7 +45,7 @@ abstract class Bee_Security_AbstractAuthenticationToken implements Bee_Security_
 	public function __construct(array $authorities = null) {
 		if(!is_null($authorities)) {
 			foreach($authorities as $authority) {
-				Assert::notNull($authority, 'List of granted authorities passed to Bee_Security_AbstractAuthenticationToken must not contain null values!');
+				Assert::notNull($authority, 'List of granted authorities passed to Bee\Security\AbstractAuthenticationToken must not contain null values!');
 			}
 		}
 		$this->authorities = $authorities;
@@ -74,7 +75,7 @@ abstract class Bee_Security_AbstractAuthenticationToken implements Bee_Security_
 	public function getName() {
 		$principal = $this->getPrincipal();
 		if(is_object($principal)) {
-			if(Types::isAssignable($principal, 'Bee_Security_IUserDetails')) {
+			if(Types::isAssignable($principal, 'Bee\Security\IUserDetails')) {
 				return $principal->getUsername();
 			} else {
 				return $principal->__toString(); 

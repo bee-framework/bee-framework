@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-class Bee_Security_PasswordEncoder_Crypt implements Bee_Security_IPasswordEncoder {
+use Bee\Security\IPasswordEncoder;
+
+class Bee_Security_PasswordEncoder_Crypt implements IPasswordEncoder {
 	
     public function encodePassword($rawPass, $salt) {
     	return crypt($rawPass, $salt);
     }
-	
+
+	/**
+	 * @param string $encPass
+	 * @param string $rawPass
+	 * @param mixed $salt
+	 * @return bool
+	 */
 	public function isPasswordValid($encPass, $rawPass, $salt) {
 		return $encPass === $this->encodePassword($rawPass, $salt);
 	}

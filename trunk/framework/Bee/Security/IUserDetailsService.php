@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +17,7 @@
  */
 
 /**
+ * Interface IUserDetailsService
  * Defines an interface for implementations that wish to provide data access
  * services to the {@link DaoAuthenticationProvider}.
  *
@@ -23,18 +25,18 @@
  * The interface requires only one read-only method, which simplifies support
  * of new data access strategies.
  * </p>
+ * @package Bee\Security
  */
-interface Bee_Security_IUserDetailsService {
+interface IUserDetailsService {
 
 	/**
 	 * Locates the user based on the username. In the actual implementation, the search may possibly be case
 	 * insensitive, or case insensitive depending on how the implementaion instance is configured. In this case, the
-	 * <code>Bee_Security_IUserDetails</code> object that comes back may have a username that is of a different case
+	 * <code>IUserDetails</code> object that comes back may have a username that is of a different case
 	 * than what was actually requested.
 	 *
 	 * @param $username
-	 * @return Bee_Security_IUserDetails a fully populated user record (never <code>null</code>)
-	 *
+	 * @return IUserDetails a fully populated user record (never <code>null</code>)
 	 */
 	function loadUserByUsername($username);
 }

@@ -14,10 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Security\ConfigAttributeDefinition;
+use Bee\Security\IAuthentication;
+use Bee\Security\IConfigAttribute;
 use Bee\Utils\Strings;
 
 /**
- * Votes if any {@link Bee_Security_IConfigAttribute#getAttribute()} starts with a prefix
+ * Votes if any {@link IConfigAttribute#getAttribute()} starts with a prefix
  * indicating that it is a role. The default prefix string is <Code>ROLE_</code>,
  * but this may be overridden to any value. It may also be set to empty, which
  * means that essentially any attribute will be voted on. As described further
@@ -25,13 +28,13 @@ use Bee\Utils\Strings;
  * <p>
  * Abstains from voting if no configuration attribute commences with the role
  * prefix. Votes to grant access if there is an exact matching
- * {@link Bee_Security_IGrantedAuthority} to a <code>Bee_Security_IConfigAttribute</code>
+ * {@link IGrantedAuthority} to a <code>IConfigAttribute</code>
  * starting with the role prefix. Votes to deny access if there is no exact
- * matching <code>Bee_Security_IGrantedAuthority</code> to a <code>Bee_Security_IConfigAttribute</code>
+ * matching <code>IGrantedAuthority</code> to a <code>IConfigAttribute</code>
  * starting with the role prefix.
  * <p>
  * An empty role prefix means that the voter will vote for every
- * Bee_Security_IConfigAttribute. When there are different categories of Bee_Security_IConfigAttribute
+ * IConfigAttribute. When there are different categories of IConfigAttribute
  * used, this will not be optimal since the voter will be voting for attributes
  * which do not represent roles. However, this option may be of some use when
  * using pre-existing role names without a prefix, and no ability exists to
@@ -62,7 +65,7 @@ class Bee_Security_Vote_RoleVoter implements Bee_Security_Vote_IAccessDecisionVo
 		$this->rolePrefix = $rolePrefix;
 	}
 
-	public function supports(Bee_Security_IConfigAttribute $configAttribute) {
+	public function supports(IConfigAttribute $configAttribute) {
 		return Strings::startsWith($configAttribute->getAttribute(), $this->rolePrefix);
 	}
 
@@ -70,7 +73,7 @@ class Bee_Security_Vote_RoleVoter implements Bee_Security_Vote_IAccessDecisionVo
 		return true;
 	}
 
-	public function vote(Bee_Security_IAuthentication $authentication, $object, Bee_Security_ConfigAttributeDefinition $config) {
+	public function vote(IAuthentication $authentication, $object, ConfigAttributeDefinition $config) {
         $result = self::ACCESS_ABSTAIN;
 
         $authorities = $this->extractAuthorities($authentication);
@@ -87,8 +90,7 @@ class Bee_Security_Vote_RoleVoter implements Bee_Security_Vote_IAccessDecisionVo
         return $result;
 	}
 	
-	protected function extractAuthorities(Bee_Security_IAuthentication $authentication) {
+	protected function extractAuthorities(IAuthentication $authentication) {
 		return $authentication->getAuthorities(); 
 	}
 }
-?>
