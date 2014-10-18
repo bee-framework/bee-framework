@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Security\XmlNamespace;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -17,6 +18,7 @@
 use Bee\Context\Config\BeanDefinitionHolder;
 use Bee\Context\Xml\ParserContext;
 use Bee\Context\Xml\XmlNamespace\IBeanDefinitionDecorator;
+use DOMNode;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,7 +28,7 @@ use Bee\Context\Xml\XmlNamespace\IBeanDefinitionDecorator;
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Security_Namespace_InterceptMethodsBeanDefinitionDecorator implements IBeanDefinitionDecorator {
+class InterceptMethodsBeanDefinitionDecorator implements IBeanDefinitionDecorator {
 
     function decorate(DOMNode $node, BeanDefinitionHolder $definition, ParserContext $parserContext) {
         // TODO: Implement decorate() method.

@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Security\XmlNamespace;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -22,6 +23,10 @@ use Bee\Context\Support\BeanDefinitionBuilder;
 use Bee\Context\Xml\ParserContext;
 use Bee\Context\Xml\XmlNamespace\IBeanDefinitionParser;
 use Bee\Utils\Strings;
+use Bee_AOP_Namespace_Utils;
+use Bee_Security_Config_IBeanIds;
+use Bee_Security_Config_Utils;
+use DOMElement;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,7 +36,7 @@ use Bee\Utils\Strings;
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Security_Namespace_GlobalMethodSecurityBeanDefinitionParser implements IBeanDefinitionParser {
+class GlobalMethodSecurityBeanDefinitionParser implements IBeanDefinitionParser {
 
     const SECURED_METHOD_DEFINITION_SOURCE_CLASS = 'Bee\Security\Annotations\SecuredMethodDefinitionSource';
 

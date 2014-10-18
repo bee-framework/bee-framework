@@ -1,4 +1,5 @@
 <?php
+namespace Bee\Security\XmlNamespace;
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -23,7 +24,7 @@
  * To change this template use File | Settings | File Templates.
  */
 // todo: work in progress...
-//class Bee_Security_Namespace_AbstractInterceptorDrivenBeanDefinitionDecorator implements IBeanDefinitionDecorator {
+//class AbstractInterceptorDrivenBeanDefinitionDecorator implements IBeanDefinitionDecorator {
 //
 //    public final function decorate(DOMNode $node, BeanDefinitionHolder $definitionHolder, ParserContext $parserContext) {
 //        $registry = $parserContext->getRegistry();
