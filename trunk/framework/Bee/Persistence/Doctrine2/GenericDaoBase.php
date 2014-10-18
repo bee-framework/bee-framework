@@ -171,7 +171,7 @@ abstract class GenericDaoBase extends DaoBase {
 //		$indexBy = count($this->getIdFieldName()) > 1 ? null : $baseEntityAlias . '.' . $this->getIdFieldName();
 //		return $this->getEntityManager()->createQueryBuilder()->select($baseEntityAlias)
 //				->from($this->getEntity(), $baseEntityAlias, $indexBy);
-		$qb = $this->getEntityManager()->createQueryBuilder()->select($baseEntityAlias)->from($this->getEntity(), $baseEntityAlias);
+		$qb = $this->getEntityManager()->createQueryBuilder()->select($baseEntityAlias)->from($this->getEntity(), $baseEntityAlias, $this->getIndexBy());
 		$this->addJoinsToBaseQuery($qb);
 		$this->addRestrictionsToBaseQuery($qb);
 		return $qb;
