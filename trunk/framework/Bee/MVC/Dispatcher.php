@@ -21,6 +21,7 @@ use Bee\Context\NoSuchBeanDefinitionException;
 use Bee\IContext;
 use Bee\MVC\Session\DispatcherAdapter;
 use Bee\MVC\View\AbstractView;
+use Bee\MVC\View\ViewBase;
 use Bee\Utils\Assert;
 use Exception;
 use Logger;
@@ -348,7 +349,7 @@ class Dispatcher implements IFilterChain {
 	public function resolveModelAndView(ModelAndView $mav, IHttpRequest $request) {
 		$resolvedView = $this->viewResolver->resolveViewName($mav->getViewName(), $request);
 		$mav->setResolvedView($resolvedView);
-		if ($resolvedView instanceof AbstractView) {
+		if ($resolvedView instanceof ViewBase) {
 			$statics = $resolvedView->getStaticAttributes();
 			if (!$statics) {
 				$statics = array();
