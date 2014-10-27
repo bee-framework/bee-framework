@@ -24,30 +24,11 @@ use Bee\MVC\Model;
  * @author Benjamin Hartmann
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
-abstract class AbstractView implements IView {
+abstract class AbstractView extends ViewBase {
 	
 	private $statusCode = 200;
 
 	private $contentType;
-	
-	private $staticAttributes = array();
-	
-	/**
-	 * @Return void
-	 * @Param name String
-	 * @Param object Object
-	 */
-	public final function addStaticAttribute($name, $object) {
-		$this->staticAttributes[$name] = $object;		
-	}
-
-	public function setStaticAttributes(array $staticAttributes) {
-		$this->staticAttributes = array_merge($this->staticAttributes, $staticAttributes);
-	}
-	
-	public function getStaticAttributes() {
-		return $this->staticAttributes;
-	}
 	
 	public function getStatusCode() {
 		return $this->statusCode;

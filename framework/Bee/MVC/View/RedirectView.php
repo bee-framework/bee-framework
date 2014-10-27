@@ -23,7 +23,7 @@ use Bee\Utils\Assert;
  * Class RedirectView
  * @package Bee\MVC\View
  */
-class RedirectView implements IView, IHttpStatusCodes {
+class RedirectView extends ViewBase {
 
 	const MODEL_KEY_REDIRECT_URL = 'redirectUrl';
 	const MODEL_KEY_GET_PARAMS = 'getParams';
