@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,7 +141,6 @@ class Bee_Persistence_Doctrine_DaoBase {
         }
 
         foreach ($orderMapping as $orderField => $orderDir) {
-//            $query->orderBy($orderField.' '.$orderDir);
             $query->addOrderBy($orderField . ' ' . $orderDir);
         }
 
@@ -151,13 +150,7 @@ class Bee_Persistence_Doctrine_DaoBase {
 
         if ($orderAndLimitHolder->getPageSize() > 0) {
             $query->limit($orderAndLimitHolder->getPageSize());
-
-            $pageCount = ceil($query->count($params) / $orderAndLimitHolder->getPageSize());
-            $orderAndLimitHolder->setPageCount($pageCount);
-
-            if ($orderAndLimitHolder->getCurrentPage() > $pageCount) {
-                $orderAndLimitHolder->setCurrentPage($pageCount);
-            }
+			$orderAndLimitHolder->setResultCount($query->count($params));
             $query->offset($orderAndLimitHolder->getCurrentPage() * $orderAndLimitHolder->getPageSize());
         }
     }
