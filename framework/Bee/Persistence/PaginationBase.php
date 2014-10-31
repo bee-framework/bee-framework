@@ -28,7 +28,7 @@ abstract class PaginationBase implements Bee_Persistence_IOrderAndLimitHolder {
 	/**
 	 * @var int
 	 */
-	private $pageSize = 50;
+	private $pageSize = 10;
 
 	/**
 	 * @var int
