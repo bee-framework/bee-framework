@@ -15,6 +15,7 @@ namespace Bee\Persistence\Doctrine2;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use BeeFramework;
 use \Doctrine\ORM\EntityManager;
 use Logger;
 
@@ -36,7 +37,7 @@ class EntityManagerHolder {
 	 */
 	public function getLog() {
 		if (!$this->log) {
-			$this->log = Logger::getLogger(get_class($this));
+			$this->log = BeeFramework::getLoggerForClass(get_class($this));
 		}
 		return $this->log;
 	}
