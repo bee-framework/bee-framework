@@ -22,8 +22,8 @@ use Bee\Security\Exception\BadCredentialsException;
 use Bee\Security\IPasswordEncoder;
 use Bee\Security\IUserDetails;
 use Bee\Security\IUserDetailsService;
+use Bee\Security\PasswordEncoder\PlainTextEncoder;
 use Bee\Security\UsernamePasswordAuthenticationToken;
-use Bee_Security_PasswordEncoder_PlainText;
 
 /**
  * Class DaoAuthentication
@@ -53,7 +53,7 @@ class DaoAuthentication extends AbstractUserDetailsAuthentication {
     private $userDetailsService;
 
     public function __construct() {
-		$this->passwordEncoder = new Bee_Security_PasswordEncoder_PlainText();
+		$this->passwordEncoder = new PlainTextEncoder();
     }
     
     protected function additionalAuthenticationChecks(IUserDetails $userDetails,  UsernamePasswordAuthenticationToken $authentication) {
