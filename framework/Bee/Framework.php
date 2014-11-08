@@ -352,11 +352,14 @@ namespace Bee {
 		}
 
 		/**
-		 * @param string $className
+		 * @param string|object $classOrClassName
 		 * @return Logger
 		 */
-		public static function getLoggerForClass($className) {
-			return Logger::getLogger(str_replace('_', '.', str_replace('\\', '.', $className)));
+		public static function getLoggerForClass($classOrClassName) {
+			if(is_object($classOrClassName)) {
+				$classOrClassName = get_class($classOrClassName);
+			}
+			return Logger::getLogger(str_replace('_', '.', str_replace('\\', '.', $classOrClassName)));
 		}
 	}
 
