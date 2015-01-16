@@ -37,4 +37,6 @@ interface IHandlerMethodInvocator {
 	 * @return ModelAndView
 	 */
 	public function invokeHandlerMethod(IHttpRequest $request, array $fixedParams = array());
+
+	public function invokeDefaultHandlerMethod(IHttpRequest $request);
 } 
