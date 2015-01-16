@@ -21,5 +21,10 @@ namespace Bee\MVC;
  * @package Bee\MVC
  */
 interface IWidgetController extends IController {
+
+    /**
+     * @param IHttpRequest $request
+     * @return ModelAndView
+     */
     function handleDefault(IHttpRequest $request);
 }
