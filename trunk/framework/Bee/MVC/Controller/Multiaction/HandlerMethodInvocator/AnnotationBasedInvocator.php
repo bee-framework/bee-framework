@@ -20,7 +20,6 @@ use Bee\Context\Config\IContextAware;
 use Bee\IContext;
 use Bee\MVC\Controller\Multiaction\AbstractAnnotationBasedResolver;
 use Bee\MVC\Controller\Multiaction\IHandlerMethodInvocator;
-use Bee\MVC\IController;
 use Bee\MVC\IHttpRequest;
 use Bee\MVC\ModelAndView;
 
@@ -93,6 +92,16 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 		}
 
 		// todo:
+		return $this->invokeResolvedMethod($resolvedMethod, $request, $fixedParams);
+	}
+
+	/**
+	 * @param MethodInvocation $resolvedMethod
+	 * @param IHttpRequest $request
+	 * @param array $fixedParams
+	 * @return mixed
+	 */
+	protected function invokeResolvedMethod(MethodInvocation $resolvedMethod, IHttpRequest $request, array $fixedParams = array()) {
 		$methodMeta = $resolvedMethod->getMethodMeta();
 		$method = $methodMeta->getMethod();
 		$args = array();
@@ -107,7 +116,7 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 				$propEditor = $this->propertyEditorRegistry->getEditor($type);
 				$posMap = $resolvedMethod->getUrlParameterPositions();
 				$value = array_key_exists($pos, $posMap) ? $resolvedMethod->getParamValue($posMap[$pos]) :
-						(array_key_exists($parameter->getName(), $_REQUEST) ? $_REQUEST[$parameter->getName()] : null);
+					(array_key_exists($parameter->getName(), $_REQUEST) ? $_REQUEST[$parameter->getName()] : null);
 				if (!is_null($value) || !$parameter->isOptional()) {
 					$args[$pos] = $propEditor->fromString($value);
 				} else {
@@ -161,5 +170,13 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 	 */
 	public function setDefaultMethodName($defaultMethodName) {
 		$this->defaultMethodName = $defaultMethodName;
+	}
+
+	/**
+	 * @param IHttpRequest $request
+	 * @return mixed
+	 */
+	public function invokeDefaultHandlerMethod(IHttpRequest $request) {
+		return $this->invokeResolvedMethod($this->getDefaultMethodInvocation(), $request);
 	}
 }

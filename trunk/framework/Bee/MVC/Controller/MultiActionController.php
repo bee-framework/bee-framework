@@ -20,6 +20,7 @@ use Bee\MVC\Controller\Multiaction\IMethodNameResolver;
 use Bee\MVC\Controller\Multiaction\NoHandlerMethodFoundException;
 use Bee\MVC\IDelegatingHandler;
 use Bee\MVC\IHttpRequest;
+use Bee\MVC\IWidgetController;
 use Bee\MVC\ModelAndView;
 use Bee\Utils\Assert;
 use Bee\Utils\Reflection;
@@ -39,7 +40,7 @@ use ReflectionMethod;
  * @author Michael Plomer <michael.plomer@iter8.de>
  * @author Benjamin Hartmann
  */
-class MultiActionController extends AbstractController implements IDelegatingHandler {
+class MultiActionController extends AbstractController implements IDelegatingHandler, IWidgetController {
 
 	/**
 	 * Enter description here...
@@ -94,12 +95,7 @@ class MultiActionController extends AbstractController implements IDelegatingHan
 			if (!Strings::hasText($methodName)) {
 				$methodName = $this->getDefaultMethodName();
 			}
-
-			// @todo: this might pose a security risk. introduce a set of allowed method names
-			$method = new ReflectionMethod($this->delegate, $methodName);
-			if (!$this->isHandlerMethod($method)) {
-				throw new NoHandlerMethodFoundException('No request handling method with name ' . $methodName . ' in class [' . Types::getType($this->delegate) . ']');
-			}
+			$method = $this->getReflectionMethodForName($methodName);
 		}
 		return $method->invokeArgs($this->delegate, array($request));
 	}
@@ -202,5 +198,31 @@ class MultiActionController extends AbstractController implements IDelegatingHan
 	 */
 	public function getMethodNameResolver() {
 		return $this->methodNameResolver;
+	}
+
+	/**
+	 * @param IHttpRequest $request
+	 * @return mixed
+	 * @throws NoHandlerMethodFoundException
+	 */
+	public function handleDefault(IHttpRequest $request) {
+		if(!is_null($this->methodInvocator)) {
+			return $this->methodInvocator->invokeDefaultHandlerMethod($request);
+		}
+		return $this->getReflectionMethodForName($this->getDefaultMethodName())->invokeArgs($this->delegate, array($request));
+	}
+
+	/**
+	 * @param string $methodName
+	 * @return ReflectionMethod
+	 * @throws NoHandlerMethodFoundException
+	 */
+	protected function getReflectionMethodForName($methodName) {
+		// @todo: this might pose a security risk. introduce a set of allowed method names
+		$method = new ReflectionMethod($this->delegate, $methodName);
+		if (!$this->isHandlerMethod($method)) {
+			throw new NoHandlerMethodFoundException('No request handling method with name ' . $methodName . ' in class [' . Types::getType($this->delegate) . ']');
+		}
+		return $method;
 	}
 } 
