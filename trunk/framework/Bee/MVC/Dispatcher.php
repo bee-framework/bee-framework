@@ -1,7 +1,7 @@
 <?php
 namespace Bee\MVC;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@ use Bee\Context\BeansException;
 use Bee\Context\NoSuchBeanDefinitionException;
 use Bee\IContext;
 use Bee\MVC\Session\DispatcherAdapter;
-use Bee\MVC\View\AbstractView;
-use Bee\MVC\View\ViewBase;
 use Bee\Utils\Assert;
 use Exception;
 use Logger;
@@ -321,7 +319,7 @@ class Dispatcher implements IFilterChain {
 
 			if ($mav instanceof ModelAndView) {
 				$mav->addModelValue(Model::CURRENT_REQUEST_KEY, $request);
-				$this->resolveModelAndView($mav, $request);
+				$this->viewResolver->resolveModelAndView($mav, $request);
 
 				if(!is_null($handlerException) && !count($interceptors)) {
 					// We were unable to resolve a handler and its interceptors due to an exception being thrown along
@@ -339,38 +337,6 @@ class Dispatcher implements IFilterChain {
 			}
 		} catch (Exception $e) {
 			throw $e;
-		}
-	}
-
-	/**
-	 * @param ModelAndView $mav
-	 * @param IHttpRequest $request
-	 */
-	public function resolveModelAndView(ModelAndView $mav, IHttpRequest $request) {
-		$resolvedView = $this->viewResolver->resolveViewName($mav->getViewName(), $request);
-		$mav->setResolvedView($resolvedView);
-		if ($resolvedView instanceof ViewBase) {
-			$statics = $resolvedView->getStaticAttributes();
-			if (!$statics) {
-				$statics = array();
-			}
-			$model = array_merge($statics, $mav->getModel());
-			$mav->setModel($model);
-		}
-		$this->resolveModelInternals($mav->getModel(), $request);
-	}
-
-	/**
-	 * @param array $model
-	 * @param IHttpRequest $request
-	 */
-	private function resolveModelInternals(array $model, IHttpRequest $request) {
-		foreach ($model as $modelElem) {
-			if ($modelElem instanceof ModelAndView) {
-				$this->resolveModelAndView($modelElem, $request);
-			} else if (is_array($modelElem)) {
-				$this->resolveModelInternals($modelElem, $request);
-			}
 		}
 	}
 }
