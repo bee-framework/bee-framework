@@ -127,7 +127,7 @@ class SimpleUserDetailsService extends UserManagerBase implements IUserDetailsSe
 	 * @return UserBase
 	 */
 	public function setRoles(array $frmdata, UserBase $user) {
-		/** @var SimpleUser $user */
+		/** @var SimpleUserBase $user */
 		if ($frmdata['admin']) {
 			$user->addRole('ROLE_ADMINISTRATOR');
 		} else {

@@ -76,12 +76,29 @@ abstract class UserManagerBase {
 	 * @throws Exception
 	 */
 	public function createOrUpdateUser(array $frmdata) {
-		$user = is_numeric($frmdata['id']) ? $this->loadById($frmdata['id']) : $this->createUserInstance();
+		return $this->updateUser($this->findOrCreateUser($frmdata), $frmdata);
+	}
+
+	/**
+	 * @param array $frmdata
+	 * @return UserBase
+	 */
+	protected function findOrCreateUser(array $frmdata) {
+		return is_numeric($frmdata['id']) ? $this->loadById($frmdata['id']) : $this->createUserInstance();
+	}
+
+	/**
+	 * @param UserBase $user
+	 * @param array $frmdata
+	 * @return UserBase
+	 * @throws PasswordConfirmationMismatchException
+	 */
+	protected function updateUser(UserBase $user, array $frmdata) {
 		$user->setUsername($frmdata['username']);
 		$user->setName($frmdata['fullname']);
 		if (Strings::hasText($frmdata['password'])) {
 			if ($frmdata['password'] !== $frmdata['password2']) {
-				throw new Exception("Passwords do not match!");
+				throw new PasswordConfirmationMismatchException("Passwords do not match!");
 			}
 			$this->setPassword($user, $frmdata['password']);
 		}

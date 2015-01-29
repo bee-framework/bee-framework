@@ -1,7 +1,7 @@
 <?php
 namespace Bee\MVC\ViewResolver;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ use Bee\IContext;
 use Bee\MVC\IHttpRequest;
 use Bee\MVC\IView;
 use Bee\MVC\IViewResolver;
+use Bee\MVC\ModelAndView;
+use Bee\MVC\View\ViewBase;
 use Logger;
 
 /**
@@ -113,5 +115,37 @@ class BasicViewResolver implements IViewResolver {
 	 */
 	protected function modifyViewName($viewName, IHttpRequest $request) {
 		return $request->getAjax() ? $viewName . $this->ajaxViewNameSuffix : $viewName;
+	}
+
+	/**
+	 * @param ModelAndView $mav
+	 * @param IHttpRequest $request
+	 */
+	public function resolveModelAndView(ModelAndView $mav, IHttpRequest $request) {
+		$resolvedView = $this->resolveViewName($mav->getViewName(), $request);
+		$mav->setResolvedView($resolvedView);
+		if ($resolvedView instanceof ViewBase) {
+			$statics = $resolvedView->getStaticAttributes();
+			if (!$statics) {
+				$statics = array();
+			}
+			$model = array_merge($statics, $mav->getModel());
+			$mav->setModel($model);
+		}
+		$this->resolveModelInternals($mav->getModel(), $request);
+	}
+
+	/**
+	 * @param array $model
+	 * @param IHttpRequest $request
+	 */
+	private function resolveModelInternals(array $model, IHttpRequest $request) {
+		foreach ($model as $modelElem) {
+			if ($modelElem instanceof ModelAndView) {
+				$this->resolveModelAndView($modelElem, $request);
+			} else if (is_array($modelElem)) {
+				$this->resolveModelInternals($modelElem, $request);
+			}
+		}
 	}
 }

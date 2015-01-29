@@ -42,4 +42,10 @@ interface IViewResolver {
 	 * (optional, to allow for ViewResolver chaining)
 	 */
 	public function resolveViewName($viewName, IHttpRequest $request);
+
+	/**
+	 * @param ModelAndView $mav
+	 * @param IHttpRequest $request
+	 */
+	public function resolveModelAndView(ModelAndView $mav, IHttpRequest $request);
 }
