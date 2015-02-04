@@ -375,9 +375,11 @@ namespace {
 	 * @deprecated replaced by Bee\Framework
 	 */
 	class Bee_Framework extends Framework {
+
 	}
 
 	interface TYPES extends ITypeDefinitions {
+
 	}
 }
 
