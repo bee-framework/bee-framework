@@ -1,5 +1,6 @@
 <?php
 namespace Bee\Beans;
+
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -17,6 +18,8 @@ namespace Bee\Beans;
  */
 use Bee\Context\InvalidPropertyException;
 use Bee\Utils\Types;
+use ReflectionClass;
+use ReflectionMethod;
 
 /**
  * Enter description here...
@@ -24,47 +27,89 @@ use Bee\Utils\Types;
  * @author Benjamin Hartmann
  */
 class BeanWrapper {
-	
-	/**
-	 * The target object
-	 *
-	 * @var object
-	 */
-	private $object;
-	
-	
-	public function __construct($object) {
-		$this->object = $object;
-	}
-	
-	public final function setPropertyValue($name, $value) {
-		call_user_func($this->findPropertyAccessor($name, 'set'), $value);
-	}
 
-	public final function getPropertyValue($name) {
-		return call_user_func($this->findPropertyAccessor($name, 'get'));
-	}
-	
-	protected function findPropertyAccessor($propertyName, $prefix) {
-		$methodName = $prefix.ucfirst($propertyName);
-		$method = array($this->object, $methodName);
-		if(!is_callable($method)) {
-			 throw new InvalidPropertyException($propertyName, Types::getType($this->object), 'no such method found: '.$methodName);
-		}
-		return $method;
-	}
-	
-	public final function setPropertyValueWithPropertyValue(PropertyValue $propertyValue) {
-		$this->setPropertyValue($propertyValue->getName(), $propertyValue->getValue());
-	}
+    const GETTER_REGEX = '#^get[A-Z]#';
 
-	public final function setPropertyValues(array $propertyValues) {
-		foreach ($propertyValues as $name => $propertyValue) {
-			if (!is_string($propertyValue) && Types::isAssignable($propertyValue, 'Bee\Beans\PropertyValue')) {
-				$this->setPropertyValueWithPropertyValue($propertyValue);
-			} else {
-				$this->setPropertyValue($name, $propertyValue);
-			}
-		}
-	}
+    /**
+     * The target object
+     *
+     * @var object
+     */
+    private $object;
+
+
+    public function __construct($object) {
+        $this->object = $object;
+    }
+
+    public final function setPropertyValue($name, $value) {
+        call_user_func($this->findPropertyAccessor($name, 'set'), $value);
+    }
+
+    public final function getPropertyValue($name) {
+        return call_user_func($this->findPropertyAccessor($name, 'get'));
+    }
+
+    protected function findPropertyAccessor($propertyName, $prefix) {
+        $methodName = $prefix . ucfirst($propertyName);
+        $method = array($this->object, $methodName);
+        if (!is_callable($method)) {
+            throw new InvalidPropertyException($propertyName, Types::getType($this->object), 'no such method found: ' . $methodName);
+        }
+        return $method;
+    }
+
+    public final function setPropertyValueWithPropertyValue(PropertyValue $propertyValue) {
+        $this->setPropertyValue($propertyValue->getName(), $propertyValue->getValue());
+    }
+
+    /**
+     * @param array $propertyValues
+     */
+    public final function setPropertyValues(array $propertyValues) {
+        foreach ($propertyValues as $name => $propertyValue) {
+            if (!is_string($propertyValue) && Types::isAssignable($propertyValue, 'Bee\Beans\PropertyValue')) {
+                $this->setPropertyValueWithPropertyValue($propertyValue);
+            } else {
+                $this->setPropertyValue($name, $propertyValue);
+            }
+        }
+    }
+
+    /**
+     * @param array $propertyValues
+     */
+    public final function setWritablePropertyValues(array $propertyValues) {
+        foreach ($propertyValues as $name => $propertyValue) {
+            try {
+                if (!is_string($propertyValue) && Types::isAssignable($propertyValue, 'Bee\Beans\PropertyValue')) {
+                    $this->setPropertyValueWithPropertyValue($propertyValue);
+                } else {
+                    $this->setPropertyValue($name, $propertyValue);
+                }
+            } catch (InvalidPropertyException $e) {
+                // ignored
+            }
+        }
+    }
+
+    /**
+     * @return array|null
+     */
+    public final function getPropertyValues() {
+        if (is_null($this->object)) {
+            return null;
+        }
+        $result = array();
+        $reflClass = new ReflectionClass($this->object);
+        $publicMethods = $reflClass->getMethods(ReflectionMethod::IS_PUBLIC);
+        foreach ($publicMethods as $method) {
+            $propName = $method->getShortName();
+            if (!$method->isStatic() && preg_match(self::GETTER_REGEX, $propName) && $method->getNumberOfRequiredParameters() == 0) {
+                $propName = lcfirst(substr($propName, 3));
+                $result[$propName] = $method->invoke($this->object);
+            }
+        }
+        return $result;
+    }
 }
