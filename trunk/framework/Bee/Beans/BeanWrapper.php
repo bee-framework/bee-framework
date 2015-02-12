@@ -28,7 +28,7 @@ use ReflectionMethod;
  */
 class BeanWrapper {
 
-    const GETTER_REGEX = '#^get[A-Z]#';
+    const GETTER_REGEX = '#^(?:get|is)[A-Z]#';
 
     /**
      * The target object
@@ -47,16 +47,22 @@ class BeanWrapper {
     }
 
     public final function getPropertyValue($name) {
-        return call_user_func($this->findPropertyAccessor($name, 'get'));
+        return call_user_func($this->findPropertyAccessor($name, array('get', 'is')));
     }
 
-    protected function findPropertyAccessor($propertyName, $prefix) {
-        $methodName = $prefix . ucfirst($propertyName);
-        $method = array($this->object, $methodName);
-        if (!is_callable($method)) {
-            throw new InvalidPropertyException($propertyName, Types::getType($this->object), 'no such method found: ' . $methodName);
+    protected function findPropertyAccessor($propertyName, $prefixes) {
+        $propertyName = ucfirst($propertyName);
+        $prefixes = is_array($prefixes) ? $prefixes : array($prefixes);
+        $triedMethods = array();
+        foreach($prefixes as $prefix) {
+            $methodName = $prefix . $propertyName;
+            $method = array($this->object, $methodName);
+            if (is_callable($method)) {
+                return $method;
+            }
+            $triedMethods[] = $methodName;
         }
-        return $method;
+        throw new InvalidPropertyException($propertyName, Types::getType($this->object), 'no such method found: ' . implode('|', $triedMethods));
     }
 
     public final function setPropertyValueWithPropertyValue(PropertyValue $propertyValue) {
@@ -105,8 +111,8 @@ class BeanWrapper {
         $publicMethods = $reflClass->getMethods(ReflectionMethod::IS_PUBLIC);
         foreach ($publicMethods as $method) {
             $propName = $method->getShortName();
-            if (!$method->isStatic() && preg_match(self::GETTER_REGEX, $propName) && $method->getNumberOfRequiredParameters() == 0) {
-                $propName = lcfirst(substr($propName, 3));
+            if (!$method->isStatic() && preg_match(self::GETTER_REGEX, $propName, $matches) && $method->getNumberOfRequiredParameters() == 0) {
+                $propName = lcfirst(substr($propName, strlen($matches[0]) - 1));
                 $result[$propName] = $method->invoke($this->object);
             }
         }
