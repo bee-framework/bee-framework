@@ -47,7 +47,7 @@ class BooleanPropertyEditor extends AbstractPropertyEditor {
 		if(is_bool($value)) {
 			return $value;
 		}
-		return $this->checkAndReturnIfNotNull(filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE), $value);
+		return $this->checkAndReturnIfNotNull(filter_var($value === '' ? 0 : $value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE), $value);
 	}
 
     public static function valueOf($value) {
