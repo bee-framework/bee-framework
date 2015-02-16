@@ -67,7 +67,7 @@
         <constructor-arg index="0" ref="defaultAclService" />
     </bean>
 
-    <bean id="aclVoterRead" class="Bee_Security_Vote_AclEntryVoter" parent="aclVoterTemplate">
+    <bean id="aclVoterRead" class="Bee\Security\Vote\AclEntryVoter" parent="aclVoterTemplate">
         <constructor-arg index="1" value="ACL_OBJECT_READ" />
         <constructor-arg index="2">
             <array>
@@ -76,7 +76,7 @@
         </constructor-arg>
 	</bean>
 
-    <bean id="aclVoterWrite" class="Bee_Security_Vote_AclEntryVoter" parent="aclVoterTemplate">
+    <bean id="aclVoterWrite" class="Bee\Security\Vote\AclEntryVoter" parent="aclVoterTemplate">
         <constructor-arg index="1" value="ACL_OBJECT_WRITE" />
         <constructor-arg index="2">
             <array>
@@ -85,7 +85,7 @@
         </constructor-arg>
 	</bean>
 
-    <bean id="aclVoterCreate" class="Bee_Security_Vote_AclEntryVoter" parent="aclVoterTemplate">
+    <bean id="aclVoterCreate" class="Bee\Security\Vote\AclEntryVoter" parent="aclVoterTemplate">
         <constructor-arg index="1" value="ACL_OBJECT_CREATE" />
         <constructor-arg index="2">
             <array>
@@ -94,7 +94,7 @@
         </constructor-arg>
 	</bean>
 
-    <bean id="aclVoterDelete" class="Bee_Security_Vote_AclEntryVoter" parent="aclVoterTemplate">
+    <bean id="aclVoterDelete" class="Bee\Security\Vote\AclEntryVoter" parent="aclVoterTemplate">
         <constructor-arg index="1" value="ACL_OBJECT_DELETE" />
         <constructor-arg index="2">
             <array>
@@ -103,7 +103,7 @@
         </constructor-arg>
 	</bean>
 
-    <bean id="aclVoterModify" class="Bee_Security_Vote_AclEntryVoter" parent="aclVoterTemplate">
+    <bean id="aclVoterModify" class="Bee\Security\Vote\AclEntryVoter" parent="aclVoterTemplate">
         <constructor-arg index="1" value="ACL_OBJECT_MODIFY" />
         <constructor-arg index="2">
             <array>
@@ -114,7 +114,7 @@
         </constructor-arg>
 	</bean>
 
-    <bean id="aclVoterAdministration" class="Bee_Security_Vote_AclEntryVoter" parent="aclVoterTemplate">
+    <bean id="aclVoterAdministration" class="Bee\Security\Vote\AclEntryVoter" parent="aclVoterTemplate">
         <constructor-arg index="1" value="ACL_OBJECT_ADMINISTRATION" />
         <constructor-arg index="2">
             <array>
@@ -126,7 +126,7 @@
     <bean id="accessDecisionManager" class="Bee\Security\Vote\AffirmativeBased">
 		<property name="decisionVoters">
 			<array>
-				<bean class="Bee\Security\Vote\RoleVoter"/>
+				<bean class="BeeSecurity\Vote\RoleVoter"/>
 				<ref bean="aclVoterRead" />
 				<ref bean="aclVoterWrite" />
 				<ref bean="aclVoterCreate" />

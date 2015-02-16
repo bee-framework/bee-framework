@@ -34,7 +34,7 @@ class Bee_Security_Config_Utils {
             $roleVoter->setBeanClassName('Bee\Security\Vote\RoleVoter');
 
 //            $authenticatedVoter = new GenericBeanDefinition();
-//            $authenticatedVoter->setBeanClassName('Bee_Security_Vote_AuthenticatedVoter'); // todo: implement...
+//            $authenticatedVoter->setBeanClassName('Bee\Security\Vote\AuthenticatedVoter'); // todo: implement...
 
             $defaultVoters = array(
                 $roleVoter/*,
