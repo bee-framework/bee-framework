@@ -134,7 +134,7 @@ abstract class AbstractAnnotationBasedResolver extends AbstractDelegatingHandler
 						$annotations = $method->getAllAnnotations('Bee_MVC_Controller_Multiaction_RequestHandler');
 						foreach ($annotations as $annotation) {
 							$requestTypeKey = $this->getMethodNameKey($annotation->httpMethod) .
-									$this->getAjaxTypeKey(filter_var($annotation->ajax, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE));
+									$this->getAjaxTypeKey(is_null($annotation->ajax) ? null : filter_var($annotation->ajax, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE));
 							if (!array_key_exists($requestTypeKey, $mappings)) {
 								$mappings[$requestTypeKey] = array();
 							}

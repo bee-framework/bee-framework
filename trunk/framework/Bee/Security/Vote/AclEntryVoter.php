@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Vote;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +28,7 @@ use Bee\Security\Exception\GenericSecurityException;
 use Bee\Security\IAuthentication;
 use Bee\Security\IConfigAttribute;
 use Bee\Utils\Strings;
+use Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -36,7 +38,7 @@ use Bee\Utils\Strings;
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter {
+class Bee_Security_Vote_AclEntryVoter extends AbstractAclVoter {
 
 	/**
 	 * @var Logger
@@ -83,6 +85,11 @@ class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter
      */
     private $requirePermission;
 
+    /**
+     * @param IAclService $aclService
+     * @param $processConfigAttribute
+     * @param array $requirePermission
+     */
     public function __construct(IAclService $aclService,
                                 $processConfigAttribute,
                                 array $requirePermission) {
@@ -135,13 +142,22 @@ class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter
         $this->sidRetrievalStrategy = $sidIdentityRetrievalStrategy;
     }
 
+    /**
+     * @param IConfigAttribute $configAttribute
+     * @return bool
+     */
     public function supports(IConfigAttribute $configAttribute) {
         return $configAttribute->getAttribute() == $this->getProcessConfigAttribute();
     }
 
+    /**
+     * @param IAuthentication $authentication
+     * @param mixed $object
+     * @param ConfigAttributeDefinition $config
+     * @return int
+     * @throws GenericSecurityException
+     */
     public function vote(IAuthentication $authentication, $object, ConfigAttributeDefinition $config) {
-
-
         foreach($config->getConfigAttributes() as $attr) {
 
             if (!$this->supports($attr)) {
@@ -216,6 +232,5 @@ class Bee_Security_Vote_AclEntryVoter extends Bee_Security_Vote_AbstractAclVoter
 
         // No configuration attribute matched, so abstain
         return self::ACCESS_ABSTAIN;
-
     }
 }

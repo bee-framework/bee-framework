@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Vote;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +21,15 @@ use Bee\Security\IAccessDecisionManager;
 use Bee\Security\IConfigAttribute;
 use Bee\Utils\Assert;
 
-abstract class Bee_Security_Vote_AbstractDecisionManager implements IAccessDecisionManager, IInitializingBean {
+/**
+ * Class AbstractDecisionManager
+ * @package Bee\Security\Vote
+ */
+abstract class AbstractDecisionManager implements IAccessDecisionManager, IInitializingBean {
 
 	/**
 	 * 
-	 * @var Bee_Security_Vote_IAccessDecisionVoter[]
+	 * @var IAccessDecisionVoter[]
 	 */
 	private $decisionVoters;
 
@@ -34,10 +39,16 @@ abstract class Bee_Security_Vote_AbstractDecisionManager implements IAccessDecis
 	 */
 	private $allowIfAllAbstainDecisions;
 
+	/**
+	 *
+	 */
 	public function afterPropertiesSet() {
 		Assert::isTrue(count($this->decisionVoters) > 0, 'A list of AccessDecisionVoters is required');
 	}
 
+	/**
+	 * @throws AccessDeniedException
+	 */
 	protected final function checkAllowIfAllAbstainDecisions() {
         if (!$this->isAllowIfAllAbstainDecisions()) {
             throw new AccessDeniedException('access_denied'); // @todo: message source
@@ -61,17 +72,27 @@ abstract class Bee_Security_Vote_AbstractDecisionManager implements IAccessDecis
         $this->allowIfAllAbstainDecisions = $allowIfAllAbstainDecisions;
     }
 
+	/**
+	 * @return IAccessDecisionVoter[]
+	 */
     public function getDecisionVoters() {
     	return $this->decisionVoters;
     }
 
+	/**
+	 * @param IAccessDecisionVoter[]|array $decisionVoters
+	 */
     public function setDecisionVoters(array $decisionVoters) {
     	foreach($decisionVoters as $voter) {
-			Assert::isInstanceOf('Bee_Security_Vote_IAccessDecisionVoter', $voter, 'AccessDecisionVoter ' . get_class($voter) . ' must implement Bee_Security_Vote_IAccessDecisionVoter');
+			Assert::isInstanceOf('Bee\Security\Vote\IAccessDecisionVoter', $voter, 'AccessDecisionVoter ' . get_class($voter) . ' must implement Bee\Security\Vote\IAccessDecisionVoter');
     	}
     	$this->decisionVoters = $decisionVoters; 
     }
 
+	/**
+	 * @param IConfigAttribute $configAttribute
+	 * @return bool
+	 */
 	public function supports(IConfigAttribute $configAttribute) {
 		foreach($this->decisionVoters as $voter) {
 			if($voter->supports($configAttribute)) {
@@ -81,6 +102,10 @@ abstract class Bee_Security_Vote_AbstractDecisionManager implements IAccessDecis
 		return false;
 	}
 
+	/**
+	 * @param string $className
+	 * @return bool
+	 */
 	public function supportsClass($className) {
 		foreach($this->decisionVoters as $voter) {
 			if(!$voter->supportsClass($className)) {

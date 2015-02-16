@@ -86,7 +86,6 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 	public function invokeHandlerMethod(IHttpRequest $request, array $fixedParams = array()) {
 		/** @var MethodInvocation $resolvedMethod */
 		$resolvedMethod = $this->resolveMethodForRequest($request);
-
 		if (is_null($resolvedMethod)) {
 			$resolvedMethod = $this->getDefaultMethodInvocation();
 		}

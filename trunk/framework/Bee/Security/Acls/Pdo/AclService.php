@@ -167,7 +167,7 @@ class AclService implements IMutableAclService {
 
         // Retrieve the ACL via superclass (ensures cache registration, proper retrieval etc)
         $acl = $this->readAclForOid($objectIdentity);
-		Assert::isInstanceOf('IMutableAcl', $acl, "MutableAcl should have been returned");
+		Assert::isInstanceOf('Bee\Security\Acls\IMutableAcl', $acl, "MutableAcl should have been returned");
 
         return $acl;
 

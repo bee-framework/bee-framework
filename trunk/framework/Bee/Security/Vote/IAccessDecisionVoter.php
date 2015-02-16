@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Vote;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +29,7 @@ use Bee\Security\IConfigAttribute;
  * </p>
  * 
  */
-interface Bee_Security_Vote_IAccessDecisionVoter {
+interface IAccessDecisionVoter {
 	
 	const ACCESS_GRANTED = 1;
 	const ACCESS_ABSTAIN = 0;

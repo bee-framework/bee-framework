@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Vote;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +18,20 @@
 use Bee\Utils\Assert;
 
 /**
- * Created by IntelliJ IDEA.
- * User: mp
- * Date: Mar 19, 2010
- * Time: 5:30:14 PM
- * To change this template use File | Settings | File Templates.
+ * Class AbstractAclVoter
+ * @package Bee\Security\Vote
  */
-
-abstract class Bee_Security_Vote_AbstractAclVoter implements Bee_Security_Vote_IAccessDecisionVoter {
+abstract class AbstractAclVoter implements IAccessDecisionVoter {
 
     /**
      * @var string
      */
     private $processDomainObjectClass;
 
+    /**
+     * @param $secureObject
+     * @return mixed
+     */
     protected function getDomainObjectInstance($secureObject) {
 //        Object[] args;
 //        Class[] params;
@@ -57,6 +58,9 @@ abstract class Bee_Security_Vote_AbstractAclVoter implements Bee_Security_Vote_I
 //            + " did not provide any argument of type: " + processDomainObjectClass);
     }
 
+    /**
+     * @return string
+     */
     public function getProcessDomainObjectClass() {
         return $this->processDomainObjectClass;
     }
