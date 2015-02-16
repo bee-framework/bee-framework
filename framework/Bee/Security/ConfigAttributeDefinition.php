@@ -44,7 +44,7 @@ class ConfigAttributeDefinition {
 					if(is_string($attr)) {
 						$newList[] = new ConfigAttribute($attr);
 					} else {
-						Assert::isInstanceOf('IConfigAttribute', $attr, 'List entries must be of type ConfigAttribute');
+						Assert::isInstanceOf('Bee\Security\IConfigAttribute', $attr, 'List entries must be of type ConfigAttribute');
 						$newList[] = $attr;
 					}
 				}

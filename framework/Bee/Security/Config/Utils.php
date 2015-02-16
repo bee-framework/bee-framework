@@ -31,7 +31,7 @@ class Bee_Security_Config_Utils {
         if (!$parserContext->getRegistry()->containsBeanDefinition(Bee_Security_Config_IBeanIds::ACCESS_MANAGER)) {
 
             $roleVoter = new GenericBeanDefinition();
-            $roleVoter->setBeanClassName('Bee_Security_Vote_RoleVoter');
+            $roleVoter->setBeanClassName('Bee\Security\Vote\RoleVoter');
 
 //            $authenticatedVoter = new GenericBeanDefinition();
 //            $authenticatedVoter->setBeanClassName('Bee_Security_Vote_AuthenticatedVoter'); // todo: implement...
@@ -41,7 +41,7 @@ class Bee_Security_Config_Utils {
                 $authenticatedVoter*/
             );
 
-            $accessMgrBuilder = BeanDefinitionBuilder::rootBeanDefinition('Bee_Security_Vote_AffirmativeBased');
+            $accessMgrBuilder = BeanDefinitionBuilder::rootBeanDefinition('Bee\Security\Vote\AffirmativeBased');
             $accessMgrBuilder->addPropertyValue('decisionVoters', $defaultVoters);
             $parserContext->getRegistry()->registerBeanDefinition(Bee_Security_Config_IBeanIds::ACCESS_MANAGER, $accessMgrBuilder->getBeanDefinition());
         }

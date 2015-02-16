@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Vote;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +19,20 @@
 use Bee\Security\ConfigAttributeDefinition;
 use Bee\Security\Exception\AccessDeniedException;
 use Bee\Security\IAuthentication;
+use Bee\Security\Vote\IAccessDecisionVoter;
 
-class Bee_Security_Vote_AffirmativeBased extends Bee_Security_Vote_AbstractDecisionManager {
+/**
+ * Class AffirmativeBased
+ * @package Bee\Security\Vote
+ */
+class AffirmativeBased extends AbstractDecisionManager {
+
+	/**
+	 * @param IAuthentication $authentication
+	 * @param mixed $object
+	 * @param ConfigAttributeDefinition $configAttributes
+	 * @throws AccessDeniedException
+	 */
 	public function decide(IAuthentication $authentication, $object, ConfigAttributeDefinition $configAttributes) {
 		$deny = 0;
 		
@@ -27,9 +40,9 @@ class Bee_Security_Vote_AffirmativeBased extends Bee_Security_Vote_AbstractDecis
 			$result = $voter->vote($authentication, $object, $configAttributes);
 
 			switch($result) {
-				case Bee_Security_Vote_IAccessDecisionVoter::ACCESS_GRANTED:
+				case IAccessDecisionVoter::ACCESS_GRANTED:
 					return;
-				case Bee_Security_Vote_IAccessDecisionVoter::ACCESS_DENIED:
+				case IAccessDecisionVoter::ACCESS_DENIED:
 					$deny++;
 					break;
 				default:

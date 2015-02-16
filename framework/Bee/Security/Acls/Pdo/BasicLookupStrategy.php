@@ -264,7 +264,7 @@ class BasicLookupStrategy implements ILookupStrategy {
 		$resultMap = array();
 
 		foreach ($acls as $inputAcl) {
-			Assert::isInstanceOf('Acl', $inputAcl, 'Map should have contained an AclImpl');
+			Assert::isInstanceOf('Bee\Security\Acls\Impl\Acl', $inputAcl, 'Map should have contained an AclImpl');
 
 			$result = $this->convert($acls, $inputAcl->getId());
 			$resultMap[$result->getObjectIdentity()->getIdentifierString()] = $result;

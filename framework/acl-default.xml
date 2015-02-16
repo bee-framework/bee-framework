@@ -123,10 +123,10 @@
         </constructor-arg>
 	</bean>
 
-    <bean id="accessDecisionManager" class="Bee_Security_Vote_AffirmativeBased">
+    <bean id="accessDecisionManager" class="Bee\Security\Vote\AffirmativeBased">
 		<property name="decisionVoters">
 			<array>
-				<bean class="Bee_Security_Vote_RoleVoter"/>
+				<bean class="Bee\Security\Vote\RoleVoter"/>
 				<ref bean="aclVoterRead" />
 				<ref bean="aclVoterWrite" />
 				<ref bean="aclVoterCreate" />

@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Security\Vote;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +45,7 @@ use Bee\Utils\Strings;
  * All comparisons and prefixes are case sensitive.
  * 
  */
-class Bee_Security_Vote_RoleVoter implements Bee_Security_Vote_IAccessDecisionVoter {
+class RoleVoter implements IAccessDecisionVoter {
 	
 	private $rolePrefix = "ROLE_";
 
@@ -65,14 +66,28 @@ class Bee_Security_Vote_RoleVoter implements Bee_Security_Vote_IAccessDecisionVo
 		$this->rolePrefix = $rolePrefix;
 	}
 
+	/**
+	 * @param IConfigAttribute $configAttribute
+	 * @return bool
+	 */
 	public function supports(IConfigAttribute $configAttribute) {
 		return Strings::startsWith($configAttribute->getAttribute(), $this->rolePrefix);
 	}
 
+	/**
+	 * @param $className
+	 * @return bool
+	 */
 	public function supportsClass($className) {
 		return true;
 	}
 
+	/**
+	 * @param IAuthentication $authentication
+	 * @param mixed $object
+	 * @param ConfigAttributeDefinition $config
+	 * @return int
+	 */
 	public function vote(IAuthentication $authentication, $object, ConfigAttributeDefinition $config) {
         $result = self::ACCESS_ABSTAIN;
 
@@ -89,7 +104,11 @@ class Bee_Security_Vote_RoleVoter implements Bee_Security_Vote_IAccessDecisionVo
 
         return $result;
 	}
-	
+
+	/**
+	 * @param IAuthentication $authentication
+	 * @return string[]
+	 */
 	protected function extractAuthorities(IAuthentication $authentication) {
 		return $authentication->getAuthorities(); 
 	}
