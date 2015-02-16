@@ -38,7 +38,7 @@ use Logger;
  * To change this template use File | Settings | File Templates.
  */
 
-class Bee_Security_Vote_AclEntryVoter extends AbstractAclVoter {
+class AclEntryVoter extends AbstractAclVoter {
 
 	/**
 	 * @var Logger
