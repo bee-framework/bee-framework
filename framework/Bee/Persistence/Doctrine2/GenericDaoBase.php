@@ -163,15 +163,17 @@ abstract class GenericDaoBase extends DaoBase {
 		return parent::executeListQuery($queryBuilder, $restrictionHolder, $orderAndLimitHolder, $defaultOrderMapping ?: $this->getDefaultOrderMapping(), $hydrationMode ?: $this->getHydrationMode());
 	}
 
-	/**
-	 * @return QueryBuilder
-	 */
-	protected function getBaseQuery() {
+    /**
+     * @param null $entity
+     * @return QueryBuilder
+     */
+	protected function getBaseQuery($entity = null) {
 		$baseEntityAlias = $this->getEntityAlias();
+        $entity = $entity ?: $this->getEntity();
 //		$indexBy = count($this->getIdFieldName()) > 1 ? null : $baseEntityAlias . '.' . $this->getIdFieldName();
 //		return $this->getEntityManager()->createQueryBuilder()->select($baseEntityAlias)
 //				->from($this->getEntity(), $baseEntityAlias, $indexBy);
-		$qb = $this->getEntityManager()->createQueryBuilder()->select($baseEntityAlias)->from($this->getEntity(), $baseEntityAlias, $this->getIndexBy());
+		$qb = $this->getEntityManager()->createQueryBuilder()->select($baseEntityAlias)->from($entity, $baseEntityAlias, $this->getIndexBy());
 		$this->addJoinsToBaseQuery($qb);
 		$this->addRestrictionsToBaseQuery($qb);
 		return $qb;
