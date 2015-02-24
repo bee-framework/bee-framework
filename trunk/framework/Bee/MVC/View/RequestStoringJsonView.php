@@ -1,5 +1,4 @@
 <?php
-namespace Bee\MVC\View;
 /*
  * Copyright 2008-2015 the original author or authors.
  *
@@ -15,20 +14,22 @@ namespace Bee\MVC\View;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+namespace Bee\MVC\View;
+
+use MODEL;
 
 /**
- * Class RequestStoringRedirectView
+ * Class RequestStoringJsonView
  * @package Bee\MVC\View
  */
-class RequestStoringRedirectView extends RedirectView {
+class RequestStoringJsonView extends JsonServiceView {
     use TRequestStoringView;
 
     /**
-     * @param array $model
+     *
      */
-    public function render(array $model = array()) {
-        $getParams = array_key_exists(RedirectView::MODEL_KEY_GET_PARAMS, $model) ? $model[RedirectView::MODEL_KEY_GET_PARAMS] : array();
-        $model[RedirectView::MODEL_KEY_GET_PARAMS] = array_merge($getParams, $this->createStoreParams($model));
-        parent::render($model);
+    protected function renderMergedOutputModel() {
+        MODEL::addValuesToModel($this->createStoreParams(MODEL::getModel()));
+        parent::renderMergedOutputModel();
     }
 }
