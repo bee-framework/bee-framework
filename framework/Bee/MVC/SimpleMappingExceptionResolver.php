@@ -16,27 +16,13 @@ namespace Bee\MVC;
  * limitations under the License.
  */
 use Bee\Utils\Strings;
+use Bee\Utils\TLogged;
 use Exception;
-use Logger;
 
 class SimpleMappingExceptionResolver implements IHandlerExceptionResolver {
+    use TLogged;
 
 	const MODEL_HANDLER_EXCEPTION_KEY = 'handler_excpetion';
-
-	/**
-	 * @var Logger
-	 */
-	protected $log;
-
-	/**
-	 * @return Logger
-	 */
-	protected function getLog() {
-		if (!$this->log) {
-			$this->log = Logger::getLogger(get_class($this));
-		}
-		return $this->log;
-	}
 
 	/**
 	 *

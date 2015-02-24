@@ -22,7 +22,7 @@ use Bee\MVC\IView;
 use Bee\MVC\IViewResolver;
 use Bee\MVC\ModelAndView;
 use Bee\MVC\View\ViewBase;
-use Logger;
+use Bee\Utils\TLogged;
 
 /**
  * Basic implementation of the IViewResolver interface. Uses a Bee\IContext for view name resolution, looking up
@@ -32,21 +32,7 @@ use Logger;
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
 class BasicViewResolver implements IViewResolver {
-
-	/**
-	 * @var Logger
-	 */
-	protected $log;
-
-	/**
-	 * @return Logger
-	 */
-	protected function getLog() {
-		if (!$this->log) {
-			$this->log = Logger::getLogger(get_class($this));
-		}
-		return $this->log;
-	}
+    use TLogged;
 
 	/**
 	 * Enter description here...
