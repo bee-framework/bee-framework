@@ -15,29 +15,14 @@ namespace Bee\MVC\Controller\Multiaction;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\MVC\Controller\MultiActionController;
 use Bee\MVC\IDelegatingHandler;
-use Logger;
+use Bee\Utils\TLogged;
 
 /**
  * Class AbstractControllerHolder
  */
 abstract class AbstractDelegatingHandlerHolder {
-
-	/**
-	 * @var Logger
-	 */
-	protected $log;
-
-	/**
-	 * @return Logger
-	 */
-	protected function getLog() {
-		if (!$this->log) {
-			$this->log = Logger::getLogger(get_class($this));
-		}
-		return $this->log;
-	}
+    use TLogged;
 
 	/**
 	 * Enter description here...
