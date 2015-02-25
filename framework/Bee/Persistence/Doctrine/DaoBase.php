@@ -15,28 +15,18 @@
  * limitations under the License.
  */
 
-use Bee\Framework;
 use Bee\Persistence\IOrderAndLimitHolder;
 use Bee\Persistence\IRestrictionHolder;
 use Bee\Utils\Strings;
 
+/**
+ * Class Bee_Persistence_Doctrine_DaoBase
+ *
+ * @deprecated phase out any Doctrine1 stuff
+ */
 class Bee_Persistence_Doctrine_DaoBase {
+    use \Bee\Utils\TLogged;
 	
-	/**
-	 * @var \Logger
-	 */
-	private static $log;
-
-	/**
-	 * @return \Logger
-	 */
-	protected static function getLog() {
-		if (!self::$log) {
-			self::$log = Framework::getLoggerForClass(__CLASS__);
-		}
-		return self::$log;
-	}
-
 	/**
 	 * Enter description here...
 	 *
@@ -168,14 +158,14 @@ class Bee_Persistence_Doctrine_DaoBase {
 	public function doInTransaction($func) {
 		$this->getDoctrineConnection()->beginTransaction();
 		try {
-			$result = $func($this, self::getLog());
+			$result = $func($this, $this->getLog());
 
 			$this->getDoctrineConnection()->commit();
 			$this->getDoctrineConnection()->flush();
 
 			return $result;
 		} catch(\Exception $e) {
-			self::getLog()->debug('exception caught', $e);
+			$this->getLog()->debug('exception caught', $e);
 			$this->getDoctrineConnection()->rollBack();
 			throw $e;
 		}

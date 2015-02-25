@@ -1,7 +1,7 @@
 <?php
 namespace Bee\Beans\PropertyEditor;
 /*
- * Copyright 2008-2014 the original author or authors.
+ * Copyright 2008-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ namespace Bee\Beans\PropertyEditor;
 use Bee\Beans\IPropertyEditor;
 use Bee\Context\BeanNotOfRequiredTypeException;
 use Bee\Context\Config\IContextAware;
+use Bee\Context\Config\TContextAware;
 use Bee\Context\NoSuchBeanDefinitionException;
 use Bee\IContext;
 use Bee\Utils\ITypeDefinitions;
@@ -31,13 +32,9 @@ use Exception;
  * @author Michael Plomer (michael.plomer@iter8.de)
  */
 class PropertyEditorRegistry implements IContextAware {
+    use TContextAware;
 
 	const PROPERTY_EDITOR_BEAN_NAME_PREFIX = 'propertyEditor_';
-
-	/**
-	 * @var IContext
-	 */
-	private $context;
 
 	/**
 	 * @var IPropertyEditor[]
@@ -86,18 +83,6 @@ class PropertyEditorRegistry implements IContextAware {
 		} catch(PropertyEditorNotFoundException $e) {
 			return false;
 		}
-	}
-
-	/**
-	 * Callback that supplies the owning context to a bean instance.
-	 * <p>Invoked after the population of normal bean properties
-	 * but before an initialization callback such as
-	 * {@link InitializingBean#afterPropertiesSet()} or a custom init-method.
-	 * @param IContext $context owning context (never <code>null</code>).
-	 * The bean can immediately call methods on the context.
-	 */
-	public function setBeeContext(IContext $context) {
-		$this->context = $context;
 	}
 
 	/**

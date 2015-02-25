@@ -36,21 +36,7 @@ use Bee\Utils\Types;
  */
 
 abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IInitializingBean {
-
-	/**
-	 * @var Logger
-	 */
-	protected static $log;
-
-	/**
-	 * @return Logger
-	 */
-	protected static function getLog() {
-		if (!self::$log) {
-			self::$log = Framework::getLoggerForClass(__CLASS__);
-		}
-		return self::$log;
-	}
+    use \Bee\Utils\TLogged;
 
     /**
      * @var IAccessDecisionManager
@@ -108,8 +94,8 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
         }
 
         if ($token->isContextHolderRefreshRequired()) {
-            if (self::getLog()->isDebugEnabled()) {
-				self::getLog()->debug("Reverting to original Authentication: " . $token->getAuthentication());
+            if ($this->getLog()->isDebugEnabled()) {
+				$this->getLog()->debug("Reverting to original Authentication: " . $token->getAuthentication());
             }
 
             SecurityContextHolder::getContext()->setAuthentication($token->getAuthentication());
@@ -157,7 +143,7 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
             $attributeDefs = $this->obtainObjectDefinitionSource()->getConfigAttributeDefinitions();
 
             if ($attributeDefs == null) {
-				self::getLog()->warn("Could not validate configuration attributes as the ObjectDefinitionSource did not return "
+				$this->getLog()->warn("Could not validate configuration attributes as the ObjectDefinitionSource did not return "
                         . "a ConfigAttributeDefinition collection");
                 return;
             }
@@ -180,7 +166,7 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
                 throw new InvalidArgumentException("Unsupported configuration attributes: " . $unsupportedAttrs);
             }
 
-			self::getLog()->info("Validated configuration attributes");
+			$this->getLog()->info("Validated configuration attributes");
         }
     }
 
@@ -213,8 +199,8 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
                                 . "AbstractSecurityInterceptor.rejectPublicInvocations property is set to 'true'");
             }
 
-            if (self::getLog()->isDebugEnabled()) {
-                self::getLog()->debug("Public object - authentication not attempted");
+            if ($this->getLog()->isDebugEnabled()) {
+                $this->getLog()->debug("Public object - authentication not attempted");
             }
 
 //            publishEvent(new PublicInvocationEvent(object));
@@ -222,8 +208,8 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
             return null; // no further work post-invocation
         }
 
-        if (self::getLog()->isDebugEnabled()) {
-            self::getLog()->debug("Secure object: $object; ConfigAttributes: $attr");
+        if ($this->getLog()->isDebugEnabled()) {
+            $this->getLog()->debug("Secure object: $object; ConfigAttributes: $attr");
         }
 
         if (SecurityContextHolder::getContext()->getAuthentication() == null) {
@@ -244,8 +230,8 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
             throw $accessDeniedException;
         }
 
-        if (self::getLog()->isDebugEnabled()) {
-            self::getLog()->debug("Authorization successful");
+        if ($this->getLog()->isDebugEnabled()) {
+            $this->getLog()->debug("Authorization successful");
         }
 //
 //        $event = new AuthorizedEvent(object, attr, authenticated);
@@ -255,15 +241,15 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
         $runAs = $this->runAsManager->buildRunAs($authenticated, $object, $attr);
 
         if ($runAs == null) {
-            if (self::getLog()->isDebugEnabled()) {
-                self::getLog()->debug("RunAsManager did not change Authentication object");
+            if ($this->getLog()->isDebugEnabled()) {
+                $this->getLog()->debug("RunAsManager did not change Authentication object");
             }
 
             // no further work post-invocation
             return new Bee_Security_Intercept_InterceptorStatusToken($authenticated, false, $attr, $object);
         } else {
-            if (self::getLog()->isDebugEnabled()) {
-                self::getLog()->debug("Switching to RunAs Authentication: " . $runAs);
+            if ($this->getLog()->isDebugEnabled()) {
+                $this->getLog()->debug("Switching to RunAs Authentication: " . $runAs);
             }
 
 			SecurityContextHolder::getContext()->setAuthentication($runAs);
@@ -284,8 +270,8 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
         $authentication = SecurityContextHolder::getContext()->getAuthentication();
 
         if ($authentication->isAuthenticated() && !$this->alwaysReauthenticate) {
-            if (self::getLog()->isDebugEnabled()) {
-                self::getLog()->debug("Previously Authenticated: " . $authentication);
+            if ($this->getLog()->isDebugEnabled()) {
+                $this->getLog()->debug("Previously Authenticated: " . $authentication);
             }
 
             return $authentication;
@@ -294,8 +280,8 @@ abstract class Bee_Security_Intercept_AbstractSecurityInterceptor implements IIn
         $authentication = $this->authenticationManager->authenticate($authentication);
 
         // We don't authenticated.setAuthentication(true), because each provider should do that
-        if (self::getLog()->isDebugEnabled()) {
-            self::getLog()->debug("Successfully Authenticated: " . $authentication);
+        if ($this->getLog()->isDebugEnabled()) {
+            $this->getLog()->debug("Successfully Authenticated: " . $authentication);
         }
 
         SecurityContextHolder::getContext()->setAuthentication($authentication);

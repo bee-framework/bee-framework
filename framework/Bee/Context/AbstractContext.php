@@ -18,6 +18,7 @@ namespace Bee\Context;
 use Bee\Beans\BeanWrapper;
 use Bee\Beans\MethodInvocation;
 use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
+use Bee\Beans\PropertyEditor\TPropertyEditorRegistryHolder;
 use Bee\Beans\PropertyValue;
 use Bee\Context\Config\BasicBeanDefinitionRegistry;
 use Bee\Context\Config\IBeanDefinition;
@@ -46,6 +47,7 @@ use ReflectionClass;
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
 abstract class AbstractContext extends BasicBeanDefinitionRegistry implements IContext, IContextAware {
+    use TPropertyEditorRegistryHolder;
 
 	/**
 	 * @var IContext[]
@@ -98,11 +100,6 @@ abstract class AbstractContext extends BasicBeanDefinitionRegistry implements IC
 	private $factoryBeanObjectCache = array();
 
 	/**
-	 * @var PropertyEditorRegistry
-	 */
-	private $propertyEditorRegistry;
-
-	/**
 	 * @static
 	 * @param string $identifier
 	 * @return IContext
@@ -140,13 +137,6 @@ abstract class AbstractContext extends BasicBeanDefinitionRegistry implements IC
 	}
 
 	/**
-	 * @return PropertyEditorRegistry
-	 */
-	public function getPropertyEditorRegistry() {
-		return $this->propertyEditorRegistry;
-	}
-
-	/**
 	 * This method is supposed to be protected, but due to php's inability to define
 	 * anonymous classes.
 	 *
@@ -168,13 +158,6 @@ abstract class AbstractContext extends BasicBeanDefinitionRegistry implements IC
 			throw $e;
 		}
 		return $instance;
-	}
-
-	/**
-	 * @param IContext $context
-	 */
-	public function setBeeContext(IContext $context) {
-		$this->setParent($context);
 	}
 
 	/**

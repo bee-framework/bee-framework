@@ -1,6 +1,4 @@
 <?php
-namespace Bee\Persistence\Pdo;
-
 /*
  * Copyright 2008-2015 the original author or authors.
  *
@@ -16,28 +14,32 @@ namespace Bee\Persistence\Pdo;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use PDOException;
-use PDOStatement;
+namespace Bee\Beans\PropertyEditor;
+
+use Bee\IContext;
 
 /**
- * User: mp
- * Date: Mar 24, 2010
- * Time: 6:01:23 PM
+ * Trait TPropertyEditorRegistryHolder
+ * @package Bee\Beans\PropertyEditor
  */
-interface IBatchStatementSetter {
+trait TPropertyEditorRegistryHolder {
 
     /**
-     * Set parameter values on the given PDOStatement.
-     * @param PDOStatement $ps the PreparedStatement to invoke setter methods on
-     * @param int $i index of the statement we're issuing in the batch, starting from 0
-     * @throws PDOException if a PDOException is encountered
+     * @var PropertyEditorRegistry
      */
-    public function setValues(PDOStatement $ps, $i);
+    private $propertyEditorRegistry;
 
     /**
-     * Return the size of the batch.
-     * @return int the number of statements in the batch
+     * @param IContext $context
      */
-    public function getBatchSize();
+    public function setBeeContext(IContext $context) {
+        $this->propertyEditorRegistry = new PropertyEditorRegistry($context);
+    }
 
+    /**
+     * @return PropertyEditorRegistry
+     */
+    public function getPropertyEditorRegistry() {
+        return $this->propertyEditorRegistry;
+    }
 }

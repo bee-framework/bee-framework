@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Framework;
 use Bee\Security\ConfigAttributeDefinition;
 use Bee\Utils\Types;
 
@@ -27,21 +26,7 @@ use Bee\Utils\Types;
  */
 
 abstract class Bee_Security_Intercept_AbstractFallbackMethodDefinitionSource implements Bee_Security_Intercept_IMethodDefinitionSource {
-
-	/**
-	 * @var Logger
-	 */
-	protected static $log;
-
-	/**
-	 * @return Logger
-	 */
-	protected static function getLog() {
-		if (!self::$log) {
-			self::$log = Framework::getLoggerForClass(__CLASS__);
-		}
-		return self::$log;
-	}
+    use \Bee\Utils\TLogged;
 
     const NULL_CONFIG_ATTRIBUTE = '<<NULL_CONFIG_ATTRIBUTE>>';
     /**
@@ -84,8 +69,8 @@ abstract class Bee_Security_Intercept_AbstractFallbackMethodDefinitionSource imp
             if ($cfgAtt == null) {
                 $this->attributeCache[$cacheKey] = self::NULL_CONFIG_ATTRIBUTE;
             } else {
-                if (self::getLog()->isDebugEnabled()) {
-					self::getLog()->debug("Adding security method [$cacheKey] with attribute [$cfgAtt]");
+                if ($this->getLog()->isDebugEnabled()) {
+					$this->getLog()->debug("Adding security method [$cacheKey] with attribute [$cfgAtt]");
                 }
                 $this->attributeCache[$cacheKey] = $cfgAtt;
             }
