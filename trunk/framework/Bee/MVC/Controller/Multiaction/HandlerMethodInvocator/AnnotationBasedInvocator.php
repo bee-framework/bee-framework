@@ -15,9 +15,8 @@ namespace Bee\MVC\Controller\Multiaction\HandlerMethodInvocator;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
+use Bee\Beans\PropertyEditor\TPropertyEditorRegistryHolder;
 use Bee\Context\Config\IContextAware;
-use Bee\IContext;
 use Bee\MVC\Controller\Multiaction\AbstractAnnotationBasedResolver;
 use Bee\MVC\Controller\Multiaction\IHandlerMethodInvocator;
 use Bee\MVC\IHttpRequest;
@@ -28,6 +27,7 @@ use Bee\MVC\ModelAndView;
  * @package Bee\MVC\Controller\Multiaction\HandlerMethodInvocator
  */
 class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implements IHandlerMethodInvocator, IContextAware {
+    use TPropertyEditorRegistryHolder;
 
 	const DEFAULT_METHOD_CACHE_KEY_PREFIX = 'BeeDefaultHandlerMethodCache_';
 
@@ -35,11 +35,6 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 	 * @var string
 	 */
 	private $defaultMethodName;
-
-	/**
-	 * @var PropertyEditorRegistry
-	 */
-	private $propertyEditorRegistry;
 
 	/**
 	 * @var MethodInvocation
@@ -141,20 +136,6 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 	 */
 	protected function createDelegate(array $mapping) {
 		return new RegexMappingInvocationResolver($mapping, $this->getPropertyEditorRegistry());
-	}
-
-	/**
-	 * @param IContext $context
-	 */
-	public function setBeeContext(IContext $context) {
-		$this->propertyEditorRegistry = new PropertyEditorRegistry($context);
-	}
-
-	/**
-	 * @return PropertyEditorRegistry
-	 */
-	public function getPropertyEditorRegistry() {
-		return $this->propertyEditorRegistry;
 	}
 
 	/**

@@ -1,6 +1,8 @@
 <?php
+namespace Bee\Persistence\Pdo\ResultSetExtractor;
+
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +16,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use PDO;
+use PDOStatement;
 
 /**
- * User: mp
- * Date: Mar 22, 2010
- * Time: 7:25:20 PM
+ * Class SingleColumnResultSetExtractor
+ * @package Bee\Persistence\Pdo\ResultSetExtractor
+ *
+ * todo: check feasibility. Remove if usages are scarce enough to replace them with closures
  */
-
-class Bee_Persistence_Pdo_ResultSetExtractor_SingleColumn implements Bee_Persistence_Pdo_IResultSetExtractor {
-    public function extractData(PDOStatement $rs) {
+class SingleColumnResultSetExtractor {
+    public function __invoke(PDOStatement $rs) {
         return $rs->fetchAll(PDO::FETCH_COLUMN);
     }
 }
-?>

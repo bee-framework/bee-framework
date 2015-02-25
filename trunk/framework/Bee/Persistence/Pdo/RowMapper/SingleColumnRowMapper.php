@@ -1,6 +1,7 @@
 <?php
+namespace Bee\Persistence\Pdo\RowMapper;
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +16,23 @@
  * limitations under the License.
  */
 use Bee\Persistence\Exception\DataAccessException;
+use PDOStatement;
 
 /**
- * User: mp
- * Date: Mar 24, 2010
- * Time: 8:59:42 AM
+ * Class SingleColumnRowMapper
+ * @package Bee\Persistence\Pdo\RowMapper
+ *
+ * todo: check feasibility. Remove if usages are scarce enough to replace them with closures*
  */
+class SingleColumnRowMapper {
 
-class Bee_Persistence_Pdo_RowMapper_SingleColumn implements Bee_Persistence_Pdo_IRowMapper {
-
-    public function mapRow(PDOStatement $rs, $rowNum) {
+    /**
+     * @param PDOStatement $rs
+     * @param $rowNum
+     * @return string
+     * @throws DataAccessException
+     */
+    public function __invoke(PDOStatement $rs, $rowNum) {
         $colCount = $rs->columnCount();
         if($colCount != 1) {
             throw new DataAccessException('Incorrect column count, is ' . $colCount . ', should be 1');

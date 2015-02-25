@@ -16,6 +16,10 @@ namespace Bee\Security\Acls\Pdo;
  * limitations under the License.
  */
 use Bee\Persistence\Exception\DataAccessException;
+use Bee\Persistence\Pdo\IBatchStatementSetter;
+use Bee\Persistence\Pdo\ResultSetExtractor\RowMapperResultSetExtractor;
+use Bee\Persistence\Pdo\StatementSetter\ArgsStatementSetter;
+use Bee\Persistence\Pdo\Template;
 use Bee\Security\Acls\Exception\AlreadyExistsException;
 use Bee\Security\Acls\Exception\ChildrenExistException;
 use Bee\Security\Acls\Exception\NotFoundException;
@@ -29,11 +33,6 @@ use Bee\Security\Acls\IObjectIdentity;
 use Bee\Security\Acls\ISid;
 use Bee\Security\Context\SecurityContextHolder;
 use Bee\Utils\Assert;
-use Bee_Persistence_Pdo_IBatchStatementSetter;
-use Bee_Persistence_Pdo_IRowMapper;
-use Bee_Persistence_Pdo_ResultSetExtractor_RowMapper;
-use Bee_Persistence_Pdo_StatementSetter_Args;
-use Bee_Persistence_Pdo_Template;
 use Exception;
 use InvalidArgumentException;
 use PDO;
@@ -72,7 +71,7 @@ class AclService implements IMutableAclService {
     const SELECT_CLASS_PRIMARY_KEY = "select id from acl_class where class=?";
 
     /**
-     * @var Bee_Persistence_Pdo_Template
+     * @var Template
      */
     protected $pdoTemplate;
 
@@ -91,15 +90,15 @@ class AclService implements IMutableAclService {
 	 * @param ILookupStrategy $lookupStrategy
 	 */
     public function __construct(PDO $pdoConnecton, ILookupStrategy $lookupStrategy) {
-        $this->pdoTemplate = new Bee_Persistence_Pdo_Template($pdoConnecton);
+        $this->pdoTemplate = new Template($pdoConnecton);
         $this->lookupStrategy = $lookupStrategy;
     }
 
     public function findChildren(IObjectIdentity $parentIdentity) {
         $args = array($parentIdentity->getIdentifier(), $parentIdentity->getType());
         $objects = $this->pdoTemplate->queryBySqlString(self::SELECT_ACL_OBJECT_WITH_PARENT,
-            new Bee_Persistence_Pdo_StatementSetter_Args($args, array(PDO::PARAM_INT, PDO::PARAM_STR)),
-            new Bee_Persistence_Pdo_ResultSetExtractor_RowMapper(new Pdo_AclService_RowMapper_findChildren()));
+            new ArgsStatementSetter($args, array(PDO::PARAM_INT, PDO::PARAM_STR)),
+            new RowMapperResultSetExtractor(new Pdo_AclService_RowMapper_findChildren()));
 
         if (count($objects) == 0) {
         	return null;
@@ -408,13 +407,13 @@ class AclService implements IMutableAclService {
     }
 }
 
-class Pdo_AclService_RowMapper_findChildren implements Bee_Persistence_Pdo_IRowMapper {
-    public function mapRow(PDOStatement $rs, $rowNum) {
+class Pdo_AclService_RowMapper_findChildren {
+    public function __invoke(PDOStatement $rs, $rowNum) {
         return $rs->fetchObject('Impl_ObjectIdentity');
     }
 }
 
-class Pdo_AclService_BatchStatementSetter_createEntries implements Bee_Persistence_Pdo_IBatchStatementSetter {
+class Pdo_AclService_BatchStatementSetter_createEntries implements IBatchStatementSetter {
 
     /**
      * @var IMutableAcl

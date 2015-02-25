@@ -20,6 +20,7 @@ use Bee\Security\Acls\IAccessControlEntry;
 use Bee\Security\Acls\IAuditableAccessControlEntry;
 use Bee\Security\Acls\IAuditLogger;
 use Bee\Utils\Assert;
+use Bee\Utils\TLogged;
 use Logger;
 
 /**
@@ -29,21 +30,7 @@ use Logger;
  */
 
 class BasicAuditLogger implements IAuditLogger {
-
-	/**
-	 * @var Logger
-	 */
-	protected static $log;
-
-	/**
-	 * @return Logger
-	 */
-	protected static function getLog() {
-		if (!self::$log) {
-			self::$log = Framework::getLoggerForClass(__CLASS__);
-		}
-		return self::$log;
-	}
+    use TLogged;
 
 	/**
 	 * @param $granted
@@ -53,9 +40,9 @@ class BasicAuditLogger implements IAuditLogger {
 		Assert::notNull($ace, 'AccessControlEntry required');
         if ($ace instanceof IAuditableAccessControlEntry) {
             if ($granted && $ace->isAuditSuccess()) {
-				self::getLog()->info('GRANTED due to ACE: ' . $ace->getId());
+				$this->getLog()->info('GRANTED due to ACE: ' . $ace->getId());
             } else if (!$granted && $ace->isAuditFailure()) {
-				self::getLog()->info('DENIED due to ACE: ' . $ace->getId());
+				$this->getLog()->info('DENIED due to ACE: ' . $ace->getId());
             }
         }
     }

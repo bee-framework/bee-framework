@@ -1,6 +1,8 @@
 <?php
+namespace Bee\Persistence\Pdo;
+
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use PDO;
 
 /**
- * User: mp
- * Date: Mar 17, 2010
- * Time: 10:27:35 AM
+ * Class SimpleStatementCreator
+ * @package Bee\Persistence\Pdo
  */
-
-class Bee_Persistence_Pdo_SimpleStatementCreator implements Bee_Persistence_Pdo_IStatementCreator, Bee_Persistence_Pdo_ISqlProvider {
+class SimpleStatementCreator implements ISqlProvider {
 
     /**
      * @var string
@@ -30,7 +31,6 @@ class Bee_Persistence_Pdo_SimpleStatementCreator implements Bee_Persistence_Pdo_
 
     /**
      * @param string $sql
-     * @return void
      */
     final function __construct($sql) {
         $this->sql = $sql;
@@ -38,16 +38,17 @@ class Bee_Persistence_Pdo_SimpleStatementCreator implements Bee_Persistence_Pdo_
 
     /**
      * Gets the Sql
-     *
-     * @return  $sql
+     * @return string $sql
      */
     public function getSql() {
         return $this->sql;
     }
 
-    public function createStatement(PDO $con) {
+    /**
+     * @param PDO $con
+     * @return \PDOStatement
+     */
+    public function __invoke(PDO $con) {
         return $con->prepare($this->sql);
     }
-
 }
-?>

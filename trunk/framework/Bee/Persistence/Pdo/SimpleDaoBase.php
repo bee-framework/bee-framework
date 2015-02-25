@@ -2,7 +2,7 @@
 namespace Bee\Persistence\Pdo;
 
 /*
- * Copyright 2008-2010 the original author or authors.
+ * Copyright 2008-2015 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@ namespace Bee\Persistence\Pdo;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Framework;
+use Bee\Utils\TLogged;
 use PDO;
 
 /**
@@ -26,21 +26,7 @@ use PDO;
  */
  
 class SimpleDaoBase {
-
-	/**
-	 * @var \Logger
-	 */
-	private static $log;
-
-	/**
-	 * @return \Logger
-	 */
-	protected static function getLog() {
-		if (!self::$log) {
-			self::$log = Framework::getLoggerForClass(__CLASS__);
-		}
-		return self::$log;
-	}
+    use TLogged;
 
 	/**
 	 * @var PDO
@@ -52,7 +38,7 @@ class SimpleDaoBase {
 	 */
 	public function __construct(PDO $pdoConnection = null) {
 		if(!is_null($pdoConnection)) {
-			self::getLog()->info('DAO constructed, got PDO connection');
+			$this->getLog()->info('DAO constructed, got PDO connection');
 			$this->pdoConnection = $pdoConnection;
 		}
 	}
@@ -79,13 +65,13 @@ class SimpleDaoBase {
 	public function doInTransaction($func) {
 		$this->pdoConnection->beginTransaction();
 		try {
-			$result = $func($this, self::getLog());
+			$result = $func($this, $this->getLog());
 
 			$this->pdoConnection->commit();
 
 			return $result;
 		} catch(\Exception $e) {
-			self::getLog()->debug('exception caught', $e);
+			$this->getLog()->debug('exception caught', $e);
 			$this->pdoConnection->rollBack();
 			throw $e;
 		}
