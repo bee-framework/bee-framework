@@ -3,6 +3,7 @@ namespace Bee\Persistence\Doctrine2;
 
 use Bee\Persistence\IOrderAndLimitHolder;
 use Bee\Persistence\IRestrictionHolder;
+use Bee\Utils\Assert;
 use Bee\Utils\Strings;
 use Doctrine\ORM\QueryBuilder;
 use UnexpectedValueException;
@@ -24,6 +25,11 @@ abstract class GenericDaoBase extends DaoBase {
 	 * @var array
 	 */
 	private $aliases;
+
+    /**
+     * @var array
+     */
+    private $reverseAliases;
 
 	/**
 	 * @var array
@@ -154,9 +160,27 @@ abstract class GenericDaoBase extends DaoBase {
 
 		if(!is_null($orderAndLimitHolder)) {
 			if(count($orderAndLimitHolder->getOrderMapping()) > 0) {
+                $internalMapping = array();
 				foreach($orderAndLimitHolder->getOrderMapping() as $field => $dir) {
+
+
+                    $tokens = explode('.', $field);
+                    $currentAlias = $this->getEntityAlias();
+                    do {
+                        $field = $currentAlias . '.' . array_shift($tokens);
+                        if(array_key_exists($field, $this->reverseAliases)) {
+                            // this is an association, there must be an actual field token left in the array
+                            Assert::isTrue(count($tokens) > 0);
+                            $currentAlias = $this->reverseAliases[$field];
+                        }
+
+                    } while(count($tokens) > 0);
+
 					$this->addAliasForExpression($queryBuilder, $field);
+                    $internalMapping[$field] = $dir;
 				}
+
+                $orderAndLimitHolder = new GenericDaoBase_OrderAndLimitWrapper($orderAndLimitHolder, $internalMapping);
 			}
 		}
 
@@ -253,6 +277,7 @@ abstract class GenericDaoBase extends DaoBase {
 	 */
 	public function setAliases(array $aliases) {
 		$this->aliases = $aliases;
+        $this->reverseAliases = array_flip($aliases);
 	}
 
 	/**
@@ -289,4 +314,65 @@ abstract class GenericDaoBase extends DaoBase {
 	public function setDefaultOrderMapping(array $defaultOrderMapping) {
 		$this->defaultOrderMapping = $defaultOrderMapping;
 	}
+}
+
+class GenericDaoBase_OrderAndLimitWrapper implements IOrderAndLimitHolder {
+
+    /**
+     * @var IOrderAndLimitHolder
+     */
+    private $wrappedOrderAndLimitHolder;
+
+    /**
+     * @var array
+     */
+    private $internalOrderMapping;
+
+    function __construct(IOrderAndLimitHolder $wrappedOrderAndLimitHolder, $internalOrderMapping) {
+        $this->wrappedOrderAndLimitHolder = $wrappedOrderAndLimitHolder;
+        $this->internalOrderMapping = $internalOrderMapping;
+    }
+
+
+    /**
+     * @return array
+     */
+    public function getOrderMapping() {
+        return $this->internalOrderMapping;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPageSize() {
+        return $this->wrappedOrderAndLimitHolder->getPageSize();
+    }
+
+    /**
+     * @return int
+     */
+    public function getPageCount() {
+        return $this->wrappedOrderAndLimitHolder->getPageCount();
+    }
+
+    /**
+     * @return int
+     */
+    public function getCurrentPage() {
+        return $this->wrappedOrderAndLimitHolder->getCurrentPage();
+    }
+
+    /**
+     * @param $currentPage
+     */
+    public function setCurrentPage($currentPage) {
+        $this->wrappedOrderAndLimitHolder->setCurrentPage($currentPage);
+    }
+
+    /**
+     * @param int $resultCount
+     */
+    public function setResultCount($resultCount) {
+        $this->wrappedOrderAndLimitHolder->setResultCount($resultCount);
+    }
 }

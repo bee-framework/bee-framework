@@ -107,7 +107,7 @@ class AnnotationBasedInvocator extends AbstractAnnotationBasedResolver implement
 			} else if (array_key_exists($type, $fixedParams)) {
 				$args[$pos] = $fixedParams[$type];
 			} else {
-				$propEditor = $this->propertyEditorRegistry->getEditor($type);
+				$propEditor = $this->getPropertyEditorForType($type);
 				$posMap = $resolvedMethod->getUrlParameterPositions();
 				$value = array_key_exists($pos, $posMap) ? $resolvedMethod->getParamValue($posMap[$pos]) :
 					(array_key_exists($parameter->getName(), $_REQUEST) ? $_REQUEST[$parameter->getName()] : null);

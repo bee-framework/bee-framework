@@ -16,6 +16,7 @@
  */
 namespace Bee\Beans\PropertyEditor;
 
+use Bee\Beans\IPropertyEditor;
 use Bee\IContext;
 
 /**
@@ -41,5 +42,13 @@ trait TPropertyEditorRegistryHolder {
      */
     public function getPropertyEditorRegistry() {
         return $this->propertyEditorRegistry;
+    }
+
+    /**
+     * @param string $type
+     * @return IPropertyEditor
+     */
+    public function getPropertyEditorForType($type) {
+        return $this->propertyEditorRegistry->getEditor($type);
     }
 }
