@@ -51,6 +51,18 @@ class BeanWrapper {
     }
 
     protected function findPropertyAccessor($propertyName, $prefixes) {
+        if(($dotpos = strpos($propertyName, '.')) !== false) {
+            $pathElem = substr($propertyName, 0, $dotpos);
+            $subProp = substr($propertyName, $dotpos + 1);
+
+            $subValue = call_user_func($this->findPropertyAccessor($pathElem, 'get'));
+            if(is_null($subValue)) {
+                return null;
+            }
+            $subBw = new BeanWrapper($subValue);
+            return $subBw->findPropertyAccessor($subProp, $prefixes);
+        }
+
         $propertyName = ucfirst($propertyName);
         $prefixes = is_array($prefixes) ? $prefixes : array($prefixes);
         $triedMethods = array();
