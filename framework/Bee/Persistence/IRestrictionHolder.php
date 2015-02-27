@@ -35,6 +35,6 @@ interface IRestrictionHolder {
     /**
      * @return array
      */
-    public function getFieldRestrictions();
+    public function getFilters();
 
 }
