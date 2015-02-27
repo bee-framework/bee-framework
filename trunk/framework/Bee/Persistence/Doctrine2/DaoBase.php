@@ -78,7 +78,6 @@ class DaoBase extends EntityManagerHolder {
 
 			$tokenName = 'filtertoken' . $no;
 			$params[$tokenName] = '%' . $token . '%';
-
 			foreach ($restrictionHolder->getFilterableFields() as $fieldName) {
 				// $fieldName MUST BE A DOCTRINE NAME
 				if (Strings::hasText($andWhereString)) {
@@ -87,7 +86,6 @@ class DaoBase extends EntityManagerHolder {
 
 				$andWhereString .= $fieldName . ' LIKE :' . $tokenName;
 			}
-
 			if (Strings::hasText($andWhereString)) {
 				$queryBuilder->andWhere($andWhereString);
 

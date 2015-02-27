@@ -112,9 +112,32 @@ abstract class GenericDaoBase extends DaoBase {
 		return $this->executeListQuery($this->getBaseQuery(), $restrictionHolder, $orderAndLimitHolder, $defaultOrderMapping, null);
 	}
 
-	/**
-	 * @param string $expr
-	 */
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param string $expr
+     * @return string
+     */
+	protected function transformAndAddAliasForPathExpression(QueryBuilder $queryBuilder, $expr) {
+        $tokens = explode('.', $expr);
+        $currentAlias = $this->getEntityAlias();
+        do {
+            $field = $currentAlias . '.' . array_shift($tokens);
+            if(array_key_exists($field, $this->reverseAliases)) {
+                // this is an association, there must be an actual field token left in the array
+                Assert::isTrue(count($tokens) > 0, 'No more property path tokens - check your listConfiguration for invalid property paths!');
+                $currentAlias = $this->reverseAliases[$field];
+            }
+
+        } while(count($tokens) > 0);
+
+        $this->addAliasForExpression($queryBuilder, $field);
+        return $field;
+	}
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param string $expr
+     */
 	protected function addAliasForExpression(QueryBuilder $queryBuilder, $expr) {
 		if(preg_match(self::ALIAS_MATCHER, $expr, $matches)) {
 			$this->addAlias($queryBuilder, $matches[1]);
@@ -145,39 +168,28 @@ abstract class GenericDaoBase extends DaoBase {
 	}
 
 	public function executeListQuery(QueryBuilder $queryBuilder, IRestrictionHolder $restrictionHolder = null, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null, $hydrationMode = null) {
+        // todo: there is no particular reason to do the path-to-alias transformations in every request...
 		if(!is_null($restrictionHolder)) {
+            $internalFilterableFields = array();
 			if(Strings::hasText($restrictionHolder->getFilterString())) {
 				foreach($restrictionHolder->getFilterableFields() as $field) {
-					$this->addAliasForExpression($queryBuilder, $field);
+                    $internalFilterableFields[] = $this->transformAndAddAliasForPathExpression($queryBuilder, $field);
 				}
 			}
-			if(count($restrictionHolder->getFieldRestrictions()) > 0) {
-				foreach($restrictionHolder->getFieldRestrictions() as $field => $value) {
-					$this->addAliasForExpression($queryBuilder, $field);
+            $internalFilters = array();
+			if(count($restrictionHolder->getFilters()) > 0) {
+            	foreach($restrictionHolder->getFilters() as $field => $value) {
+                    $internalFilters[$this->transformAndAddAliasForPathExpression($queryBuilder, $field)] = $value;
 				}
 			}
+            $restrictionHolder = new GenericDaoBase_RestrictionWrapper($restrictionHolder, $internalFilterableFields, $internalFilters);
 		}
 
 		if(!is_null($orderAndLimitHolder)) {
 			if(count($orderAndLimitHolder->getOrderMapping()) > 0) {
                 $internalMapping = array();
 				foreach($orderAndLimitHolder->getOrderMapping() as $field => $dir) {
-
-
-                    $tokens = explode('.', $field);
-                    $currentAlias = $this->getEntityAlias();
-                    do {
-                        $field = $currentAlias . '.' . array_shift($tokens);
-                        if(array_key_exists($field, $this->reverseAliases)) {
-                            // this is an association, there must be an actual field token left in the array
-                            Assert::isTrue(count($tokens) > 0);
-                            $currentAlias = $this->reverseAliases[$field];
-                        }
-
-                    } while(count($tokens) > 0);
-
-					$this->addAliasForExpression($queryBuilder, $field);
-                    $internalMapping[$field] = $dir;
+                    $internalMapping[$this->transformAndAddAliasForPathExpression($queryBuilder, $field)] = $dir;
 				}
 
                 $orderAndLimitHolder = new GenericDaoBase_OrderAndLimitWrapper($orderAndLimitHolder, $internalMapping);
@@ -261,7 +273,40 @@ abstract class GenericDaoBase extends DaoBase {
 		return null;
 	}
 
-	// =================================================================================================================
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param $filters
+     * @param $categoryName
+     * @param string $baseAlias
+     * @param null $property
+     */
+    protected function addCategoryRestrictions(QueryBuilder $queryBuilder, $filters, $categoryName, $baseAlias = 'e', $property = null) {
+        $property = $property ?: $categoryName;
+        if (array_key_exists($categoryName, $filters)) {
+            if(!is_array($catIds = $filters[$categoryName])) {
+                $catIds = array_filter(explode(',', $catIds));
+            }
+            if(count($catIds) > 0) {
+                $this->addAlias($queryBuilder, $baseAlias);
+                $queryBuilder->andWhere($queryBuilder->expr()->in('IDENTITY(' . $baseAlias . '.' . $property . ')', $catIds));
+            }
+        }
+    }
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param $filters
+     * @param string $fldName
+     * @param string $baseAlias
+     */
+    protected function addValueRestriction(QueryBuilder $queryBuilder, $filters, $fldName = 'gender', $baseAlias = 'e') {
+        if (array_key_exists($fldName, $filters) && $value = $filters[$fldName]) {
+            $queryBuilder->andWhere($baseAlias . '.' . $fldName . ' = :val')->setParameter('val', $value);
+            $this->addAlias($queryBuilder, $baseAlias);
+        }
+    }
+
+    // =================================================================================================================
 	// == GETTERS & SETTERS ============================================================================================
 	// =================================================================================================================
 
@@ -333,7 +378,6 @@ class GenericDaoBase_OrderAndLimitWrapper implements IOrderAndLimitHolder {
         $this->internalOrderMapping = $internalOrderMapping;
     }
 
-
     /**
      * @return array
      */
@@ -374,5 +418,55 @@ class GenericDaoBase_OrderAndLimitWrapper implements IOrderAndLimitHolder {
      */
     public function setResultCount($resultCount) {
         $this->wrappedOrderAndLimitHolder->setResultCount($resultCount);
+    }
+}
+
+class GenericDaoBase_RestrictionWrapper implements IRestrictionHolder {
+
+    /**
+     * @var IRestrictionHolder
+     */
+    private $wrappedRestrictionHolder;
+
+    /**
+     * @var array
+     */
+    private $internalFilterableFields;
+
+    /**
+     * @var array
+     */
+    private $internalFilters;
+
+    /**
+     * @param $wrappedRestrictionHolder
+     * @param $internalFilterableFields
+     * @param $internalFilters
+     */
+    function __construct(IRestrictionHolder $wrappedRestrictionHolder, array $internalFilterableFields, array $internalFilters) {
+        $this->wrappedRestrictionHolder = $wrappedRestrictionHolder;
+        $this->internalFilterableFields = $internalFilterableFields;
+        $this->internalFilters = $internalFilters;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFilterableFields() {
+        return $this->internalFilterableFields;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFilterString() {
+        return $this->wrappedRestrictionHolder->getFilterString();
+    }
+
+    /**
+     * @return array
+     */
+    public function getFilters() {
+        return $this->internalFilters;
     }
 }
