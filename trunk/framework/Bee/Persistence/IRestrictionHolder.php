@@ -28,7 +28,7 @@ interface IRestrictionHolder {
     public function getFilterableFields();
 
     /**
-     * @return array
+     * @return string
      */
     public function getFilterString();
 

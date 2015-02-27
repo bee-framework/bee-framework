@@ -297,12 +297,11 @@ abstract class GenericDaoBase extends DaoBase {
      * @param QueryBuilder $queryBuilder
      * @param $filters
      * @param string $fldName
-     * @param string $baseAlias
      */
-    protected function addValueRestriction(QueryBuilder $queryBuilder, $filters, $fldName = 'gender', $baseAlias = 'e') {
+    protected function addValueRestriction(QueryBuilder $queryBuilder, $filters, $fldName) {
         if (array_key_exists($fldName, $filters) && $value = $filters[$fldName]) {
-            $queryBuilder->andWhere($baseAlias . '.' . $fldName . ' = :val')->setParameter('val', $value);
-            $this->addAlias($queryBuilder, $baseAlias);
+            $fldName = $this->transformAndAddAliasForPathExpression($queryBuilder, $fldName);
+            $queryBuilder->andWhere($fldName . ' = :val')->setParameter('val', $value);
         }
     }
 
