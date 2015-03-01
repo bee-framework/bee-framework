@@ -53,6 +53,11 @@ abstract class GenericDaoBase extends DaoBase {
 	 */
 	private $defaultOrderMapping = array();
 
+    /**
+     * @var array
+     */
+    private $fieldDisaggregations = array();
+
 	/**
 	 * @param mixed $id
 	 * @throws UnexpectedValueException
@@ -173,7 +178,7 @@ abstract class GenericDaoBase extends DaoBase {
             $internalFilterableFields = array();
 			if(Strings::hasText($restrictionHolder->getFilterString())) {
 				foreach($restrictionHolder->getFilterableFields() as $field) {
-                    $internalFilterableFields[] = $this->transformAndAddAliasForPathExpression($queryBuilder, $field);
+                    $internalFilterableFields = array_merge($internalFilterableFields, $this->getFieldDisaggregation($this->transformAndAddAliasForPathExpression($queryBuilder, $field)));
 				}
 			}
             $internalFilters = array();
@@ -189,7 +194,7 @@ abstract class GenericDaoBase extends DaoBase {
 			if(count($orderAndLimitHolder->getOrderMapping()) > 0) {
                 $internalMapping = array();
 				foreach($orderAndLimitHolder->getOrderMapping() as $field => $dir) {
-                    $internalMapping[$this->transformAndAddAliasForPathExpression($queryBuilder, $field)] = $dir;
+                    $internalMapping = array_merge($internalMapping, array_fill_keys($this->getFieldDisaggregation($this->transformAndAddAliasForPathExpression($queryBuilder, $field)), $dir));
 				}
 
                 $orderAndLimitHolder = new GenericDaoBase_OrderAndLimitWrapper($orderAndLimitHolder, $internalMapping);
@@ -358,6 +363,31 @@ abstract class GenericDaoBase extends DaoBase {
 	public function setDefaultOrderMapping(array $defaultOrderMapping) {
 		$this->defaultOrderMapping = $defaultOrderMapping;
 	}
+
+    /**
+     * @return array
+     */
+    public function getFieldDisaggregations() {
+        return $this->fieldDisaggregations;
+    }
+
+    /**
+     * @param array $fieldDisaggregations
+     */
+    public function setFieldDisaggregations($fieldDisaggregations) {
+        $this->fieldDisaggregations = $fieldDisaggregations;
+    }
+
+    /**
+     * @param $aggregateFieldName
+     * @return array
+     */
+    public function getFieldDisaggregation($aggregateFieldName) {
+        if(array_key_exists($aggregateFieldName, $this->fieldDisaggregations)) {
+            return $this->fieldDisaggregations[$aggregateFieldName];
+        }
+        return array($aggregateFieldName);
+    }
 }
 
 class GenericDaoBase_OrderAndLimitWrapper implements IOrderAndLimitHolder {
