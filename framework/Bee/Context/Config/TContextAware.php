@@ -17,7 +17,7 @@ trait TContextAware {
     /**
      * @param IContext $context
      */
-    public function setBeeContext(IContext $context) {
+    public final function setBeeContext(IContext $context) {
         $this->context = $context;
     }
 
