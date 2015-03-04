@@ -196,18 +196,18 @@ abstract class GenericDaoBase extends DaoBase {
      */
     protected final function internalizeFieldExpression($fieldExpr, QueryBuilder $queryBuilder, $join = false) {
         // ex: $fieldExpr = 'e.hochschultyp.kategorie.promotionsrecht'
-        $dotPos = strrpos($fieldExpr, '.');             // 24
-        $fieldName = substr($fieldExpr, $dotPos + 1);   // 'promotionsrecht'
-        $pathExpr = substr($fieldExpr, 0, $dotPos);     // 'e.hochschultyp.kategorie'
+        preg_match('#^(?:([\w.]*)\.)?(.*?)$#', $fieldExpr, $matches);
+        $pathExpr = $matches[1];    // 'e.hochschultyp.kategorie'
+        $fieldName = $matches[2];   // 'promotionsrecht'
 
-        if($pathExpr != $this->getEntityAlias()) {
+        if ($pathExpr && $pathExpr != $this->getEntityAlias()) {
             Assert::isTrue(array_key_exists($pathExpr, $this->reverseAliases), 'Unknown path expression "' . $pathExpr . '"');
             $this->internalizePathExpression($pathExpr, $queryBuilder, $join);
             $pathExpr = $this->reverseAliases[$pathExpr];
         }
 
         // ex: return e4.promotionsrecht
-        return $pathExpr . '.' . $fieldName;
+        return ($pathExpr ? $pathExpr . '.' : '') . $fieldName;
     }
 
     /**
@@ -221,10 +221,10 @@ abstract class GenericDaoBase extends DaoBase {
         // ex (Rc2):    $pathExpr = 'e.hochschultyp'
         // ex (Rc3):    $pathExpr = 'e'
 
-        if(($dotPos = strrpos($pathExpr, '.')) !== false) {
+        if (($dotPos = strrpos($pathExpr, '.')) !== false) {
             $currentAlias = $this->reverseAliases[$pathExpr];
 
-            if(!array_key_exists($currentAlias, $this->addedAliases)) {
+            if (!array_key_exists($currentAlias, $this->addedAliases)) {
 
                 $currentAssociation = substr($pathExpr, $dotPos + 1);
                 $pathExpr = substr($pathExpr, 0, $dotPos);
@@ -250,7 +250,7 @@ abstract class GenericDaoBase extends DaoBase {
                 // ex (Rc1):    $currentAssociation = 'e1.kategorie'
 
                 $queryBuilder->leftJoin($currentAssociation, $currentAlias);
-                if($fetchJoin) {
+                if ($fetchJoin) {
                     $queryBuilder->addSelect($currentAlias);
                 }
                 $this->addedAliases[$currentAlias] = $currentAssociation;
@@ -448,7 +448,7 @@ abstract class GenericDaoBase extends DaoBase {
      */
     protected function getFieldDisaggregation($aggregateFieldName) {
         // prefix only if simple path expression not prefixed with entity alias and not a function expression
-        if(!preg_match('#^(?:' . $this->getEntityAlias() . '\.|\w+\()#', $aggregateFieldName)) {
+        if (!preg_match('#^(?:' . $this->getEntityAlias() . '\.|\w+\()#', $aggregateFieldName)) {
             $aggregateFieldName = $this->getEntityAlias() . '.' . $aggregateFieldName;
         }
         if (array_key_exists($aggregateFieldName, $this->fieldDisaggregations)) {
