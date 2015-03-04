@@ -166,11 +166,10 @@ abstract class GenericDaoBase extends DaoBase {
      * @param array $externalFieldValueMapping
      * @param array $internalFieldValueMapping
      * @param QueryBuilder $queryBuilder
-     * @param string $prefix
      */
-    protected final function disaggregateAndInternalizeFieldValueMapping(array $externalFieldValueMapping, array &$internalFieldValueMapping, QueryBuilder $queryBuilder, $prefix = '') {
+    protected final function disaggregateAndInternalizeFieldValueMapping(array $externalFieldValueMapping, array &$internalFieldValueMapping, QueryBuilder $queryBuilder) {
         foreach ($externalFieldValueMapping as $field => $value) {
-            array_walk($this->getFieldDisaggregation($field, $prefix), function ($field) use (&$internalFieldValueMapping, $queryBuilder, $value) {
+            array_walk($this->getFieldDisaggregation($field), function ($field) use (&$internalFieldValueMapping, $queryBuilder, $value) {
                 $internalFieldValueMapping[$this->internalizeFieldExpression($field, $queryBuilder)] = $value;
             });
         }
@@ -180,14 +179,12 @@ abstract class GenericDaoBase extends DaoBase {
      * @param array $externalFieldList
      * @param array $internalFieldList
      * @param QueryBuilder $queryBuilder
-     * @param string $prefix
      */
-    protected final function disaggregateAndInternalizeFieldList(array $externalFieldList, array &$internalFieldList, QueryBuilder $queryBuilder, $prefix = '') {
-        $prefix = $prefix ?: $this->getEntityAlias() . '.';
+    protected final function disaggregateAndInternalizeFieldList(array $externalFieldList, array &$internalFieldList, QueryBuilder $queryBuilder) {
         foreach ($externalFieldList as $field) {
-            $internalFieldList = array_merge($internalFieldList, array_map(function ($field) use (&$queryBuilder, $prefix) {
+            $internalFieldList = array_merge($internalFieldList, array_map(function ($field) use (&$queryBuilder) {
                 return $this->internalizeFieldExpression($field, $queryBuilder);
-            }, $this->getFieldDisaggregation($field, $prefix)));
+            }, $this->getFieldDisaggregation($field)));
         }
     }
 
@@ -447,11 +444,13 @@ abstract class GenericDaoBase extends DaoBase {
 
     /**
      * @param $aggregateFieldName
-     * @param string $prefix
      * @return array
      */
-    protected function getFieldDisaggregation($aggregateFieldName, $prefix = '') {
-        $aggregateFieldName = ($prefix ?: $this->getEntityAlias() . '.') . $aggregateFieldName;
+    protected function getFieldDisaggregation($aggregateFieldName) {
+        // prefix only if simple path expression not prefixed with entity alias and not a function expression
+        if(!preg_match('#^(?:' . $this->getEntityAlias() . '\.|\w+\()#', $aggregateFieldName)) {
+            $aggregateFieldName = $this->getEntityAlias() . '.' . $aggregateFieldName;
+        }
         if (array_key_exists($aggregateFieldName, $this->fieldDisaggregations)) {
             return $this->fieldDisaggregations[$aggregateFieldName];
         }
@@ -531,11 +530,6 @@ class GenericDaoBase_RestrictionWrapper implements IRestrictionHolder {
      */
     private $internalFilterableFields;
 
-//    /**
-//     * @var array
-//     */
-//    private $internalFilters;
-
     /**
      * @param $wrappedRestrictionHolder
      * @param $internalFilterableFields
@@ -543,7 +537,6 @@ class GenericDaoBase_RestrictionWrapper implements IRestrictionHolder {
     function __construct(IRestrictionHolder $wrappedRestrictionHolder, array $internalFilterableFields/*, array $internalFilters*/) {
         $this->wrappedRestrictionHolder = $wrappedRestrictionHolder;
         $this->internalFilterableFields = $internalFilterableFields;
-//        $this->internalFilters = $internalFilters;
     }
 
     /**
@@ -564,7 +557,6 @@ class GenericDaoBase_RestrictionWrapper implements IRestrictionHolder {
      * @return array
      */
     public function getFilters() {
-//        return $this->internalFilters;
         return $this->wrappedRestrictionHolder->getFilters();
     }
 }
