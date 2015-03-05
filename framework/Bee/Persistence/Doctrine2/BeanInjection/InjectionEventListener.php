@@ -16,7 +16,6 @@ namespace Bee\Persistence\Doctrine2\BeanInjection;
  * limitations under the License.
  */
 use Bee\Context\Config\IContextAware;
-use Bee\Context\Config\TContextAware;
 use Bee\IContext;
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\Common\EventSubscriber;
@@ -31,12 +30,16 @@ use ReflectionProperty;
  * Class InjectionEventListener
  */
 class InjectionEventListener implements EventSubscriber, IContextAware {
-    use TContextAware;
 
 	/**
 	 * @var Reader
 	 */
 	private $reader;
+
+	/**
+	 * @var IContext
+	 */
+	private $context;
 
 	/**
 	 * @param LifecycleEventArgs $eventArgs
@@ -115,5 +118,12 @@ class InjectionEventListener implements EventSubscriber, IContextAware {
 	 */
 	public function setReader(Reader $reader) {
 		$this->reader = $reader;
+	}
+
+	/**
+	 * @param IContext $context
+	 */
+	public function setBeeContext(IContext $context) {
+		$this->context = $context;
 	}
 }

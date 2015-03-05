@@ -15,16 +15,32 @@ namespace Bee\Persistence\Doctrine2;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use Bee\Utils\TLogged;
+use BeeFramework;
 use \Doctrine\ORM\EntityManager;
+use Logger;
 
 /**
  * User: mp
  * Date: 27.06.13
  * Time: 04:17
  */
+ 
 class EntityManagerHolder {
-    use TLogged;
+
+	/**
+	 * @var Logger
+	 */
+	protected $log;
+
+	/**
+	 * @return Logger
+	 */
+	public function getLog() {
+		if (!$this->log) {
+			$this->log = BeeFramework::getLoggerForClass(get_class($this));
+		}
+		return $this->log;
+	}
 
 	/**
 	 * @var EntityManager

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2008-2015 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Bee\MVC\View;
-
-use MODEL;
 
 /**
- * Class RequestStoringJsonView
- * @package Bee\MVC\View
+ * User: mp
+ * Date: Mar 22, 2010
+ * Time: 7:25:20 PM
  */
-class RequestStoringJsonView extends JsonServiceView {
-    use TRequestStoringView;
 
-    /**
-     *
-     */
-    protected function renderMergedOutputModel() {
-        MODEL::addValuesToModel($this->createStoreParams(MODEL::getModel()));
-        parent::renderMergedOutputModel();
+class Bee_Persistence_Pdo_ResultSetExtractor_SingleColumn implements Bee_Persistence_Pdo_IResultSetExtractor {
+    public function extractData(PDOStatement $rs) {
+        return $rs->fetchAll(PDO::FETCH_COLUMN);
     }
 }
+?>

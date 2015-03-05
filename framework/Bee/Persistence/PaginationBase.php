@@ -15,7 +15,6 @@ namespace Bee\Persistence;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use JsonSerializable;
 
 /**
  * Class BasicListStateHolder
@@ -23,7 +22,7 @@ use JsonSerializable;
  * Implements the pagination aspect of the IOrderAndLimitHolder and embodies generic logic for
  * @package Bee\Persistence
  */
-abstract class PaginationBase implements IOrderAndLimitHolder, JsonSerializable {
+abstract class PaginationBase implements IOrderAndLimitHolder {
 
 	/**
 	 * @var int
@@ -51,7 +50,7 @@ abstract class PaginationBase implements IOrderAndLimitHolder, JsonSerializable 
 	 * @param int $pageSize
 	 */
 	public function setPageSize($pageSize) {
-		$this->pageSize = intval($pageSize);
+		$this->pageSize = $pageSize;
 	}
 
 	/**
@@ -72,17 +71,17 @@ abstract class PaginationBase implements IOrderAndLimitHolder, JsonSerializable 
 	 * @param $currentPage
 	 */
 	public function setCurrentPage($currentPage) {
-        $currentPage = intval($currentPage);
-		$this->currentPage = $currentPage < 0 ? 0 : $currentPage;
+		$currentPage = $currentPage < 0 ? 0 : $currentPage;
+		$this->currentPage = $currentPage;
 	}
 
 	/**
 	 * @param int $resultCount
 	 */
 	public function setResultCount($resultCount) {
-		$this->resultCount = intval($resultCount);
+		$this->resultCount = $resultCount;
 		if($this->getCurrentPage() >= $this->getPageCount()) {
-            $this->adjustCurrentPageOnOverflow();
+			$this->setCurrentPage($this->getPageCount() - 1);
 		}
 	}
 
@@ -100,11 +99,4 @@ abstract class PaginationBase implements IOrderAndLimitHolder, JsonSerializable 
 	protected function adjustCurrentPageOnOverflow() {
 		$this->setCurrentPage($this->getPageCount() - 1);
 	}
-
-    /**
-     * @return array
-     */
-    function jsonSerialize() {
-        return array('pageCount' => $this->getPageCount(), 'pageSize' => $this->getPageSize(), 'currentPage' => $this->getCurrentPage(), 'resultCount' => $this->getResultCount());
-    }
 }

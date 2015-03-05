@@ -1,8 +1,6 @@
 <?php
-namespace Bee\Persistence\Pdo\ResultSetExtractor;
-
 /*
- * Copyright 2008-2015 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,33 +14,36 @@ namespace Bee\Persistence\Pdo\ResultSetExtractor;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use PDOStatement;
 
 /**
- * Class RowMapper
- * @package Bee\Persistence\Pdo\ResultSetExtractor
+ * User: mp
+ * Date: Mar 22, 2010
+ * Time: 7:25:20 PM
  */
-class RowMapperResultSetExtractor {
+
+class Bee_Persistence_Pdo_ResultSetExtractor_RowMapper implements Bee_Persistence_Pdo_IResultSetExtractor {
 
     /**
-     * @var callable
+     * @var Bee_Persistence_Pdo_IRowMapper 
      */
     private $rowMapper;
 
     /**
-     * @param callable $rowMapper
+     * @param Bee_Persistence_Pdo_IRowMapper $rowMapper
+     * @return void
      */
-    public function __construct(callable $rowMapper) {
+    public function __construct(Bee_Persistence_Pdo_IRowMapper $rowMapper) {
         $this->rowMapper = $rowMapper;
     }
 
-    public function __invoke(PDOStatement $rs) {
+    public function extractData(PDOStatement $rs) {
         $results = array();
         $rowNum = 0;
-        $rm = $this->rowMapper;
-        while ($result = $rm($rs, $rowNum++)) {
+        while($result = $this->rowMapper->mapRow($rs, $rowNum++)) {
             $results[] = $result;
         }
         return $results;
     }
+
 }
+?>

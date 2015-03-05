@@ -21,8 +21,8 @@ use Bee\Context\NoSuchBeanDefinitionException;
 use Bee\IContext;
 use Bee\MVC\Session\DispatcherAdapter;
 use Bee\Utils\Assert;
-use Bee\Utils\TLogged;
 use Exception;
+use Logger;
 
 /**
  * The dispatcher is the main entry point into an Bee MVC application. It acts as a front controller, i.e. it handles incoming
@@ -49,7 +49,6 @@ use Exception;
  * @author Benjamin Hartmann
  */
 class Dispatcher implements IFilterChain {
-    use TLogged;
 
 	const REQUEST_BUILDER_BEAN_NAME = 'requestBuilder';
 
@@ -60,6 +59,21 @@ class Dispatcher implements IFilterChain {
 	const FILTER_CHAIN_PROXY_NAME = 'filterChainProxy';
 
 	const HANDLER_EXCEPTION_RESOLVER_NAME = 'handlerExceptionResolver';
+
+	/**
+	 * @var Logger
+	 */
+	protected $log;
+
+	/**
+	 * @return Logger
+	 */
+	protected function getLog() {
+		if (!$this->log) {
+			$this->log = Logger::getLogger(get_class($this));
+		}
+		return $this->log;
+	}
 
 	/**
 	 * The dispatcher responsible for the current request

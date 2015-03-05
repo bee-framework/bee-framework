@@ -17,17 +17,22 @@
 
 /**
  * User: mp
- * Date: Mar 17, 2010
- * Time: 10:31:56 AM
+ * Date: Mar 16, 2010
+ * Time: 7:17:05 PM
  */
 
-interface Bee_Persistence_Pdo_ISqlProvider {
+interface Bee_Persistence_Pdo_IStatementCreator {
 
-    /**
-     * Return the SQL string for this object, i.e.
-     * typically the SQL used for creating statements.
-     * @return string the SQL string, or <code>null</code>
+    /** 
+     * Create a statement in this connection. Allows implementations to use
+     * PreparedStatements. The JdbcTemplate will close the created statement.
+     * @param PDO $con Connection to use to create statement
+     * @return PDOStatement a prepared statement
+     * @throws PDOException there is no need to catch PDOException
+     * that may be thrown in the implementation of this method.
+     * The PDOTemplate class will handle them.
      */
-    function getSql();
+    public function createStatement(PDO $con);
+
 }
 ?>

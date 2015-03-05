@@ -16,7 +16,6 @@ namespace Bee\MVC\HandlerMapping;
  * limitations under the License.
  */
 use Bee\Context\Config\IContextAware;
-use Bee\Context\Config\TContextAware;
 use Bee\IContext;
 use Bee\MVC\HandlerExecutionChain;
 use Bee\MVC\IController;
@@ -32,7 +31,13 @@ use Exception;
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
 abstract class AbstractHandlerMapping implements IHandlerMapping, IContextAware {
-    use TContextAware;
+
+	/**
+	 * Enter description here...
+	 *
+	 * @var IContext
+	 */
+	private $context;
 
 	/**
 	 * Enter description here...
@@ -47,6 +52,13 @@ abstract class AbstractHandlerMapping implements IHandlerMapping, IContextAware 
 	 * @var IHandlerInterceptor[]
 	 */
 	private $interceptors = array();
+
+	/**
+	 * @param IContext $context
+	 */
+	public function setBeeContext(IContext $context) {
+		$this->context = $context;
+	}
 
 	/**
 	 * Enter description here...

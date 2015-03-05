@@ -1,7 +1,7 @@
 <?php
 namespace Bee\MVC\View;
 /*
- * Copyright 2008-2015 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,70 @@ namespace Bee\MVC\View;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\MVC\Redirect\AbstractRedirectStorage;
 
 /**
  * Class RequestStoringRedirectView
  * @package Bee\MVC\View
  */
 class RequestStoringRedirectView extends RedirectView {
-    use TRequestStoringView;
 
-    /**
-     * @param array $model
-     */
-    public function render(array $model = array()) {
-        $getParams = array_key_exists(RedirectView::MODEL_KEY_GET_PARAMS, $model) ? $model[RedirectView::MODEL_KEY_GET_PARAMS] : array();
-        $model[RedirectView::MODEL_KEY_GET_PARAMS] = array_merge($getParams, $this->createStoreParams($model));
-        parent::render($model);
-    }
+	/**
+	 * @var string
+	 */
+	private $requestIdParamName = 'requestId';
+
+	/**
+	 * @var AbstractRedirectStorage[]
+	 */
+	private $stores = array();
+
+	/**
+	 * @param string $requestIdParamName
+	 */
+	public function setRequestIdParamName($requestIdParamName) {
+		$this->requestIdParamName = $requestIdParamName;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getRequestIdParamName() {
+		return $this->requestIdParamName;
+	}
+
+	/**
+	 * @param array $stores
+	 */
+	public function setStores(array $stores) {
+		$this->stores = $stores;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getStores() {
+		return $this->stores;
+	}
+
+	/**
+	 * @param array $model
+	 */
+	public function render(array $model = array()) {
+		$this->augmentModel($model);
+		$getParams = array_key_exists(self::MODEL_KEY_GET_PARAMS, $model) ? $model[self::MODEL_KEY_GET_PARAMS] : array();
+		foreach($this->stores as $paramName => $store) {
+			$getParams[$paramName] = $store->storeData($model);
+		}
+		$model[self::MODEL_KEY_GET_PARAMS] = $getParams;
+		parent::render($model);
+	}
+
+	/**
+	 * Extension point for subclasses
+	 * @param array $model
+	 */
+	protected function augmentModel(array &$model) {
+		// do nothing by default
+	}
 }

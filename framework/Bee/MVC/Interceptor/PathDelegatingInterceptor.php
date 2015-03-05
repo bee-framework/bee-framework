@@ -16,7 +16,6 @@ namespace Bee\MVC\Interceptor;
  * limitations under the License.
  */
 use Bee\Context\Config\IContextAware;
-use Bee\Context\Config\TContextAware;
 use Bee\IContext;
 use Bee\MVC\Controller\Multiaction\HandlerMethodInvocator\AnnotationBasedInvocator;
 use Bee\MVC\Controller\Multiaction\IHandlerMethodInvocator;
@@ -33,7 +32,6 @@ use Exception;
  * @package Bee\MVC\Interceptor
  */
 class PathDelegatingInterceptor implements IHandlerInterceptor, IDelegatingHandler, IContextAware {
-    use TContextAware;
 
 	/**
 	 * Enter description here...
@@ -56,6 +54,11 @@ class PathDelegatingInterceptor implements IHandlerInterceptor, IDelegatingHandl
 	 * @var IHandlerMethodInvocator
 	 */
 	private $afterCompletionMethodInvocator;
+
+	/**
+	 * @var IContext
+	 */
+	private $context;
 
 	/**
 	 * Enter description here...
@@ -131,5 +134,12 @@ class PathDelegatingInterceptor implements IHandlerInterceptor, IDelegatingHandl
 		$instance->setRequiredMethodPrefix($prefix);
 		$instance->setDefaultMethodName($prefix . 'Default');
 		return $instance;
+	}
+
+	/**
+	 * @param IContext $context
+	 */
+	public function setBeeContext(IContext $context) {
+		$this->context = $context;
 	}
 }

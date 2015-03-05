@@ -15,6 +15,7 @@ namespace Bee\Security\Vote;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+use Bee\Framework;
 use Bee\Security\Acls\Exception\NotFoundException;
 use Bee\Security\Acls\IAclService;
 use Bee\Security\Acls\Impl\ObjectIdentityRetrievalStrategy;
@@ -27,7 +28,7 @@ use Bee\Security\Exception\GenericSecurityException;
 use Bee\Security\IAuthentication;
 use Bee\Security\IConfigAttribute;
 use Bee\Utils\Strings;
-use Bee\Utils\TLogged;
+use Logger;
 
 /**
  * Created by IntelliJ IDEA.
@@ -38,7 +39,21 @@ use Bee\Utils\TLogged;
  */
 
 class AclEntryVoter extends AbstractAclVoter {
-    use TLogged;
+
+	/**
+	 * @var Logger
+	 */
+	protected static $log;
+
+	/**
+	 * @return Logger
+	 */
+	protected static function getLog() {
+		if (!self::$log) {
+			self::$log = Framework::getLoggerForClass(__CLASS__);
+		}
+		return self::$log;
+	}
 
     /**
      * @var IAclService
@@ -155,8 +170,8 @@ class AclEntryVoter extends AbstractAclVoter {
 
             // If domain object is null, vote to abstain
             if ($domainObject == null) {
-                if ($this->getLog()->isDebugEnabled()) {
-                    $this->getLog()->debug('Voting to abstain - domainObject is null');
+                if (self::getLog()->isDebugEnabled()) {
+                    self::getLog()->debug('Voting to abstain - domainObject is null');
                 }
 
                 return self::ACCESS_ABSTAIN;
@@ -185,8 +200,8 @@ class AclEntryVoter extends AbstractAclVoter {
                 // Lookup only ACLs for SIDs we're interested in
                 $acl = $this->aclService->readAclForOidAndSids($objectIdentity, $sids);
             } catch (NotFoundException $nfe) {
-                if ($this->getLog()->isDebugEnabled()) {
-                    $this->getLog()->debug('Voting to deny access - no ACLs apply for this principal');
+                if (self::getLog()->isDebugEnabled()) {
+                    self::getLog()->debug('Voting to deny access - no ACLs apply for this principal');
                 }
 
                 return self::ACCESS_DENIED;
@@ -194,21 +209,21 @@ class AclEntryVoter extends AbstractAclVoter {
 
             try {
                 if ($acl->isGranted($this->requirePermission, $sids, false)) {
-                    if ($this->getLog()->isDebugEnabled()) {
-                        $this->getLog()->debug('Voting to grant access');
+                    if (self::getLog()->isDebugEnabled()) {
+                        self::getLog()->debug('Voting to grant access');
                     }
 
                     return self::ACCESS_GRANTED;
                 } else {
-                    if ($this->getLog()->isDebugEnabled()) {
-                        $this->getLog()->debug('Voting to deny access - ACLs returned, but insufficient permissions for this principal');
+                    if (self::getLog()->isDebugEnabled()) {
+                        self::getLog()->debug('Voting to deny access - ACLs returned, but insufficient permissions for this principal');
                     }
 
                     return self::ACCESS_DENIED;
                 }
             } catch (NotFoundException $nfe) {
-                if ($this->getLog()->isDebugEnabled()) {
-                    $this->getLog()->debug('Voting to deny access - no ACLs apply for this principal');
+                if (self::getLog()->isDebugEnabled()) {
+                    self::getLog()->debug('Voting to deny access - no ACLs apply for this principal');
                 }
 
                 return self::ACCESS_DENIED;

@@ -1,8 +1,6 @@
 <?php
-namespace Bee\Persistence\Pdo\ResultSetExtractor;
-
 /*
- * Copyright 2008-2015 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +14,21 @@ namespace Bee\Persistence\Pdo\ResultSetExtractor;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use PDO;
-use PDOStatement;
 
 /**
- * Class SingleColumnResultSetExtractor
- * @package Bee\Persistence\Pdo\ResultSetExtractor
- *
- * todo: check feasibility. Remove if usages are scarce enough to replace them with closures
+ * User: mp
+ * Date: Mar 16, 2010
+ * Time: 7:29:55 PM
  */
-class SingleColumnResultSetExtractor {
-    public function __invoke(PDOStatement $rs) {
-        return $rs->fetchAll(PDO::FETCH_COLUMN);
-    }
+
+interface Bee_Persistence_Pdo_IStatementSetter {
+    /**
+     * Set parameter values on the given PreparedStatement.
+     * @param PDOStatement $ps the PreparedStatement to invoke setter methods on
+     * @throws PDOException if a PDOException is encountered
+     * (i.e. there is no need to catch PDOException)
+     */
+    public function setValues(PDOStatement $ps);
+
 }
+?>

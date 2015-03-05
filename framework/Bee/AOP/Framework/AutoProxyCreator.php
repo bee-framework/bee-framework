@@ -28,7 +28,6 @@ use Bee\IContext;
  */
 
 class Bee_AOP_Framework_AutoProxyCreator implements IInstantiationAwareBeanPostProcessor, IContextAware, IInitializingBean {
-    use \Bee\Context\Config\TContextAware;
 
     const DO_NOT_PROXY = '<<DO_NOT_PROXY>>';
 
@@ -36,6 +35,15 @@ class Bee_AOP_Framework_AutoProxyCreator implements IInstantiationAwareBeanPostP
      * @var string
      */
     private $cachedAdvisorBeanNames;
+
+    /**
+     * @var IContext
+     */
+    private $beeContext;
+
+    public function setBeeContext(IContext $context) {
+        $this->beeContext = $context;
+    }
 
     public function afterPropertiesSet() {
     }
@@ -110,7 +118,7 @@ class Bee_AOP_Framework_AutoProxyCreator implements IInstantiationAwareBeanPostP
         if ($advisorNames == null) {
             // Do not initialize FactoryBeans here: We need to leave all regular beans
             // uninitialized to let the auto-proxy creator apply to them!
-            $advisorNames = ContextUtils::beanNamesForTypeIncludingAncestors($this->context, 'Bee_AOP_IAdvisor');
+            $advisorNames = ContextUtils::beanNamesForTypeIncludingAncestors($this->beeContext, 'Bee_AOP_IAdvisor');
             $this->cachedAdvisorBeanNames = $advisorNames;
         }
 
@@ -120,9 +128,9 @@ class Bee_AOP_Framework_AutoProxyCreator implements IInstantiationAwareBeanPostP
 
         $advisors = array();
         foreach($advisorNames as $name) {
-            if ($this->isEligibleAdvisorBean($name) && !$this->context->isBeanCurrentlyInCreation($name)) {
+            if ($this->isEligibleAdvisorBean($name) && !$this->beeContext->isBeanCurrentlyInCreation($name)) {
                 try {
-                    $advisors[] = $this->context->getBean($name, 'Bee_AOP_IAdvisor');
+                    $advisors[] = $this->beeContext->getBean($name, 'Bee_AOP_IAdvisor');
                 }
                 catch (BeanCreationException $ex) {
 //                    $rootCause = $ex->getMostSpecificCause();

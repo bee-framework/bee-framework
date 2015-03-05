@@ -1,8 +1,6 @@
 <?php
-namespace Bee\Persistence\Pdo;
-
 /*
- * Copyright 2008-2015 the original author or authors.
+ * Copyright 2008-2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +14,14 @@ namespace Bee\Persistence\Pdo;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-use PDOException;
-use PDOStatement;
 
 /**
  * User: mp
  * Date: Mar 24, 2010
  * Time: 6:01:23 PM
  */
-interface IBatchStatementSetter {
+
+interface Bee_Persistence_Pdo_IBatchStatementSetter {
 
     /**
      * Set parameter values on the given PDOStatement.
@@ -41,3 +38,4 @@ interface IBatchStatementSetter {
     public function getBatchSize();
 
 }
+?>

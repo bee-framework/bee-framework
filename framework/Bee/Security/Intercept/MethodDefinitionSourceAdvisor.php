@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 use Bee\Context\Config\IContextAware;
+use Bee\IContext;
 use Bee\Utils\Assert;
 
 /**
@@ -26,7 +27,11 @@ use Bee\Utils\Assert;
  */
 
 class Bee_Security_Intercept_MethodDefinitionSourceAdvisor extends Bee_AOP_Support_AbstractPointcutAdvisor implements IContextAware {
-    use \Bee\Context\Config\TContextAware;
+
+    /**
+     * @var IContext
+     */
+    private $beeContext;
 
     /**
      * @var Bee_Security_Intercept_IMethodDefinitionSource
@@ -81,10 +86,17 @@ class Bee_Security_Intercept_MethodDefinitionSourceAdvisor extends Bee_AOP_Suppo
     public function getAdvice() {
         if ($this->interceptor == null) {
             Assert::notNull($this->adviceBeanName, "'adviceBeanName' must be set for use with bean factory lookup.");
-            Assert::notNull($this->context != null, "BeanFactory must be set to resolve 'adviceBeanName'");
-            $this->interceptor = $this->context->getBean($this->adviceBeanName, 'Bee_Security_Intercept_MethodSecurityInterceptor');
+            Assert::notNull($this->beeContext != null, "BeanFactory must be set to resolve 'adviceBeanName'");
+            $this->interceptor = $this->beeContext->getBean($this->adviceBeanName, 'Bee_Security_Intercept_MethodSecurityInterceptor');
         }
         return $this->interceptor;
+    }
+
+	/**
+	 * @param IContext $context
+	 */
+    public function setBeeContext(IContext $context) {
+        $this->beeContext = $context;
     }
 
 	/**

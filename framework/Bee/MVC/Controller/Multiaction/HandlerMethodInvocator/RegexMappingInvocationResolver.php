@@ -19,7 +19,6 @@ namespace Bee\MVC\Controller\Multiaction\HandlerMethodInvocator;
 use Bee\Beans\PropertyEditor\PropertyEditorRegistry;
 use Bee\MVC\IHttpRequest;
 use Bee\Utils\AntPathToRegexTransformer;
-use Bee\Utils\TLogged;
 use Logger;
 use ReflectionMethod;
 
@@ -28,9 +27,23 @@ use ReflectionMethod;
  * @package Bee\MVC\Controller\Multiaction\HandlerMethodInvocator
  */
 class RegexMappingInvocationResolver implements IInvocationResolver {
-    use TLogged;
 
 	const IGNORE_WILDCARD_TRAILING_PATTERN = '\\.[^/]*';
+
+	/**
+	 * @var Logger
+	 */
+	protected static $log;
+
+	/**
+	 * @return Logger
+	 */
+	protected static function getLog() {
+		if (!self::$log) {
+			self::$log = Logger::getLogger(get_called_class());
+		}
+		return self::$log;
+	}
 
 	/**
 	 * @var HandlerMethodMetadata[]
@@ -79,8 +92,8 @@ class RegexMappingInvocationResolver implements IInvocationResolver {
 			}
 		}
 		// sort matching patterns
-		if ($this->getLog()->isDebugEnabled()) {
-			$this->getLog()->debug('Found ' . count($matchingPatterns) . ' matching patterns for pathInfo "' . $pathInfo . '", trying to determine most specific match');
+		if (self::getLog()->isDebugEnabled()) {
+			self::getLog()->debug('Found ' . count($matchingPatterns) . ' matching patterns for pathInfo "' . $pathInfo . '", trying to determine most specific match');
 		}
 
 		uksort($matchingPatterns, function ($patternA, $patternB) use ($matchingPatterns, $pathInfo) {
@@ -137,11 +150,11 @@ class RegexMappingInvocationResolver implements IInvocationResolver {
 			return strlen($matchA->getAntPathPattern()) - strlen($matchB->getAntPathPattern());
 		});
 
-		if ($this->getLog()->isDebugEnabled()) {
+		if (self::getLog()->isDebugEnabled()) {
 			$matchingAntPaths = array_map(function (MethodInvocation $item) {
 				return $item->getAntPathPattern();
 			}, $matchingPatterns);
-			$this->getLog()->debug('Sorted patterns for pathInfo "' . $pathInfo . '" are ' . "\n" . implode("\n", $matchingAntPaths));
+			self::getLog()->debug('Sorted patterns for pathInfo "' . $pathInfo . '" are ' . "\n" . implode("\n", $matchingAntPaths));
 		}
 
 		if (count($matchingPatterns) > 0) {

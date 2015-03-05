@@ -28,13 +28,13 @@ interface IRestrictionHolder {
     public function getFilterableFields();
 
     /**
-     * @return string
+     * @return array
      */
     public function getFilterString();
 
     /**
      * @return array
      */
-    public function getFilters();
+    public function getFieldRestrictions();
 
 }

@@ -16,7 +16,6 @@ namespace Bee\Persistence\Doctrine2;
  * limitations under the License.
  */
 use Bee\Framework;
-use Bee\Utils\TLogged;
 use Doctrine\DBAL\Logging\SQLLogger;
 
 /**
@@ -27,7 +26,11 @@ use Doctrine\DBAL\Logging\SQLLogger;
  * Implementation of the Doctrine 2 SQLLogger interface that logs to Log4PHP
  */
 class Log4PHPLogger implements SQLLogger {
-    use TLogged;
+
+	/**
+	 * @var \Logger
+	 */
+	private static $log;
 
 	/**
 	 * @var int
@@ -43,7 +46,7 @@ class Log4PHPLogger implements SQLLogger {
 	 * @return void
 	 */
 	public function startQuery($sql, array $params = null, array $types = null) {
-		$this->getLog()->trace('SQL : [' . $sql . '] PARAMS : [' . var_export($params, true) . '] TYPES: ['. var_export($types, true) . ']');
+		self::getLog()->trace('SQL : [' . $sql . '] PARAMS : [' . var_export($params, true) . '] TYPES: ['. var_export($types, true) . ']');
 		$this->startTime = microtime(true);
 	}
 
@@ -54,6 +57,16 @@ class Log4PHPLogger implements SQLLogger {
 	 */
 	public function stopQuery() {
 		$dur = microtime(true) - $this->startTime;
-		$this->getLog()->trace('.. completed in '. ($dur*1000) . ' ms');
+		self::getLog()->trace('.. completed in '. ($dur*1000) . ' ms');
+	}
+
+	/**
+	 * @return \Logger
+	 */
+	protected static function getLog() {
+		if (!self::$log) {
+			self::$log = Framework::getLoggerForClass(__CLASS__);
+		}
+		return self::$log;
 	}
 }

@@ -2,7 +2,7 @@
 namespace Bee\Persistence\Doctrine2;
 
 /*
- * Copyright 2008-2015 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,10 +58,9 @@ class DaoBase extends EntityManagerHolder {
 	}
 
 	/**
-     * todo: give this a proper name. This method ONLY applies the text filter (and is only ever intended to do so). All
-     * todo: other filters are use-case- (or at least entity-) specific.
 	 * @param QueryBuilder $queryBuilder
 	 * @param IRestrictionHolder $restrictionHolder
+	 * @internal param QueryBuilder $query
 	 */
 	protected final function applyFilterRestrictions(QueryBuilder &$queryBuilder, IRestrictionHolder $restrictionHolder = null) {
 		if (is_null($restrictionHolder)) {
@@ -79,6 +78,7 @@ class DaoBase extends EntityManagerHolder {
 
 			$tokenName = 'filtertoken' . $no;
 			$params[$tokenName] = '%' . $token . '%';
+
 			foreach ($restrictionHolder->getFilterableFields() as $fieldName) {
 				// $fieldName MUST BE A DOCTRINE NAME
 				if (Strings::hasText($andWhereString)) {
@@ -87,6 +87,7 @@ class DaoBase extends EntityManagerHolder {
 
 				$andWhereString .= $fieldName . ' LIKE :' . $tokenName;
 			}
+
 			if (Strings::hasText($andWhereString)) {
 				$queryBuilder->andWhere($andWhereString);
 
