@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<xsd:schema xmlns="http://www.beeframework.org/schema/mvc"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.beeframework.org/schema/beans"
+            targetNamespace="http://www.beeframework.org/schema/mvc"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+    <xsd:import namespace="http://www.beeframework.org/schema/beans"
+                schemaLocation="http://www.beeframework.org/schema/beans/bee-beans-1.2.xsd"/>
+
+    <xsd:annotation>
+        <xsd:documentation>
+            <![CDATA[Defines standard configuration elements for the MVC framework.]]></xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:element name="viewresolver">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[
+                    Configures a view resolver based on an XML context.
+            ]]></xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType">
+                    <xsd:attribute name="contextLocation" type="xsd:string"/>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<xsd:schema xmlns="http://www.beeframework.org/schema/util"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:beans="http://www.beeframework.org/schema/beans"
+            targetNamespace="http://www.beeframework.org/schema/util"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+    <xsd:import namespace="http://www.beeframework.org/schema/beans"
+                schemaLocation="http://www.beeframework.org/schema/beans/bee-beans-1.2.xsd"/>
+
+    <xsd:annotation>
+        <xsd:documentation><![CDATA[
+	Defines the configuration elements for misc context utilities.
+		]]></xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:element name="array">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[
+                    Conveniently defines an array factory bean
+            ]]></xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType">
+                    <xsd:group ref="beans:arrayElements"/>
+                    <xsd:attributeGroup ref="beans:commonBeanAttributes"/>
+                    <xsd:attributeGroup ref="beans:collectionBeanAttributes"/>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="value">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[Conveniently defines a value factory bean]]></xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:complexContent>
+                <xsd:extension base="beans:identifiedType">
+                    <xsd:sequence>
+                        <xsd:element ref="beans:null" minOccurs="0" maxOccurs="1"/>
+                        <xsd:any namespace="##other" processContents="strict" minOccurs="0" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                    <xsd:attributeGroup ref="beans:typedValueAttributes"/>
+                    <xsd:attributeGroup ref="beans:commonBeanAttributes"/>
+                </xsd:extension>
+            </xsd:complexContent>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>
