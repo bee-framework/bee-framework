@@ -45,7 +45,7 @@ class SessionScope implements IScope {
 	 * @param IObjectFactory $objectFactory
 	 * @return mixed|Object
 	 */
-	public function get($beanName, IObjectFactory $objectFactory) {
+	public function &get($beanName, IObjectFactory $objectFactory) {
 		$beans =& $_SESSION[$this->id.self::SESSION_SCOPE_PREFIX];
 		$scopedObject =& $beans[$beanName];
 		if(is_null($scopedObject)) {

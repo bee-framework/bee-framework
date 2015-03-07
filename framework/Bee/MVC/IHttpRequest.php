@@ -107,4 +107,9 @@ interface IHttpRequest {
 	 * @return bool
 	 */
 	public function getAjax();
+
+    /**
+     * @return string
+     */
+    public function __toString();
 }
