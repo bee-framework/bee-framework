@@ -223,4 +223,8 @@ class HttpRequest implements IHttpRequest {
 	public function getAjax() {
 		return $this->ajax;
 	}
+
+    function __toString() {
+        return 'HttpRequest{' . $this->getMethod() . '|' . $this->getPathInfo() . '|ajax:' . $this->getAjax() . '}';
+    }
 }

@@ -2,7 +2,6 @@
 namespace Bee\Persistence\Doctrine2;
 
 use Bee\Persistence\IOrderAndLimitHolder;
-use Bee\Persistence\IRestrictionHolder;
 use Bee\Utils\Assert;
 use Bee\Utils\Strings;
 use Doctrine\ORM\QueryBuilder;
@@ -12,7 +11,10 @@ use UnexpectedValueException;
  * Class GenericDaoBase
  * @package Bee\Persistence\Doctrine2
  */
-abstract class GenericDaoBase extends DaoBase {
+abstract class GenericDaoBase extends PaginatingDao {
+
+    const FILTER_STRING = 'filterString';
+    const FILTER_STRING_FIELDS = 'filterStringFields';
 
     /**
      * @var callable
@@ -121,71 +123,132 @@ abstract class GenericDaoBase extends DaoBase {
     }
 
     /**
-     * @param IRestrictionHolder $restrictionHolder
+     * @param mixed $filters
      * @param IOrderAndLimitHolder $orderAndLimitHolder
      * @param array $defaultOrderMapping
      * @return array
      */
-    public function getList(IRestrictionHolder $restrictionHolder = null, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null) {
-        return $this->executeListQuery($this->getBaseQuery(), $restrictionHolder, $orderAndLimitHolder, $defaultOrderMapping, null);
+    public function getList($filters = null, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null, $hydrationMode = null) {
+        $qb = $this->getBaseQuery();
+        $this->applyFilterRestrictions($qb, $filters);
+        return $this->executeListQuery($qb, $orderAndLimitHolder, $defaultOrderMapping ?: $this->getDefaultOrderMapping(), $hydrationMode ?: $this->getHydrationMode());
     }
 
     /**
-     * @param QueryBuilder $queryBuilder
-     * @param IRestrictionHolder $restrictionHolder
-     * @param IOrderAndLimitHolder $orderAndLimitHolder
-     * @param array $defaultOrderMapping
-     * @param null $hydrationMode
-     * @return array
+     * @param null $entity
+     * @return QueryBuilder
      */
-    public function executeListQuery(QueryBuilder $queryBuilder, IRestrictionHolder $restrictionHolder = null, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null, $hydrationMode = null) {
-        if (!is_null($restrictionHolder)) {
-            $internalFilterableFields = array();
-            if (Strings::hasText($restrictionHolder->getFilterString())) {
-                $this->disaggregateAndInternalizeFieldList($restrictionHolder->getFilterableFields(), $internalFilterableFields, $queryBuilder);
-            }
-//            $internalFilters = array();
-//            if (count($restrictionHolder->getFilters()) > 0) {
-//                $this->internalizeFieldValueMapping($restrictionHolder->getFilters(), $internalFilters, $queryBuilder);
-//            }
-            $restrictionHolder = new GenericDaoBase_RestrictionWrapper($restrictionHolder, $internalFilterableFields);
-        }
+    protected function getBaseQuery($entity = null) {
+        $baseEntityAlias = $this->getEntityAlias();
+        $entity = $entity ?: $this->getEntity();
+//		$indexBy = count($this->getIdFieldName()) > 1 ? null : $baseEntityAlias . '.' . $this->getIdFieldName();
+//		return $this->getEntityManager()->createQueryBuilder()->select($baseEntityAlias)
+//				->from($this->getEntity(), $baseEntityAlias, $indexBy);
+        $qb = $this->getEntityManager()->createQueryBuilder()->select($baseEntityAlias)->from($entity, $baseEntityAlias, $this->getIndexBy());
+        $this->addJoinsToBaseQuery($qb);
+        $this->addRestrictionsToBaseQuery($qb);
+        return $qb;
+    }
 
-        if (!is_null($orderAndLimitHolder)) {
-            if (count($orderAndLimitHolder->getOrderMapping()) > 0) {
-                $internalMapping = array();
-                $this->disaggregateAndInternalizeFieldValueMapping($orderAndLimitHolder->getOrderMapping(), $internalMapping, $queryBuilder);
-                $orderAndLimitHolder = new GenericDaoBase_OrderAndLimitWrapper($orderAndLimitHolder, $internalMapping);
-            }
+    /**
+     * @param QueryBuilder $q
+     */
+    protected function addJoinsToBaseQuery(QueryBuilder $q) {
+        foreach ($this->joins as $join) {
+            $this->internalizePathExpression($join, $q, true);
         }
+    }
 
-        return parent::executeListQuery($queryBuilder, $restrictionHolder, $orderAndLimitHolder, $defaultOrderMapping ?: $this->getDefaultOrderMapping(), $hydrationMode ?: $this->getHydrationMode());
+    /**
+     * @param QueryBuilder $q
+     */
+    protected function addRestrictionsToBaseQuery(QueryBuilder $q) {
+        foreach ($this->restrictions as $restriction) {
+            $q->andWhere($restriction);
+        }
+    }
+
+    /**
+     * @param QueryBuilder $qb
+     * @return mixed
+     */
+    protected function getSingleResult(QueryBuilder $qb) {
+        $q = $this->getQueryFromBuilder($qb);
+        return $q->getSingleResult($this->getHydrationMode());
+    }
+
+    /**
+     * @return null|string
+     */
+    protected function getHydrationMode() {
+        return null;
+    }
+
+    /**
+     * @return string
+     */
+    protected function getEntityAlias() {
+        return 'e';
+    }
+
+    /**
+     * @return mixed
+     */
+    abstract protected function getIdFieldName();
+
+    /**
+     * @return string
+     */
+    public abstract function getEntity();
+
+    /**
+     * @return null
+     */
+    protected function getIndexBy() {
+        return null;
+    }
+
+    // =================================================================================================================
+    // == Field disaggregation and canonicalization ====================================================================
+    // =================================================================================================================
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param array $orderMapping
+     * @return QueryBuilder
+     */
+    protected function applyOrderMapping(QueryBuilder $queryBuilder, array $orderMapping = array()) {
+        return parent::applyOrderMapping($queryBuilder, $this->disaggregateAndInternalizeFieldValueMapping($orderMapping, $queryBuilder));
     }
 
     /**
      * @param array $externalFieldValueMapping
      * @param array $internalFieldValueMapping
      * @param QueryBuilder $queryBuilder
+     * @return array
      */
-    protected final function disaggregateAndInternalizeFieldValueMapping(array $externalFieldValueMapping, array &$internalFieldValueMapping, QueryBuilder $queryBuilder) {
+    protected final function disaggregateAndInternalizeFieldValueMapping(array $externalFieldValueMapping, QueryBuilder $queryBuilder, array &$internalFieldValueMapping = array()) {
         foreach ($externalFieldValueMapping as $field => $value) {
             array_walk($this->getFieldDisaggregation($field), function ($field) use (&$internalFieldValueMapping, $queryBuilder, $value) {
                 $internalFieldValueMapping[$this->internalizeFieldExpression($field, $queryBuilder)] = $value;
             });
         }
+        return $internalFieldValueMapping;
     }
 
     /**
      * @param array $externalFieldList
-     * @param array $internalFieldList
      * @param QueryBuilder $queryBuilder
+     * @param array $internalFieldList
+     * @return array
      */
-    protected final function disaggregateAndInternalizeFieldList(array $externalFieldList, array &$internalFieldList, QueryBuilder $queryBuilder) {
+    protected final function disaggregateAndInternalizeFieldList(array $externalFieldList, QueryBuilder $queryBuilder, array &$internalFieldList = array()) {
         foreach ($externalFieldList as $field) {
             $internalFieldList = array_merge($internalFieldList, array_map(function ($field) use (&$queryBuilder) {
                 return $this->internalizeFieldExpression($field, $queryBuilder);
             }, $this->getFieldDisaggregation($field)));
         }
+        return $internalFieldList;
     }
 
     /**
@@ -268,86 +331,72 @@ abstract class GenericDaoBase extends DaoBase {
         return $pathExpr;
     }
 
+    // =================================================================================================================
+    // == Filtering helpers ============================================================================================
+    // =================================================================================================================
+
     /**
-     * @param null $entity
+     * Apply the filter restrictions defined by the filters array to the given QueryBuilder.
+     *
+     * Intended to be overridden by subclasses. The default implementation only applies a string filter if defined.
+     *
+     * @param QueryBuilder $queryBuilder
+     * @param mixed $filters
+     * @return QueryBuilder for chaining
+     */
+    protected function applyFilterRestrictions(QueryBuilder &$queryBuilder, $filters = null) {
+        if (!is_null($filters)) {
+            if(array_key_exists(self::FILTER_STRING, $filters) && Strings::hasText($filterString = $filters[self::FILTER_STRING])) {
+                $this->addStringFilterRestrictions($queryBuilder, $filterString, $filters[self::FILTER_STRING_FIELDS]);
+            }
+        }
+        return $queryBuilder;
+    }
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param string $filterString
+     * @param array $filterableFields
      * @return QueryBuilder
      */
-    protected function getBaseQuery($entity = null) {
-        $baseEntityAlias = $this->getEntityAlias();
-        $entity = $entity ?: $this->getEntity();
-//		$indexBy = count($this->getIdFieldName()) > 1 ? null : $baseEntityAlias . '.' . $this->getIdFieldName();
-//		return $this->getEntityManager()->createQueryBuilder()->select($baseEntityAlias)
-//				->from($this->getEntity(), $baseEntityAlias, $indexBy);
-        $qb = $this->getEntityManager()->createQueryBuilder()->select($baseEntityAlias)->from($entity, $baseEntityAlias, $this->getIndexBy());
-        $this->addJoinsToBaseQuery($qb);
-        $this->addRestrictionsToBaseQuery($qb);
-        return $qb;
-    }
+    protected function addStringFilterRestrictions(QueryBuilder $queryBuilder, $filterString, array $filterableFields = array()) {
+        if (Strings::hasText($filterString)) {
+            $filterableFields = $this->disaggregateAndInternalizeFieldList($filterableFields, $queryBuilder);
 
-    /**
-     * @param QueryBuilder $q
-     */
-    protected function addJoinsToBaseQuery(QueryBuilder $q) {
-        foreach ($this->joins as $join) {
-            $this->internalizePathExpression($join, $q, true);
+            $filterTokens = Strings::tokenizeToArray($filterString, ' ');
+            foreach ($filterTokens as $no => $token) {
+                $andWhereString = '';
+                $params = array();
+
+                $tokenName = 'filtertoken' . $no;
+                $params[$tokenName] = '%' . $token . '%';
+                foreach ($filterableFields as $fieldName) {
+                    // $fieldName MUST BE A DOCTRINE NAME
+                    if (Strings::hasText($andWhereString)) {
+                        $andWhereString .= ' OR ';
+                    }
+
+                    $andWhereString .= $fieldName . ' LIKE :' . $tokenName;
+                }
+                if (Strings::hasText($andWhereString)) {
+                    $queryBuilder->andWhere($andWhereString);
+
+                    foreach ($params as $key => $value) {
+                        $queryBuilder->setParameter($key, $value);
+                    }
+                }
+            }
         }
-    }
-
-    /**
-     * @param QueryBuilder $q
-     */
-    protected function addRestrictionsToBaseQuery(QueryBuilder $q) {
-        foreach ($this->restrictions as $restriction) {
-            $q->andWhere($restriction);
-        }
-    }
-
-    /**
-     * @param QueryBuilder $qb
-     * @return mixed
-     */
-    protected function getSingleResult(QueryBuilder $qb) {
-        $q = $this->getQueryFromBuilder($qb);
-        return $q->getSingleResult($this->getHydrationMode());
-    }
-
-    /**
-     * @return null|string
-     */
-    protected function getHydrationMode() {
-        return null;
-    }
-
-    /**
-     * @return string
-     */
-    protected function getEntityAlias() {
-        return 'e';
-    }
-
-    /**
-     * @return mixed
-     */
-    abstract protected function getIdFieldName();
-
-    /**
-     * @return string
-     */
-    public abstract function getEntity();
-
-    /**
-     * @return null
-     */
-    protected function getIndexBy() {
-        return null;
+        return $queryBuilder;
     }
 
     /**
      * @param QueryBuilder $queryBuilder
      * @param $filters
      * @param string $fieldPath
+     * @return QueryBuilder for chaining
      */
-    protected function addCategoryRestrictions(QueryBuilder $queryBuilder, $filters, $fieldPath) {
+    protected final function addCategoryRestrictions(QueryBuilder $queryBuilder, $filters, $fieldPath) {
         if (array_key_exists($fieldPath, $filters)) {
             if (!is_array($catIds = $filters[$fieldPath])) {
                 $catIds = array_filter(explode(',', $catIds));
@@ -356,6 +405,7 @@ abstract class GenericDaoBase extends DaoBase {
                 $queryBuilder->andWhere($queryBuilder->expr()->in('IDENTITY(' . $this->internalizeFieldExpression($fieldPath, $queryBuilder) . ')', $catIds));
             }
         }
+        return $queryBuilder;
     }
 
     /**
@@ -363,12 +413,14 @@ abstract class GenericDaoBase extends DaoBase {
      * @param array $filters
      * @param string $fieldExpr
      * @param string $filterKey
+     * @return QueryBuilder for chaining
      */
-    protected function addValueRestriction(QueryBuilder $queryBuilder, $filters, $fieldExpr, $filterKey = '') {
+    protected final function addValueRestriction(QueryBuilder $queryBuilder, $filters, $fieldExpr, $filterKey = '') {
         $filterKey = $filterKey ?: $fieldExpr;
         if (array_key_exists($filterKey, $filters) && $value = $filters[$filterKey]) {
             $queryBuilder->andWhere($this->internalizeFieldExpression($fieldExpr, $queryBuilder) . ' = :val')->setParameter('val', $value);
         }
+        return $queryBuilder;
     }
 
     // =================================================================================================================
@@ -455,108 +507,5 @@ abstract class GenericDaoBase extends DaoBase {
             return $this->fieldDisaggregations[$aggregateFieldName];
         }
         return array($aggregateFieldName);
-    }
-}
-
-class GenericDaoBase_OrderAndLimitWrapper implements IOrderAndLimitHolder {
-
-    /**
-     * @var IOrderAndLimitHolder
-     */
-    private $wrappedOrderAndLimitHolder;
-
-    /**
-     * @var array
-     */
-    private $internalOrderMapping;
-
-    function __construct(IOrderAndLimitHolder $wrappedOrderAndLimitHolder, $internalOrderMapping) {
-        $this->wrappedOrderAndLimitHolder = $wrappedOrderAndLimitHolder;
-        $this->internalOrderMapping = $internalOrderMapping;
-    }
-
-    /**
-     * @return array
-     */
-    public function getOrderMapping() {
-        return $this->internalOrderMapping;
-    }
-
-    /**
-     * @return int
-     */
-    public function getPageSize() {
-        return $this->wrappedOrderAndLimitHolder->getPageSize();
-    }
-
-    /**
-     * @return int
-     */
-    public function getPageCount() {
-        return $this->wrappedOrderAndLimitHolder->getPageCount();
-    }
-
-    /**
-     * @return int
-     */
-    public function getCurrentPage() {
-        return $this->wrappedOrderAndLimitHolder->getCurrentPage();
-    }
-
-    /**
-     * @param $currentPage
-     */
-    public function setCurrentPage($currentPage) {
-        $this->wrappedOrderAndLimitHolder->setCurrentPage($currentPage);
-    }
-
-    /**
-     * @param int $resultCount
-     */
-    public function setResultCount($resultCount) {
-        $this->wrappedOrderAndLimitHolder->setResultCount($resultCount);
-    }
-}
-
-class GenericDaoBase_RestrictionWrapper implements IRestrictionHolder {
-
-    /**
-     * @var IRestrictionHolder
-     */
-    private $wrappedRestrictionHolder;
-
-    /**
-     * @var array
-     */
-    private $internalFilterableFields;
-
-    /**
-     * @param $wrappedRestrictionHolder
-     * @param $internalFilterableFields
-     */
-    function __construct(IRestrictionHolder $wrappedRestrictionHolder, array $internalFilterableFields/*, array $internalFilters*/) {
-        $this->wrappedRestrictionHolder = $wrappedRestrictionHolder;
-        $this->internalFilterableFields = $internalFilterableFields;
-    }
-
-    /**
-     * @return array
-     */
-    public function getFilterableFields() {
-        return $this->internalFilterableFields;
-    }
-
-    /**
-     * @return array
-     */
-    public function getFilterString() {
-        return $this->wrappedRestrictionHolder->getFilterString();
-    }
-
-    /**
-     * @return array
-     */
-    public function getFilters() {
-        return $this->wrappedRestrictionHolder->getFilters();
     }
 }

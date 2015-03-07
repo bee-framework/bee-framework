@@ -17,8 +17,6 @@ namespace Bee\Persistence\Doctrine2;
  * limitations under the License.
  */
 use Bee\Persistence\IOrderAndLimitHolder;
-use Bee\Persistence\IRestrictionHolder;
-use Bee\Utils\Strings;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -29,19 +27,22 @@ use Exception;
  * Date: 05.05.13
  * Time: 17:26
  */
-class DaoBase extends EntityManagerHolder {
+class PaginatingDao extends EntityManagerHolder {
 
 	/**
 	 * @param QueryBuilder $queryBuilder
-	 * @param IRestrictionHolder $restrictionHolder
 	 * @param IOrderAndLimitHolder $orderAndLimitHolder
 	 * @param array $defaultOrderMapping
 	 * @param null $hydrationMode
 	 * @return array
 	 */
-	public function executeListQuery(QueryBuilder $queryBuilder, IRestrictionHolder $restrictionHolder = null, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null, $hydrationMode = null) {
-		$this->applyFilterRestrictions($queryBuilder, $restrictionHolder);
-		$this->applyOrderMapping($queryBuilder, $orderAndLimitHolder, $defaultOrderMapping);
+	protected final function executeListQuery(QueryBuilder $queryBuilder, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = array(), $hydrationMode = null) {
+        if (is_null($orderAndLimitHolder)) {
+            $orderMapping = $defaultOrderMapping;
+        } else {
+            $orderMapping = count($orderAndLimitHolder->getOrderMapping()) > 0 ? $orderAndLimitHolder->getOrderMapping() : $defaultOrderMapping;
+        }
+		$this->applyOrderMapping($queryBuilder, $orderMapping);
 		$q = $this->getQueryFromBuilder($queryBuilder);
 		if(!is_null($hydrationMode)) {
 			$q->setHydrationMode($hydrationMode);
@@ -57,64 +58,16 @@ class DaoBase extends EntityManagerHolder {
 		return $qb->getQuery();
 	}
 
-	/**
-     * todo: give this a proper name. This method ONLY applies the text filter (and is only ever intended to do so). All
-     * todo: other filters are use-case- (or at least entity-) specific.
-	 * @param QueryBuilder $queryBuilder
-	 * @param IRestrictionHolder $restrictionHolder
-	 */
-	protected final function applyFilterRestrictions(QueryBuilder &$queryBuilder, IRestrictionHolder $restrictionHolder = null) {
-		if (is_null($restrictionHolder)) {
-			return;
-		}
-
-		if (!Strings::hasText($restrictionHolder->getFilterString())) {
-			return;
-		}
-
-		$filterTokens = Strings::tokenizeToArray($restrictionHolder->getFilterString(), ' ');
-		foreach ($filterTokens as $no => $token) {
-			$andWhereString = '';
-			$params = array();
-
-			$tokenName = 'filtertoken' . $no;
-			$params[$tokenName] = '%' . $token . '%';
-			foreach ($restrictionHolder->getFilterableFields() as $fieldName) {
-				// $fieldName MUST BE A DOCTRINE NAME
-				if (Strings::hasText($andWhereString)) {
-					$andWhereString .= ' OR ';
-				}
-
-				$andWhereString .= $fieldName . ' LIKE :' . $tokenName;
-			}
-			if (Strings::hasText($andWhereString)) {
-				$queryBuilder->andWhere($andWhereString);
-
-				foreach ($params as $key => $value) {
-					$queryBuilder->setParameter($key, $value);
-				}
-			}
-		}
-	}
-
-	/**
-	 * @param QueryBuilder $queryBuilder
-	 * @param IOrderAndLimitHolder $orderAndLimitHolder
-	 * @param array $defaultOrderMapping
-	 */
-	protected final function applyOrderMapping(QueryBuilder &$queryBuilder, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null) {
-		if (is_null($defaultOrderMapping)) {
-			$defaultOrderMapping = array();
-		}
-		if (is_null($orderAndLimitHolder)) {
-			$orderMapping = $defaultOrderMapping;
-		} else {
-			$orderMapping = count($orderAndLimitHolder->getOrderMapping()) > 0 ? $orderAndLimitHolder->getOrderMapping() : $defaultOrderMapping;
-		}
-
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param array $orderMapping
+     * @return QueryBuilder
+     */
+	protected function applyOrderMapping(QueryBuilder $queryBuilder, array $orderMapping = array()) {
 		foreach ($orderMapping as $orderField => $orderDir) {
 			$queryBuilder->addOrderBy($orderField, $orderDir);
 		}
+        return $queryBuilder;
 	}
 
 	/**
