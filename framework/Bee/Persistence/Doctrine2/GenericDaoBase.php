@@ -16,6 +16,12 @@ abstract class GenericDaoBase extends PaginatingDao {
     const FILTER_STRING = 'filterString';
     const FILTER_STRING_FIELDS = 'filterStringFields';
 
+    const SCALAR_RESTRICTION_EQUAL = ' = ';
+    const SCALAR_RESTRICTION_LESS = ' < ';
+    const SCALAR_RESTRICTION_LESS_OR_EQUAL = ' <= ';
+    const SCALAR_RESTRICTION_GREATER = ' > ';
+    const SCALAR_RESTRICTION_GREATER_OR_EQUAL = ' >= ';
+
     /**
      * @var callable
      */
@@ -414,32 +420,15 @@ abstract class GenericDaoBase extends PaginatingDao {
      * @param array $filters
      * @param string $fieldExpr
      * @param string $filterKey
+     * @param string $comp
      * @return QueryBuilder for chaining
      */
-    protected final function addValueRestriction(QueryBuilder $queryBuilder, $filters, $fieldExpr, $filterKey = '') {
+    protected final function addScalarRestriction(QueryBuilder $queryBuilder, $filters, $fieldExpr, $filterKey = '', $comp = self::SCALAR_RESTRICTION_EQUAL) {
         $filterKey = $filterKey ?: $fieldExpr;
         if (array_key_exists($filterKey, $filters) && $value = $filters[$filterKey]) {
-            $queryBuilder->andWhere($this->internalizeFieldExpression($fieldExpr, $queryBuilder) . ' = :val')->setParameter('val', $value);
+            $queryBuilder->andWhere($this->internalizeFieldExpression($fieldExpr, $queryBuilder) . $comp . ':val')->setParameter('val', $value);
         }
         return $queryBuilder;
-    }
-
-    /**
-     * @param QueryBuilder $queryBuilder
-     * @param $filters
-     * @param $fldExpr
-     * @param bool $filterKeyFrom
-     * @param bool $filterKeyUntil
-     */
-    protected function addDateRestriction(QueryBuilder $queryBuilder, $filters, $fldExpr, $filterKeyFrom = false, $filterKeyUntil = false) {
-        $filterKeyFrom = $filterKeyFrom ?: $fldExpr . 'From';
-        if (array_key_exists($filterKeyFrom, $filters) && $date = DateTimeHelper::parseDate($filters[$filterKeyFrom])) {
-            $queryBuilder->andWhere($this->internalizeFieldExpression($fldExpr, $queryBuilder) . ' >= :dateFrom')->setParameter('dateFrom', $date);
-        }
-        $filterKeyUntil = $filterKeyUntil ?: $fldExpr . 'Until';
-        if (array_key_exists($filterKeyUntil, $filters) && $date = DateTimeHelper::parseDate($filters[$filterKeyUntil])) {
-            $queryBuilder->andWhere($this->internalizeFieldExpression($fldExpr, $queryBuilder) . ' <= :dateUntil')->setParameter('dateUntil', $date);
-        }
     }
 
     // =================================================================================================================
