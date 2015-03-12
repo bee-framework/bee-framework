@@ -2,15 +2,18 @@
 namespace Bee\Persistence\Doctrine2;
 
 use Doctrine\ORM\Tools\Pagination\Paginator;
-use Bee\Utils\IJsonSerializable;
+use JsonSerializable;
 
 /**
  * Class JsonSerializablePaginator
  * @package Bee\Tools\Entities
  */
-class JsonSerializablePaginator extends Paginator implements IJsonSerializable {
+class JsonSerializablePaginator extends Paginator implements JsonSerializable {
 
-	public function jsonSerialize() {
+    /**
+     * @return array
+     */
+    function jsonSerialize() {
 		return $this->getIterator()->getArrayCopy();
 	}
 } 
