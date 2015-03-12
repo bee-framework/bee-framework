@@ -31,11 +31,19 @@ abstract class PaginationBase implements IOrderAndLimitHolder, JsonSerializable 
      */
     private $state = array();
 
-	/**
+    /**
+     *
+     */
+    function __construct() {
+        $this->setPageSize(50);
+    }
+
+
+    /**
 	 * @return int
 	 */
 	public function getPageSize() {
-		return $this->state['pageSize'];
+        return $this->getIndexSave('pageSize');
 	}
 
 	/**
@@ -56,7 +64,7 @@ abstract class PaginationBase implements IOrderAndLimitHolder, JsonSerializable 
 	 * @return int
 	 */
 	public function getCurrentPage() {
-		return $this->state['currentPage'];
+        return $this->getIndexSave('currentPage');
 	}
 
 	/**
@@ -81,7 +89,7 @@ abstract class PaginationBase implements IOrderAndLimitHolder, JsonSerializable 
 	 * @return int
 	 */
 	public function getResultCount() {
-		return $this->state['resultCount'];
+        return $this->getIndexSave('resultCount');
 	}
 
 	/**
@@ -111,5 +119,9 @@ abstract class PaginationBase implements IOrderAndLimitHolder, JsonSerializable 
      */
     function jsonSerialize() {
         return array('pageCount' => $this->getPageCount(), 'pageSize' => $this->getPageSize(), 'currentPage' => $this->getCurrentPage(), 'resultCount' => $this->getResultCount());
+    }
+
+    private function getIndexSave($idx, $defaultVal = 0) {
+        return array_key_exists($idx, $this->state) ? $this->state[$idx] : $defaultVal;
     }
 }

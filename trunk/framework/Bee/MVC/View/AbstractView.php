@@ -60,17 +60,17 @@ abstract class AbstractView extends ViewBase {
 	 */
 	public final function render(array $model = null) {
 		// Consolidate static and dynamic model attributes.
-		
-		$oldModelValues = Model::getModelValues();
+
+        $oldModelValues = Model::getModelValues();
 		Model::clear();
 //		Model::addValuesToModel($this->staticAttributes);
 		Model::addValuesToModel($model);
 
-		$this->prepareResponse();
+        $this->prepareResponse();
 
 		$this->outputStatusHeader();
 
-		$this->renderMergedOutputModel();
+        $this->renderMergedOutputModel();
 
 		Model::clear();
 		Model::addValuesToModel($oldModelValues);

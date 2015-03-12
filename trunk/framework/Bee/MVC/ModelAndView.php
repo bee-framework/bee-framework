@@ -153,6 +153,6 @@ final class ModelAndView {
 	 */
 	public function renderModelInView() {
 		// @todo: assert a resolvedView is set
-		$this->resolvedView->render($this->getModel());
+        $this->resolvedView->render($this->getModel());
 	}
 }
