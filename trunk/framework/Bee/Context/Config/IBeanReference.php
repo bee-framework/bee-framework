@@ -27,7 +27,7 @@ interface IBeanReference {
     /**
      * Return the target bean name that this reference points to (never <code>null</code>).
      * @abstract
-     * @return string
+     * @return array
      */
     function getBeanNames();
 }

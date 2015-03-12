@@ -55,7 +55,7 @@ class RuntimeBeanReference implements IBeanReference {
 	/**
 	 * Enter description here...
 	 *
-	 * @return String
+	 * @return array
 	 */
     public function getBeanNames() {
 		return $this->beanNames;

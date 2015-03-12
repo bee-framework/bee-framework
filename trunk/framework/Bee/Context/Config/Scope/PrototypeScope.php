@@ -38,7 +38,7 @@ final class PrototypeScope implements IScope {
 	 * @param IObjectFactory $objectFactory
 	 * @return mixed|Object
 	 */
-	public function get($beanName, IObjectFactory $objectFactory) {
+	public function &get($beanName, IObjectFactory $objectFactory) {
 		return $objectFactory->getObject();
 	}
 

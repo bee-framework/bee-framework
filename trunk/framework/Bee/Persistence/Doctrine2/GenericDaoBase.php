@@ -396,9 +396,10 @@ abstract class GenericDaoBase extends PaginatingDao {
      * @param string $fieldPath
      * @return QueryBuilder for chaining
      */
-    protected final function addCategoryRestrictions(QueryBuilder $queryBuilder, $filters, $fieldPath) {
-        if (array_key_exists($fieldPath, $filters)) {
-            if (!is_array($catIds = $filters[$fieldPath])) {
+    protected final function addCategoryRestrictions(QueryBuilder $queryBuilder, $filters, $fieldPath, $filterName = false) {
+        $filterName = $filterName ?: $fieldPath;
+        if (array_key_exists($filterName, $filters)) {
+            if (!is_array($catIds = $filters[$filterName])) {
                 $catIds = array_filter(explode(',', $catIds));
             }
             if (count($catIds) > 0) {
@@ -421,6 +422,24 @@ abstract class GenericDaoBase extends PaginatingDao {
             $queryBuilder->andWhere($this->internalizeFieldExpression($fieldExpr, $queryBuilder) . ' = :val')->setParameter('val', $value);
         }
         return $queryBuilder;
+    }
+
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param $filters
+     * @param $fldExpr
+     * @param bool $filterKeyFrom
+     * @param bool $filterKeyUntil
+     */
+    protected function addDateRestriction(QueryBuilder $queryBuilder, $filters, $fldExpr, $filterKeyFrom = false, $filterKeyUntil = false) {
+        $filterKeyFrom = $filterKeyFrom ?: $fldExpr . 'From';
+        if (array_key_exists($filterKeyFrom, $filters) && $date = DateTimeHelper::parseDate($filters[$filterKeyFrom])) {
+            $queryBuilder->andWhere($this->internalizeFieldExpression($fldExpr, $queryBuilder) . ' >= :dateFrom')->setParameter('dateFrom', $date);
+        }
+        $filterKeyUntil = $filterKeyUntil ?: $fldExpr . 'Until';
+        if (array_key_exists($filterKeyUntil, $filters) && $date = DateTimeHelper::parseDate($filters[$filterKeyUntil])) {
+            $queryBuilder->andWhere($this->internalizeFieldExpression($fldExpr, $queryBuilder) . ' <= :dateUntil')->setParameter('dateUntil', $date);
+        }
     }
 
     // =================================================================================================================

@@ -34,7 +34,7 @@ class CacheScope implements IScope {
 		$this->id = $id;
 	}
 
-	public function get($beanName, IObjectFactory $objectFactory) {
+	public function &get($beanName, IObjectFactory $objectFactory) {
         return Manager::retrieveCachable(new CachableConfig($this->getCacheKey($beanName), $objectFactory));
 	}
 

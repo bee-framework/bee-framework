@@ -31,7 +31,7 @@ interface IScope {
 	 * @param IObjectFactory $objectFactory
 	 * @return Object
 	 */
-	public function get($beanName, IObjectFactory $objectFactory);
+	public function &get($beanName, IObjectFactory $objectFactory);
 
 	/**
 	 * Enter description here...
