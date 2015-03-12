@@ -43,7 +43,7 @@ class RequestScope implements IScope {
 	 * @param IObjectFactory $objectFactory
 	 * @return mixed|Object
 	 */
-	public function get($beanName, IObjectFactory $objectFactory) {
+	public function &get($beanName, IObjectFactory $objectFactory) {
 		$scopedObject =& $this->beans[$beanName];
 		if(is_null($scopedObject)) {
 			$scopedObject = $objectFactory->getObject();

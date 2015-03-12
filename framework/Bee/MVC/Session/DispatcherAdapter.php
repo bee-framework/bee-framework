@@ -19,7 +19,7 @@ namespace Bee\MVC\Session;
 use Bee\IContext;
 use Exception;
 
-class DispatcherAdapter {
+class DispatcherAdapter /*implements SessionHandlerInterface*/ {
 	
 	const SESSION_HANDLER_NAME = '__sessionHandler';
 

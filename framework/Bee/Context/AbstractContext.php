@@ -47,7 +47,9 @@ use ReflectionClass;
  * @author Michael Plomer <michael.plomer@iter8.de>
  */
 abstract class AbstractContext extends BasicBeanDefinitionRegistry implements IContext, IContextAware {
-    use TPropertyEditorRegistryHolder;
+    use TPropertyEditorRegistryHolder {
+        TPropertyEditorRegistryHolder::setBeeContext as setPropertyEditorContext;
+    }
 
 	/**
 	 * @var IContext[]
@@ -886,6 +888,14 @@ abstract class AbstractContext extends BasicBeanDefinitionRegistry implements IC
 	public function getModificationTimestamp() {
 		return 0;
 	}
+
+    /**
+     * @param IContext $context
+     */
+    public function setBeeContext(IContext $context) {
+        $this->setPropertyEditorContext($context);
+        $this->setParent($context);
+    }
 }
 
 
