@@ -229,9 +229,9 @@ abstract class GenericDaoBase extends PaginatingDao {
      */
     protected final function disaggregateAndInternalizeFieldValueMapping(array $externalFieldValueMapping, QueryBuilder $queryBuilder, array &$internalFieldValueMapping = array()) {
         foreach ($externalFieldValueMapping as $field => $value) {
-            array_walk($this->getFieldDisaggregation($field), function ($field) use (&$internalFieldValueMapping, $queryBuilder, $value) {
+            array_map(function ($field) use (&$internalFieldValueMapping, $queryBuilder, $value) {
                 $internalFieldValueMapping[$this->internalizeFieldExpression($field, $queryBuilder)] = $value;
-            });
+            }, $this->getFieldDisaggregation($field));
         }
         return $internalFieldValueMapping;
     }
