@@ -79,6 +79,11 @@ abstract class GenericDaoBase extends PaginatingDao {
     private $addedAliases = array();
 
     /**
+     * @var int
+     */
+    private $scalarParamCount = 0;
+
+    /**
      * @param mixed $id
      * @throws UnexpectedValueException
      * @return mixed
@@ -426,7 +431,8 @@ abstract class GenericDaoBase extends PaginatingDao {
     protected final function addScalarRestriction(QueryBuilder $queryBuilder, $filters, $fieldExpr, $filterKey = '', $comp = self::SCALAR_RESTRICTION_EQUAL) {
         $filterKey = $filterKey ?: $fieldExpr;
         if (array_key_exists($filterKey, $filters) && $value = $filters[$filterKey]) {
-            $queryBuilder->andWhere($this->internalizeFieldExpression($fieldExpr, $queryBuilder) . $comp . ':val')->setParameter('val', $value);
+            $paramName = 'sclr' . $this->scalarParamCount++;
+            $queryBuilder->andWhere($this->internalizeFieldExpression($fieldExpr, $queryBuilder) . $comp . ':' . $paramName)->setParameter($paramName, $value);
         }
         return $queryBuilder;
     }
