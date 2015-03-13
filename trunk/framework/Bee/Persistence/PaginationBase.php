@@ -122,6 +122,6 @@ abstract class PaginationBase implements IOrderAndLimitHolder, JsonSerializable 
     }
 
     private function getIndexSave($idx, $defaultVal = 0) {
-        return array_key_exists($idx, $this->state) ? $this->state[$idx] : $defaultVal;
+        return isset($this->state[$idx]) ? $this->state[$idx] : $defaultVal;
     }
 }
