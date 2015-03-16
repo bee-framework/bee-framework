@@ -22,7 +22,7 @@
   "require-dev": {
     "smarty/smarty": "~3.1@stable",
     "phpmailer/phpmailer": "~5@stable",
-    "doctrine/orm": "~2.4@RC"
+    "doctrine/orm": "@alpha"
   },
   "minimum-stability": "RC",
   "autoload": {
