@@ -57,7 +57,6 @@ namespace Bee\Utils {
 				$basePath = self::getBasePath();
 
 				if (Strings::hasText(self::$absoluteBasePath) && Strings::hasText($basePath) && !preg_match('#' . DIRECTORY_SEPARATOR . '$#i', self::$absoluteBasePath) && !preg_match('#^' . DIRECTORY_SEPARATOR . '#i', $basePath)) {
-					echo 'MUST ADD THE THING!!!!<br/>';
 					self::$absoluteBasePath .= DIRECTORY_SEPARATOR;
 				}
 				self::$absoluteBasePath .= $basePath;
@@ -84,6 +83,13 @@ namespace Bee\Utils {
 			}
 			return self::$basePath;
 		}
+
+        /**
+         * @return string
+         */
+        public static function getBaseUrl() {
+            return self::getProtocol() . "://" . self::getHost() . '/' . self::getBasePath();
+        }
 
 		/**
 		 * The applicationIndex is the .php file that will be the
@@ -130,17 +136,20 @@ namespace Bee\Utils {
 		}
 
 		/**
-		 * The URL to the server
+		 * The protocol used for the current request
 		 *
-		 * @return String
+		 * @return string
+         *
+         *
 		 */
 		public static final function getProtocol() {
-			$protocol = $_SERVER['HTTP_REFERER'];
-			$pos = strpos($protocol, '://');
-			if ($pos === false) {
-				return 'http';
-			}
-			return substr($protocol, 0, $pos);
+            return array_key_exists('HTTPS', $_SERVER) && filter_var($_SERVER['HTTPS'], FILTER_VALIDATE_BOOLEAN) ? 'https' : 'http';
+//			$protocol = $_SERVER['HTTP_REFERER'];
+//			$pos = strpos($protocol, '://');
+//			if ($pos === false) {
+//				return 'http';
+//			}
+//			return substr($protocol, 0, $pos);
 		}
 
 		/**
