@@ -137,6 +137,7 @@ abstract class GenericDaoBase extends PaginatingDao {
      * @param mixed $filters
      * @param IOrderAndLimitHolder $orderAndLimitHolder
      * @param array $defaultOrderMapping
+     * @param string $hydrationMode
      * @return array
      */
     public function getList($filters = null, IOrderAndLimitHolder $orderAndLimitHolder = null, array $defaultOrderMapping = null, $hydrationMode = null) {
