@@ -406,6 +406,7 @@ abstract class GenericDaoBase extends PaginatingDao {
      * @param QueryBuilder $queryBuilder
      * @param $filters
      * @param string $fieldPath
+     * @param bool $filterName
      * @return QueryBuilder for chaining
      */
     protected final function addCategoryRestrictions(QueryBuilder $queryBuilder, $filters, $fieldPath, $filterName = false) {

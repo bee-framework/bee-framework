@@ -51,9 +51,8 @@ class EntityManagerHolder {
 	 * @return mixed
 	 */
 	public function transactional($callback) {
-		$that = $this;
-		return $this->getEntityManager()->transactional(function (EntityManager $em) use ($callback, $that) {
-			return $callback($that);
+		return $this->getEntityManager()->transactional(function (EntityManager $em) use ($callback) {
+			return $callback($this);
 		});
 	}
 }
