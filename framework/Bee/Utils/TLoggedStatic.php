@@ -20,32 +20,34 @@ use Bee\Framework;
 use Logger;
 
 /**
- * Trait TLogged
- * Logging trait using a per-instance logger. Use this for classes that have only few instances, or in class hierarchies.
+ * Trait TLoggedStatic
+ * Logging trait using a static logger. Use this for classes that have lots of instances. Do not use it in class hierarchies
+ * above the leaf level.
  *
  * PROS:
- *  - each instance (and therefore each concrete class) has its own logger, as opposed to different subclasses logging
- *    into one superclass logger.
+ *  - resource efficient, as only one logger exists per class (hierarchy), as opposed to one per instance.
  * CONS:
- *  - not resource efficient. Every instance of a class performs logger instantiation (or at least lookup)
- *  - absent a "transient" keyword in PHP, the Logger is serialized together with the rest of the class, which is in
- *    general NOT desired
+ *  - not suitable for use in class hierarchies. If a superclass uses the logging trait, the logger name will depend
+ *    on which subclass fist used it...
+ *
+ * todo: do some profiling on the Framework::getLoggerForClass() call. Maybe we can do away with the static type member
+ * todo: completely, thus avoiding the cons?
  * @package Bee\Utils
  */
-trait TLogged {
+trait TLoggedStatic {
 
     /**
      * @var Logger
      */
-    protected $log;
+    protected static $log;
 
     /**
      * @return Logger
      */
-    public function getLog() {
-        if (!$this->log) {
-            $this->log = Framework::getLoggerForClass(get_class($this));
+    public static function getLog() {
+        if (!self::$log) {
+            self::$log = Framework::getLoggerForClass(get_called_class());
         }
-        return $this->log;
+        return self::$log;
     }
 }
