@@ -16,6 +16,7 @@ namespace Bee\Security\UserDetails\Doctrine2;
  * limitations under the License.
  */
 use Bee\Security\IUserDetails;
+use Bee\Tools\Entities\Persistence\Doctrine2\TAutoIncIdentity;
 
 /**
  * Class UserBase
@@ -23,15 +24,7 @@ use Bee\Security\IUserDetails;
  * @MappedSuperclass
  */
 abstract class UserBase implements IUserDetails {
-
-	/**
-	 * @var integer
-	 *
-	 * @Id
-	 * @GeneratedValue
-	 * @Column(type="integer")
-	 */
-	private $id;
+    use TAutoIncIdentity;
 
 	/**
 	 * @var string
@@ -56,15 +49,6 @@ abstract class UserBase implements IUserDetails {
 	 * @Column(name="name", type="string", length=200, nullable=true)
 	 */
 	protected $name;
-
-	/**
-	 * Get the identifier
-	 *
-	 * @return integer
-	 */
-	public function getId() {
-		return $this->id;
-	}
 
 	/**
 	 * Returns the password used to authenticate the user. Cannot return <code>null</code>.
