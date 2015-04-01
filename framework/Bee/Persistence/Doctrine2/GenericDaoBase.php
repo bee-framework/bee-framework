@@ -4,6 +4,7 @@ namespace Bee\Persistence\Doctrine2;
 use Bee\Persistence\IOrderAndLimitHolder;
 use Bee\Utils\Assert;
 use Bee\Utils\Strings;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use UnexpectedValueException;
 
@@ -81,7 +82,7 @@ abstract class GenericDaoBase extends PaginatingDao {
     /**
      * @var int
      */
-    private $scalarParamCount = 0;
+    protected $scalarParamCount = 0;
 
     /**
      * @param mixed $id
@@ -291,7 +292,7 @@ abstract class GenericDaoBase extends PaginatingDao {
      * @param bool $fetchJoin
      * @return string
      */
-    protected final function internalizePathExpression($pathExpr, QueryBuilder $queryBuilder, $fetchJoin = false) {
+    protected final function internalizePathExpression($pathExpr, QueryBuilder $queryBuilder, $fetchJoin = false, $condition = null) {
         // ex (Rc1):    $pathExpr = 'e.hochschultyp.kategorie'
         // ex (Rc2):    $pathExpr = 'e.hochschultyp'
         // ex (Rc3):    $pathExpr = 'e'
@@ -324,7 +325,7 @@ abstract class GenericDaoBase extends PaginatingDao {
                 // ex (Rc2):    $currentAssociation = 'e.hochschultyp'
                 // ex (Rc1):    $currentAssociation = 'e1.kategorie'
 
-                $queryBuilder->leftJoin($currentAssociation, $currentAlias);
+                $queryBuilder->leftJoin($currentAssociation, $currentAlias, !is_null($condition) ? Join::WITH : null, !is_null($condition) ? str_replace('{currentAlias}', $currentAlias, $condition) : null);
                 if ($fetchJoin) {
                     $queryBuilder->addSelect($currentAlias);
                 }
