@@ -77,7 +77,7 @@ abstract class AbstractView extends ViewBase {
 	}
 	
 	protected function outputStatusHeader() {
-		
+
 		switch($this->statusCode) {
 			case 200:
 				$header = '200 OK';
