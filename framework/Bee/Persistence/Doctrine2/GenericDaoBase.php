@@ -440,6 +440,23 @@ abstract class GenericDaoBase extends PaginatingDao {
         return $queryBuilder;
     }
 
+    /**
+     * @param QueryBuilder $queryBuilder
+     * @param array $filters
+     * @param string $fieldExpr
+     * @param string $filterKey
+     * @param string $comp
+     * @return QueryBuilder for chaining
+     */
+    protected final function addBooleanRestriction(QueryBuilder $queryBuilder, $filters, $fieldExpr, $filterKey = '') {
+        $filterKey = $filterKey ?: $fieldExpr;
+        if (array_key_exists($filterKey, $filters) && $value = $filters[$filterKey]) {
+            $paramName = 'sclr' . $this->scalarParamCount++;
+            $queryBuilder->andWhere($this->internalizeFieldExpression($fieldExpr, $queryBuilder) . ' = :' . $paramName)->setParameter($paramName, filter_var($value, FILTER_VALIDATE_BOOLEAN));
+        }
+        return $queryBuilder;
+    }
+
     // =================================================================================================================
     // == GETTERS & SETTERS ============================================================================================
     // =================================================================================================================
