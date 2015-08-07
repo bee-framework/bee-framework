@@ -65,9 +65,20 @@ class PaginatingDao extends EntityManagerHolder {
      */
 	protected function applyOrderMapping(QueryBuilder $queryBuilder, array $orderMapping = array()) {
 		foreach ($orderMapping as $orderField => $orderDir) {
-			$queryBuilder->addOrderBy($orderField, $orderDir);
+			if(in_array($orderDir, ['ASC', 'DESC'])) {
+				$this->doAddOrderBy($queryBuilder, $orderField, $orderDir);
+			}
 		}
         return $queryBuilder;
+	}
+
+	/**
+	 * @param QueryBuilder $queryBuilder
+	 * @param $orderField
+	 * @param $orderDir
+	 */
+	protected function doAddOrderBy(QueryBuilder $queryBuilder, $orderField, $orderDir) {
+		$queryBuilder->addOrderBy($orderField, $orderDir);
 	}
 
 	/**

@@ -224,14 +224,15 @@ abstract class GenericDaoBase extends PaginatingDao {
     // =================================================================================================================
     // == Field disaggregation and canonicalization ====================================================================
     // =================================================================================================================
-
     /**
      * @param QueryBuilder $queryBuilder
-     * @param array $orderMapping
-     * @return QueryBuilder
+     * @param $orderField
+     * @param $orderDir
      */
-    protected function applyOrderMapping(QueryBuilder $queryBuilder, array $orderMapping = array()) {
-        return parent::applyOrderMapping($queryBuilder, $this->disaggregateAndInternalizeFieldValueMapping($orderMapping, $queryBuilder));
+    protected function doAddOrderBy(QueryBuilder $queryBuilder, $orderField, $orderDir) {
+        array_map(function ($field) use (&$internalFieldValueMapping, $queryBuilder, $orderDir) {
+            parent::doAddOrderBy($queryBuilder, $this->internalizeFieldExpression($field, $queryBuilder), $orderDir);
+        }, $this->getFieldDisaggregation($orderField));
     }
 
     /**
