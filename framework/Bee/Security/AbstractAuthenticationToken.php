@@ -19,6 +19,10 @@ namespace Bee\Security;
 use Bee\Utils\Assert;
 use Bee\Utils\Types;
 
+/**
+ * Class AbstractAuthenticationToken
+ * @package Bee\Security
+ */
 abstract class AbstractAuthenticationToken implements IAuthentication {
 	
 	/**
