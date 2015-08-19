@@ -81,6 +81,9 @@ class Manager {
 	 */
 	private static $provider;
 
+	/**
+	 *
+	 */
 	private static function initCacheProvider() {
 		// todo: take into account minimum versions for extensions?
 		foreach(self::$providers as $extension => $providerClass) {
@@ -96,6 +99,9 @@ class Manager {
 		}
 	}
 
+	/**
+	 * @param $providerClass
+	 */
 	private static function initProviderClass($providerClass) {
 		static::getLog()->info('initializing cache provider class ' . $providerClass);
 		$loc = Framework::getClassFileLocations($providerClass);
@@ -103,7 +109,10 @@ class Manager {
 		self::$provider = new $providerClass();
 		static::getLog()->info('cache initialized : ' . get_class(static::$provider));
 	}
-	
+
+	/**
+	 * @param bool|false $providerInstanceOrClassName
+	 */
 	public static function init($providerInstanceOrClassName = false) {
 		if($providerInstanceOrClassName) {
 			if(is_string($providerInstanceOrClassName)) {
@@ -121,6 +130,9 @@ class Manager {
 		}
 	}
 
+	/**
+	 *
+	 */
 	public static function shutdown() {
 		if(!is_null(self::$provider)) {
 			self::$provider->shutdown();
@@ -135,7 +147,10 @@ class Manager {
 	public static function getProvider() {
 		return self::$provider;
 	}
-	
+
+	/**
+	 * @param $keyOrCachable
+	 */
 	public static function evict($keyOrCachable) {
 		if ($keyOrCachable instanceof ICachableResource) {
 			$keyOrCachable = $keyOrCachable->getKey();
@@ -293,6 +308,10 @@ class Manager {
    		return $data;
    	}
 
+	/**
+	 * @param $key
+	 * @return mixed
+	 */
 	public static function retrieve($key) {
 		return self::$provider->retrieve(self::getQualifiedKey($key));
 	}
@@ -306,15 +325,41 @@ class Manager {
 		return self::$provider->exists($key);
 	}
 
+	/**
+	 * @param $key
+	 * @param $value
+	 * @param int $etime
+	 */
 	public static function store($key, &$value, $etime = 0) {
 		self::$provider->store(self::getQualifiedKey($key), $value, $etime);
 	}
 
+	/**
+	 * @param $key
+	 * @return string
+	 */
 	private static function getQualifiedKey($key) {
 		return (Framework::getApplicationId()!==false ? Framework::getApplicationId().'_' : '') . $key;
 	}
 
+	/**
+	 * @return mixed
+	 */
     public static function clearCache() {
         return self::$provider->clearCache();
     }
+
+	/**
+	 * @param boolean $useFileCacheFallback
+	 */
+	public static function setUseFileCacheFallback($useFileCacheFallback) {
+		self::$useFileCacheFallback = $useFileCacheFallback;
+	}
+
+	/**
+	 * @param boolean $useSessionCacheFallback
+	 */
+	public static function setUseSessionCacheFallback($useSessionCacheFallback) {
+		self::$useSessionCacheFallback = $useSessionCacheFallback;
+	}
 }
