@@ -124,4 +124,11 @@ abstract class EnumBase {
 		return $this->val();
 	}
 
+	/**
+	 * Helper for entity-like usage (e.g. in ILabeled implementations)
+	 * @return mixed
+	 */
+	public final function getId() {
+		return $this->val();
+	}
 }
