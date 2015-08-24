@@ -58,7 +58,7 @@ namespace Bee {
 
 		private static $classFileMap;
 
-		private static $productionMode = false;
+        private static $runLevel = 0;
 
 		/**
 		 * @param Bee_Weaving_IEnhancedClassesStore $enhancedClassesStore
@@ -139,7 +139,7 @@ namespace Bee {
 				return false;
 			}
 
-			if (self::$productionMode) {
+			if (static::getProductionMode()) {
 				if (!is_array(self::$classFileMap)) {
 					try {
 						self::$classFileMap = Manager::retrieve(self::CLASS_FILE_CACHE_PREFIX);
@@ -203,7 +203,7 @@ namespace Bee {
 		}
 
 		public static function shutdown() {
-			if (self::$productionMode) {
+			if (static::getProductionMode()) {
 				foreach (self::$missedClassNames as $missedClassName) {
 					$ref = new ReflectionClass($missedClassName);
 					self::$classFileMap[$missedClassName] = file_exists($ref->getFileName()) ? $ref->getFileName() : self::GENERATED_CLASS_CODE_MARKER;
@@ -343,13 +343,58 @@ namespace Bee {
 			return self::$applicationName;
 		}
 
-		public static function setProductionMode($productionMode) {
-			self::$productionMode = $productionMode;
+        /**
+         * Deprecated. Use Run-Level instead.
+         *
+         * @param $productionMode
+         * @deprecated
+         */
+        public static function setProductionMode($productionMode) {
+            if ($productionMode) {
+                if (static::$runLevel > 0) {
+                    static::$runLevel = 0;
+                }
+           } else {
+                if (static::$runLevel == 0) {
+                    static::$runLevel = 1;
+                }
+           }
+       }
+
+        /**
+         * Deprecated. Use Run-Level instead.
+         *
+         * @return bool
+         * @deprecated
+         */
+		public static function getProductionMode() {
+			return self::$runLevel == 0;
 		}
 
-		public static function getProductionMode() {
-			return self::$productionMode;
-		}
+        public static function getRunlevel($key=false) {
+            if (!$key) {
+                return static::$runLevel;
+            }
+            $key = pow(2, $key);
+            return (static::$runLevel & $key) > 0;
+        }
+
+        public static function setRunlevel($runLevelOrKey, $value=null) {
+            if (is_null($value)) {
+                static::$runLevel = $runLevelOrKey;
+
+            } else {
+                $runLevelOrKey = pow(2, $runLevelOrKey);
+                $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+
+                if ($value && !(static::$runLevel & $runLevelOrKey)) {
+                    static::$runLevel += $runLevelOrKey;
+
+                } else if (!$value && (static::$runLevel & $runLevelOrKey)) {
+                    static::$runLevel -= $runLevelOrKey;
+                }
+            }
+        }
 
 		/**
 		 * @param string|object $classOrClassName

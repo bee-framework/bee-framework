@@ -10,5 +10,5 @@ Logger::configure('conf/log4php.xml');
 
 Bee\Cache\Manager::init();
 
-//Bee\Framework::setProductionMode(true);
+Bee\Framework::setRunlevel(1);
 Bee\Framework::dispatchRequestUsingXmlContext(__DIR__.'/conf/context-newinterceptors.xml');
