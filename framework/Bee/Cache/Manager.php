@@ -322,6 +322,9 @@ class Manager {
 	 * @return bool
 	 */
 	public static function exists($key) {
+		if(is_null(self::$provider)) {
+			return false;
+		}
 		return self::$provider->exists($key);
 	}
 
@@ -331,7 +334,9 @@ class Manager {
 	 * @param int $etime
 	 */
 	public static function store($key, &$value, $etime = 0) {
-		self::$provider->store(self::getQualifiedKey($key), $value, $etime);
+		if(!is_null(self::$provider)) {
+			self::$provider->store(self::getQualifiedKey($key), $value, $etime);
+		}
 	}
 
 	/**
@@ -346,6 +351,9 @@ class Manager {
 	 * @return mixed
 	 */
     public static function clearCache() {
+		if(is_null(self::$provider)) {
+			return false;
+		}
         return self::$provider->clearCache();
     }
 
