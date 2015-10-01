@@ -1,7 +1,7 @@
 <?php
 namespace Bee\Security\UserDetails;
 /*
- * Copyright 2008-2015 the original author or authors.
+ * Copyright 2008-2014 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@ namespace Bee\Security\UserDetails;
  * limitations under the License.
  */
 
+use Exception;
+
 /**
- * Class PasswordConfirmationMismatchException
+ * Class PasswordException
  * @package Bee\Security\UserDetails
  */
-class PasswordConfirmationMismatchException extends PasswordException {
+class PasswordException extends Exception {
 
 }

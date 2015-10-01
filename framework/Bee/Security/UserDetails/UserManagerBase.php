@@ -97,14 +97,23 @@ abstract class UserManagerBase {
 		$user->setUsername($frmdata['username']);
 		$user->setName($frmdata['fullname']);
 		if (Strings::hasText($frmdata['password'])) {
-			if ($frmdata['password'] !== $frmdata['password2']) {
-				throw new PasswordConfirmationMismatchException("Passwords do not match!");
-			}
-			$this->setPassword($user, $frmdata['password']);
+			$this->updatePassword($user, $frmdata);
 		}
 		$user->setDisabled(filter_var($frmdata['deactivated'], FILTER_VALIDATE_BOOLEAN));
 		$this->setRoles($frmdata, $user);
 		return $this->addUser($user);
+	}
+
+	/**
+	 * @param UserBase $user
+	 * @param array $frmdata
+	 * @throws PasswordConfirmationMismatchException
+	 */
+	protected function updatePassword(UserBase $user, array $frmdata) {
+		if ($frmdata['password'] !== $frmdata['password2']) {
+			throw new PasswordConfirmationMismatchException("Passwords do not match!");
+		}
+		$this->setPassword($user, $frmdata['password']);
 	}
 
 	/**
