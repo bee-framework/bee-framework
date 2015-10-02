@@ -1,5 +1,6 @@
 <?php
 namespace Bee\Persistence\Doctrine2\BeanInjection;
+
 /*
  * Copyright 2008-2014 the original author or authors.
  *
@@ -33,87 +34,87 @@ use ReflectionProperty;
 class InjectionEventListener implements EventSubscriber, IContextAware {
     use TContextAware;
 
-	/**
-	 * @var Reader
-	 */
-	private $reader;
+    /**
+     * @var Reader
+     */
+    private $reader;
 
-	/**
-	 * @param LifecycleEventArgs $eventArgs
-	 */
-	public function postLoad(LifecycleEventArgs $eventArgs) {
-		$entity = $eventArgs->getEntity();
-		$reflClass = new ReflectionClass($entity);
+    /**
+     * @param LifecycleEventArgs $eventArgs
+     */
+    public function postLoad(LifecycleEventArgs $eventArgs) {
+        $entity = $eventArgs->getEntity();
+        $reflClass = new ReflectionClass($entity);
 
-		foreach($reflClass->getProperties() as $prop) {
-			$annot = $this->reader->getPropertyAnnotation($prop, 'Bee\Persistence\Doctrine2\BeanInjection\Inject');
-			if ($annot instanceof Inject) {
-				$this->injectIntoProperty($entity, $prop, $annot);
-			}
-		}
+        foreach ($reflClass->getProperties() as $prop) {
+            $annot = $this->reader->getPropertyAnnotation($prop, 'Bee\Persistence\Doctrine2\BeanInjection\Inject');
+            if ($annot instanceof Inject) {
+                $this->injectIntoProperty($entity, $prop, $annot);
+            }
+        }
 
-		foreach($reflClass->getMethods(ReflectionProperty::IS_PUBLIC) as $method) {
-			if($method->getNumberOfRequiredParameters() == 1) {
-				$annot = $this->reader->getMethodAnnotation($method, 'Bee\Persistence\Doctrine2\BeanInjection\Inject');
-				if ($annot instanceof Inject) {
-					$this->injectIntoSetter($entity, $method, $annot);
-				}
-			}
-		}
-	}
+        foreach ($reflClass->getMethods(ReflectionProperty::IS_PUBLIC) as $method) {
+            if ($method->getNumberOfRequiredParameters() == 1) {
+                $annot = $this->reader->getMethodAnnotation($method, 'Bee\Persistence\Doctrine2\BeanInjection\Inject');
+                if ($annot instanceof Inject) {
+                    $this->injectIntoSetter($entity, $method, $annot);
+                }
+            }
+        }
+    }
 
-	/**
-	 * @param $entity
-	 * @param ReflectionProperty $prop
-	 * @param Inject $annotation
-	 */
-	protected function injectIntoProperty($entity, ReflectionProperty $prop, Inject $annotation) {
-		$value = $this->context->getBean($annotation->beanName);
-		$prop->setAccessible(true);
-		$prop->setValue($entity, $value);
-	}
+    /**
+     * @param $entity
+     * @param ReflectionProperty $prop
+     * @param Inject $annotation
+     */
+    protected function injectIntoProperty($entity, ReflectionProperty $prop, Inject $annotation) {
+        $value = $this->context->getBean($annotation->beanName);
+        $prop->setAccessible(true);
+        $prop->setValue($entity, $value);
+    }
 
-	/**
-	 * @param $entity
-	 * @param ReflectionMethod $method
-	 * @param Inject $annotation
-	 */
-	protected function injectIntoSetter($entity, ReflectionMethod $method, Inject $annotation) {
-		$value = $this->context->getBean($annotation->beanName);
-		$method->setAccessible(true);
-		$method->invoke($entity, $value);
-	}
+    /**
+     * @param $entity
+     * @param ReflectionMethod $method
+     * @param Inject $annotation
+     */
+    protected function injectIntoSetter($entity, ReflectionMethod $method, Inject $annotation) {
+        $value = $this->context->getBean($annotation->beanName);
+        $method->setAccessible(true);
+        $method->invoke($entity, $value);
+    }
 
-	/**
-	 * @param LoadClassMetadataEventArgs $eventArgs
-	 */
+    /**
+     * @param LoadClassMetadataEventArgs $eventArgs
+     */
 //	public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs) {
 //		$classMata = $eventArgs->getClassMetadata();
 //	}
 
-	/**
-	 * Returns an array of events this subscriber wants to listen to.
-	 *
-	 * @return array
-	 */
-	public function getSubscribedEvents() {
-		return array(
-				Events::postLoad//,
+    /**
+     * Returns an array of events this subscriber wants to listen to.
+     *
+     * @return array
+     */
+    public function getSubscribedEvents() {
+        return array(
+            Events::postLoad//,
 //				Events::loadClassMetadata
-		);
-	}
+        );
+    }
 
-	/**
-	 * @return Reader
-	 */
-	public function getReader() {
-		return $this->reader;
-	}
+    /**
+     * @return Reader
+     */
+    public function getReader() {
+        return $this->reader;
+    }
 
-	/**
-	 * @param Reader $reader
-	 */
-	public function setReader(Reader $reader) {
-		$this->reader = $reader;
-	}
+    /**
+     * @param Reader $reader
+     */
+    public function setReader(Reader $reader) {
+        $this->reader = $reader;
+    }
 }
