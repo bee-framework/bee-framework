@@ -96,7 +96,7 @@ class Manager extends AbstractAuthenticationManager {
 
 //        publishAuthenticationFailure($lastException, $authentication);
 
-        throw $lastException;    	
+        throw $lastException;
     }
     
     private function copyDetails(IAuthentication $source, IAuthentication $dest) {
